@@ -1,16 +1,36 @@
-import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
+import { configDefaults, defineConfig } from 'vitest/config';
 
-// Scaffold: a single node project for plain-logic tests.
+// Ported from the dashboards repo. Two projects:
+//   - node:    plain-logic + hook + data-layer specs (jsdom-free, MSW via msw/node)
+//   - browser: *.browser.spec.tsx component tests, real Chromium via Playwright
 //
-// Step 1c ports the full dashboards Vitest setup on top of this — a second
-// `browser` project (Playwright provider) for the `*.browser.spec.tsx`
-// component tests, MSW, and the `routeMocker.ts` stack. See
-// `standalone-wasap/06-cross-cutting-concerns.md` §6.4.
+// Run one with `vitest --project node` / `--project browser`; CI runs both and
+// installs the Playwright browser first. See
+// standalone-wasap/06-cross-cutting-concerns.md §6.4.
 export default defineConfig({
     test: {
-        globals: true,
-        environment: 'node',
-        include: ['src/**/*.test.{ts,tsx}'],
         passWithNoTests: true,
+        projects: [
+            {
+                test: {
+                    name: 'node',
+                    exclude: [...configDefaults.exclude, 'src/**/*.browser.{test,spec}.tsx'],
+                    setupFiles: 'vitest.setup.ts',
+                },
+            },
+            {
+                test: {
+                    name: 'browser',
+                    include: ['src/**/*.browser.{test,spec}.tsx'],
+                    browser: {
+                        provider: playwright(),
+                        enabled: true,
+                        headless: true,
+                        instances: [{ browser: 'chromium' }],
+                    },
+                },
+            },
+        ],
     },
 });
