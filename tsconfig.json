@@ -5,14 +5,25 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "jsx": "react-jsx",
+        "jsxImportSource": "react",
+
+        // Strictness: `strict` only, matching the dashboards repo
+        // (astro/tsconfigs/strict) the wasap code was written against. The
+        // stricter checks the sibling experiment repo uses
+        // (noUncheckedIndexedAccess, noUnusedLocals/Parameters,
+        // noFallthroughCasesInSwitch, exactOptionalPropertyTypes) are
+        // deliberately off for now — turning them on is a dedicated later pass,
+        // not something to do while moving verbatim code (see
+        // standalone-wasap/02-step-1-standalone-repo.md).
         "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
-        "skipLibCheck": true,
+
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
         "noEmit": true,
         "types": ["vite/client", "vitest/globals", "node"]
     },
