@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import { LocationFilter, type LocationFilterProps } from '../preact/locationFilter/location-filter';
-import { type LocationChangedEvent } from '../preact/locationFilter/LocationChangedEvent';
+import { LocationFilter, type LocationFilterProps } from '../react/locationFilter/location-filter';
+import { type LocationChangedEvent } from '../react/locationFilter/LocationChangedEvent';
 import { gsEventNames } from '../utils/gsEventNames';
 
 export type GsLocationFilterProps = Omit<LocationFilterProps, 'fields' | 'lapisFilter' | 'width'> & {

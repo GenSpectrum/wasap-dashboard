@@ -1,9 +1,9 @@
 import { queryDatesInDataset } from './queryDatesInDataset';
 import { fetchMutationsOverTime } from '../lapisApi/lapisApi';
 import { FetchSubstitutionsOrDeletionsOperator } from '../operator/FetchSubstitutionsOrDeletionsOperator';
-import { UserFacingError } from '../preact/components/error-display';
-import { BaseMutationOverTimeDataMap } from '../preact/mutationsOverTime/MutationOverTimeData';
-import { sortSubstitutionsAndDeletions } from '../preact/shared/sort/sortSubstitutionsAndDeletions';
+import { UserFacingError } from '../react/components/error-display';
+import { BaseMutationOverTimeDataMap } from '../react/mutationsOverTime/MutationOverTimeData';
+import { sortSubstitutionsAndDeletions } from '../react/shared/sort/sortSubstitutionsAndDeletions';
 import {
     type LapisFilter,
     type SequenceType,

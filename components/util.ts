@@ -17,22 +17,22 @@ export {
     views,
 } from './types';
 
-export type { DateRangeOption } from './preact/dateRangeFilter/dateRangeOption';
-export { DateRangeOptionChangedEvent } from './preact/dateRangeFilter/dateRangeOption';
+export type { DateRangeOption } from './react/dateRangeFilter/dateRangeOption';
+export { DateRangeOptionChangedEvent } from './react/dateRangeFilter/dateRangeOption';
 
-export type { LapisNumberFilter, NumberRange } from './preact/numberRangeFilter/NumberRangeFilterChangedEvent';
+export type { LapisNumberFilter, NumberRange } from './react/numberRangeFilter/NumberRangeFilterChangedEvent';
 export {
     NumberRangeFilterChangedEvent,
     NumberRangeValueChangedEvent,
-} from './preact/numberRangeFilter/NumberRangeFilterChangedEvent';
+} from './react/numberRangeFilter/NumberRangeFilterChangedEvent';
 
 export { gsEventNames } from './utils/gsEventNames';
 
 export type { MutationAnnotation, MutationAnnotations } from './gsComponents/mutation-annotations-context';
 
-export type { MeanProportionInterval } from './preact/mutationsOverTime/mutations-over-time';
-export type { CountCoverageQuery } from './preact/queriesOverTime/queries-over-time';
-export type { CustomColumn } from './preact/components/features-over-time-grid';
+export type { MeanProportionInterval } from './react/mutationsOverTime/mutations-over-time';
+export type { CountCoverageQuery } from './react/queriesOverTime/queries-over-time';
+export type { CustomColumn } from './react/components/features-over-time-grid';
 
 // Not vendored (the wasap dashboards don't render `gs-aggregate`) — `views.table | views.bar` is
 // its exact upstream definition (preact/aggregatedData/aggregate.tsx), reproduced here since only

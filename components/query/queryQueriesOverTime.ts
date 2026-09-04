@@ -1,7 +1,7 @@
 import { queryDatesInDataset } from './queryDatesInDataset';
 import { fetchQueriesOverTime } from '../lapisApi/lapisApi';
 import { type QueryDefinition } from '../lapisApi/lapisTypes';
-import { UserFacingError } from '../preact/components/error-display';
+import { UserFacingError } from '../react/components/error-display';
 import { type LapisFilter, type TemporalGranularity } from '../types';
 import { type ProportionValue } from './queryMutationsOverTime';
 import { type Map2DContents } from '../utils/map2d';

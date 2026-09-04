@@ -1,10 +1,10 @@
 import { type FC } from 'react';
 
-import { LineageFilter, type LineageFilterProps } from '../preact/lineageFilter/lineage-filter';
+import { LineageFilter, type LineageFilterProps } from '../react/lineageFilter/lineage-filter';
 import {
     type LineageFilterChangedEvent,
     type LineageMultiFilterChangedEvent,
-} from '../preact/lineageFilter/LineageFilterChangedEvent';
+} from '../react/lineageFilter/LineageFilterChangedEvent';
 import { gsEventNames } from '../utils/gsEventNames';
 
 export type GsLineageFilterProps = Omit<LineageFilterProps, 'lapisField' | 'lapisFilter' | 'width'> & {

@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import { TextFilter, type TextFilterProps } from '../preact/textFilter/text-filter';
-import { type TextFilterChangedEvent } from '../preact/textFilter/TextFilterChangedEvent';
+import { TextFilter, type TextFilterProps } from '../react/textFilter/text-filter';
+import { type TextFilterChangedEvent } from '../react/textFilter/TextFilterChangedEvent';
 import { gsEventNames } from '../utils/gsEventNames';
 
 export type GsTextFilterProps = Omit<TextFilterProps, 'lapisField' | 'lapisFilter' | 'width'> & {

@@ -3,11 +3,11 @@ import z from 'zod';
 
 import { fetchReferenceGenome } from '../lapisApi/lapisApi';
 import { type ReferenceGenome } from '../lapisApi/ReferenceGenome';
-import { LapisUrlContextProvider } from '../preact/LapisUrlContext';
-import { MutationAnnotationsContextProvider } from '../preact/MutationAnnotationsContext';
-import { MutationLinkTemplateContextProvider } from '../preact/MutationLinkTemplateContext';
-import { INITIAL_REFERENCE_GENOMES, ReferenceGenomeContext } from '../preact/ReferenceGenomeContext';
-import { useQuery } from '../preact/useQuery';
+import { LapisUrlContextProvider } from '../react/LapisUrlContext';
+import { MutationAnnotationsContextProvider } from '../react/MutationAnnotationsContext';
+import { MutationLinkTemplateContextProvider } from '../react/MutationLinkTemplateContext';
+import { INITIAL_REFERENCE_GENOMES, ReferenceGenomeContext } from '../react/ReferenceGenomeContext';
+import { useQuery } from '../react/useQuery';
 import { type MutationAnnotations } from './mutation-annotations-context';
 import { type MutationLinkTemplate } from './mutation-link-template-context';
 

@@ -1,10 +1,10 @@
 import { type FC } from 'react';
 
-import { NumberRangeFilter, type NumberRangeFilterProps } from '../preact/numberRangeFilter/number-range-filter';
+import { NumberRangeFilter, type NumberRangeFilterProps } from '../react/numberRangeFilter/number-range-filter';
 import {
     type NumberRangeFilterChangedEvent,
     type NumberRangeValueChangedEvent,
-} from '../preact/numberRangeFilter/NumberRangeFilterChangedEvent';
+} from '../react/numberRangeFilter/NumberRangeFilterChangedEvent';
 import { gsEventNames } from '../utils/gsEventNames';
 
 export type GsNumberRangeFilterProps = Omit<

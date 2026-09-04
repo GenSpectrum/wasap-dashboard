@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import { ReferenceGenomesAwaiter } from '../preact/components/ReferenceGenomesAwaiter';
-import { MutationFilter, type MutationFilterProps } from '../preact/mutationFilter/mutation-filter';
+import { ReferenceGenomesAwaiter } from '../react/components/ReferenceGenomesAwaiter';
+import { MutationFilter, type MutationFilterProps } from '../react/mutationFilter/mutation-filter';
 import { type MutationsFilter } from '../types';
 import { gsEventNames } from '../utils/gsEventNames';
 
