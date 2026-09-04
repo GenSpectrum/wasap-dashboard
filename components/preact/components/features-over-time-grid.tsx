@@ -14,7 +14,7 @@ import { type Temporal } from '../../utils/temporalClass';
 import { type TemporalDataMap } from '../mutationsOverTime/MutationOverTimeData';
 import { type PageSizes } from '../shared/tanstackTable/pagination';
 import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';
-import { usePreactTable } from '../shared/tanstackTable/tanstackTable';
+import { useReactTable } from '../shared/tanstackTable/tanstackTable';
 
 export const customColumnSchema = z.object({
     header: z.string(),
@@ -66,7 +66,7 @@ function FeaturesOverTimeGrid<F>({
     );
     const { pageSize } = usePageSizeContext();
 
-    const table = usePreactTable({
+    const table = useReactTable({
         data: tableData,
         columns,
         getCoreRowModel: getCoreRowModel(),
@@ -125,7 +125,7 @@ export function FeaturesOverTimeGridServerPaginated<F>({
     );
     const { pageSize, setPageSize } = usePageSizeContext();
 
-    const table = usePreactTable({
+    const table = useReactTable({
         data: tableData,
         columns,
         getCoreRowModel: getCoreRowModel(),

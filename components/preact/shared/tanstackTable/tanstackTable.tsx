@@ -16,7 +16,7 @@ export function flexRender<TProps extends object>(Comp: Renderable<TProps>, prop
 /*
  * Taken from https://github.com/TanStack/table/blob/f7bf6f1adfa4f8b28b9968b29745f2452d4be9d8/packages/react-table/src/index.tsx
  */
-export function usePreactTable<TData extends RowData>(options: TableOptions<TData>) {
+export function useReactTable<TData extends RowData>(options: TableOptions<TData>) {
     const resolvedOptions: TableOptionsResolved<TData> = {
         state: {},
         onStateChange: () => {},
