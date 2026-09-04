@@ -9,6 +9,9 @@ export default defineConfig({
     base: process.env.BASE_PATH ?? '/',
     plugins: [react(), tailwindcss()],
     server: {
+        // Match the port the Astro `dashboards` app uses, so muscle memory and
+        // any bookmarks carry over.
+        port: 4321,
         proxy: {
             // The GenSpectrum collections backend has no CORS headers (it was
             // only ever called same-origin through the Astro `/api` proxy). In
