@@ -93,7 +93,13 @@ function MutationFilterInner({
         setSelectedItems((prevSelectedItems) =>
             prevSelectedItems.filter((mutFilterItem) => enabledMutationTypes.includes(mutFilterItem.type)),
         );
-    }, [enabledMutationTypes, selectedItems]);
+        // `selectedItems` is deliberately not a dependency: the functional updater above always
+        // reads the current value. Including it would create the exact infinite loop this fixes
+        // — Array.prototype.filter returns a new array reference even when nothing was removed,
+        // so setSelectedItems always changes `selectedItems`' identity, which would immediately
+        // re-trigger this effect if it were listed here.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [enabledMutationTypes]);
 
     const fireChangeEvent = (selectedFilters: MutationFilterItem[]) => {
         const detail = mapToMutationFilterStrings(selectedFilters);
