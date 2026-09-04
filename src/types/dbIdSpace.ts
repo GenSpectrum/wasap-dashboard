@@ -1,3 +1,5 @@
+import { getAppConfig } from '../config/appConfig';
+
 export const dbIdSpaces = {
     prod: 'prod',
     staging: 'staging',
@@ -7,16 +9,7 @@ export const dbIdSpaces = {
 export type DbIdSpace = (typeof dbIdSpaces)[keyof typeof dbIdSpaces];
 
 export function getDbIdSpace(): DbIdSpace {
-    const envValue = process.env.DB_ID_SPACE ?? import.meta.env.DB_ID_SPACE;
-    if (envValue) {
-        const validValues: string[] = [dbIdSpaces.prod, dbIdSpaces.staging, dbIdSpaces.local];
-        if (validValues.includes(envValue)) {
-            return envValue as DbIdSpace;
-        }
-        throw new Error(
-            `Environment variable DB_ID_SPACE (value '${envValue}') is not valid. Expected one of: ${validValues.join(', ')}`,
-        );
-    }
-    const dashboardsEnv = process.env.DASHBOARDS_ENVIRONMENT ?? import.meta.env.DASHBOARDS_ENVIRONMENT;
-    return dashboardsEnv === 'dashboards-staging' ? dbIdSpaces.staging : dbIdSpaces.prod;
+    // Standalone: sourced from `config.json` at startup rather than from the
+    // dashboards repo's DB_ID_SPACE / DASHBOARDS_ENVIRONMENT env vars.
+    return getAppConfig().dbIdSpace;
 }

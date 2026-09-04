@@ -2,8 +2,10 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 
+import { loadAppConfig } from './config/appConfig';
 import { routes } from './routes';
 import { DataProviders } from './data/queryClient';
+import setupDayjs from './util/setupDayjs';
 import './index.css';
 
 // Hash routing on purpose: static hosts (GitHub Pages, plain file servers) can't
@@ -12,10 +14,17 @@ import './index.css';
 // View/filter state goes through react-router's search params, not raw history.
 const router = createHashRouter(routes);
 
-createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        <DataProviders>
-            <RouterProvider router={router} />
-        </DataProviders>
-    </StrictMode>,
-);
+async function bootstrap() {
+    await loadAppConfig();
+    setupDayjs();
+
+    createRoot(document.getElementById('root')!).render(
+        <StrictMode>
+            <DataProviders>
+                <RouterProvider router={router} />
+            </DataProviders>
+        </StrictMode>,
+    );
+}
+
+void bootstrap();

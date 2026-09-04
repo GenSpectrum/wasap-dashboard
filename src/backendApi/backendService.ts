@@ -2,6 +2,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse 
 import { z, type ZodSchema } from 'zod';
 
 import { UserFacingError } from '../components/ErrorReportInstruction.tsx';
+import { getAppConfig } from '../config/appConfig';
 import { apiKeyMetadataSchema, generatedApiKeySchema } from '../types/ApiKey.ts';
 import {
     collectionSchema,
@@ -258,7 +259,10 @@ export class BackendService extends ApiService {
 let backendServiceForClientside: BackendService | null = null;
 
 export function getBackendServiceForClientside(): BackendService {
+    // Standalone: the collections backend URL comes from `config.json`
+    // (`getAppConfig().collectionsBackendUrl`) rather than a same-origin
+    // `/api` proxy as in the dashboards deployment.
     backendServiceForClientside =
-        backendServiceForClientside ?? new BackendService(`${new URL(window.location.href).origin}/api`);
+        backendServiceForClientside ?? new BackendService(getAppConfig().collectionsBackendUrl);
     return backendServiceForClientside;
 }
