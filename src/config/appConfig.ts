@@ -21,11 +21,15 @@ const appConfigSchema = z.object({
     dbIdSpace: z.enum(['prod', 'staging', 'local']).default('prod'),
     /**
      * Base URL of the GenSpectrum collections backend (resistance-mutation
-     * collections, predefined variants, `collection` mode). In the dashboards
-     * deployment this is a same-origin `/api` proxy; standalone points straight
-     * at the backend.
+     * collections, predefined variants, `collection` mode). May be absolute or
+     * a same-origin path. The backend sends no CORS headers, so in dev the
+     * default is the Vite proxy path (`vite.config.ts`); a deployment must set
+     * an absolute URL to a backend that allows its origin, or its own proxy.
      */
-    collectionsBackendUrl: z.string().url().default('https://genspectrum.org/api'),
+    collectionsBackendUrl: z
+        .string()
+        .min(1)
+        .default(import.meta.env.DEV ? '/collections-backend' : 'https://genspectrum.org/api'),
 });
 
 export type AppConfig = z.infer<typeof appConfigSchema>;
@@ -42,21 +46,33 @@ let currentConfig: AppConfig = defaultAppConfig;
  */
 export async function loadAppConfig(): Promise<AppConfig> {
     const url = `${import.meta.env.BASE_URL}config.json`;
-    let response: Response;
+
+    let body: string;
     try {
-        response = await fetch(url);
+        const response = await fetch(url);
+        if (!response.ok) {
+            currentConfig = defaultAppConfig;
+            return currentConfig;
+        }
+        body = await response.text();
     } catch {
         currentConfig = defaultAppConfig;
         return currentConfig;
     }
-    if (response.status === 404) {
+
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(body);
+    } catch {
+        // No config.json — a static host (or the Vite dev server) answered the
+        // missing file with its index.html fallback. Use the defaults.
         currentConfig = defaultAppConfig;
         return currentConfig;
     }
-    if (!response.ok) {
-        throw new Error(`Failed to load ${url}: ${response.status} ${response.statusText}`);
-    }
-    currentConfig = appConfigSchema.parse(await response.json());
+
+    // A present-but-invalid config is a hard error: a misconfigured deployment
+    // should fail loudly rather than silently talk to the wrong backend.
+    currentConfig = appConfigSchema.parse(parsed);
     return currentConfig;
 }
 
