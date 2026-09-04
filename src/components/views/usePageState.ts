@@ -1,47 +1,39 @@
-import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import type { PageStateHandler } from '../../views/pageStateHandlers/PageStateHandler.ts';
 
 /**
- * Given a `PageStateHandler`, this hook initially parses the page state from the current URL.
- * It returns a `pageState` object and a `setPageState` function.
- * When the function is called,
- * the new page state is turned into a URL and set as the current URL (added to the page history).
- * This way, the URL and current page state are kept in sync.
+ * Given a `PageStateHandler`, derives the page state from the URL's search
+ * params and returns it together with a `setPageState` function that writes a
+ * new state back to the URL (adding a history entry).
+ *
+ * Standalone: this used to read/write `window.location` + `window.history`
+ * directly. Under the hash router the query string is in the fragment, so it
+ * goes through react-router's `useSearchParams` instead. Page state is now
+ * derived from the URL rather than held in local `useState` — back/forward and
+ * shared links then need no extra wiring.
  */
 export function usePageState<StateHandler extends PageStateHandler<object>>(pageStateHandler: StateHandler) {
     type PageState = StateHandler extends PageStateHandler<infer PS> ? PS : never;
 
-    const [pageState, setPageStateRaw] = useState<PageState>(
-        () => pageStateHandler.parsePageStateFromUrl(new URL(window.location.href)) as PageState,
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const pageState = useMemo(
+        () => pageStateHandler.parsePageStateFromUrl(searchParams) as PageState,
+        [pageStateHandler, searchParams],
     );
 
     const setPageState: Dispatch<SetStateAction<PageState>> = useCallback(
         (newPageStateOrUpdater) => {
-            setPageStateRaw((prevState) => {
-                const newPageState =
-                    typeof newPageStateOrUpdater === 'function'
-                        ? newPageStateOrUpdater(prevState)
-                        : newPageStateOrUpdater;
-                window.history.pushState(undefined, '', pageStateHandler.toUrl(newPageState));
-                return newPageState;
-            });
+            const newPageState =
+                typeof newPageStateOrUpdater === 'function'
+                    ? newPageStateOrUpdater(pageStateHandler.parsePageStateFromUrl(searchParams) as PageState)
+                    : newPageStateOrUpdater;
+            setSearchParams(pageStateHandler.toSearchParams(newPageState));
         },
-        [pageStateHandler],
+        [pageStateHandler, searchParams, setSearchParams],
     );
-
-    useEffect(() => {
-        const handlePopState = () => {
-            const url = new URL(window.location.href);
-            const newPageState = pageStateHandler.parsePageStateFromUrl(url);
-            setPageStateRaw(newPageState as PageState);
-        };
-
-        window.addEventListener('popstate', handlePopState);
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, [pageStateHandler]);
 
     return useMemo(() => ({ pageState, setPageState }), [pageState, setPageState]);
 }

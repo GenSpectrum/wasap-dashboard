@@ -28,10 +28,10 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         this.filterConfig = generateWasapFilterConfig(config);
     }
 
-    parsePageStateFromUrl(url: URL): WasapFilter {
+    parsePageStateFromUrl(searchParams: URLSearchParams): WasapFilter {
         // URL-parsed settings
-        const texts = parseTextFiltersFromUrl(url.searchParams, this.filterConfig);
-        const dateRanges = parseDateRangesFromUrl(url.searchParams, this.filterConfig);
+        const texts = parseTextFiltersFromUrl(searchParams, this.filterConfig);
+        const dateRanges = parseDateRangesFromUrl(searchParams, this.filterConfig);
         const providedSequenceType = texts.sequenceType as SequenceType | undefined;
         const providedMode = texts.analysisMode as WasapAnalysisMode | undefined;
 
@@ -136,6 +136,10 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     }
 
     toUrl(pageState: WasapFilter): string {
+        return formatUrl(this.config.path, this.toSearchParams(pageState));
+    }
+
+    toSearchParams(pageState: WasapFilter): URLSearchParams {
         const search = new URLSearchParams();
         const { base, analysis } = pageState;
 
@@ -207,7 +211,7 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
                 break;
         }
 
-        return formatUrl(this.config.path, search);
+        return search;
     }
 
     getDefaultPageUrl(): string {
