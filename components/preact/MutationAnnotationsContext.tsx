@@ -4,7 +4,7 @@ import {
     type MutationAnnotation,
     type MutationAnnotations,
     mutationAnnotationsSchema,
-} from '../web-components/mutation-annotations-context';
+} from '../gsComponents/mutation-annotations-context';
 import { ErrorDisplay } from './components/error-display';
 import { ResizeContainer } from './components/resize-container';
 import { type Mutation } from '../utils/mutations';

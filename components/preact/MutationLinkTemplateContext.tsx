@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, type FC, type PropsWithChildren } f
 
 import type { SequenceType } from '../types';
 import type { Deletion, Substitution } from '../utils/mutations';
-import { mutationLinkTemplateSchema } from '../web-components/mutation-link-template-context';
+import { mutationLinkTemplateSchema } from '../gsComponents/mutation-link-template-context';
 import { ErrorDisplay } from './components/error-display';
 import { ResizeContainer } from './components/resize-container';
 

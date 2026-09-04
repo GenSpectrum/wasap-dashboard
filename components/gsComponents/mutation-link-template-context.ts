@@ -1,4 +1,3 @@
-import { createContext } from '@lit/context';
 import z from 'zod';
 
 export const mutationLinkTemplateSchema = z.object({
@@ -7,7 +6,3 @@ export const mutationLinkTemplateSchema = z.object({
 });
 
 export type MutationLinkTemplate = z.infer<typeof mutationLinkTemplateSchema>;
-
-export const mutationLinkTemplateContext = createContext<MutationLinkTemplate>(
-    Symbol('mutation-link-template-context'),
-);

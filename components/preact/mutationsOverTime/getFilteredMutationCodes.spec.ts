@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
 import { type DeletionEntry, type SubstitutionEntry } from '../../types';
 import { type Deletion, type Substitution } from '../../utils/mutations';
-import { type MutationAnnotations } from '../../web-components/mutation-annotations-context';
+import { type MutationAnnotations } from '../../gsComponents/mutation-annotations-context';
 import { buildAnnotationIndex, getMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 
 describe('getFilteredMutationCodes', () => {

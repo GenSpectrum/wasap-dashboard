@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import flatpickr from 'flatpickr';
+// Previously injected only into gs-date-range-filter's Lit shadow root (see components/VENDOR.md
+// and the step-2 Lit-removal commit). Global now that there's no shadow DOM to scope it to.
+import 'flatpickr/dist/flatpickr.css';
 
 import { type WithClassName } from '../shared/WithClassName/WithClassName';
 

@@ -1,4 +1,3 @@
-import { createContext } from '@lit/context';
 import z from 'zod';
 
 const mutationEntrySchema = z.union([
@@ -26,5 +25,3 @@ export const mutationAnnotationsSchema = z.array(mutationAnnotationSchema, {
     errorMap: () => ({ message: 'invalid mutation annotations' }),
 });
 export type MutationAnnotations = z.infer<typeof mutationAnnotationsSchema>;
-
-export const mutationAnnotationsContext = createContext<MutationAnnotations>(Symbol('mutation-annotations-context'));
