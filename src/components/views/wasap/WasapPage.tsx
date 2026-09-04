@@ -9,13 +9,9 @@ import { getInitialMeanProportionInterval } from './initialMeanProportionInterva
 import type { ResistanceData } from './resistanceData';
 import { useWasapPageData } from './useWasapPageData';
 import type { WasapPageConfig } from './wasapPageConfig';
-import { withQueryProvider } from '../../../backendApi/withQueryProvider';
 import { getClientLogger } from '../../../clientLogger';
-import { defaultBreadcrumbs } from '../../../layouts/Breadcrumbs.tsx';
-import { DataPageLayout } from '../../../layouts/OrganismPage/DataPageLayout.tsx';
-import { dataOrigins } from '../../../types/dataOrigins.ts';
+import { LapisUnreachableWrapperClient } from '../../LapisUnreachableWrapperClient';
 import { Page } from '../../../types/pages.ts';
-import { wastewaterBreadcrumb } from '../../../types/wastewaterConfig';
 import { Loading } from '../../../util/Loading';
 import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
 import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
@@ -58,18 +54,7 @@ export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) =
     };
 
     return (
-        <DataPageLayout
-            breadcrumbs={[
-                ...defaultBreadcrumbs,
-                wastewaterBreadcrumb,
-                {
-                    name: config.name,
-                    href: config.path,
-                },
-            ]}
-            dataOrigins={[dataOrigins.wise]}
-            lapisUrl={config.lapisBaseUrl}
-        >
+        <LapisUnreachableWrapperClient lapisUrl={config.lapisBaseUrl}>
             <gs-app
                 lapis={config.lapisBaseUrl}
                 mutationAnnotations={mutationAnnotations}
@@ -206,8 +191,10 @@ export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) =
                     )}
                 </div>
             </gs-app>
-        </DataPageLayout>
+        </LapisUnreachableWrapperClient>
     );
 };
 
-export const WasapPage = withQueryProvider(WasapPageInner);
+// The app provides a single QueryClient (see src/data/queryClient.tsx), so the
+// dashboards repo's per-page withQueryProvider wrapper is gone.
+export const WasapPage = WasapPageInner;
