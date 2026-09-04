@@ -27,7 +27,7 @@ export type WasapPageProps = {
     resistanceData: ResistanceData;
 };
 
-export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) => {
+export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
     // initialize page state from the URL
     const pageStateHandler = useMemo(() => new WasapPageStateHandler(config), [config]);
 
@@ -202,7 +202,3 @@ export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) =
         </LapisUnreachableWrapperClient>
     );
 };
-
-// The app provides a single QueryClient (see src/data/queryClient.tsx), so the
-// dashboards repo's per-page withQueryProvider wrapper is gone.
-export const WasapPage = WasapPageInner;
