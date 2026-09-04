@@ -1,9 +1,11 @@
 import { type Dataset } from './Dataset';
 import { type Operator } from './Operator';
 
-export class GroupByOperator<Data, AggregationResult, KeyToGroupBy extends keyof Data>
-    implements Operator<AggregationResult>
-{
+export class GroupByOperator<
+    Data,
+    AggregationResult,
+    KeyToGroupBy extends keyof Data,
+> implements Operator<AggregationResult> {
     constructor(
         private child: Operator<Data>,
         private field: KeyToGroupBy,
