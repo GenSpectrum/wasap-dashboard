@@ -1,6 +1,6 @@
-import type { Variant } from './Collection.ts';
-import { organismConfig, paths, type Organism } from './Organism.ts';
-import { advancedQueryUrlParamForVariant } from '../components/genspectrum/advancedQueryUrlParamConstants.ts';
+import type { Variant } from './Collection';
+import { organismConfig, paths, type Organism } from './Organism';
+import { advancedQueryUrlParamForVariant } from '../components/genspectrum/advancedQueryUrlParamConstants';
 
 export const Page = {
     apiKey: '/api-key',

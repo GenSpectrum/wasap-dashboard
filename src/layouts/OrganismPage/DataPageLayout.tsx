@@ -1,12 +1,12 @@
 import type { FC, PropsWithChildren } from 'react';
 
-import { AccessionsDownloadButton, type DownloadLink } from './AccessionsDownloadButton.tsx';
-import { LastUpdatedInfo } from './LastUpdatedInfo.tsx';
-import { withQueryProvider } from '../../backendApi/withQueryProvider.tsx';
-import { LapisUnreachableWrapperClient } from '../../components/LapisUnreachableWrapperClient.tsx';
-import type { DataOrigin } from '../../types/dataOrigins.ts';
-import { type BreadcrumbElement, Breadcrumbs } from '../Breadcrumbs.tsx';
-import { DataInfo } from '../base/footer/DataInfo.tsx';
+import { AccessionsDownloadButton, type DownloadLink } from './AccessionsDownloadButton';
+import { LastUpdatedInfo } from './LastUpdatedInfo';
+import { withQueryProvider } from '../../backendApi/withQueryProvider';
+import { LapisUnreachableWrapperClient } from '../../components/LapisUnreachableWrapperClient';
+import type { DataOrigin } from '../../types/dataOrigins';
+import { type BreadcrumbElement, Breadcrumbs } from '../Breadcrumbs';
+import { DataInfo } from '../base/footer/DataInfo';
 
 export type DataPageLayoutProps = PropsWithChildren<{
     breadcrumbs: BreadcrumbElement[];

@@ -1,7 +1,7 @@
 import type { LapisFilter } from 'wasap-components/util';
 
-import { GsLineageFilter } from '../genspectrum/GsLineageFilter.tsx';
-import { GsTextFilter } from '../genspectrum/GsTextFilter.tsx';
+import { GsLineageFilter } from '../genspectrum/GsLineageFilter';
+import { GsTextFilter } from '../genspectrum/GsTextFilter';
 
 export type LineageFilterConfig = {
     placeholderText: string;

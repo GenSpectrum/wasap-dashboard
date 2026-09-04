@@ -1,4 +1,4 @@
-import type { SiloFilterExpression } from '../lapis/siloFilterExpression.ts';
+import type { SiloFilterExpression } from '../lapis/siloFilterExpression';
 
 /**
  * Result of validating a SILO filter expression

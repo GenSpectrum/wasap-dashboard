@@ -1,6 +1,6 @@
 import { type FC, type PropsWithChildren, type RefObject, useRef } from 'react';
 
-import { ModalBox } from './ModalBox.tsx';
+import { ModalBox } from './ModalBox';
 
 export function useModalRef() {
     return useRef<HTMLDialogElement>(null);

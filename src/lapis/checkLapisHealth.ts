@@ -1,4 +1,4 @@
-import { getClientLogger } from '../clientLogger.ts';
+import { getClientLogger } from '../clientLogger';
 import { getTotalCount } from './getTotalCount';
 
 const logger = getClientLogger('checkLapisHealth');

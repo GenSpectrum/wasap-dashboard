@@ -11,14 +11,14 @@ import { useWasapPageData } from './useWasapPageData';
 import type { WasapPageConfig } from './wasapPageConfig';
 import { getClientLogger } from '../../../clientLogger';
 import { LapisUnreachableWrapperClient } from '../../LapisUnreachableWrapperClient';
-import { Page } from '../../../types/pages.ts';
+import { Page } from '../../../types/pages';
 import { Loading } from '../../../util/Loading';
 import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
 import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
-import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime.tsx';
+import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime';
 import { GsApp } from 'wasap-components/gsComponents/gs-app';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
-import { usePageState } from '../usePageState.ts';
+import { usePageState } from '../usePageState';
 
 const logger = getClientLogger('WasapPage');
 

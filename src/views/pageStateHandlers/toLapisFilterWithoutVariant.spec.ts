@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { DatasetFilter } from '../View.ts';
-import { toLapisFilterWithoutVariant } from './toLapisFilterWithoutVariant.ts';
+import type { DatasetFilter } from '../View';
+import { toLapisFilterWithoutVariant } from './toLapisFilterWithoutVariant';
 
 describe('toLapisFilterWithoutVariant', () => {
     const emptyFilter: DatasetFilter = {

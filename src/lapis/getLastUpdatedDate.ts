@@ -2,8 +2,8 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-import { getClientLogger } from '../clientLogger.ts';
-import setupDayjs from '../util/setupDayjs.ts';
+import { getClientLogger } from '../clientLogger';
+import setupDayjs from '../util/setupDayjs';
 
 const lapisInfoSchema = z.object({
     dataVersion: z.string(),

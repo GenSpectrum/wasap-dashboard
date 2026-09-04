@@ -1,4 +1,4 @@
-import { logLevels, type AdditionalLogContext, type InstanceLogger } from './types/logMessage.ts';
+import { logLevels, type AdditionalLogContext, type InstanceLogger } from './types/logMessage';
 
 /**
  * Console-backed logger with the same interface as the dashboards repo's

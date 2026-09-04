@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseDateRangesFromUrl, setSearchFromDateFilters } from './dateFilterFromToUrl.ts';
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector.tsx';
-import { CustomDateRangeLabel } from '../../types/DateWindow.ts';
-import type { Dataset } from '../View.ts';
+import { parseDateRangesFromUrl, setSearchFromDateFilters } from './dateFilterFromToUrl';
+import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import { CustomDateRangeLabel } from '../../types/DateWindow';
+import type { Dataset } from '../View';
 
 const mockDateRangeOption = { label: 'Last 7 Days', dateFrom: '2024-11-22', dateTo: '2024-11-29' };
 

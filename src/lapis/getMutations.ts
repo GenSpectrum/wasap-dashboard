@@ -2,8 +2,8 @@ import type { LapisFilter, SequenceType } from 'wasap-components/util';
 import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../clientLogger.ts';
-import { getTotalCount } from './getTotalCount.ts';
+import { getClientLogger } from '../clientLogger';
+import { getTotalCount } from './getTotalCount';
 
 const mutationsSchema = z.object({
     data: z.array(

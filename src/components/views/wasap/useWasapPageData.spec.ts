@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { http } from 'msw';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { fetchWasapPageData, getLapisFilterForTimeFrame } from './useWasapPageData.ts';
+import { fetchWasapPageData, getLapisFilterForTimeFrame } from './useWasapPageData';
 import {
     EXCLUDE_SET_NAME,
     SEQUENCE_TYPE,
@@ -10,13 +10,13 @@ import {
     VARIANT_TIME_FRAME,
     WASAP_ANALYSIS_MODE,
     type WasapPageConfig,
-} from './wasapPageConfig.ts';
-import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker.ts';
-import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup.ts';
-import type { Collection } from '../../../types/Collection.ts';
+} from './wasapPageConfig';
+import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker';
+import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup';
+import type { Collection } from '../../../types/Collection';
 
 vi.mock('../../../backendApi/backendService.ts', async (importOriginal) => {
-    const mod = await importOriginal<typeof import('../../../backendApi/backendService.ts')>();
+    const mod = await importOriginal<typeof import('../../../backendApi/backendService')>();
     return {
         ...mod,
         getBackendServiceForClientside: () => new mod.BackendService(DUMMY_BACKEND_URL),

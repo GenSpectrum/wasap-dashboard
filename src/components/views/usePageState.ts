@@ -1,7 +1,7 @@
 import { type Dispatch, type SetStateAction, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import type { PageStateHandler } from '../../views/pageStateHandlers/PageStateHandler.ts';
+import type { PageStateHandler } from '../../views/pageStateHandlers/PageStateHandler';
 
 /**
  * Given a `PageStateHandler`, derives the page state from the URL's search

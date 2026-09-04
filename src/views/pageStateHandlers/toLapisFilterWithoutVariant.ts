@@ -1,6 +1,6 @@
 import type { LapisFilter } from 'wasap-components/util';
 
-import type { DatasetFilter } from '../View.ts';
+import type { DatasetFilter } from '../View';
 
 export function toLapisFilterWithoutVariant(
     datasetFilter: DatasetFilter,

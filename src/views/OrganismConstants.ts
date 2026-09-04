@@ -5,11 +5,11 @@ import {
     PATHOPLEXUS_MAIN_FILTER_DATE_COLUMN,
     pathoplexusGroupNameField,
     type VariantFilter,
-} from './View.ts';
-import type { BaselineFilterConfig } from '../components/pageStateSelectors/BaselineSelector.tsx';
-import type { LineageFilterConfig } from '../components/pageStateSelectors/LineageFilterInput.tsx';
-import type { Organism } from '../types/Organism.ts';
-import type { DataOrigin } from '../types/dataOrigins.ts';
+} from './View';
+import type { BaselineFilterConfig } from '../components/pageStateSelectors/BaselineSelector';
+import type { LineageFilterConfig } from '../components/pageStateSelectors/LineageFilterInput';
+import type { Organism } from '../types/Organism';
+import type { DataOrigin } from '../types/dataOrigins';
 
 type AggregatedVisualizations = {
     sequencingEfforts: GsAggregatedConfig[];

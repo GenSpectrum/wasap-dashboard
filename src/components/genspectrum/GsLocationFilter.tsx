@@ -2,7 +2,7 @@ import { gsEventNames, type LapisFilter } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
 import { GsLocationFilter as LocationFilter } from 'wasap-components/gsComponents/gs-location-filter';
 
-import type { LapisLocation } from '../../views/pageStateHandlers/locationFilterFromToUrl.ts';
+import type { LapisLocation } from '../../views/pageStateHandlers/locationFilterFromToUrl';
 
 export function GsLocationFilter<Field extends string>({
     onLocationChange = () => {},

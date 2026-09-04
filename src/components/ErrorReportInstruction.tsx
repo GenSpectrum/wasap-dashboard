@@ -2,8 +2,8 @@ import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Modal, useModalRef } from '../styles/containers/Modal.tsx';
-import type { InstanceLogger } from '../types/logMessage.ts';
+import { Modal, useModalRef } from '../styles/containers/Modal';
+import type { InstanceLogger } from '../types/logMessage';
 
 type ErrorToastArguments = {
     error: Error;

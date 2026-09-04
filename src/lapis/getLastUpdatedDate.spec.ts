@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { describe, expect, test } from 'vitest';
 
-import { getLastUpdatedDate } from './getLastUpdatedDate.ts';
-import { DUMMY_LAPIS_URL } from '../../routeMocker.ts';
-import { lapisRouteMocker } from '../../vitest.setup.ts';
+import { getLastUpdatedDate } from './getLastUpdatedDate';
+import { DUMMY_LAPIS_URL } from '../../routeMocker';
+import { lapisRouteMocker } from '../../vitest.setup';
 
 describe('getLastUpdatedDate', () => {
     test('should return the dataVersion for today', async () => {

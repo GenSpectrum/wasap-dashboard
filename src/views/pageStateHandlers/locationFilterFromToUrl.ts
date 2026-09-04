@@ -1,6 +1,6 @@
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector.tsx';
-import type { Dataset } from '../View.ts';
-import { getStringFromSearch, setSearchFromString } from '../helpers.ts';
+import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { Dataset } from '../View';
+import { getStringFromSearch, setSearchFromString } from '../helpers';
 
 export type LapisLocation = Record<string, string | undefined>;
 

@@ -1,6 +1,6 @@
 import { type FC, type PropsWithChildren } from 'react';
 
-import { externalLinkIconCss } from '../../../components/iconCss.ts';
+import { externalLinkIconCss } from '../../../components/iconCss';
 import { type DataOrigin, dataOriginConfig } from '../../../types/dataOrigins';
 
 export type DataInfoProps = {

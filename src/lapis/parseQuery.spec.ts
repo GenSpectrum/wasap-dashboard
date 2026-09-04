@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { parseQuery } from './parseQuery.ts';
-import { DUMMY_LAPIS_URL } from '../../routeMocker.ts';
-import { lapisRouteMocker } from '../../vitest.setup.ts';
+import { parseQuery } from './parseQuery';
+import { DUMMY_LAPIS_URL } from '../../routeMocker';
+import { lapisRouteMocker } from '../../vitest.setup';
 
 describe('parseQuery', () => {
     beforeEach(() => {});

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import { getClientLogger } from '../clientLogger.ts';
-import { collectionsRawResponseSchema, type CollectionRaw } from './types.ts';
+import { getClientLogger } from '../clientLogger';
+import { collectionsRawResponseSchema, type CollectionRaw } from './types';
 
 const logger = getClientLogger('getCollections');
 

@@ -7,7 +7,7 @@ import {
 import { useEffect, useRef } from 'react';
 import { GsDateRangeFilter as DateRangeFilter } from 'wasap-components/gsComponents/gs-date-range-filter';
 
-import { CustomDateRangeLabel } from '../../types/DateWindow.ts';
+import { CustomDateRangeLabel } from '../../types/DateWindow';
 
 export function GsDateRangeFilter({
     lapisDateField,

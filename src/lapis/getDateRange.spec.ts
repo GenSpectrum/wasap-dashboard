@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { getDateRange } from './getDateRange.ts';
-import { DUMMY_LAPIS_URL } from '../../routeMocker.ts';
-import { lapisRouteMocker } from '../../vitest.setup.ts';
+import { getDateRange } from './getDateRange';
+import { DUMMY_LAPIS_URL } from '../../routeMocker';
+import { lapisRouteMocker } from '../../vitest.setup';
 
 describe('getDateRange', () => {
     beforeEach(() => {});

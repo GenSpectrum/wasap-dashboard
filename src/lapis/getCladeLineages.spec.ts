@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { getCladeLineages } from './getCladeLineages.ts';
-import { DUMMY_LAPIS_URL } from '../../routeMocker.ts';
-import { lapisRouteMocker } from '../../vitest.setup.ts';
+import { getCladeLineages } from './getCladeLineages';
+import { DUMMY_LAPIS_URL } from '../../routeMocker';
+import { lapisRouteMocker } from '../../vitest.setup';
 
 describe('getCladeLineages', () => {
     beforeEach(() => {});

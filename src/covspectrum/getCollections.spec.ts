@@ -1,9 +1,9 @@
 import { http } from 'msw';
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { getCollections } from './getCollections.ts';
-import { type CollectionRaw } from './types.ts';
-import { testServer } from '../../vitest.setup.ts';
+import { getCollections } from './getCollections';
+import { type CollectionRaw } from './types';
+import { testServer } from '../../vitest.setup';
 
 const DUMMY_COV_SPECTRUM_URL = 'http://cov-spectrum.dummy/api/v2';
 

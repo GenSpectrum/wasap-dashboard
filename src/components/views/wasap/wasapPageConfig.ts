@@ -1,6 +1,6 @@
 import type { DateRangeOption, SequenceType, TemporalGranularity } from 'wasap-components/util';
 
-import type { Organism } from '../../../types/Organism.ts';
+import type { Organism } from '../../../types/Organism';
 
 export const SEQUENCE_TYPE = {
     nucleotide: 'nucleotide',

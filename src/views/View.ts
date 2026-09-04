@@ -1,12 +1,12 @@
 import type { DateRangeOption, NumberRange } from 'wasap-components/util';
 
-import type { OrganismConstants } from './OrganismConstants.ts';
+import type { OrganismConstants } from './OrganismConstants';
 import { type ViewConstants } from './ViewConstants';
-import type { LapisLineageQuery, LapisMutationQuery } from './helpers.ts';
-import { type PageStateHandler } from './pageStateHandlers/PageStateHandler.ts';
-import type { LineageFilterConfig } from '../components/pageStateSelectors/LineageFilterInput.tsx';
-import { type BreadcrumbElement } from '../layouts/Breadcrumbs.tsx';
-import type { LapisLocation } from './pageStateHandlers/locationFilterFromToUrl.ts';
+import type { LapisLineageQuery, LapisMutationQuery } from './helpers';
+import { type PageStateHandler } from './pageStateHandlers/PageStateHandler';
+import type { LineageFilterConfig } from '../components/pageStateSelectors/LineageFilterInput';
+import { type BreadcrumbElement } from '../layouts/Breadcrumbs';
+import type { LapisLocation } from './pageStateHandlers/locationFilterFromToUrl';
 
 export type DatasetFilter = {
     locationFilters: LocationFilterState;

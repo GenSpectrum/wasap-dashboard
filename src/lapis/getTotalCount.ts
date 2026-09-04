@@ -2,7 +2,7 @@ import type { LapisFilter } from 'wasap-components/util';
 import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../clientLogger.ts';
+import { getClientLogger } from '../clientLogger';
 
 const lapisTotalCountSchema = z.object({
     data: z.tuple([z.object({ count: z.number() })]),

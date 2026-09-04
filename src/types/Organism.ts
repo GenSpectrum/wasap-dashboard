@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { wastewaterBreadcrumb, wastewaterPathFragment } from './wastewaterConfig.ts';
+import { wastewaterBreadcrumb, wastewaterPathFragment } from './wastewaterConfig';
 
 export const Organisms = {
     covid: 'covid' as const,

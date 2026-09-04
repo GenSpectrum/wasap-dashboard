@@ -1,12 +1,12 @@
 import type { DateRangeOption, LapisFilter } from 'wasap-components/util';
 
-import type { DatasetFilter } from '../../views/View.ts';
-import { locationFieldsToFilterIdentifier } from '../../views/pageStateHandlers/locationFilterFromToUrl.ts';
-import { AdvancedQueryFilter } from '../genspectrum/AdvancedQueryFilter.tsx';
-import { GsDateRangeFilter } from '../genspectrum/GsDateRangeFilter.tsx';
-import { GsLocationFilter } from '../genspectrum/GsLocationFilter.tsx';
-import { GsNumberRangeFilter } from '../genspectrum/GsNumberRangeFilter.tsx';
-import { GsTextFilter } from '../genspectrum/GsTextFilter.tsx';
+import type { DatasetFilter } from '../../views/View';
+import { locationFieldsToFilterIdentifier } from '../../views/pageStateHandlers/locationFilterFromToUrl';
+import { AdvancedQueryFilter } from '../genspectrum/AdvancedQueryFilter';
+import { GsDateRangeFilter } from '../genspectrum/GsDateRangeFilter';
+import { GsLocationFilter } from '../genspectrum/GsLocationFilter';
+import { GsNumberRangeFilter } from '../genspectrum/GsNumberRangeFilter';
+import { GsTextFilter } from '../genspectrum/GsTextFilter';
 
 export type LocationFilterConfig = {
     locationFields: string[];

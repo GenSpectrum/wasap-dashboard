@@ -1,4 +1,4 @@
-import { BackendError, UnknownBackendError } from '../backendApi/backendService.ts';
+import { BackendError, UnknownBackendError } from '../backendApi/backendService';
 
 export function getErrorLogMessage(error: unknown): string {
     if (error instanceof BackendError) {

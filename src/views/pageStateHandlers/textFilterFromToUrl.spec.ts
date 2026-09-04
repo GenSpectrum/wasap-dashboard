@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseTextFiltersFromUrl, setSearchFromTextFilters } from './textFilterFromToUrl.ts';
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector.tsx';
-import type { Dataset } from '../View.ts';
+import { parseTextFiltersFromUrl, setSearchFromTextFilters } from './textFilterFromToUrl';
+import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { Dataset } from '../View';
 
 const configs = [
     {

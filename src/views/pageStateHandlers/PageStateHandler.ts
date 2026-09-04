@@ -1,5 +1,5 @@
-import { type DatasetAndVariantData, type VariantFilter } from '../View.ts';
-import { toLapisFilterWithoutVariant } from './toLapisFilterWithoutVariant.ts';
+import { type DatasetAndVariantData, type VariantFilter } from '../View';
+import { toLapisFilterWithoutVariant } from './toLapisFilterWithoutVariant';
 
 export interface PageStateHandler<PageState extends object> {
     // Standalone: parses from `URLSearchParams` rather than a whole `URL`. Under

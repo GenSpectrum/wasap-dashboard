@@ -1,23 +1,23 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { z, type ZodSchema } from 'zod';
 
-import { UserFacingError } from '../components/ErrorReportInstruction.tsx';
+import { UserFacingError } from '../components/ErrorReportInstruction';
 import { getAppConfig } from '../config/appConfig';
-import { apiKeyMetadataSchema, generatedApiKeySchema } from '../types/ApiKey.ts';
+import { apiKeyMetadataSchema, generatedApiKeySchema } from '../types/ApiKey';
 import {
     collectionSchema,
     collectionSummarySchema,
     type CollectionRequest,
     type CollectionUpdate,
-} from '../types/Collection.ts';
-import { type ProblemDetail, problemDetailSchema } from '../types/ProblemDetail.ts';
-import { publicUserSchema } from '../types/PublicUser.ts';
+} from '../types/Collection';
+import { type ProblemDetail, problemDetailSchema } from '../types/ProblemDetail';
+import { publicUserSchema } from '../types/PublicUser';
 import {
     type SubscriptionPutRequest,
     type SubscriptionRequest,
     subscriptionResponseSchema,
     triggerEvaluationResponseSchema,
-} from '../types/Subscription.ts';
+} from '../types/Subscription';
 
 const X_REQUEST_ID_HEADER = 'x-request-id';
 

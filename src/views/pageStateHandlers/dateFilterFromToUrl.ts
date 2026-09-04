@@ -1,8 +1,8 @@
 import type { DateRangeOption } from 'wasap-components/util';
 
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector.tsx';
-import { CustomDateRangeLabel } from '../../types/DateWindow.ts';
-import type { Dataset } from '../View.ts';
+import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import { CustomDateRangeLabel } from '../../types/DateWindow';
+import type { Dataset } from '../View';
 
 export function parseDateRangesFromUrl(
     search: URLSearchParams | Map<string, string>,
