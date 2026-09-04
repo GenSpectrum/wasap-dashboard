@@ -53,12 +53,23 @@ type RenderErrorCatcherProps = {
     // changed (see the original `useEffect` this replaces). React has no hook for
     // catching errors thrown while rendering children — only a class component's
     // `getDerivedStateFromError` can — so `resetKey` reproduces that "reset on prop
-    // change" behavior via `componentDidUpdate`.
-    resetKey: unknown;
+    // change" behavior via `componentDidUpdate`. Compared by shallow equality, not
+    // reference: callers pass `componentProps` as a fresh object on every render, so
+    // reference equality would clear a caught error on the next unrelated re-render.
+    resetKey: Record<string, unknown>;
     children?: ReactNode;
 };
 
 type RenderErrorCatcherState = { error: Error | undefined };
+
+function shallowEqual(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+    if (a === b) {
+        return true;
+    }
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    return aKeys.length === bKeys.length && aKeys.every((key) => Object.is(a[key], b[key]));
+}
 
 class RenderErrorCatcher extends Component<RenderErrorCatcherProps, RenderErrorCatcherState> {
     override state: RenderErrorCatcherState = { error: undefined };
@@ -68,7 +79,7 @@ class RenderErrorCatcher extends Component<RenderErrorCatcherProps, RenderErrorC
     }
 
     override componentDidUpdate(prevProps: RenderErrorCatcherProps) {
-        if (this.state.error !== undefined && prevProps.resetKey !== this.props.resetKey) {
+        if (this.state.error !== undefined && !shallowEqual(prevProps.resetKey, this.props.resetKey)) {
             this.setState({ error: undefined });
         }
     }
