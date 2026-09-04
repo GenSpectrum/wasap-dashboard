@@ -20,7 +20,10 @@ export const InfoHeadline2: FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const InfoParagraph: FC<PropsWithChildren> = ({ children }) => {
-    return <p className='text-justify text-base font-normal my-1 text-wrap'>{children}</p>;
+    // A <div>, not a <p>: several callers nest block content (lists, a code block, a
+    // form) inside this, which isn't valid inside <p> and made the browser silently
+    // close the tag early, breaking the DOM structure React expected.
+    return <div className='text-justify text-base font-normal my-1 text-wrap'>{children}</div>;
 };
 
 export const InfoLink: FC<PropsWithChildren<{ href: string }>> = ({ children, href }) => {
