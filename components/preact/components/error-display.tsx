@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { type FC, useEffect, useRef } from 'react';
 import { type ZodError } from 'zod';
 
 import { InfoHeadline1, InfoParagraph } from './info';
@@ -42,7 +41,7 @@ export type ErrorDisplayProps = {
     layout?: 'horizontal' | 'vertical';
 };
 
-export const ErrorDisplay: FunctionComponent<ErrorDisplayProps> = ({ error, resetError, layout }) => {
+export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, resetError, layout }) => {
     // eslint-disable-next-line no-console -- Currently we use the following statement for our error handling
     console.error(error);
 

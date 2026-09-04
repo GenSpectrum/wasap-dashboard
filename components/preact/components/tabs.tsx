@@ -1,15 +1,13 @@
-import { forwardRef } from 'preact/compat';
-import { useState } from 'preact/hooks';
-import { type JSXInternal } from 'preact/src/jsx';
+import { forwardRef, useState, type ReactElement } from 'react';
 
 type Tab = {
     title: string;
-    content: JSXInternal.Element;
+    content: ReactElement;
 };
 
 interface ComponentTabsProps {
     tabs: Tab[];
-    toolbar?: JSXInternal.Element | ((activeTab: string) => JSXInternal.Element);
+    toolbar?: ReactElement | ((activeTab: string) => ReactElement);
 }
 
 const Tabs = forwardRef<HTMLDivElement, ComponentTabsProps>(({ tabs, toolbar }, ref) => {

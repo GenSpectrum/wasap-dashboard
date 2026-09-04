@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-
+import { useContext } from 'react';
 import { isSingleSegmented, type ReferenceGenome } from '../../lapisApi/ReferenceGenome';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
 import { ExampleMutation } from './ExampleMutation';

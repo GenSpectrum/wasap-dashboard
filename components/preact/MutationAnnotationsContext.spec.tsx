@@ -1,5 +1,5 @@
-import { renderHook } from '@testing-library/preact';
-import { type FunctionalComponent } from 'preact';
+import { type FC, type PropsWithChildren } from 'react';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -16,7 +16,7 @@ function resolved(annotation: MutationAnnotation): ResolvedMutationAnnotation {
 
 describe('useMutationAnnotation', () => {
     function renderAnnotationsHook(mockAnnotations: MutationAnnotations) {
-        const wrapper: FunctionalComponent = ({ children }) => (
+        const wrapper: FC<PropsWithChildren> = ({ children }) => (
             <MutationAnnotationsContextProvider value={mockAnnotations}>{children}</MutationAnnotationsContextProvider>
         );
 

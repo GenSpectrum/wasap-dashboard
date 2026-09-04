@@ -1,6 +1,4 @@
-import { type ComponentProps, createContext, type FunctionalComponent } from 'preact';
-import { useContext, useMemo } from 'preact/hooks';
-
+import { createContext, type ComponentProps, type FC, useContext, useMemo } from 'react';
 import { type SequenceType } from '../types';
 import {
     type MutationAnnotation,
@@ -43,7 +41,7 @@ const MutationAnnotationsContext = createContext<MutationAnnotationsContextValue
  * Accepts the raw MutationAnnotations config, builds the internal lookup index, and stores it in context.
  * Renders an error message if the provided annotations fail schema validation.
  */
-export const MutationAnnotationsContextProvider: FunctionalComponent<
+export const MutationAnnotationsContextProvider: FC<
     Omit<ComponentProps<typeof MutationAnnotationsContext.Provider>, 'value'> & { value: MutationAnnotations }
 > = ({ value, children }) => {
     const parseResult = useMemo(() => mutationAnnotationsSchema.safeParse(value), [value]);

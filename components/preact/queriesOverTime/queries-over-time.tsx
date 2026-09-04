@@ -1,5 +1,13 @@
-import { type FunctionComponent } from 'preact';
-import { type Dispatch, type StateUpdater, useMemo, useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
+import {
+    type Dispatch,
+    type FC,
+    type SetStateAction,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import z from 'zod';
 
 import { getFilteredQueryOverTimeData, type QueryFilter } from './getFilteredQueriesOverTimeData';
@@ -74,7 +82,7 @@ const queriesOverTimeSchema = z.object({
 });
 export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 
-export const QueriesOverTime: FunctionComponent<QueriesOverTimeProps> = (componentProps) => {
+export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
 
@@ -87,7 +95,7 @@ export const QueriesOverTime: FunctionComponent<QueriesOverTimeProps> = (compone
     );
 };
 
-export const QueriesOverTimeInner: FunctionComponent<QueriesOverTimeProps> = ({ ...componentProps }) => {
+export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentProps }) => {
     const lapis = useLapisUrl();
     const { lapisFilter, queries, granularity, lapisDateField } = componentProps;
 
@@ -119,10 +127,7 @@ type QueriesOverTimeTabsProps = {
     originalComponentProps: QueriesOverTimeProps;
 };
 
-const QueriesOverTimeTabs: FunctionComponent<QueriesOverTimeTabsProps> = ({
-    queryOverTimeData,
-    originalComponentProps,
-}) => {
+const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, originalComponentProps }) => {
     const tabsRef = useDispatchFinishedLoadingEvent();
     const tooltipPortalTargetRef = useRef<HTMLDivElement>(null);
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
@@ -242,18 +247,18 @@ const QueriesOverTimeTabs: FunctionComponent<QueriesOverTimeTabsProps> = ({
 type ToolbarProps = {
     activeTab: string;
     proportionInterval: ProportionInterval;
-    setProportionInterval: Dispatch<StateUpdater<ProportionInterval>>;
+    setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
-    setHideGaps: Dispatch<StateUpdater<boolean>>;
+    setHideGaps: Dispatch<SetStateAction<boolean>>;
     filteredData: ReturnType<typeof getFilteredQueryOverTimeData>;
     colorScale: ColorScale;
-    setColorScale: Dispatch<StateUpdater<ColorScale>>;
+    setColorScale: Dispatch<SetStateAction<ColorScale>>;
     originalComponentProps: QueriesOverTimeProps;
     queryFilterValue: QueryFilter;
-    setFilterValue: Dispatch<StateUpdater<QueryFilter>>;
+    setFilterValue: Dispatch<SetStateAction<QueryFilter>>;
 };
 
-const Toolbar: FunctionComponent<ToolbarProps> = ({
+const Toolbar: FC<ToolbarProps> = ({
     activeTab,
     proportionInterval,
     setProportionInterval,
@@ -294,7 +299,7 @@ type QueriesOverTimeInfoProps = {
     originalComponentProps: QueriesOverTimeProps;
 };
 
-const QueriesOverTimeInfo: FunctionComponent<QueriesOverTimeInfoProps> = ({ originalComponentProps }) => {
+const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentProps }) => {
     const lapis = useLapisUrl();
     return (
         <Info>

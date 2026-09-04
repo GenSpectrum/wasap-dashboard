@@ -1,6 +1,6 @@
-import { type FunctionComponent } from 'preact';
+import { type FC } from 'react';
 
-export const LoadingDisplay: FunctionComponent = () => {
+export const LoadingDisplay: FC = () => {
     return (
         <div
             aria-label={'Loading'}

@@ -1,5 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
 import flatpickr from 'flatpickr';
-import { useEffect, useRef, useState } from 'preact/hooks';
 
 import { type WithClassName } from '../shared/WithClassName/WithClassName';
 

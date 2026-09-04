@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'preact';
+import { type FC } from 'react';
 import z from 'zod';
 
 import { useLapisUrl } from '../LapisUrlContext';
@@ -26,7 +26,7 @@ export type TextFilterInnerProps = z.infer<typeof textFilterInnerPropsSchema>;
 export type TextFilterProps = z.infer<typeof textFilterPropsSchema>;
 type TextSelectorProps = z.infer<typeof textSelectorPropsSchema>;
 
-export const TextFilter: FunctionComponent<TextFilterProps> = (props) => {
+export const TextFilter: FC<TextFilterProps> = (props) => {
     const { width, ...innerProps } = props;
     const size = { width, height: '3rem' };
 
@@ -39,13 +39,7 @@ export const TextFilter: FunctionComponent<TextFilterProps> = (props) => {
     );
 };
 
-const TextFilterInner: FunctionComponent<TextFilterInnerProps> = ({
-    value,
-    lapisField,
-    placeholderText,
-    hideCounts,
-    lapisFilter,
-}) => {
+const TextFilterInner: FC<TextFilterInnerProps> = ({ value, lapisField, placeholderText, hideCounts, lapisFilter }) => {
     const lapis = useLapisUrl();
 
     const { data, error, isLoading } = useQuery(

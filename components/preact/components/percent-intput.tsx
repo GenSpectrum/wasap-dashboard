@@ -1,5 +1,4 @@
-import { type FunctionComponent, type JSX } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState, type FormEvent, type FC } from 'react';
 
 export type PercentInputProps = {
     percentage: number;
@@ -11,18 +10,14 @@ const percentageInRange = (percentage: number) => {
     return percentage <= 100 && percentage >= 0;
 };
 
-export const PercentInput: FunctionComponent<PercentInputProps> = ({
-    percentage,
-    setPercentage,
-    indicateError = false,
-}) => {
+export const PercentInput: FC<PercentInputProps> = ({ percentage, setPercentage, indicateError = false }) => {
     const [internalPercentage, setInternalPercentage] = useState(percentage);
 
     useEffect(() => {
         setInternalPercentage(percentage);
     }, [percentage]);
 
-    const handleInputChange = (event: JSX.TargetedInputEvent<HTMLInputElement>) => {
+    const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
         const input = event.target as HTMLInputElement;
         const value = Number(input.value);
 

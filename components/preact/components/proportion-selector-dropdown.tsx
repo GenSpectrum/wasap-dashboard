@@ -1,11 +1,10 @@
-import { type FunctionComponent } from 'preact';
-
+import { type FC } from 'react';
 import { Dropdown } from './dropdown';
 import { ProportionSelector, type ProportionSelectorProps } from './proportion-selector';
 
 export type ProportionSelectorDropdownProps = ProportionSelectorProps & { labelPrefix?: string };
 
-export const ProportionSelectorDropdown: FunctionComponent<ProportionSelectorDropdownProps> = ({
+export const ProportionSelectorDropdown: FC<ProportionSelectorDropdownProps> = ({
     proportionInterval,
     setMinProportion,
     setMaxProportion,

@@ -1,14 +1,12 @@
-import { type FunctionComponent } from 'preact';
-import { type Dispatch, type StateUpdater } from 'preact/hooks';
-
+import { type Dispatch, type FC, type SetStateAction } from 'react';
 import { type QueryFilter } from './getFilteredQueriesOverTimeData';
 
 type QueriesOverTimeFilterProps = {
     value: QueryFilter;
-    setFilterValue: Dispatch<StateUpdater<QueryFilter>>;
+    setFilterValue: Dispatch<SetStateAction<QueryFilter>>;
 };
 
-export const QueriesOverTimeFilter: FunctionComponent<QueriesOverTimeFilterProps> = ({ value, setFilterValue }) => {
+export const QueriesOverTimeFilter: FC<QueriesOverTimeFilterProps> = ({ value, setFilterValue }) => {
     return (
         <input
             type='text'

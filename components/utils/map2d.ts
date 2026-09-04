@@ -29,9 +29,11 @@ export type Map2DContents<Key1, Key2, Value> = {
     data: Map<string, Map<string, Value>>;
 };
 
-export class Map2dBase<Key1 extends object | string, Key2 extends object | string, Value>
-    implements Map2d<Key1, Key2, Value>
-{
+export class Map2dBase<Key1 extends object | string, Key2 extends object | string, Value> implements Map2d<
+    Key1,
+    Key2,
+    Value
+> {
     readonly data: Map<string, Map<string, Value>> = new Map<string, Map<string, Value>>();
     readonly keysFirstAxis = new Map<string, Key1>();
     readonly keysSecondAxis = new Map<string, Key2>();
@@ -137,9 +139,11 @@ export class SortedMap2d<Key1 extends object | string, Key2 extends object | str
     }
 }
 
-export class Map2dView<Key1 extends object | string, Key2 extends object | string, Value>
-    implements Map2d<Key1, Key2, Value>
-{
+export class Map2dView<Key1 extends object | string, Key2 extends object | string, Value> implements Map2d<
+    Key1,
+    Key2,
+    Value
+> {
     readonly keysFirstAxis;
     readonly keysSecondAxis;
 

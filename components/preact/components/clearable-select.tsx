@@ -1,6 +1,4 @@
-import { type ChangeEvent } from 'preact/compat';
-import { useEffect, useState } from 'preact/hooks';
-
+import { type ChangeEvent, useEffect, useState } from 'react';
 import { type WithClassName } from '../shared/WithClassName/WithClassName';
 import { DeleteIcon } from '../shared/icons/DeleteIcon';
 

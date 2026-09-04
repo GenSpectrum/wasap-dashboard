@@ -1,5 +1,13 @@
-import { type FunctionComponent } from 'preact';
-import { type Dispatch, type StateUpdater, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
+import {
+    type Dispatch,
+    type FC,
+    type SetStateAction,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import z from 'zod';
 
 import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
@@ -70,7 +78,7 @@ const mutationOverTimeSchema = z.object({
 });
 export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 
-export const MutationsOverTime: FunctionComponent<MutationsOverTimeProps> = (componentProps) => {
+export const MutationsOverTime: FC<MutationsOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
 
@@ -83,7 +91,7 @@ export const MutationsOverTime: FunctionComponent<MutationsOverTimeProps> = (com
     );
 };
 
-export const MutationsOverTimeInner: FunctionComponent<MutationsOverTimeProps> = ({ ...componentProps }) => {
+export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componentProps }) => {
     const lapis = useLapisUrl();
     const { lapisFilter, sequenceType, granularity, lapisDateField, displayMutations, pageSizes } = componentProps;
 
@@ -133,10 +141,10 @@ type MutationOverTimeTabsProps = {
     metadata: MutationsOverTimeMetadata;
     originalComponentProps: MutationsOverTimeProps;
     pageIndex: number;
-    setPageIndex: Dispatch<StateUpdater<number>>;
+    setPageIndex: Dispatch<SetStateAction<number>>;
 };
 
-const MutationsOverTimeTabs: FunctionComponent<MutationOverTimeTabsProps> = ({
+const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     metadata,
     originalComponentProps,
     pageIndex,
@@ -295,19 +303,19 @@ type ToolbarProps = {
     displayedMutationTypes: DisplayedMutationType[];
     setDisplayedMutationTypes: (types: DisplayedMutationType[]) => void;
     proportionInterval: ProportionInterval;
-    setProportionInterval: Dispatch<StateUpdater<ProportionInterval>>;
+    setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
-    setHideGaps: Dispatch<StateUpdater<boolean>>;
+    setHideGaps: Dispatch<SetStateAction<boolean>>;
     colorScale: ColorScale;
-    setColorScale: Dispatch<StateUpdater<ColorScale>>;
+    setColorScale: Dispatch<SetStateAction<ColorScale>>;
     originalComponentProps: MutationsOverTimeProps;
     mutationFilterValue: MutationFilter;
-    setFilterValue: Dispatch<StateUpdater<MutationFilter>>;
+    setFilterValue: Dispatch<SetStateAction<MutationFilter>>;
     filteredMutationCodes: string[];
     metadata: MutationsOverTimeMetadata;
 };
 
-const Toolbar: FunctionComponent<ToolbarProps> = ({
+const Toolbar: FC<ToolbarProps> = ({
     activeTab,
     displayedSegments,
     setDisplayedSegments,
@@ -377,7 +385,7 @@ type MutationsOverTimeInfoProps = {
     originalComponentProps: MutationsOverTimeProps;
 };
 
-const MutationsOverTimeInfo: FunctionComponent<MutationsOverTimeInfoProps> = ({ originalComponentProps }) => {
+const MutationsOverTimeInfo: FC<MutationsOverTimeInfoProps> = ({ originalComponentProps }) => {
     const lapis = useLapisUrl();
     return (
         <Info>

@@ -1,6 +1,5 @@
+import { Fragment, type FC, type RefObject, useRef } from 'react';
 import DOMPurify from 'dompurify';
-import { useRef } from 'gridjs';
-import { Fragment, type FunctionComponent, type RefObject } from 'preact';
 
 import { InfoHeadline1, InfoHeadline2, InfoParagraph } from './info';
 import { ButtonWithModalDialog, useModalRef } from './modal';
@@ -14,7 +13,7 @@ export type AnnotatedMutationProps = {
     sequenceType: SequenceType;
 };
 
-export const AnnotatedMutation: FunctionComponent<AnnotatedMutationProps> = (props) => {
+export const AnnotatedMutation: FC<AnnotatedMutationProps> = (props) => {
     const annotationsProvider = useMutationAnnotationsProvider();
     const linkProvider = useMutationLinkProvider();
     const modalRef = useModalRef();
@@ -39,17 +38,17 @@ type GridJsAnnotatedMutationProps = AnnotatedMutationProps & {
  * - Our Preact contexts are not available in GridJS. We need to inject context content as long as we're in our Preact instance.
  * - We must use the GridJS re-exports of the Preact hooks. I'm not sure why.
  */
-export const GridJsAnnotatedMutation: FunctionComponent<GridJsAnnotatedMutationProps> = (props) => {
+export const GridJsAnnotatedMutation: FC<GridJsAnnotatedMutationProps> = (props) => {
     const modalRef = useRef<HTMLDialogElement>(null);
 
     return <AnnotatedMutationWithoutContext {...props} modalRef={modalRef} />;
 };
 
 type AnnotatedMutationWithoutContextProps = GridJsAnnotatedMutationProps & {
-    modalRef: RefObject<HTMLDialogElement>;
+    modalRef: RefObject<HTMLDialogElement | null>;
 };
 
-const AnnotatedMutationWithoutContext: FunctionComponent<AnnotatedMutationWithoutContextProps> = ({
+const AnnotatedMutationWithoutContext: FC<AnnotatedMutationWithoutContextProps> = ({
     mutation,
     sequenceType,
     annotationsProvider,

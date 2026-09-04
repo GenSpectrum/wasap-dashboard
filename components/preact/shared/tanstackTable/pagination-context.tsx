@@ -1,12 +1,10 @@
-import { createContext, type FunctionComponent } from 'preact';
-import { type Dispatch, type StateUpdater, useContext } from 'preact/hooks';
-
+import { createContext, type Dispatch, type FC, type ReactNode, type SetStateAction, useContext } from 'react';
 import type { PageSizes } from './pagination';
 import { useControlledState } from '../../../utils/useControlledState';
 
 type PageSizeContext = {
     pageSize: number;
-    setPageSize: Dispatch<StateUpdater<number>>;
+    setPageSize: Dispatch<SetStateAction<number>>;
 };
 
 const pageSizeContext = createContext<PageSizeContext>({
@@ -22,9 +20,10 @@ export function usePageSizeContext() {
 
 export type PageSizeContextProviderProps = {
     pageSizes: PageSizes;
+    children?: ReactNode;
 };
 
-export const PageSizeContextProvider: FunctionComponent<PageSizeContextProviderProps> = ({ children, pageSizes }) => {
+export const PageSizeContextProvider: FC<PageSizeContextProviderProps> = ({ children, pageSizes }) => {
     const [pageSize, setPageSize] = useControlledState(
         typeof pageSizes === 'number' ? pageSizes : (pageSizes.at(0) ?? 10),
     );

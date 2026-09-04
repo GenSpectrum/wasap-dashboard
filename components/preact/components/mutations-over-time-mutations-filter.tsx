@@ -1,5 +1,13 @@
-import { type FunctionComponent, type h } from 'preact';
-import { type Dispatch, type StateUpdater, useCallback, useEffect, useState } from 'preact/hooks';
+import {
+    useCallback,
+    useEffect,
+    useState,
+    type FormEvent,
+    type Dispatch,
+    type FC,
+    type JSX,
+    type SetStateAction,
+} from 'react';
 
 import { Dropdown } from './dropdown';
 import { useRawMutationAnnotations } from '../MutationAnnotationsContext';
@@ -7,7 +15,7 @@ import { type MutationFilter } from '../mutationsOverTime/getFilteredMutationCod
 import { DeleteIcon } from '../shared/icons/DeleteIcon';
 
 export type MutationsOverTimeMutationsFilterProps = {
-    setFilterValue: Dispatch<StateUpdater<MutationFilter>>;
+    setFilterValue: Dispatch<SetStateAction<MutationFilter>>;
     value: MutationFilter;
 };
 
@@ -30,7 +38,7 @@ function getButtonTitle(value: MutationFilter) {
     return [value.textFilter, ...value.annotationNameFilter].filter((it) => it !== '').join(', ');
 }
 
-const TextInput: FunctionComponent<MutationsOverTimeMutationsFilterProps> = ({ setFilterValue, value }) => {
+const TextInput: FC<MutationsOverTimeMutationsFilterProps> = ({ setFilterValue, value }) => {
     const onInput = useCallback(
         (newValue: string) => {
             setFilterValue((previousFilter) => ({
@@ -71,7 +79,7 @@ function DebouncedInput({
     onInput: (value: string) => void;
     debounce?: number;
     value?: string;
-} & Omit<h.JSX.IntrinsicElements['input'], 'onInput'>) {
+} & Omit<JSX.IntrinsicElements['input'], 'onInput'>) {
     const [value, setValue] = useState<string | undefined>(initialValue);
 
     useEffect(() => {
@@ -86,14 +94,14 @@ function DebouncedInput({
         return () => clearTimeout(timeout);
     }, [value, debounce, onInput]);
 
-    const onChangeInput = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+    const onChangeInput = useCallback((event: FormEvent<HTMLInputElement>) => {
         setValue(event.currentTarget.value);
     }, []);
 
     return <input {...props} value={value} onInput={onChangeInput} />;
 }
 
-const AnnotationCheckboxes: FunctionComponent<MutationsOverTimeMutationsFilterProps> = ({ value, setFilterValue }) => {
+const AnnotationCheckboxes: FC<MutationsOverTimeMutationsFilterProps> = ({ value, setFilterValue }) => {
     const mutationAnnotations = useRawMutationAnnotations();
 
     if (mutationAnnotations.length === 0) {

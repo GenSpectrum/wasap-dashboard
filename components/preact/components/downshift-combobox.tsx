@@ -1,6 +1,5 @@
-import { useCombobox, useMultipleSelection } from 'downshift/preact';
-import { type ComponentChild } from 'preact';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useCombobox, useMultipleSelection } from 'downshift';
 
 import { DeleteIcon } from '../shared/icons/DeleteIcon';
 
@@ -20,7 +19,7 @@ export function DownshiftCombobox<Item>({
     createEvent: (item: Item | null) => CustomEvent;
     itemToString: (item: Item | undefined | null) => string;
     placeholderText?: string;
-    formatItemInList: (item: Item) => ComponentChild;
+    formatItemInList: (item: Item) => ReactNode;
     inputClassName?: string;
 }) {
     const [selectedItem, setSelectedItem] = useState<Item | null>(() => value);
@@ -146,8 +145,8 @@ export function DownshiftMultiCombobox<Item>({
     createEvent: (items: Item[]) => CustomEvent;
     itemToString: (item: Item | undefined | null) => string;
     placeholderText?: string;
-    formatItemInList: (item: Item) => ComponentChild;
-    formatSelectedItem?: (item: Item) => ComponentChild;
+    formatItemInList: (item: Item) => ReactNode;
+    formatSelectedItem?: (item: Item) => ReactNode;
     inputClassName?: string;
 }) {
     const [selectedItems, setSelectedItems] = useState<Item[]>(() => value);
@@ -308,7 +307,7 @@ export function DownshiftMultiCombobox<Item>({
     );
 }
 
-function useShadowEnvironment(divRef: React.RefObject<HTMLDivElement>) {
+function useShadowEnvironment(divRef: React.RefObject<HTMLDivElement | null>) {
     const shadowRoot = divRef.current?.shadowRoot ?? undefined;
 
     return shadowRoot !== undefined
@@ -370,7 +369,7 @@ function DropdownMenu<Item>({
     items: Item[];
     highlightedIndex: number;
     getItemProps: (options: { item: Item; index: number }) => Record<string, unknown>;
-    formatItemInList: (item: Item) => ComponentChild;
+    formatItemInList: (item: Item) => ReactNode;
     itemToString: (item: Item) => string;
     selectedItem?: Item | Item[] | null;
     emptyMessage: string;

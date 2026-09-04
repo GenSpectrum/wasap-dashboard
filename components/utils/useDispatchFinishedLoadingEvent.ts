@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
-
+import { useEffect, useRef } from 'react';
 import { gsEventNames } from './gsEventNames';
 
 export function useDispatchFinishedLoadingEvent() {

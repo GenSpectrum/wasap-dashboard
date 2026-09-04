@@ -1,5 +1,4 @@
-import { useEffect, useReducer, useState } from 'preact/hooks';
-
+import { useEffect, useReducer, useState } from 'react';
 import { type NumberRange } from './NumberRangeFilterChangedEvent';
 
 type InputState = {

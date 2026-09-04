@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 
 export function useQuery<Data>(fetchDataCallback: () => Promise<Data>, dependencies: unknown[]) {
     const [data, setData] = useState<Data | null>(null);

@@ -1,8 +1,7 @@
-import { type FunctionComponent } from 'preact';
-
+import { type FC, type PropsWithChildren } from 'react';
 import { Modal } from './modal';
 
-const Info: FunctionComponent = ({ children }) => {
+const Info: FC<PropsWithChildren> = ({ children }) => {
     return (
         <div className='relative inline-flex'>
             <Modal buttonClassName='btn btn-xs' modalContent={children}>
@@ -12,19 +11,19 @@ const Info: FunctionComponent = ({ children }) => {
     );
 };
 
-export const InfoHeadline1: FunctionComponent = ({ children }) => {
+export const InfoHeadline1: FC<PropsWithChildren> = ({ children }) => {
     return <h1 className='text-justify text-lg font-bold'>{children}</h1>;
 };
 
-export const InfoHeadline2: FunctionComponent = ({ children }) => {
+export const InfoHeadline2: FC<PropsWithChildren> = ({ children }) => {
     return <h2 className='text-justify text-base font-bold mt-4'>{children}</h2>;
 };
 
-export const InfoParagraph: FunctionComponent = ({ children }) => {
+export const InfoParagraph: FC<PropsWithChildren> = ({ children }) => {
     return <p className='text-justify text-base font-normal my-1 text-wrap'>{children}</p>;
 };
 
-export const InfoLink: FunctionComponent<{ href: string }> = ({ children, href }) => {
+export const InfoLink: FC<PropsWithChildren<{ href: string }>> = ({ children, href }) => {
     return (
         <a className='text-blue-600 hover:text-blue-800' href={href} target='_blank' rel='noopener noreferrer'>
             {children}
@@ -38,7 +37,7 @@ export type InfoComponentCodeProps = {
     lapisUrl: string;
 };
 
-export const InfoComponentCode: FunctionComponent<InfoComponentCodeProps> = ({ componentName, params, lapisUrl }) => {
+export const InfoComponentCode: FC<InfoComponentCodeProps> = ({ componentName, params, lapisUrl }) => {
     const componentCode = componentParametersToCode(componentName, params, lapisUrl);
     const codePenData = {
         title: 'GenSpectrum dashboard component',

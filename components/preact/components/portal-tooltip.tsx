@@ -1,12 +1,18 @@
-import { type FunctionComponent } from 'preact';
-import { type CSSProperties, createPortal } from 'preact/compat';
-import { useState, useRef, useLayoutEffect } from 'preact/hooks';
-import { type JSXInternal } from 'preact/src/jsx';
+import {
+    useState,
+    useRef,
+    useLayoutEffect,
+    type CSSProperties,
+    type FC,
+    type PropsWithChildren,
+    type ReactElement,
+} from 'react';
+import { createPortal } from 'react-dom';
 
 import { type TooltipPosition, TOOLTIP_BASE_STYLES } from './tooltip';
 
 export type PortalTooltipProps = {
-    content: string | JSXInternal.Element;
+    content: string | ReactElement;
     position?: TooltipPosition;
     tooltipStyle?: CSSProperties;
     portalTarget: HTMLElement | null;
@@ -38,7 +44,7 @@ export type PortalTooltipProps = {
  * </PortalTooltip>
  * ```
  */
-const PortalTooltip: FunctionComponent<PortalTooltipProps> = ({
+const PortalTooltip: FC<PropsWithChildren<PortalTooltipProps>> = ({
     children,
     content,
     position = 'bottom',

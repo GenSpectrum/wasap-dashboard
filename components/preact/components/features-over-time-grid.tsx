@@ -1,6 +1,5 @@
 import { createColumnHelper, getCoreRowModel, getPaginationRowModel } from '@tanstack/table-core';
-import { type JSX } from 'preact';
-import { type Dispatch, type StateUpdater, useMemo } from 'preact/hooks';
+import { useMemo, type Dispatch, type ReactElement, type SetStateAction } from 'react';
 import z from 'zod';
 
 import { type ColorScale } from './color-scale-selector';
@@ -25,8 +24,8 @@ export type CustomColumn = z.infer<typeof customColumnSchema>;
 
 export interface FeatureRenderer<D> {
     asString(value: D): string;
-    renderRowLabel(value: D): JSX.Element;
-    renderTooltip(value: D, temporal: Temporal, proportionValue: ProportionValue): JSX.Element;
+    renderRowLabel(value: D): ReactElement;
+    renderTooltip(value: D, temporal: Temporal, proportionValue: ProportionValue): ReactElement;
 }
 
 export interface FeaturesOverTimeGridProps<F> {
@@ -94,7 +93,7 @@ export interface FeaturesOverTimeGridServerPaginatedProps<F> {
     pageIndex: number;
     /** Total number of rows across all pages. */
     totalRows: number;
-    onPageChange: Dispatch<StateUpdater<number>>;
+    onPageChange: Dispatch<SetStateAction<number>>;
     customColumns?: CustomColumn[];
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;

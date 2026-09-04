@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { type FC, useEffect, useRef, useState } from 'react';
 import z from 'zod';
 
 import {
@@ -23,7 +22,7 @@ const numberRangeFilterPropsSchema = z.object({
 });
 export type NumberRangeFilterProps = z.infer<typeof numberRangeFilterPropsSchema>;
 
-export const NumberRangeFilter: FunctionComponent<NumberRangeFilterProps> = (props) => {
+export const NumberRangeFilter: FC<NumberRangeFilterProps> = (props) => {
     const { width, ...innerProps } = props;
     const size = { width, height: '4.8rem' };
 
@@ -38,7 +37,7 @@ export const NumberRangeFilter: FunctionComponent<NumberRangeFilterProps> = (pro
 
 type NumberRangeFilterInnerProps = Omit<NumberRangeFilterProps, 'width'>;
 
-const NumberRangeFilterInner: FunctionComponent<NumberRangeFilterInnerProps> = ({
+const NumberRangeFilterInner: FC<NumberRangeFilterInnerProps> = ({
     value,
     lapisField,
     sliderMin,

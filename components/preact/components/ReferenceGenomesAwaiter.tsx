@@ -1,6 +1,4 @@
-import { type ComponentChildren, type FunctionalComponent } from 'preact';
-import { useContext } from 'preact/hooks';
-
+import { type FC, type ReactNode, useContext } from 'react';
 import { isNotInitialized, ReferenceGenomeContext } from '../ReferenceGenomeContext';
 
 /**
@@ -9,7 +7,7 @@ import { isNotInitialized, ReferenceGenomeContext } from '../ReferenceGenomeCont
  * Child components can assume that the reference genome is available on the first render,
  * which e.g. matters for initial values of `useState`.
  */
-export const ReferenceGenomesAwaiter: FunctionalComponent<{ children: ComponentChildren }> = ({ children }) => {
+export const ReferenceGenomesAwaiter: FC<{ children: ReactNode }> = ({ children }) => {
     const referenceGenome = useContext(ReferenceGenomeContext);
 
     if (isNotInitialized(referenceGenome)) {

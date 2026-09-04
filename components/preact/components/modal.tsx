@@ -1,22 +1,22 @@
-import { type ComponentChildren, type FunctionComponent, type Ref, type RefObject } from 'preact';
-import { useRef } from 'preact/hooks';
+import { type FC, type ReactNode, type Ref, type RefObject, useRef } from 'react';
 
 export type ModalButtonProps = {
     buttonClassName?: string;
-    modalContent: ComponentChildren;
+    modalContent: ReactNode;
+    children?: ReactNode;
 };
 
-export const Modal: FunctionComponent<ModalButtonProps> = (props) => {
+export const Modal: FC<ModalButtonProps> = (props) => {
     const modalRef = useModalRef();
 
     return <ButtonWithModalDialog {...props} modalRef={modalRef} />;
 };
 
 type ButtonWithModalDialogProps = ModalButtonProps & {
-    modalRef: RefObject<HTMLDialogElement>;
+    modalRef: RefObject<HTMLDialogElement | null>;
 };
 
-export const ButtonWithModalDialog: FunctionComponent<ButtonWithModalDialogProps> = ({
+export const ButtonWithModalDialog: FC<ButtonWithModalDialogProps> = ({
     children,
     buttonClassName,
     modalContent,
@@ -38,9 +38,10 @@ export function useModalRef() {
 
 export type ModalProps = {
     modalRef: Ref<HTMLDialogElement>;
+    children?: ReactNode;
 };
 
-export const ModalDialog: FunctionComponent<ModalProps> = ({ children, modalRef }) => {
+export const ModalDialog: FC<ModalProps> = ({ children, modalRef }) => {
     return (
         <dialog ref={modalRef} className={'modal modal-bottom sm:modal-middle'}>
             <div className='modal-box sm:max-w-5xl'>

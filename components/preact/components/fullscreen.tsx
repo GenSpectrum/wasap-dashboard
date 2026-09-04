@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'react';
 
 export const Fullscreen = () => {
     const element = useRef<HTMLButtonElement>(null);

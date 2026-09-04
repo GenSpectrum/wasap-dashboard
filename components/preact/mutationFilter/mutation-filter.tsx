@@ -1,6 +1,5 @@
-import { useCombobox, useMultipleSelection } from 'downshift/preact';
-import { type FunctionComponent } from 'preact';
-import { useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { type FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCombobox, useMultipleSelection } from 'downshift';
 import z from 'zod';
 
 import { getExampleMutation } from './ExampleMutation';
@@ -54,12 +53,9 @@ type SelectedAminoAcidInsertion = {
 };
 
 export type MutationFilterItem =
-    | SelectedNucleotideMutation
-    | SelectedAminoAcidMutation
-    | SelectedNucleotideInsertion
-    | SelectedAminoAcidInsertion;
+    SelectedNucleotideMutation | SelectedAminoAcidMutation | SelectedNucleotideInsertion | SelectedAminoAcidInsertion;
 
-export const MutationFilter: FunctionComponent<MutationFilterProps> = (props) => {
+export const MutationFilter: FC<MutationFilterProps> = (props) => {
     const { width, initialValue, enabledMutationTypes } = props;
     return (
         <ErrorBoundary

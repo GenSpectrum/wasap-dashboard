@@ -1,19 +1,19 @@
+import { type FC, type ReactNode, useRef, useState } from 'react';
 import { flip, offset, shift } from '@floating-ui/dom';
 import { type Placement } from '@floating-ui/utils';
-import { type FunctionComponent } from 'preact';
-import { useRef, useState } from 'preact/hooks';
 
 import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from '../shared/floating-ui/hooks';
 
 interface DropdownProps {
     buttonTitle: string;
     placement?: Placement;
+    children?: ReactNode;
 }
 
 export const dropdownClass =
     'z-10 absolute w-max top-0 left-0 bg-white p-4 border border-gray-200 shadow-lg rounded-md';
 
-export const Dropdown: FunctionComponent<DropdownProps> = ({ children, buttonTitle, placement }) => {
+export const Dropdown: FC<DropdownProps> = ({ children, buttonTitle, placement }) => {
     const [showContent, setShowContent] = useState(false);
     const referenceRef = useRef<HTMLButtonElement>(null);
     const floatingRef = useRef<HTMLDivElement>(null);

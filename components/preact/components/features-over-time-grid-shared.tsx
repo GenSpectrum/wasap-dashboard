@@ -1,5 +1,5 @@
 import type { Table } from '@tanstack/table-core';
-import { type FunctionComponent, type JSX } from 'preact';
+import { type FC, type ReactElement } from 'react';
 
 import { type ColorScale, getColorWithinScale, getTextColorForScale } from './color-scale-selector';
 import PortalTooltip from './portal-tooltip';
@@ -16,9 +16,9 @@ const NON_BREAKING_SPACE = ' ';
  * tooltip that appears on hover. The proportion text is hidden on narrow columns, since it
  * wouldn't fit without breaking the grid layout.
  */
-export const ProportionCell: FunctionComponent<{
+export const ProportionCell: FC<{
     value: ProportionValue;
-    tooltip: JSX.Element;
+    tooltip: ReactElement;
     tooltipPosition: TooltipPosition;
     colorScale: ColorScale;
     tooltipPortalTarget: HTMLElement | null;
@@ -145,7 +145,7 @@ export function styleGridHeader(columnIndex: number, numDateColumns: number) {
     }
 
     if (columnIndex === numDateColumns - 1) {
-        return { className: 'overflow-visible text-nowrap', style: { direction: 'rtl' } };
+        return { className: 'overflow-visible text-nowrap', style: { direction: 'rtl' as const } };
     }
 
     return { className: 'invisible @[6rem]:visible' };

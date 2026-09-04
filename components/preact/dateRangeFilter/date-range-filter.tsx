@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 import { computeInitialValues } from './computeInitialValues';

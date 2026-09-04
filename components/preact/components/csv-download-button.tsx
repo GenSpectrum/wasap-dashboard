@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useState } from 'preact/hooks';
+import { type FC, useState } from 'react';
 
 type ToStringable = {
     toString: () => string;
@@ -14,7 +13,7 @@ export interface CsvDownloadButtonProps {
     className?: string;
 }
 
-export const CsvDownloadButton: FunctionComponent<CsvDownloadButtonProps> = ({
+export const CsvDownloadButton: FC<CsvDownloadButtonProps> = ({
     label = 'Download',
     filename = 'data.csv',
     getData,

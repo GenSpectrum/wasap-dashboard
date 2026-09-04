@@ -1,11 +1,11 @@
-import { type FunctionComponent } from 'preact';
+import { type FC } from 'react';
 
 type HideGapsButtonProps = {
     hideGaps: boolean;
     setHideGaps: (hideGaps: boolean) => void;
 };
 
-export const HideGapsButton: FunctionComponent<HideGapsButtonProps> = ({ hideGaps, setHideGaps }) => (
+export const HideGapsButton: FC<HideGapsButtonProps> = ({ hideGaps, setHideGaps }) => (
     <button
         className='btn btn-xs w-24'
         onClick={() => setHideGaps(!hideGaps)}

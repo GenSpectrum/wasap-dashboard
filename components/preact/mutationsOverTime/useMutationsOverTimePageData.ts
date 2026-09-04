@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef } from 'preact/hooks';
-
+import { useEffect, useMemo, useRef } from 'react';
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import {
     hideGapsInPlace,

@@ -1,6 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useContext, useState } from 'preact/hooks';
-
+import { type FC, useContext, useState } from 'react';
 import { type CheckboxItem, CheckboxSelector } from './checkbox-selector';
 import { getSegmentNames } from '../../lapisApi/ReferenceGenome';
 import { type SequenceType } from '../../types';
@@ -16,7 +14,7 @@ export type SegmentSelectorProps = {
     sequenceType: SequenceType;
 };
 
-export const SegmentSelector: FunctionComponent<SegmentSelectorProps> = ({
+export const SegmentSelector: FC<SegmentSelectorProps> = ({
     displayedSegments,
     setDisplayedSegments,
     sequenceType,

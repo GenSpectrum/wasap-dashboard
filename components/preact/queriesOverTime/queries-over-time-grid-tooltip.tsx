@@ -1,5 +1,4 @@
-import type { FunctionComponent } from 'preact';
-
+import { type FC } from 'react';
 import { MUTATIONS_OVER_TIME_MIN_PROPORTION, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../utils/temporalClass';
 import { OverTimeGridTooltip } from '../components/over-time-grid-tooltip';
@@ -11,7 +10,7 @@ export type QueriesOverTimeGridTooltipProps = {
     value: ProportionValue;
 };
 
-export const QueriesOverTimeGridTooltip: FunctionComponent<QueriesOverTimeGridTooltipProps> = ({
+export const QueriesOverTimeGridTooltip: FC<QueriesOverTimeGridTooltipProps> = ({
     query,
     date,
     value,
@@ -23,7 +22,7 @@ export const QueriesOverTimeGridTooltip: FunctionComponent<QueriesOverTimeGridTo
     );
 };
 
-const TooltipValueCountsDescription: FunctionComponent<{
+const TooltipValueCountsDescription: FC<{
     value: NonNullable<ProportionValue>;
     queryLabel: string;
 }> = ({ value, queryLabel }) => {

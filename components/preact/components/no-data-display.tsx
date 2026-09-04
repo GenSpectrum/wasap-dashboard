@@ -1,6 +1,6 @@
-import { type FunctionComponent } from 'preact';
+import { type FC } from 'react';
 
-export const NoDataDisplay: FunctionComponent<{ message?: string }> = ({ message = 'No data available.' }) => {
+export const NoDataDisplay: FC<{ message?: string }> = ({ message = 'No data available.' }) => {
     return (
         <div className='h-full w-full rounded-md border-2 border-gray-100 p-2 flex items-center justify-center'>
             <div>{message}</div>

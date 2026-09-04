@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { type FC, useMemo } from 'react';
 import z from 'zod';
 
 import { LocationChangedEvent } from './LocationChangedEvent';
@@ -27,7 +26,7 @@ export type LocationFilterInnerProps = z.infer<typeof locationFilterInnerPropsSc
 export type LocationFilterProps = z.infer<typeof locationFilterPropsSchema>;
 type LocationSelectorProps = z.infer<typeof locationSelectorPropsSchema>;
 
-export const LocationFilter: FunctionComponent<LocationFilterProps> = (props) => {
+export const LocationFilter: FC<LocationFilterProps> = (props) => {
     const { width, ...innerProps } = props;
     const size = { width, height: '3rem' };
 

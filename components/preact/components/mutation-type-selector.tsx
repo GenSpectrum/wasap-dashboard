@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact/compat';
-
+import { type FC } from 'react';
 import { type CheckboxItem, CheckboxSelector } from './checkbox-selector';
 import type { SubstitutionOrDeletion } from '../../types';
 
@@ -12,7 +11,7 @@ export type MutationTypeSelectorProps = {
     setDisplayedMutationTypes: (mutationTypes: DisplayedMutationType[]) => void;
 };
 
-export const MutationTypeSelector: FunctionComponent<MutationTypeSelectorProps> = ({
+export const MutationTypeSelector: FC<MutationTypeSelectorProps> = ({
     displayedMutationTypes,
     setDisplayedMutationTypes,
 }) => {

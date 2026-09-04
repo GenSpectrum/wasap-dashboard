@@ -1,6 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
-
+import { type FC, useEffect, useRef, useState } from 'react';
 import { MinMaxRangeSlider } from './min-max-range-slider';
 import { PercentInput } from './percent-intput';
 
@@ -34,7 +32,7 @@ function useUpdateExternalValueInIntervals(
     }, [internalValue]);
 }
 
-export const ProportionSelector: FunctionComponent<ProportionSelectorProps> = ({
+export const ProportionSelector: FC<ProportionSelectorProps> = ({
     proportionInterval,
     setMinProportion,
     setMaxProportion,

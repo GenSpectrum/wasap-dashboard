@@ -1,4 +1,4 @@
-import { useContext } from 'preact/hooks';
+import { useContext } from 'react';
 import type { FC } from 'react';
 
 import { type ReferenceGenome } from '../../lapisApi/ReferenceGenome';

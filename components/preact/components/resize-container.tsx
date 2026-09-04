@@ -1,5 +1,4 @@
-import { type ComponentChildren } from 'preact';
-import { forwardRef } from 'preact/compat';
+import { forwardRef, type ReactNode } from 'react';
 
 export type Size = {
     width: string;
@@ -7,7 +6,7 @@ export type Size = {
     minHeight?: string;
 };
 
-export const ResizeContainer = forwardRef<HTMLDivElement, { size: Size; children: ComponentChildren }>(
+export const ResizeContainer = forwardRef<HTMLDivElement, { size: Size; children: ReactNode }>(
     ({ size, children }, ref) => (
         <div
             ref={ref}

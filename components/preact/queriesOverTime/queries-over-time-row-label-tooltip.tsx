@@ -1,12 +1,11 @@
-import type { FunctionComponent } from 'preact';
-
+import { type FC } from 'react';
 import type { CountCoverageQuery } from './queries-over-time';
 
 export type QueriesOverTimeRowLabelTooltipProps = {
     query: CountCoverageQuery;
 };
 
-export const QueriesOverTimeRowLabelTooltip: FunctionComponent<QueriesOverTimeRowLabelTooltipProps> = ({ query }) => {
+export const QueriesOverTimeRowLabelTooltip: FC<QueriesOverTimeRowLabelTooltipProps> = ({ query }) => {
     return (
         <div className='flex flex-col gap-2 max-w-xl'>
             <div className='font-bold'>{query.displayLabel}</div>

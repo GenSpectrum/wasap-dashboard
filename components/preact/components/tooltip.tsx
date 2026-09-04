@@ -1,19 +1,10 @@
-import { type FunctionComponent } from 'preact';
-import { type CSSProperties } from 'preact/compat';
-import { type JSXInternal } from 'preact/src/jsx';
+import { type CSSProperties, type FC, type PropsWithChildren, type ReactElement } from 'react';
 
 export type TooltipPosition =
-    | 'top'
-    | 'top-start'
-    | 'top-end'
-    | 'bottom'
-    | 'bottom-start'
-    | 'bottom-end'
-    | 'left'
-    | 'right';
+    'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'right';
 
 export type TooltipProps = {
-    content: string | JSXInternal.Element;
+    content: string | ReactElement;
     position?: TooltipPosition;
     tooltipStyle?: CSSProperties;
 };
@@ -34,7 +25,7 @@ export const TOOLTIP_BASE_STYLES = 'z-10 w-max bg-white p-4 border border-gray-2
  * </Tooltip>
  * ```
  */
-const Tooltip: FunctionComponent<TooltipProps> = ({ children, content, position = 'bottom', tooltipStyle }) => {
+const Tooltip: FC<PropsWithChildren<TooltipProps>> = ({ children, content, position = 'bottom', tooltipStyle }) => {
     return (
         <div className={`relative group`}>
             <div>{children}</div>

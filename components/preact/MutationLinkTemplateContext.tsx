@@ -1,5 +1,4 @@
-import { createContext, type Provider } from 'preact';
-import { useContext, useMemo } from 'preact/hooks';
+import { createContext, useContext, useMemo, type FC, type PropsWithChildren } from 'react';
 
 import type { SequenceType } from '../types';
 import type { Deletion, Substitution } from '../utils/mutations';
@@ -17,7 +16,10 @@ const MutationLinkTemplateContext = createContext<MutationLinkTemplate>({
     aminoAcidMutation: undefined,
 });
 
-export const MutationLinkTemplateContextProvider: Provider<MutationLinkTemplate> = ({ value, children }) => {
+export const MutationLinkTemplateContextProvider: FC<PropsWithChildren<{ value: MutationLinkTemplate }>> = ({
+    value,
+    children,
+}) => {
     const parseResult = useMemo(() => mutationLinkTemplateSchema.safeParse(value), [value]);
 
     if (!parseResult.success) {

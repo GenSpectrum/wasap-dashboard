@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact';
-
+import { type FC } from 'react';
 import { MinMaxRangeSlider } from './min-max-range-slider';
 import { type GraphColor, singleGraphColorRGBByName } from '../shared/charts/colors';
 import { formatProportion } from '../shared/table/formatProportion';
@@ -15,7 +14,7 @@ export interface ColorScaleSelectorProps {
     setColorScale: (colorScale: ColorScale) => void;
 }
 
-export const ColorScaleSelector: FunctionComponent<ColorScaleSelectorProps> = ({ colorScale, setColorScale }) => {
+export const ColorScaleSelector: FC<ColorScaleSelectorProps> = ({ colorScale, setColorScale }) => {
     const colorDisplayCss = `w-10 h-8 border border-gray-200 mx-2 text-xs flex items-center justify-center`;
 
     return (

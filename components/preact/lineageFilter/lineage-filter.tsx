@@ -1,5 +1,4 @@
-import { type FunctionComponent } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { type FC, useMemo } from 'react';
 import z from 'zod';
 
 import { useLapisUrl } from '../LapisUrlContext';
@@ -50,7 +49,7 @@ export type LineageFilterInnerProps = z.infer<typeof lineageFilterInnerPropsSche
 export type LineageFilterProps = z.infer<typeof lineageFilterPropsSchema>;
 type LineageSelectorProps = z.infer<typeof lineageSelectorPropsSchema>;
 
-export const LineageFilter: FunctionComponent<LineageFilterProps> = (props) => {
+export const LineageFilter: FC<LineageFilterProps> = (props) => {
     const { width, ...innerProps } = props;
     const size = { width, minHeight: '3rem' };
 
@@ -63,7 +62,7 @@ export const LineageFilter: FunctionComponent<LineageFilterProps> = (props) => {
     );
 };
 
-const LineageFilterInner: FunctionComponent<LineageFilterInnerProps> = ({
+const LineageFilterInner: FC<LineageFilterInnerProps> = ({
     lapisField,
     placeholderText,
     value,
