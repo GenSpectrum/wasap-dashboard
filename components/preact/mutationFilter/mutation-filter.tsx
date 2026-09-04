@@ -167,18 +167,6 @@ function MutationFilterInner({
         }
     };
 
-    const shadowRoot = filterRef.current?.shadowRoot ?? undefined;
-
-    const environment =
-        shadowRoot !== undefined
-            ? {
-                  addEventListener: window.addEventListener.bind(window),
-                  removeEventListener: window.removeEventListener.bind(window),
-                  document: shadowRoot.ownerDocument,
-                  Node: window.Node,
-              }
-            : undefined;
-
     const { getDropdownProps, removeSelectedItem } = useMultipleSelection({
         selectedItems,
         onStateChange({ selectedItems: newSelectedItems, type }) {
@@ -190,7 +178,6 @@ function MutationFilterInner({
                     break;
             }
         },
-        environment,
     });
 
     const { isOpen, getMenuProps, getInputProps, highlightedIndex, getItemProps, selectedItem } = useCombobox({
@@ -216,7 +203,6 @@ function MutationFilterInner({
                     break;
             }
         },
-        environment,
     });
 
     if (referenceGenome.nucleotideSequences.length === 0 && referenceGenome.genes.length === 0) {

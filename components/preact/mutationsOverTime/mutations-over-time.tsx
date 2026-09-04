@@ -37,6 +37,7 @@ import {
     FeaturesOverTimeGridServerPaginated,
 } from '../components/features-over-time-grid';
 import { Fullscreen } from '../components/fullscreen';
+import { FullscreenTargetContext } from '../components/fullscreen-target';
 import { HideGapsButton } from '../components/hide-gaps-button';
 import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../components/info';
 import { LoadingDisplay } from '../components/loading-display';
@@ -81,12 +82,15 @@ export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 export const MutationsOverTime: FC<MutationsOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
+    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ErrorBoundary size={size} schema={mutationOverTimeSchema} componentProps={componentProps}>
-            <ResizeContainer size={size}>
-                <MutationsOverTimeInner {...componentProps} />
-            </ResizeContainer>
+            <FullscreenTargetContext.Provider value={containerRef}>
+                <ResizeContainer size={size} ref={containerRef}>
+                    <MutationsOverTimeInner {...componentProps} />
+                </ResizeContainer>
+            </FullscreenTargetContext.Provider>
         </ErrorBoundary>
     );
 };

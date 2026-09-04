@@ -26,6 +26,7 @@ import { CsvDownloadButton } from '../components/csv-download-button';
 import { ErrorBoundary } from '../components/error-boundary';
 import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../components/features-over-time-grid';
 import { Fullscreen } from '../components/fullscreen';
+import { FullscreenTargetContext } from '../components/fullscreen-target';
 import { HideGapsButton } from '../components/hide-gaps-button';
 import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../components/info';
 import { LoadingDisplay } from '../components/loading-display';
@@ -85,12 +86,15 @@ export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
+    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ErrorBoundary size={size} schema={queriesOverTimeSchema} componentProps={componentProps}>
-            <ResizeContainer size={size}>
-                <QueriesOverTimeInner {...componentProps} />
-            </ResizeContainer>
+            <FullscreenTargetContext.Provider value={containerRef}>
+                <ResizeContainer size={size} ref={containerRef}>
+                    <QueriesOverTimeInner {...componentProps} />
+                </ResizeContainer>
+            </FullscreenTargetContext.Provider>
         </ErrorBoundary>
     );
 };

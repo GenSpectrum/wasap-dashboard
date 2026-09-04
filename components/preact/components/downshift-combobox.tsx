@@ -42,8 +42,6 @@ export function DownshiftCombobox<Item>({
         divRef.current?.dispatchEvent(createEvent(item));
     };
 
-    const environment = useShadowEnvironment(divRef);
-
     const {
         isOpen,
         getToggleButtonProps,
@@ -67,7 +65,6 @@ export function DownshiftCombobox<Item>({
             return itemToString(item);
         },
         selectedItem,
-        environment,
     });
 
     const onInputBlur = () => {
@@ -173,8 +170,6 @@ export function DownshiftMultiCombobox<Item>({
         divRef.current?.dispatchEvent(createEvent(items));
     };
 
-    const environment = useShadowEnvironment(divRef);
-
     const { getDropdownProps, removeSelectedItem } = useMultipleSelection({
         selectedItems,
         onStateChange({ selectedItems: newSelectedItems, type }) {
@@ -186,7 +181,6 @@ export function DownshiftMultiCombobox<Item>({
                     break;
             }
         },
-        environment,
     });
 
     const {
@@ -235,7 +229,6 @@ export function DownshiftMultiCombobox<Item>({
                     return changes;
             }
         },
-        environment,
     });
 
     const clearAll = () => {
@@ -305,19 +298,6 @@ export function DownshiftMultiCombobox<Item>({
             />
         </div>
     );
-}
-
-function useShadowEnvironment(divRef: React.RefObject<HTMLDivElement | null>) {
-    const shadowRoot = divRef.current?.shadowRoot ?? undefined;
-
-    return shadowRoot !== undefined
-        ? {
-              addEventListener: window.addEventListener.bind(window),
-              removeEventListener: window.removeEventListener.bind(window),
-              document: shadowRoot.ownerDocument,
-              Node: window.Node,
-          }
-        : undefined;
 }
 
 function ToggleButton({

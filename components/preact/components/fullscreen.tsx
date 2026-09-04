@@ -1,21 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useFullscreenTarget } from './fullscreen-target';
 
 export const Fullscreen = () => {
-    const element = useRef<HTMLButtonElement>(null);
+    const targetRef = useFullscreenTarget();
     const isFullscreen = useFullscreenStatus();
     return (
         <button
-            ref={element}
             onClick={() => {
-                if (element.current) {
-                    if (isFullscreen) {
-                        void document.exitFullscreen();
-                    } else {
-                        const componentRoot = findComponentRoot(element.current);
-                        if (componentRoot) {
-                            void componentRoot.requestFullscreen();
-                        }
-                    }
+                if (isFullscreen) {
+                    void document.exitFullscreen();
+                } else if (targetRef?.current) {
+                    void targetRef.current.requestFullscreen();
                 }
             }}
             className={`btn btn-xs`}
@@ -27,21 +23,6 @@ export const Fullscreen = () => {
         </button>
     );
 };
-
-function findComponentRoot(element: HTMLElement) {
-    return findShadowRoot(element)?.children[0];
-}
-
-function findShadowRoot(element: HTMLElement) {
-    let current: Node | null = element;
-    while (current !== null) {
-        if (current instanceof ShadowRoot) {
-            return current;
-        }
-        current = current.parentNode;
-    }
-    return null;
-}
 
 function useFullscreenStatus(): boolean {
     const [isFullscreen, setIsFullscreen] = useState<boolean>(document.fullscreenElement !== null);
