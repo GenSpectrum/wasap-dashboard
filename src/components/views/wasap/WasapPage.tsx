@@ -64,6 +64,13 @@ export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) =
                 <div className='grid-cols-[300px_1fr] gap-x-4 lg:grid'>
                     <div className='h-fit p-2 shadow-lg'>
                         <WasapPageStateSelector
+                            // Remount (rather than resync via an effect) whenever the URL-derived
+                            // state changes, so the panel's in-progress draft state doesn't go
+                            // stale after browser back/forward or opening a shared link while this
+                            // page is already mounted. Safe to remount on every URL change, including
+                            // the app's own "Apply filters" writes, since the new initial values
+                            // always match what the draft already showed at that point.
+                            key={JSON.stringify({ base, analysis })}
                             config={config}
                             pageStateHandler={pageStateHandler}
                             initialBaseFilterState={base}
