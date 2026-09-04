@@ -47,31 +47,35 @@ let currentConfig: AppConfig = defaultAppConfig;
 export async function loadAppConfig(): Promise<AppConfig> {
     const url = `${import.meta.env.BASE_URL}config.json`;
 
-    let body: string;
+    let response: Response;
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            currentConfig = defaultAppConfig;
-            return currentConfig;
-        }
-        body = await response.text();
+        response = await fetch(url);
     } catch {
         currentConfig = defaultAppConfig;
         return currentConfig;
     }
 
-    let parsed: unknown;
-    try {
-        parsed = JSON.parse(body);
-    } catch {
-        // No config.json — a static host (or the Vite dev server) answered the
-        // missing file with its index.html fallback. Use the defaults.
+    if (!response.ok) {
         currentConfig = defaultAppConfig;
         return currentConfig;
     }
+
+    // No config.json — a static host (or the Vite dev server) answered the
+    // missing file with a 200 OK SPA fallback to index.html rather than a 404.
+    // Detect that by content type, not by whether the body happens to fail to
+    // parse as JSON: a present config.json with a JSON syntax error must still
+    // fail loudly below, not be mistaken for "absent".
+    const contentType = response.headers.get('content-type') ?? '';
+    if (contentType.includes('text/html')) {
+        currentConfig = defaultAppConfig;
+        return currentConfig;
+    }
+
+    const body = await response.text();
 
     // A present-but-invalid config is a hard error: a misconfigured deployment
     // should fail loudly rather than silently talk to the wrong backend.
+    const parsed: unknown = JSON.parse(body);
     currentConfig = appConfigSchema.parse(parsed);
     return currentConfig;
 }
