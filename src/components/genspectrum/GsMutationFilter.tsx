@@ -41,9 +41,18 @@ export function GsMutationFilter({
         };
     }, [onMutationChange]);
 
+    // This was a <label> wrapping the whole thing, unlabeled by a `for`/`id` pair. Behind a
+    // shadow-DOM custom element that was inert — a <label> only implicitly associates with a
+    // control that's its light-DOM descendant, and the shadow boundary excluded the combobox
+    // inside from that. Without shadow DOM, the wrap silently became a real (and wrong) implicit
+    // label on the combobox, which is why it — not the "Mutations" text — picked up "Mutations" as
+    // its accessible name, and other pages' controls started colliding with it in
+    // accessible-name-based test/a11y-tooling queries. A plain <div> (same daisyUI classes, purely
+    // visual) restores "not actually a label" instead of "accidentally the wrong one".
+    //
     // See GsTextFilter.tsx for why listening on a wrapping div still catches the same event.
     return (
-        <label className='form-control'>
+        <div className='form-control'>
             <div className='label'>
                 <span className='label-text'>Mutations</span>
             </div>
@@ -54,6 +63,6 @@ export function GsMutationFilter({
                     enabledMutationTypes={enabledMutationTypes}
                 />
             </div>
-        </label>
+        </div>
     );
 }
