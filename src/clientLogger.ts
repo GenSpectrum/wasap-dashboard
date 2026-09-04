@@ -1,48 +1,22 @@
-import axios from 'axios';
+import { logLevels, type AdditionalLogContext, type InstanceLogger } from './types/logMessage.ts';
 
-import { type AdditionalLogContext, type InstanceLogger, type LogMessage } from './types/logMessage.ts';
-
-class ClientLogger {
-    public sendLogMessage = async (logMessage: LogMessage): Promise<void> => {
-        try {
-            await axios.post('/api/log', logMessage);
-        } catch (error) {
-            // eslint-disable-next-line no-console -- this is our last resort
-            console.error('Failed to send log message', logMessage, 'error', error);
-        }
-    };
-}
-
+/**
+ * Console-backed logger with the same interface as the dashboards repo's
+ * `clientLogger` (which POSTed to the Astro `/api/log` route). A standalone SPA
+ * has nowhere to send logs, so they go to the browser console.
+ */
 export const getClientLogger = (instance: string): InstanceLogger => {
-    const logger = new ClientLogger();
+    const log = (level: (typeof logLevels)[number], message: string, context?: AdditionalLogContext): void => {
+        const prefix = `[${instance}]`;
+        const args = context?.errorId !== undefined ? [prefix, message, context] : [prefix, message];
+        // eslint-disable-next-line no-console -- this logger's whole job is the console
+        (console[level] ?? console.log)(...args);
+    };
+
     return {
-        error: (message: string, context?: AdditionalLogContext) =>
-            void logger.sendLogMessage({
-                level: 'error',
-                message,
-                instance,
-                ...context,
-            }),
-        warn: (message: string, context?: AdditionalLogContext) =>
-            void logger.sendLogMessage({
-                level: 'warn',
-                message,
-                instance,
-                ...context,
-            }),
-        info: (message: string, context?: AdditionalLogContext) =>
-            void logger.sendLogMessage({
-                level: 'info',
-                message,
-                instance,
-                ...context,
-            }),
-        debug: (message: string, context?: AdditionalLogContext) =>
-            void logger.sendLogMessage({
-                level: 'debug',
-                message,
-                instance,
-                ...context,
-            }),
+        error: (message, context) => log('error', message, context),
+        warn: (message, context) => log('warn', message, context),
+        info: (message, context) => log('info', message, context),
+        debug: (message, context) => log('debug', message, context),
     };
 };
