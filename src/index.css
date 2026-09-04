@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+/* Light theme only, matching the dashboards deployment. */
+@plugin 'daisyui' {
+    themes: light --default;
+}
+
+/* Palette lifted verbatim from the dashboards repo (`src/styles/tailwind.css`),
+   so the wastewater charts and panels ported in step 1b/1c keep their colours.
+   The `gs-*` components render into shadow DOM and bring their own styling; this
+   is here so our wrappers and chrome match them. */
+@theme {
+    --color-indigo: rgba(51, 34, 136, 0.9);
+    --color-green: rgba(17, 119, 51, 1);
+    --color-cyan: rgba(53, 166, 222, 1);
+    --color-teal: rgba(68, 170, 153, 1);
+    --color-olive: rgba(153, 153, 51, 1);
+    --color-sand: rgba(187, 170, 85, 1);
+    --color-rose: rgba(204, 102, 119, 1);
+    --color-wine: rgba(136, 34, 85, 1);
+    --color-purple: rgba(170, 68, 153, 1);
+    --color-lime: rgba(136, 204, 34, 1);
+
+    --color-indigoMuted: rgba(51, 34, 136, 0.3);
+    --color-greenMuted: rgba(17, 119, 51, 0.3);
+    --color-cyanMuted: rgba(53, 166, 222, 0.3);
+    --color-tealMuted: rgba(68, 170, 153, 0.3);
+    --color-oliveMuted: rgba(153, 153, 51, 0.3);
+    --color-sandMuted: rgba(187, 170, 85, 0.3);
+    --color-roseMuted: rgba(204, 102, 119, 0.3);
+    --color-wineMuted: rgba(136, 34, 85, 0.3);
+    --color-purpleMuted: rgba(170, 68, 153, 0.3);
+    --color-limeMuted: rgba(136, 204, 34, 0.3);
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
