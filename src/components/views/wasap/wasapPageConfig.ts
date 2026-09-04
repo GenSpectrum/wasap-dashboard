@@ -1,0 +1,317 @@
+import type { DateRangeOption, SequenceType, TemporalGranularity } from '@genspectrum/dashboard-components/util';
+
+import type { Organism } from '../../../types/Organism.ts';
+
+export const SEQUENCE_TYPE = {
+    nucleotide: 'nucleotide',
+    aminoAcid: 'amino acid',
+} as const satisfies Record<string, SequenceType>;
+
+/**
+ * All config settings for a W-ASAP dashboard page.
+ */
+export type WasapPageConfig = WasapPageConfigBase & AnalysisModeConfigs;
+
+/**
+ * Base settings that apply to all modes.
+ */
+export type WasapPageConfigBase = {
+    /**
+     * The internal identifier of the organism, i.e. 'covid'. Used as a key in maps and API parameters.
+     */
+    internalName: Organism;
+
+    /**
+     * The name of the organism, i.e. 'Sars-CoV-2'
+     */
+    name: string;
+
+    /**
+     * The path to the page itself.
+     * Used to generate URLs and in the breadcrumbs.
+     */
+    path: string;
+
+    /**
+     * A description of the page to display in the menu.
+     */
+    description: string;
+
+    /**
+     * Object with templates to generate URLs to specific mutations.
+     */
+    linkTemplate: LinkTemplate;
+
+    lapisBaseUrl: string;
+    samplingDateField: string;
+    locationNameField: string;
+
+    defaultLocationName: string;
+
+    browseDataUrl: string;
+    browseDataDescription: string;
+
+    defaultAnalysisMode?: WasapAnalysisMode;
+};
+
+/**
+ * Mode dependent settings. Always contains a config setting called <modeName>AnalysisModeEnabled.
+ * If the mode is enabled, the type also contains mode dependent settings, like extra fetch settings
+ * or mode default configs.
+ */
+type AnalysisModeConfigs = ManualAnalysisModeConfig &
+    VariantAnalysisModeConfig &
+    ResistanceAnalysisModeConfig &
+    UntrackedAnalyisModeConfig &
+    CovSpectrumCollectionAnalysisModeConfig &
+    CollectionAnalysisModeConfig;
+
+type ManualAnalysisModeConfig =
+    | {
+          manualAnalysisModeEnabled?: never;
+      }
+    | {
+          manualAnalysisModeEnabled: true;
+          filterDefaults: {
+              manual: WasapManualFilter;
+          };
+      };
+
+type VariantAnalysisModeConfig =
+    | {
+          variantAnalysisModeEnabled?: never;
+      }
+    | {
+          variantAnalysisModeEnabled: true;
+          predefinedVariantsSource?: {
+              collectionsUserId: number;
+              collectionsTag: string;
+              variantSourceLabel?: string;
+          };
+          clinicalLapis: {
+              lapisBaseUrl: string;
+              dateField: string;
+              lineageField: string;
+          };
+          filterDefaults: {
+              variant: WasapVariantFilter;
+          };
+          clinicalSequenceCountWarningThreshold: number;
+      };
+
+type ResistanceAnalysisModeConfig =
+    | {
+          resistanceAnalysisModeEnabled?: never;
+      }
+    | {
+          resistanceAnalysisModeEnabled: true;
+          resistanceMutationCollections: ResistanceMutationCollectionConfig[];
+          filterDefaults: {
+              resistance: WasapResistanceFilter;
+          };
+      };
+
+type UntrackedAnalyisModeConfig =
+    | {
+          untrackedAnalysisModeEnabled?: never;
+      }
+    | {
+          untrackedAnalysisModeEnabled: true;
+          clinicalLapis: {
+              lapisBaseUrl: string;
+              cladeField: string;
+              lineageField: string;
+          };
+          filterDefaults: {
+              untracked: WasapUntrackedFilter;
+          };
+      };
+
+type CovSpectrumCollectionAnalysisModeConfig =
+    | {
+          covSpectrumCollectionAnalysisModeEnabled?: never;
+      }
+    | {
+          covSpectrumCollectionAnalysisModeEnabled: true;
+          collectionsApiBaseUrl: string;
+          collectionTitleFilter: string;
+          filterDefaults: {
+              covSpectrumCollection: WasapCovSpectrumCollectionFilter;
+          };
+      };
+
+type CollectionAnalysisModeConfig =
+    | {
+          collectionAnalysisModeEnabled?: never;
+      }
+    | {
+          collectionAnalysisModeEnabled: true;
+          filterDefaults: {
+              collection: WasapCollectionFilter;
+          };
+      };
+
+/**
+ * Convenience function to get the list of enabled modes.
+ */
+export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode[] {
+    const result: WasapAnalysisMode[] = [];
+    if (config.manualAnalysisModeEnabled) {
+        result.push('manual');
+    }
+    if (config.variantAnalysisModeEnabled) {
+        result.push('variant');
+    }
+    if (config.resistanceAnalysisModeEnabled) {
+        result.push('resistance');
+    }
+    if (config.untrackedAnalysisModeEnabled) {
+        result.push('untracked');
+    }
+    if (config.collectionAnalysisModeEnabled) {
+        result.push('collection');
+    }
+    if (config.covSpectrumCollectionAnalysisModeEnabled) {
+        result.push('covSpectrumCollection');
+    }
+    return result;
+}
+
+/**
+ * URL templates containing the placeholder '{{mutation}}', which are used to construct
+ * URLs to mutations in the mutations-over-time component.
+ */
+export type LinkTemplate = {
+    nucleotideMutation: string;
+    aminoAcidMutation: string;
+};
+
+export const WASAP_ANALYSIS_MODE = {
+    manual: 'manual',
+    variant: 'variant',
+    resistance: 'resistance',
+    untracked: 'untracked',
+    covSpectrumCollection: 'covSpectrumCollection',
+    collection: 'collection',
+} as const;
+
+export type WasapAnalysisMode = (typeof WASAP_ANALYSIS_MODE)[keyof typeof WASAP_ANALYSIS_MODE];
+
+/**
+ * Contains mode-independent settings, like the filter for location and date range.
+ */
+export type WasapBaseFilter = {
+    locationName?: string;
+    samplingDate?: DateRangeOption;
+    granularity: TemporalGranularity;
+    excludeEmpty: boolean;
+};
+
+export type WasapManualFilter = {
+    mode: 'manual';
+    sequenceType: SequenceType;
+    /**
+     * A list of mutations like A23T (nucleotide) or S:E44H (amino acid).
+     * The type of mutation should match the sequenceType.
+     */
+    mutations?: string[];
+};
+
+export const VARIANT_TIME_FRAME = {
+    all: 'all',
+    sixMonths: '6months',
+    threeMonths: '3months',
+} as const;
+
+export type VariantTimeFrame = (typeof VARIANT_TIME_FRAME)[keyof typeof VARIANT_TIME_FRAME];
+
+export function variantTimeFrameLabel(timeFrame: VariantTimeFrame): string {
+    switch (timeFrame) {
+        case VARIANT_TIME_FRAME.all:
+            return 'All';
+        case VARIANT_TIME_FRAME.sixMonths:
+            return '6 months';
+        case VARIANT_TIME_FRAME.threeMonths:
+            return '3 months';
+    }
+}
+
+export const SIGNATURE_TYPE = {
+    computed: 'computed',
+    predefined: 'predefined',
+} as const;
+
+/**
+ * The type of variant mutation signature. `predefined` is a pre-defined list pulled from online,
+ * `computed` computes the list of signature mutations for a variant based on user parameters.
+ */
+export type SignatureType = (typeof SIGNATURE_TYPE)[keyof typeof SIGNATURE_TYPE];
+
+export type WasapVariantFilter = {
+    mode: 'variant';
+    signatureType: SignatureType;
+    sequenceType: SequenceType;
+    // computed signature fields
+    variant?: string;
+    minProportion: number;
+    minCount: number;
+    minJaccard: number;
+    timeFrame: VariantTimeFrame;
+    // predefined signature fields
+    collectionId?: number;
+    newMutationsOnly?: boolean;
+    includeSublineagesForJaccard?: boolean;
+};
+
+export type WasapResistanceFilter = {
+    mode: 'resistance';
+    sequenceType: 'amino acid'; // resistance sets are only defined for amino acid mutations
+    resistanceSet: string;
+};
+
+export const EXCLUDE_SET_NAME = {
+    predefined: 'predefined',
+    custom: 'custom',
+} as const;
+
+export type ExcludeSetName = (typeof EXCLUDE_SET_NAME)[keyof typeof EXCLUDE_SET_NAME];
+
+export type WasapUntrackedFilter = {
+    mode: 'untracked';
+    sequenceType: SequenceType;
+    excludeSet?: ExcludeSetName;
+    excludeVariants?: string[];
+};
+
+export type WasapCovSpectrumCollectionFilter = {
+    mode: 'covSpectrumCollection';
+    collectionId?: number;
+};
+
+export type WasapCollectionFilter = {
+    mode: 'collection';
+    collectionId?: number;
+};
+
+export type WasapAnalysisFilter =
+    | WasapManualFilter
+    | WasapVariantFilter
+    | WasapResistanceFilter
+    | WasapUntrackedFilter
+    | WasapCovSpectrumCollectionFilter
+    | WasapCollectionFilter;
+
+export type WasapFilter = {
+    base: WasapBaseFilter;
+    analysis: WasapAnalysisFilter;
+};
+
+/**
+ * Resistance mutations defined in a collection, which is specified via the collection ID.
+ */
+export type ResistanceMutationCollectionConfig = {
+    collectionId: number;
+    name: string;
+    description: string;
+    annotationSymbol: string;
+};

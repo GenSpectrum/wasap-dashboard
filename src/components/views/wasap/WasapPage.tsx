@@ -1,0 +1,213 @@
+import { useEffect, useMemo } from 'react';
+import { type FC } from 'react';
+
+import { ClinicalSequenceCountStat } from './components/ClinicalSequenceCountStat';
+import { CollectionInfo } from './components/CollectionInfo';
+import { NoDataHelperText } from './components/NoDataHelperText';
+import { WasapStats } from './components/WasapStats';
+import { getInitialMeanProportionInterval } from './initialMeanProportionInterval';
+import type { ResistanceData } from './resistanceData';
+import { useWasapPageData } from './useWasapPageData';
+import type { WasapPageConfig } from './wasapPageConfig';
+import { withQueryProvider } from '../../../backendApi/withQueryProvider';
+import { getClientLogger } from '../../../clientLogger';
+import { defaultBreadcrumbs } from '../../../layouts/Breadcrumbs.tsx';
+import { DataPageLayout } from '../../../layouts/OrganismPage/DataPageLayout.tsx';
+import { dataOrigins } from '../../../types/dataOrigins.ts';
+import { Page } from '../../../types/pages.ts';
+import { wastewaterBreadcrumb } from '../../../types/wastewaterConfig';
+import { Loading } from '../../../util/Loading';
+import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
+import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
+import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime.tsx';
+import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
+import { usePageState } from '../usePageState.ts';
+
+const logger = getClientLogger('WasapPage');
+
+export type WasapPageProps = {
+    config: WasapPageConfig;
+    resistanceData: ResistanceData;
+};
+
+export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) => {
+    // initialize page state from the URL
+    const pageStateHandler = useMemo(() => new WasapPageStateHandler(config), [config]);
+
+    const {
+        pageState: { base, analysis },
+        setPageState,
+    } = usePageState(pageStateHandler);
+
+    const { mutationAnnotations, displayMutationsBySet } = resistanceData;
+    // fetch which mutations should be analyzed
+    const { data, isPending, isError, error } = useWasapPageData(config, displayMutationsBySet, analysis);
+
+    useEffect(() => {
+        if (error) {
+            logger.error(`Failed to fetch wasap page data: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }, [error]);
+
+    const initialMeanProportionInterval = getInitialMeanProportionInterval(analysis);
+
+    const lapisFilter = {
+        ...(base.locationName && { locationName: base.locationName }),
+        ...(base.samplingDate?.dateFrom && { samplingDateFrom: base.samplingDate.dateFrom }),
+        ...(base.samplingDate?.dateTo && { samplingDateTo: base.samplingDate.dateTo }),
+    };
+
+    return (
+        <DataPageLayout
+            breadcrumbs={[
+                ...defaultBreadcrumbs,
+                wastewaterBreadcrumb,
+                {
+                    name: config.name,
+                    href: config.path,
+                },
+            ]}
+            dataOrigins={[dataOrigins.wise]}
+            lapisUrl={config.lapisBaseUrl}
+        >
+            <gs-app
+                lapis={config.lapisBaseUrl}
+                mutationAnnotations={mutationAnnotations}
+                mutationLinkTemplate={config.linkTemplate}
+            >
+                <div className='grid-cols-[300px_1fr] gap-x-4 lg:grid'>
+                    <div className='h-fit p-2 shadow-lg'>
+                        <WasapPageStateSelector
+                            config={config}
+                            pageStateHandler={pageStateHandler}
+                            initialBaseFilterState={base}
+                            initialAnalysisFilterState={analysis}
+                            setPageState={setPageState}
+                            resistanceSetNames={Object.keys(displayMutationsBySet)}
+                        />
+                    </div>
+                    {isError ? (
+                        analysis.mode === 'variant' &&
+                        analysis.signatureType === 'predefined' &&
+                        analysis.collectionId === undefined ? (
+                            <div className='rounded-md border-2 border-gray-100 p-4'>
+                                <h1 className='text-lg font-semibold'>No variant selected</h1>
+                                <p className='text-sm'>Please select a variant from the filter panel.</p>
+                            </div>
+                        ) : (analysis.mode === 'collection' || analysis.mode === 'covSpectrumCollection') &&
+                          analysis.collectionId === undefined ? (
+                            <div className='rounded-md border-2 border-gray-100 p-4'>
+                                <h1 className='text-lg font-semibold'>No collection selected</h1>
+                                <p className='text-sm'>Please select a collection from the filter panel.</p>
+                            </div>
+                        ) : (
+                            <span>There was an error fetching the data to display.</span>
+                        )
+                    ) : isPending ? (
+                        <Loading />
+                    ) : (
+                        <div className='h-full space-y-4 pr-4'>
+                            {data.type === 'mutations' ? (
+                                <>
+                                    {data.displayMutations?.length === 0 ? (
+                                        <NoDataHelperText analysisFilter={analysis} />
+                                    ) : (
+                                        <GsMutationsOverTime
+                                            lapisFilter={lapisFilter}
+                                            granularity={base.granularity}
+                                            lapisDateField={config.samplingDateField}
+                                            sequenceType={
+                                                'sequenceType' in analysis ? analysis.sequenceType : 'nucleotide'
+                                            }
+                                            displayMutations={data.displayMutations}
+                                            pageSizes={[20, 50, 100, 250]}
+                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            hideGaps={base.excludeEmpty ? true : undefined}
+                                            customColumns={data.customColumns}
+                                        />
+                                    )}
+                                    {analysis.mode === 'variant' &&
+                                        analysis.signatureType === 'computed' &&
+                                        config.variantAnalysisModeEnabled &&
+                                        analysis.variant !== undefined && (
+                                            <ClinicalSequenceCountStat
+                                                lineage={analysis.variant}
+                                                analysis={analysis}
+                                                clinicalLapisBaseUrl={config.clinicalLapis.lapisBaseUrl}
+                                                clinicalLapisLineageField={config.clinicalLapis.lineageField}
+                                                clinicalLapisDateField={config.clinicalLapis.dateField}
+                                                warningThreshold={config.clinicalSequenceCountWarningThreshold}
+                                                queryKeyPrefix='variantFetchInfo'
+                                                title={`Clinical sequences for ${analysis.variant}`}
+                                                descriptionStart={`The number of clinical sequences for ${analysis.variant}`}
+                                                warningMessage='. Clinical signature calculation with this few sequences is not recommended.'
+                                            />
+                                        )}
+                                    {analysis.mode === 'variant' &&
+                                        analysis.signatureType === 'predefined' &&
+                                        config.variantAnalysisModeEnabled &&
+                                        data.lineageForJaccard !== undefined && (
+                                            <ClinicalSequenceCountStat
+                                                lineage={data.lineageForJaccard}
+                                                analysis={analysis}
+                                                clinicalLapisBaseUrl={config.clinicalLapis.lapisBaseUrl}
+                                                clinicalLapisLineageField={config.clinicalLapis.lineageField}
+                                                clinicalLapisDateField={config.clinicalLapis.dateField}
+                                                warningThreshold={config.clinicalSequenceCountWarningThreshold}
+                                                queryKeyPrefix='jaccardFetchInfo'
+                                                title='Jaccard index'
+                                                descriptionStart={`Clinical sequences for ${data.lineageForJaccard}`}
+                                                warningMessage='. Low sequence count may lead to unreliable Jaccard scores.'
+                                                zeroMessage='. No sequences found — min. Jaccard filter was not applied.'
+                                            />
+                                        )}
+                                </>
+                            ) : data.collection.queries.length === 0 ? (
+                                <div className='rounded-md border-2 border-gray-100 p-4'>
+                                    <h1 className='text-lg font-semibold'>No valid variants</h1>
+                                    <p className='text-sm'>
+                                        This collection has no valid variants to display. Check the collection
+                                        configuration for errors.
+                                    </p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className='rounded-md border-2 border-gray-100 p-4'>
+                                        <GsQueriesOverTime
+                                            collectionTitle={data.collection.title}
+                                            lapisFilter={lapisFilter}
+                                            queries={data.collection.queries}
+                                            granularity={base.granularity}
+                                            lapisDateField={config.samplingDateField}
+                                            pageSizes={[20, 50, 100, 250]}
+                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            hideGaps={base.excludeEmpty ? true : undefined}
+                                        />
+                                    </div>
+                                    <CollectionInfo
+                                        collectionId={data.collection.id}
+                                        collectionTitle={data.collection.title}
+                                        sourceLabel={
+                                            analysis.mode === 'covSpectrumCollection'
+                                                ? 'CoV-Spectrum collection'
+                                                : 'GenSpectrum collection'
+                                        }
+                                        collectionUrl={
+                                            analysis.mode === 'covSpectrumCollection'
+                                                ? `https://cov-spectrum.org/collections/${data.collection.id}`
+                                                : Page.viewCollection(config.internalName, String(data.collection.id))
+                                        }
+                                        invalidVariants={data.invalidVariants}
+                                    />
+                                </>
+                            )}
+                            <WasapStats config={config} />
+                        </div>
+                    )}
+                </div>
+            </gs-app>
+        </DataPageLayout>
+    );
+};
+
+export const WasapPage = withQueryProvider(WasapPageInner);
