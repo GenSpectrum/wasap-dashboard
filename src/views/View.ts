@@ -1,11 +1,6 @@
 import type { DateRangeOption, NumberRange } from 'wasap-components/util';
 
-import type { OrganismConstants } from './OrganismConstants';
-import { type ViewConstants } from './ViewConstants';
 import type { LapisLineageQuery, LapisMutationQuery } from './helpers';
-import { type PageStateHandler } from './pageStateHandlers/PageStateHandler';
-import type { LineageFilterConfig } from '../components/pageStateSelectors/LineageFilterInput';
-import { type BreadcrumbElement } from '../layouts/Breadcrumbs';
 import type { LapisLocation } from './pageStateHandlers/locationFilterFromToUrl';
 
 export type DatasetFilter = {
@@ -43,99 +38,7 @@ export type VariantFilter = {
     advancedQuery?: string;
 };
 
-export type VariantData<VariantFilterType = VariantFilter> = {
-    variantFilter: VariantFilterType;
-};
-
-export type BaselineData = {
-    baselineFilter: VariantFilter;
-};
-
-export type DatasetAndVariantData = Dataset & VariantData;
-
-export function makeDatasetAndVariantData(datasetFilter: DatasetFilter): DatasetAndVariantData {
-    return {
-        datasetFilter,
-        variantFilter: {},
-    };
-}
-
-export type Id = number;
-
-export type CompareSideBySideData<ColumnData extends DatasetAndVariantData = DatasetAndVariantData> = {
-    filters: Map<Id, ColumnData>;
-};
-
-export function makeCompareSideBySideData(
-    datasetFilter: DatasetFilter,
-    variantFilters: VariantFilter[],
-): CompareSideBySideData {
-    const filters = new Map(
-        variantFilters.map((variantFilter, index) => [
-            index,
-            {
-                datasetFilter,
-                variantFilter,
-            },
-        ]),
-    );
-
-    return {
-        filters,
-    };
-}
-
-export type CompareVariantsData = {
-    variants: Map<Id, VariantFilter>;
-} & Dataset;
-
-export function makeCompareVariantsData(datasetFilter: DatasetFilter): CompareVariantsData {
-    return {
-        datasetFilter,
-        variants: new Map(),
-    };
-}
-
-export type CompareToBaselineData = {
-    variants: Map<Id, VariantFilter>;
-} & Dataset &
-    BaselineData;
-
-export function makeCompareToBaselineData(datasetFilter: DatasetFilter): CompareToBaselineData {
-    return {
-        datasetFilter,
-        baselineFilter: {},
-        variants: new Map(),
-    };
-}
-
-/**
- * PageState is the state of the organism pages. It:
- * - can be set by users via input components
- * - is used to compute LAPIS filters for the visualization components
- * - is stored in the URL as query parameters
- * - must be parsable from the URL query parameters
- */
-export type View<
-    PageState extends object,
-    Constants extends OrganismConstants,
-    StateHandler extends PageStateHandler<PageState>,
-> = {
-    readonly viewConstants: ViewConstants;
-    readonly organismConstants: Constants;
-    readonly pageStateHandler: StateHandler;
-
-    readonly viewTitle: string;
-    readonly viewBreadcrumbEntries: BreadcrumbElement[];
-};
-
-export const defaultTablePageSize = 200;
-
 export const pathoplexusGroupNameField = 'groupName';
-
-export function getLineageFilterFields(lineageFilters: LineageFilterConfig[]) {
-    return lineageFilters.map((filter) => filter.lapisField);
-}
 
 export const PATHOPLEXUS_MAIN_FILTER_DATE_COLUMN = 'sampleCollectionDateRangeLower';
 export const GENSPECTRUM_LOCULUS_MAIN_FILTER_DATE_COLUMN = 'sampleCollectionDateRangeLower';
