@@ -4,9 +4,9 @@ import {
     type NumberRangeValueChangedEvent,
     type LapisNumberFilter,
     type NumberRange,
-} from '@genspectrum/dashboard-components/util';
+} from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-import '@genspectrum/dashboard-components/components';
+import { GsNumberRangeFilter as NumberRangeFilter } from 'wasap-components/gsComponents/gs-number-range-filter';
 
 export function GsNumberRangeFilter({
     lapisField,
@@ -27,7 +27,7 @@ export function GsNumberRangeFilter({
     sliderMax?: number;
     sliderStep?: number;
 }) {
-    const numberRangeFilterRef = useRef<HTMLElement>(null);
+    const numberRangeFilterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const currentInputRef = numberRangeFilterRef.current;
@@ -52,15 +52,17 @@ export function GsNumberRangeFilter({
         };
     }, [onLapisFilterChanged, onNumberRangeChanged]);
 
+    // See GsTextFilter.tsx for why listening on a wrapping div still catches the same event.
     return (
-        <gs-number-range-filter
-            ref={numberRangeFilterRef}
-            lapisField={lapisField}
-            width={width}
-            value={value ?? {}}
-            sliderMin={sliderMin}
-            sliderMax={sliderMax}
-            sliderStep={sliderStep}
-        ></gs-number-range-filter>
+        <div ref={numberRangeFilterRef}>
+            <NumberRangeFilter
+                lapisField={lapisField}
+                width={width}
+                value={value ?? {}}
+                sliderMin={sliderMin}
+                sliderMax={sliderMax}
+                sliderStep={sliderStep}
+            />
+        </div>
     );
 }

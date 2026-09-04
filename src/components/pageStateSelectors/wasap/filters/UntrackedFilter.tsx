@@ -2,6 +2,7 @@ import { type UseQueryResult } from '@tanstack/react-query';
 
 import { Loading } from '../../../../util/Loading';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
+import { GsApp } from 'wasap-components/gsComponents/gs-app';
 import type { ExcludeSetName, WasapUntrackedFilter } from '../../../views/wasap/wasapPageConfig';
 import { KnownVariantsExclusionInfo } from '../InfoBlocks';
 import { LabeledField } from '../utils/LabeledField';
@@ -71,7 +72,7 @@ export function UntrackedFilter({
                 <>
                     <div className='h-2' />
                     <LabeledField label='Custom variant list'>
-                        <gs-app lapis={clinicalSequenceLapisBaseUrl}>
+                        <GsApp lapis={clinicalSequenceLapisBaseUrl}>
                             <GsLineageFilter
                                 lapisField={clinicalSequenceLapisLineageField}
                                 lapisFilter={{}}
@@ -86,7 +87,7 @@ export function UntrackedFilter({
                                 hideCounts={true}
                                 multiSelect={true}
                             />
-                        </gs-app>
+                        </GsApp>
                     </LabeledField>
                 </>
             )}

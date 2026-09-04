@@ -1,4 +1,4 @@
-import type { DateRangeOption, SequenceType, TemporalGranularity } from '@genspectrum/dashboard-components/util';
+import type { DateRangeOption, SequenceType, TemporalGranularity } from 'wasap-components/util';
 
 import type { Organism } from '../../../types/Organism.ts';
 

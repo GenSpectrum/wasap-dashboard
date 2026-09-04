@@ -1,4 +1,4 @@
-import type { MeanProportionInterval } from '@genspectrum/dashboard-components/util';
+import type { MeanProportionInterval } from 'wasap-components/util';
 
 import type { WasapAnalysisFilter } from './wasapPageConfig';
 

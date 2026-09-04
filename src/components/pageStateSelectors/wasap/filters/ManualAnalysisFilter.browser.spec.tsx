@@ -1,5 +1,6 @@
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { GsApp } from 'wasap-components/gsComponents/gs-app';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
@@ -18,9 +19,9 @@ describe('ManualAnalysisFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const nucleotideRadio = getByLabelText('Nucleotide');
@@ -36,9 +37,9 @@ describe('ManualAnalysisFilter', () => {
         };
 
         const { getByLabelText } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const aminoAcidRadio = getByLabelText('Amino acid');
@@ -55,9 +56,9 @@ describe('ManualAnalysisFilter', () => {
         };
 
         const { getByLabelText } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const aminoAcidRadio = getByLabelText('Amino acid');
@@ -77,9 +78,9 @@ describe('ManualAnalysisFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const nucleotideRadio = getByLabelText('Nucleotide');
@@ -95,9 +96,9 @@ describe('ManualAnalysisFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const mutationInput = getByRole('combobox');
@@ -122,9 +123,9 @@ describe('ManualAnalysisFilter', () => {
         };
 
         const { getByRole } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const mutationInput = getByRole('combobox');
@@ -145,9 +146,9 @@ describe('ManualAnalysisFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </gs-app>,
+            </GsApp>,
         );
 
         const mutationInput = getByRole('combobox');

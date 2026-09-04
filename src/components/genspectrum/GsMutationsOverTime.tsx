@@ -5,8 +5,9 @@ import {
     type MeanProportionInterval,
     type CustomColumn,
     views,
-} from '@genspectrum/dashboard-components/util';
+} from 'wasap-components/util';
 import { type FC } from 'react';
+import { GsMutationsOverTime as MutationsOverTime } from 'wasap-components/gsComponents/gs-mutations-over-time';
 
 import { ComponentWrapper } from '../ComponentWrapper';
 
@@ -40,7 +41,7 @@ export const GsMutationsOverTime: FC<GsMutationsOverTimeProps> = ({
             title={sequenceType === 'nucleotide' ? 'Nucleotide mutations over time' : 'Amino acid mutations over time'}
             height={height}
         >
-            <gs-mutations-over-time
+            <MutationsOverTime
                 width='100%'
                 height={height ? '100%' : undefined}
                 lapisFilter={lapisFilter}
@@ -53,7 +54,7 @@ export const GsMutationsOverTime: FC<GsMutationsOverTimeProps> = ({
                 pageSizes={pageSizes ?? [10, 20, 30, 40, 50]}
                 initialMeanProportionInterval={initialMeanProportionInterval}
                 customColumns={customColumns}
-            ></gs-mutations-over-time>
+            />
         </ComponentWrapper>
     );
 };

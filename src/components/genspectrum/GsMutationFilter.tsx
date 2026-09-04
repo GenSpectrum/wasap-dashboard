@@ -1,6 +1,6 @@
-import '@genspectrum/dashboard-components/components';
-import { type MutationType, gsEventNames } from '@genspectrum/dashboard-components/util';
+import { type MutationType, gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
+import { GsMutationFilter as MutationFilterComponent } from 'wasap-components/gsComponents/gs-mutation-filter';
 
 export type MutationFilter = {
     nucleotideMutations: string[];
@@ -20,7 +20,7 @@ export function GsMutationFilter({
     enabledMutationTypes?: MutationType[];
     onMutationChange: (mutationFilter: MutationFilter | undefined) => void;
 }) {
-    const mutationFilterRef = useRef<HTMLElement>(null);
+    const mutationFilterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const currentMutationFilterRef = mutationFilterRef.current;
@@ -41,17 +41,19 @@ export function GsMutationFilter({
         };
     }, [onMutationChange]);
 
+    // See GsTextFilter.tsx for why listening on a wrapping div still catches the same event.
     return (
         <label className='form-control'>
             <div className='label'>
                 <span className='label-text'>Mutations</span>
             </div>
-            <gs-mutation-filter
-                width={width}
-                initialValue={initialValue ?? []}
-                enabledMutationTypes={enabledMutationTypes}
-                ref={mutationFilterRef}
-            ></gs-mutation-filter>
+            <div ref={mutationFilterRef}>
+                <MutationFilterComponent
+                    width={width}
+                    initialValue={initialValue ?? []}
+                    enabledMutationTypes={enabledMutationTypes}
+                />
+            </div>
         </label>
     );
 }

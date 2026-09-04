@@ -1,4 +1,4 @@
-import type { DateRangeOption, NumberRange } from '@genspectrum/dashboard-components/util';
+import type { DateRangeOption, NumberRange } from 'wasap-components/util';
 
 import type { OrganismConstants } from './OrganismConstants.ts';
 import { type ViewConstants } from './ViewConstants';

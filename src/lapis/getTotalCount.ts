@@ -1,4 +1,4 @@
-import type { LapisFilter } from '@genspectrum/dashboard-components/util';
+import type { LapisFilter } from 'wasap-components/util';
 import axios from 'axios';
 import { z } from 'zod';
 

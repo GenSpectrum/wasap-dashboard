@@ -2,6 +2,7 @@ import { type UseQueryResult } from '@tanstack/react-query';
 import { page, userEvent } from 'vitest/browser';
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { GsApp } from 'wasap-components/gsComponents/gs-app';
 
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
@@ -39,14 +40,14 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
                 />
-            </gs-app>,
+            </GsApp>,
         );
 
         const aminoAcidRadio = getByLabelText('Amino acid');
@@ -63,14 +64,14 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
                 />
-            </gs-app>,
+            </GsApp>,
         );
 
         const variantCombobox = await vi.waitFor(() => getByRole('combobox', { name: /variant/i }));
@@ -94,14 +95,14 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
                 />
-            </gs-app>,
+            </GsApp>,
         );
 
         const minProportionInput = getByRole('spinbutton').first();
@@ -118,7 +119,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
@@ -126,7 +127,7 @@ describe('VariantExplorerFilter', () => {
                     clinicalSequenceLapisLineageField='pangoLineage'
                     predefinedVariantsQueryResult={mockPredefinedQueryResult}
                 />
-            </gs-app>,
+            </GsApp>,
         );
 
         const variantSourceSelect = page.getByRole('combobox').first();
@@ -143,7 +144,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={predefinedPageState}
                     setPageState={mockSetPageState}
@@ -151,7 +152,7 @@ describe('VariantExplorerFilter', () => {
                     clinicalSequenceLapisLineageField='pangoLineage'
                     predefinedVariantsQueryResult={mockPredefinedQueryResult}
                 />
-            </gs-app>,
+            </GsApp>,
         );
 
         const collectionInput = page.getByPlaceholder('Select variant');
@@ -174,7 +175,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = render(
-            <gs-app lapis={DUMMY_LAPIS_URL}>
+            <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={predefinedPageState}
                     setPageState={mockSetPageState}
@@ -182,7 +183,7 @@ describe('VariantExplorerFilter', () => {
                     clinicalSequenceLapisLineageField='pangoLineage'
                     predefinedVariantsQueryResult={mockPredefinedQueryResult}
                 />
-            </gs-app>,
+            </GsApp>,
         );
 
         const checkbox = getByLabelText('Mutation not in parent');

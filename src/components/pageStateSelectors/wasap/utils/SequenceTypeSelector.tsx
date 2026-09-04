@@ -1,4 +1,4 @@
-import { type SequenceType } from '@genspectrum/dashboard-components/util';
+import { type SequenceType } from 'wasap-components/util';
 
 import { RadioSelect } from './RadioSelect';
 

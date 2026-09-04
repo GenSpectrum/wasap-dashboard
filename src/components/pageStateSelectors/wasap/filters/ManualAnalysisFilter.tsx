@@ -1,4 +1,4 @@
-import { mutationType, type MutationType } from '@genspectrum/dashboard-components/util';
+import { mutationType, type MutationType } from 'wasap-components/util';
 
 import { GsMutationFilter } from '../../../genspectrum/GsMutationFilter';
 import type { WasapManualFilter } from '../../../views/wasap/wasapPageConfig';

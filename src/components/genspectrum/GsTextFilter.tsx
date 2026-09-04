@@ -1,7 +1,6 @@
-import { gsEventNames, type LapisFilter } from '@genspectrum/dashboard-components/util';
+import { gsEventNames, type LapisFilter } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-
-import '@genspectrum/dashboard-components/components';
+import { GsTextFilter as TextFilter } from 'wasap-components/gsComponents/gs-text-filter';
 
 export function GsTextFilter<LapisField extends string>({
     lapisField,
@@ -20,7 +19,7 @@ export function GsTextFilter<LapisField extends string>({
     value?: string | undefined;
     hideCounts?: true;
 }) {
-    const textInputRef = useRef<HTMLElement>(null);
+    const textInputRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const currentInputRef = textInputRef.current;
@@ -38,15 +37,19 @@ export function GsTextFilter<LapisField extends string>({
         };
     }, [onInputChange]);
 
+    // TextFilter dispatches its change event as a bubbling DOM CustomEvent (unchanged from the
+    // Lit component it replaced — see wasap-components/VENDOR.md), so listening on a wrapping div
+    // still works the same way listening on the old <gs-text-filter> custom element itself did.
     return (
-        <gs-text-filter
-            ref={textInputRef}
-            lapisField={lapisField}
-            placeholderText={placeholderText}
-            lapisFilter={lapisFilter}
-            width={width}
-            value={value ?? ''}
-            hideCounts={hideCounts}
-        ></gs-text-filter>
+        <div ref={textInputRef}>
+            <TextFilter
+                lapisField={lapisField}
+                placeholderText={placeholderText}
+                lapisFilter={lapisFilter}
+                width={width}
+                value={value ?? ''}
+                hideCounts={hideCounts}
+            />
+        </div>
     );
 }

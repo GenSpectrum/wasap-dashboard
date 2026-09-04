@@ -1,4 +1,4 @@
-import { type DateRangeOption } from '@genspectrum/dashboard-components/util';
+import { type DateRangeOption } from 'wasap-components/util';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 

@@ -1,4 +1,4 @@
-import type { DateRangeOption, LapisFilter } from '@genspectrum/dashboard-components/util';
+import type { DateRangeOption, LapisFilter } from 'wasap-components/util';
 
 import type { DatasetFilter } from '../../views/View.ts';
 import { locationFieldsToFilterIdentifier } from '../../views/pageStateHandlers/locationFilterFromToUrl.ts';

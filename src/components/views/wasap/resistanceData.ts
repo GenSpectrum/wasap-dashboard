@@ -1,4 +1,4 @@
-import type { MutationAnnotations } from '@genspectrum/dashboard-components/util';
+import type { MutationAnnotations } from 'wasap-components/util';
 
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from './wasapPageConfig';
 import type { BackendService } from '../../../backendApi/backendService';

@@ -1,7 +1,6 @@
-import { gsEventNames, type LapisFilter } from '@genspectrum/dashboard-components/util';
+import { gsEventNames, type LapisFilter } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-
-import '@genspectrum/dashboard-components/components';
+import { GsLineageFilter as LineageFilter } from 'wasap-components/gsComponents/gs-lineage-filter';
 
 export function GsLineageFilter<Lineage extends string>({
     lapisField,
@@ -24,7 +23,7 @@ export function GsLineageFilter<Lineage extends string>({
     hideCounts?: true;
     multiSelect?: true;
 }) {
-    const lineageFilterRef = useRef<HTMLElement>(null);
+    const lineageFilterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const currentLineageFilterRef = lineageFilterRef.current;
@@ -63,16 +62,18 @@ export function GsLineageFilter<Lineage extends string>({
         };
     }, [onLineageMultiChange]);
 
+    // See GsTextFilter.tsx for why listening on a wrapping div still catches the same event.
     return (
-        <gs-lineage-filter
-            lapisField={lapisField}
-            placeholderText={placeholderText}
-            value={value ?? (multiSelect ? [] : '')}
-            width={width}
-            ref={lineageFilterRef}
-            lapisFilter={lapisFilter}
-            hideCounts={hideCounts}
-            multiSelect={multiSelect}
-        ></gs-lineage-filter>
+        <div ref={lineageFilterRef}>
+            <LineageFilter
+                lapisField={lapisField}
+                placeholderText={placeholderText}
+                value={value ?? (multiSelect ? [] : '')}
+                width={width}
+                lapisFilter={lapisFilter}
+                hideCounts={hideCounts}
+                multiSelect={multiSelect}
+            />
+        </div>
     );
 }

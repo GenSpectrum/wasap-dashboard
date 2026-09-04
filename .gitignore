@@ -3,5 +3,9 @@ dist/
 *.local
 .DS_Store
 
+# vitest-browser failure artifacts
+__screenshots__/
+.vitest-attachments/
+
 # runtime config — copy public/config.example.json
 public/config.json

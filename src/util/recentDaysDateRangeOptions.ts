@@ -1,4 +1,4 @@
-import { type DateRangeOption } from '@genspectrum/dashboard-components/util';
+import { type DateRangeOption } from 'wasap-components/util';
 import dayjs from 'dayjs';
 
 /**

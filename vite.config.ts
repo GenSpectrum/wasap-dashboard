@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -8,6 +9,15 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     base: process.env.BASE_PATH ?? '/',
     plugins: [react(), tailwindcss()],
+    resolve: {
+        alias: {
+            // The vendored fork of @genspectrum/dashboard-components (see components/VENDOR.md).
+            // A bare-specifier alias, rather than relative imports, so `src/`'s many import sites
+            // at varying depths only ever need one path regardless of where they live — the same
+            // shape as importing the published package it replaces.
+            'wasap-components': resolve(import.meta.dirname, 'components'),
+        },
+    },
     server: {
         // Match the port the Astro `dashboards` app uses, so muscle memory and
         // any bookmarks carry over.

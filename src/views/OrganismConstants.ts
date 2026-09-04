@@ -1,9 +1,4 @@
-import {
-    type AggregateView,
-    type DateRangeOption,
-    type MutationAnnotation,
-    views,
-} from '@genspectrum/dashboard-components/util';
+import { type AggregateView, type DateRangeOption, type MutationAnnotation, views } from 'wasap-components/util';
 
 import {
     GENSPECTRUM_LOCULUS_MAIN_FILTER_DATE_COLUMN,

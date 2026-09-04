@@ -1,4 +1,4 @@
-import type { LapisFilter } from '@genspectrum/dashboard-components/util';
+import type { LapisFilter } from 'wasap-components/util';
 import type { FC } from 'react';
 
 import { assembleDownloadUrl } from './assembleDownloadUrl';

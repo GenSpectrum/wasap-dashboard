@@ -1,4 +1,4 @@
-import type { MutationAnnotation } from '@genspectrum/dashboard-components/util';
+import type { MutationAnnotation } from 'wasap-components/util';
 
 import { getDbIdSpace, dbIdSpaces, type DbIdSpace } from './dbIdSpace';
 import type { ResistanceMutationCollectionConfig } from '../components/views/wasap/wasapPageConfig';

@@ -1,4 +1,4 @@
-import { type SequenceType, type TemporalGranularity } from '@genspectrum/dashboard-components/util';
+import { type SequenceType, type TemporalGranularity } from 'wasap-components/util';
 
 import { type PageStateHandler } from './PageStateHandler';
 import { parseDateRangesFromUrl, setSearchFromDateRange } from './dateFilterFromToUrl';

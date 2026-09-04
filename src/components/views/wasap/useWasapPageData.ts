@@ -1,4 +1,4 @@
-import type { CountCoverageQuery, CustomColumn, LapisFilter } from '@genspectrum/dashboard-components/util';
+import type { CountCoverageQuery, CustomColumn, LapisFilter } from 'wasap-components/util';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 

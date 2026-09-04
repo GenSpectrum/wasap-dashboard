@@ -16,6 +16,7 @@ import { Loading } from '../../../util/Loading';
 import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
 import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
 import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime.tsx';
+import { GsApp } from 'wasap-components/gsComponents/gs-app';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
 import { usePageState } from '../usePageState.ts';
 
@@ -55,7 +56,7 @@ export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) =
 
     return (
         <LapisUnreachableWrapperClient lapisUrl={config.lapisBaseUrl}>
-            <gs-app
+            <GsApp
                 lapis={config.lapisBaseUrl}
                 mutationAnnotations={mutationAnnotations}
                 mutationLinkTemplate={config.linkTemplate}
@@ -190,7 +191,7 @@ export const WasapPageInner: FC<WasapPageProps> = ({ config, resistanceData }) =
                         </div>
                     )}
                 </div>
-            </gs-app>
+            </GsApp>
         </LapisUnreachableWrapperClient>
     );
 };

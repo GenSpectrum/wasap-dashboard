@@ -1,11 +1,11 @@
-import '@genspectrum/dashboard-components/components';
 import {
     type DateRangeOption,
     type DateRangeOptionChangedEvent,
     gsEventNames,
     type LapisFilter,
-} from '@genspectrum/dashboard-components/util';
+} from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
+import { GsDateRangeFilter as DateRangeFilter } from 'wasap-components/gsComponents/gs-date-range-filter';
 
 import { CustomDateRangeLabel } from '../../types/DateWindow.ts';
 
@@ -24,7 +24,7 @@ export function GsDateRangeFilter({
     dateRangeOptions?: DateRangeOption[];
     width?: string;
 }) {
-    const dateRangeSelectorRef = useRef<HTMLElement>(null);
+    const dateRangeSelectorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const currentDateRangeSelectorRef = dateRangeSelectorRef.current;
@@ -70,13 +70,15 @@ export function GsDateRangeFilter({
 
     const isCustom = value?.label === CustomDateRangeLabel;
 
+    // See GsTextFilter.tsx for why listening on a wrapping div still catches the same event.
     return (
-        <gs-date-range-filter
-            ref={dateRangeSelectorRef}
-            dateRangeOptions={dateRangeOptions}
-            value={(isCustom ? value : value?.label) ?? null}
-            lapisDateField={lapisDateField}
-            width={width}
-        ></gs-date-range-filter>
+        <div ref={dateRangeSelectorRef}>
+            <DateRangeFilter
+                dateRangeOptions={dateRangeOptions}
+                value={(isCustom ? value : value?.label) ?? null}
+                lapisDateField={lapisDateField}
+                width={width}
+            />
+        </div>
     );
 }

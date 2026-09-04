@@ -5,8 +5,9 @@ import {
     type MeanProportionInterval,
     type TemporalGranularity,
     type CountCoverageQuery,
-} from '@genspectrum/dashboard-components/util';
+} from 'wasap-components/util';
 import { type FC } from 'react';
+import { GsQueriesOverTime as QueriesOverTime } from 'wasap-components/gsComponents/gs-queries-over-time';
 
 import { ComponentWrapper } from '../ComponentWrapper';
 
@@ -40,7 +41,7 @@ export const GsQueriesOverTime: FC<GsQueriesOverTimeProps> = ({
             title={'Collection over time' + (collectionTitle ? `: ${collectionTitle}` : '')}
             height={height}
         >
-            <gs-queries-over-time
+            <QueriesOverTime
                 width='100%'
                 height={height ? '100%' : undefined}
                 lapisFilter={lapisFilter}
@@ -52,7 +53,7 @@ export const GsQueriesOverTime: FC<GsQueriesOverTimeProps> = ({
                 pageSizes={pageSizes ?? [10, 20, 30, 40, 50]}
                 initialMeanProportionInterval={initialMeanProportionInterval}
                 customColumns={customColumns}
-            ></gs-queries-over-time>
+            />
         </ComponentWrapper>
     );
 };

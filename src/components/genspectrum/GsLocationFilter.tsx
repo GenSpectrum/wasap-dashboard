@@ -1,7 +1,6 @@
-import { gsEventNames, type LapisFilter } from '@genspectrum/dashboard-components/util';
+import { gsEventNames, type LapisFilter } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-
-import '@genspectrum/dashboard-components/components';
+import { GsLocationFilter as LocationFilter } from 'wasap-components/gsComponents/gs-location-filter';
 
 import type { LapisLocation } from '../../views/pageStateHandlers/locationFilterFromToUrl.ts';
 
@@ -22,7 +21,7 @@ export function GsLocationFilter<Field extends string>({
     value?: LapisLocation;
     hideCounts?: true;
 }) {
-    const locationFilterRef = useRef<HTMLElement>(null);
+    const locationFilterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const currentLocationFilterRef = locationFilterRef.current;
@@ -40,15 +39,17 @@ export function GsLocationFilter<Field extends string>({
         };
     }, [onLocationChange]);
 
+    // See GsTextFilter.tsx for why listening on a wrapping div still catches the same event.
     return (
-        <gs-location-filter
-            fields={fields}
-            placeholderText={placeholderText}
-            lapisFilter={lapisFilter}
-            width={width}
-            ref={locationFilterRef}
-            value={value}
-            hideCounts={hideCounts}
-        ></gs-location-filter>
+        <div ref={locationFilterRef}>
+            <LocationFilter
+                fields={fields}
+                placeholderText={placeholderText}
+                lapisFilter={lapisFilter}
+                width={width}
+                value={value}
+                hideCounts={hideCounts}
+            />
+        </div>
     );
 }
