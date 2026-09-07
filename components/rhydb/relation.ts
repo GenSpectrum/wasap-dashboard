@@ -7,8 +7,6 @@
  *
  * - `limit()` ends the pipeline, so `offset` after it does not typecheck.
  * - `offset(0)` is the relation unchanged.
- *
- * Modelled on `SiloQuery.kt` in `GenSpectrum/LAPIS` (branch `experiments/lib`).
  */
 
 import { field, int, num, record, renderArgs, set, type Args, type Expr } from './expression';

@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type FC } from 'react';
 
 // Previously injected only into this component's Lit shadow root by PreactLitAdapter (see
-// components/VENDOR.md and the step-2 Lit-removal commit). There's no shadow DOM to scope it to
+// the step-2 Lit-removal commit). There's no shadow DOM to scope it to
 // any more, so this now styles `input[type=range]` globally — harmless today since this is the
 // only range input in the app, but worth knowing if that stops being true.
 import './min-max-percent-slider.css';

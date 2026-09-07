@@ -2,10 +2,10 @@
  * How a wastewater SILO read is scoped, and the SaneQL predicate that scopes it.
  *
  * `SiloReadFilter` is the one description of "which reads" the catalogue speaks
- * — the purpose-built replacement for the flat `LapisFilter` the vendored
- * components used to take as a prop. wasap only ever narrows the wastewater
- * dataset by sampling location and a sampling-date window, so it is a small,
- * closed record (see doc 04, "The `SiloReadFilter`").
+ * — the purpose-built replacement for the flat `LapisFilter` the components
+ * used to take as a prop. wasap only ever narrows the wastewater dataset by
+ * sampling location and a sampling-date window, so it is a small, closed record
+ * (see doc 04, "The `SiloReadFilter`").
  */
 
 import { and, dateLiteral, field, str, type Expr } from '../rhydb/expression';

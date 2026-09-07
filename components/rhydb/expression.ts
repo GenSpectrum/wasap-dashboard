@@ -1,13 +1,11 @@
 /**
- * SaneQL expressions, as a tree that renders itself.
+ * SaneQL expressions, as a tree that renders itself — one class closed over
+ * its children.
  *
  * The tree guarantees two things. Every literal is escaped where it is built,
  * so a value cannot reach the query text without passing through `escape.ts`.
  * And every node knows how tightly it binds, so parentheses are added exactly
  * where they are needed and nowhere else.
- *
- * Modelled on `SiloExpression.kt` in `GenSpectrum/LAPIS` (branch
- * `experiments/lib`), as one class closed over its children.
  */
 
 import { identifier, stringLiteral } from './escape';
@@ -137,8 +135,6 @@ export function str(value: string): Expr {
  * SILO rejects a bare string in a comparison against a `DATE32` column; the
  * `::date` cast is how a date reaches such a comparison. Only used against the
  * `samplingDate` column (see `components/queries/filter.ts`).
- *
- * (wasap-local addition to the vendored file — see `components/rhydb/VENDOR.md`.)
  */
 export function dateLiteral(value: string): Expr {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {

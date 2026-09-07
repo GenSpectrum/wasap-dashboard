@@ -12,14 +12,11 @@
             "wasap-components/*": ["./components/*"]
         },
 
-        // Strictness: `strict` only, matching the dashboards repo
-        // (astro/tsconfigs/strict) the wasap code was written against. The
-        // stricter checks the sibling experiment repo uses
+        // Strictness: `strict` only. The stricter checks
         // (noUncheckedIndexedAccess, noUnusedLocals/Parameters,
         // noFallthroughCasesInSwitch, exactOptionalPropertyTypes) are
-        // deliberately off for now — turning them on is a dedicated later pass,
-        // not something to do while moving verbatim code (see
-        // standalone-wasap/02-step-1-standalone-repo.md).
+        // deliberately off for now — turning them on is a dedicated later pass
+        // (see standalone-wasap/02-step-1-standalone-repo.md).
         "strict": true,
 
         "allowImportingTsExtensions": true,

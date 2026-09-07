@@ -7,12 +7,11 @@
  * component tree never sees a URL — it calls the `data/` hooks, which call
  * `useConnection()` / `useSiloSchema()`.
  *
- * Unlike `wastewater-analytics-experiment`'s `instance.tsx` (a single-organism
- * app that bundles its one config here), wasap is multi-organism and keeps its
- * per-organism coordinates in `src/` (`WasapPageConfig`). So this provider takes
- * `url` + `schema` as props; `src/` mounts it with the values for the organism
- * being viewed. Runtime instance selection (`?silo=` override, settings panel)
- * is layered on top in a later phase (doc 04, sub-phase 6).
+ * wasap is multi-organism and keeps its per-organism coordinates in `src/`
+ * (`WasapPageConfig`), so this provider takes `url` + `schema` as props; `src/`
+ * mounts it with the values for the organism being viewed. Runtime instance
+ * selection (`?silo=` override, settings panel) is layered on top in a later
+ * phase (doc 04, sub-phase 6).
  */
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react';

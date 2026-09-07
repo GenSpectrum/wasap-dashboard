@@ -36,8 +36,8 @@ export function GsTextFilter<Field extends string>({
     }, [onInputChange]);
 
     // TextFilter dispatches its change event as a bubbling DOM CustomEvent (unchanged from the
-    // Lit component it replaced — see wasap-components/VENDOR.md), so listening on a wrapping div
-    // still works the same way listening on the old <gs-text-filter> custom element itself did.
+    // Lit component it replaced), so listening on a wrapping div still works the same way
+    // listening on the old <gs-text-filter> custom element itself did.
     return (
         <div ref={textInputRef}>
             <TextFilter

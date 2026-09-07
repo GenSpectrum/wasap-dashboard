@@ -1,12 +1,10 @@
 /**
  * The SILO SaneQL queries the wastewater components send.
  *
- * Each is a builder returning a `Relation` (renderable query text). The exact
- * text of each is pinned in `__snapshots__/catalogue.sanql`, so a change to how
- * one is built arrives as a diff of that file.
- *
- * Grows as components move off LAPIS. Started with the Tier-1 reads (doc 04,
- * sub-phase 2): each a single `groupBy(count(), …)`.
+ * Each is a builder returning a `Relation` (renderable query text); the
+ * rendered text of each is asserted in `catalogue.spec.ts`. Grows as components
+ * move off LAPIS — started with the Tier-1 reads (doc 04, sub-phase 2), each a
+ * single `groupBy(count(), …)`.
  */
 
 import { count } from '../rhydb/functions';

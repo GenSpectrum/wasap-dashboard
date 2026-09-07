@@ -10,12 +10,11 @@ const BROWSER_SPEC_PATTERNS = ['src/**/*.browser.{test,spec}.tsx', 'components/*
 // root config's `resolve`.
 const resolveAlias = { 'wasap-components': resolve(import.meta.dirname, 'components') };
 
-// Ported from the dashboards repo. Two projects:
+// Two projects:
 //   - node:    plain-logic + hook + data-layer specs (jsdom-free, MSW via msw/node)
 //   - browser: *.browser.spec.tsx component tests, real Chromium via Playwright
 //
-// Both projects also cover components/ — the vendored dashboard-components code (see
-// components/VENDOR.md) — not just src/.
+// Both projects also cover components/ — the dashboard-components code — not just src/.
 //
 // Run one with `vitest --project node` / `--project browser`; CI runs both and
 // installs the Playwright browser first. See

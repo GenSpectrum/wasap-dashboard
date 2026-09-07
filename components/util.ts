@@ -1,10 +1,8 @@
-// The public surface `src/` imports from `components/`, replacing
-// `@genspectrum/dashboard-components/util`. Unlike the published package's `utilEntrypoint.ts`
-// (which re-exports from every component in the library, including ones the wasap dashboards
-// never render), this only re-exports what `src/` actually uses — re-exporting the real
-// entrypoint verbatim would have pulled the whole unvendored library back in as a type
-// dependency. Grew from grepping every `@genspectrum/dashboard-components/util` import in `src/`;
-// keep it in sync with that when adding a new one.
+// The public surface `src/` imports from `components/` (aliased `wasap-components`).
+// Only what `src/` actually uses is re-exported here — a catch-all entrypoint that
+// pulled in every component would drag the whole library back in as a type dependency.
+// Grew from grepping every `wasap-components/util` import in `src/`; keep it in sync
+// with that when adding a new one.
 
 export {
     type LapisFilter,

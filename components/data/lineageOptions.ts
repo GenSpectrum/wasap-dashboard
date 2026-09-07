@@ -6,10 +6,6 @@
  * wildcard form (`BA.3.2.1` and `BA.3.2.1*`), and the wildcard prefixes of
  * aliased lineages (`BA.3.2*`), each with a read count that for a wildcard
  * includes its sublineages.
- *
- * The DAG-assembly logic is carried over verbatim from the vendored
- * `react/lineageFilter/fetchLineageAutocompleteList.ts` (now deleted); only the
- * fetch layer changed from raw `lapisApi` calls to the `LapisClient`.
  */
 
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
