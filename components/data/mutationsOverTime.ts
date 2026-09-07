@@ -19,13 +19,13 @@ import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query
 
 import { useConnection, useSiloSchema } from './connection';
 import {
-    mutationSpectrumQuery,
+    overallMutationsQuery,
     normalizeFilter,
     positionPileupQuery,
-    readMutationSpectrum,
+    readOverallMutations,
     readPositionPileup,
     samplingDatesQuery,
-    type MutationSpectrumRow,
+    type OverallMutationRow,
     type OverTimeSequenceType,
     type PileupTarget,
     type PositionPileupRow,
@@ -94,7 +94,7 @@ export function useOverTimeMetadata(
         ],
         queryFn: async ({ signal }): Promise<OverTimeMetadata> => {
             // Date axis first: the "too many buckets" guard has to fire before the
-            // (potentially expensive) mutation-spectrum scan.
+            // (potentially expensive) mutations() scan.
             const dateRows = await connection
                 .query(samplingDatesQuery(schema, normalized), 'Over-time date axis', { signal })
                 .then((result) => readNamedCounts(result.rows, schema.groupingDate));
@@ -111,15 +111,15 @@ export function useOverTimeMetadata(
             }
 
             const boundedFilter = withDateBounds(normalized, requestedDateRanges);
-            const spectrumRows = await connection
+            const mutationRows = await connection
                 .query(
-                    mutationSpectrumQuery(schema, boundedFilter, { sequenceType, sequenceNames }),
+                    overallMutationsQuery(schema, boundedFilter, { sequenceType, sequenceNames }),
                     'Over-time mutations',
                     { signal },
                 )
-                .then((result) => readMutationSpectrum(result.rows));
+                .then((result) => readOverallMutations(result.rows));
 
-            const overallMutations = toMutationEntries(spectrumRows, sequenceType)
+            const overallMutations = toMutationEntries(mutationRows, sequenceType)
                 .filter((entry) => displayMutations === undefined || displayMutations.includes(entry.mutation.code))
                 .sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation));
 
@@ -258,7 +258,7 @@ export function buildDateAxis(
 }
 
 export function toMutationEntries(
-    rows: MutationSpectrumRow[],
+    rows: OverallMutationRow[],
     sequenceType: OverTimeSequenceType,
 ): SubstitutionOrDeletionEntry<Substitution, Deletion>[] {
     return rows.map((row) => {
@@ -289,7 +289,7 @@ function segmentFor(sequenceName: string | null, sequenceType: OverTimeSequenceT
 /**
  * The genes to restrict the metadata `mutations()` scan to, given a fixed
  * display set — `['S']` for Spike codes, `undefined` (all sequences) for
- * nucleotides or an open set. A big speed-up on the spectrum scan.
+ * nucleotides or an open set. A big speed-up on that scan.
  */
 export function genesOf(
     displayMutations: string[] | undefined,

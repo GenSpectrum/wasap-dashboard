@@ -8,9 +8,9 @@
  * from a **symbol pileup per position**, and the two queries here back the two
  * data hooks in `components/data/mutationsOverTime.ts`:
  *
- *   `mutationSpectrumQuery` — one `mutations()` call for the *metadata*: which
- *     mutations get a grid row, and each one's overall proportion over the
- *     whole span (drives the "minimum proportion" filter across pages).
+ *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
+ *     mutations get a grid row, and each one's proportion over the whole shown
+ *     span (drives the "minimum proportion" filter across pages).
  *   `positionPileupQuery` — one `groupBy(count(), {date, seq.at(pos)})` per
  *     distinct position of the visible *page*: the full symbol distribution
  *     there, per day. `coverage = Σ count(known symbols)`,
@@ -32,9 +32,16 @@ export const OVER_TIME_MIN_PROPORTION = 0.001;
 
 // --- metadata: which mutations get a row ----------------------------------
 
-const SPECTRUM_FIELDS = ['mutationFrom', 'mutationTo', 'sequenceName', 'position', 'count', 'coverage'] as const;
+const OVERALL_MUTATION_FIELDS = [
+    'mutationFrom',
+    'mutationTo',
+    'sequenceName',
+    'position',
+    'count',
+    'coverage',
+] as const;
 
-export type MutationSpectrumOptions = {
+export type OverallMutationsOptions = {
     sequenceType: OverTimeSequenceType;
     /** Restrict to specific sequence columns (genes / the nucleotide sequence); omit for all. */
     sequenceNames?: readonly string[];
@@ -43,24 +50,26 @@ export type MutationSpectrumOptions = {
 };
 
 /**
- * `{ mutationFrom, mutationTo, sequenceName, position, count, coverage }` per mutation over the
- * reads the filter admits. One call, scoped to the shown date span.
+ * Every mutation the filtered reads carry above the proportion floor, as
+ * `{ mutationFrom, mutationTo, sequenceName, position, count, coverage }` — one
+ * `mutations()` call, scoped to the shown date span. This is the whole-range
+ * ("overall") figure per mutation; the per-day breakdown is the pileup.
  */
-export function mutationSpectrumQuery(
+export function overallMutationsQuery(
     schema: SiloSchema,
     filter: SiloReadFilter,
-    options: MutationSpectrumOptions,
+    options: OverallMutationsOptions,
 ): Relation {
     const args = {
         minProportion: options.minProportion ?? OVER_TIME_MIN_PROPORTION,
         sequenceNames: options.sequenceNames,
-        fields: SPECTRUM_FIELDS,
+        fields: OVERALL_MUTATION_FIELDS,
     };
     const relation = scoped(schema, filter);
     return options.sequenceType === 'nucleotide' ? relation.mutations(args) : relation.aminoAcidMutations(args);
 }
 
-export type MutationSpectrumRow = {
+export type OverallMutationRow = {
     mutationFrom: string;
     mutationTo: string;
     /** The gene for an amino-acid mutation; the nucleotide sequence name otherwise. */
@@ -70,7 +79,7 @@ export type MutationSpectrumRow = {
     coverage: number;
 };
 
-export function readMutationSpectrum(rows: readonly RhydbRow[]): MutationSpectrumRow[] {
+export function readOverallMutations(rows: readonly RhydbRow[]): OverallMutationRow[] {
     return rows.map((row) => ({
         mutationFrom: readText(row, 'mutationFrom'),
         mutationTo: readText(row, 'mutationTo'),

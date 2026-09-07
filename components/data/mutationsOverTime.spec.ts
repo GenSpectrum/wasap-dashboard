@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { buildDateAxis, buildMatrix, genesOf, pileupTargets, toMutationEntries } from './mutationsOverTime';
-import { type MutationSpectrumRow, type PositionPileupRow } from '../queries';
+import { type OverallMutationRow, type PositionPileupRow } from '../queries';
 import { getProportion } from '../query/queryMutationsOverTime';
 
 describe('buildDateAxis', () => {
@@ -30,7 +30,7 @@ describe('buildDateAxis', () => {
 
 describe('toMutationEntries', () => {
     test('nucleotide codes unprefixed, proportion = count/coverage', () => {
-        const rows: MutationSpectrumRow[] = [
+        const rows: OverallMutationRow[] = [
             { mutationFrom: 'C', mutationTo: 'T', sequenceName: 'main', position: 241, count: 90, coverage: 100 },
             { mutationFrom: 'G', mutationTo: '-', sequenceName: 'main', position: 510, count: 5, coverage: 10 },
         ];

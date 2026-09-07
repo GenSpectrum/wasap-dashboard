@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
 import {
-    mutationSpectrumQuery,
+    overallMutationsQuery,
     positionPileupQuery,
-    readMutationSpectrum,
+    readOverallMutations,
     readPositionPileup,
 } from './mutationsOverTime';
 import type { SiloSchema } from './schema';
@@ -19,16 +19,16 @@ const schema: SiloSchema = {
 
 const fields = '{mutationFrom, mutationTo, sequenceName, position, count, coverage}';
 
-describe('mutationSpectrumQuery (metadata: which mutations get a row)', () => {
+describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
     test('nucleotide: mutations() with the proportion floor and trimmed fields', () => {
-        expect(mutationSpectrumQuery(schema, {}, { sequenceType: 'nucleotide' }).render()).toBe(
+        expect(overallMutationsQuery(schema, {}, { sequenceType: 'nucleotide' }).render()).toBe(
             `default.mutations(minProportion := 0.001, fields := ${fields})`,
         );
     });
 
     test('amino acid: aminoAcidMutations(), gene-restricted, over the shown span', () => {
         expect(
-            mutationSpectrumQuery(
+            overallMutationsQuery(
                 schema,
                 { locationName: 'Basel (BS)', samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-30' },
                 { sequenceType: 'amino acid', sequenceNames: ['S'] },
@@ -62,9 +62,9 @@ describe('positionPileupQuery (page: per-position pileup)', () => {
 });
 
 describe('readers', () => {
-    test('readMutationSpectrum maps the rows, null sequenceName through', () => {
+    test('readOverallMutations maps the rows, null sequenceName through', () => {
         expect(
-            readMutationSpectrum([
+            readOverallMutations([
                 { mutationFrom: 'C', mutationTo: 'T', sequenceName: 'main', position: 241, count: 90, coverage: 100 },
                 { mutationFrom: 'G', mutationTo: '-', sequenceName: null, position: 510, count: 5, coverage: 10 },
             ]),
