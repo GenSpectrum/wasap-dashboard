@@ -8,6 +8,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
 };
 
@@ -31,9 +32,9 @@ describe('the Tier-1 read catalogue', () => {
         );
     });
 
-    test('samplingDatesQuery filters on the DATE32 column but groups on the grouping-date column', () => {
+    test('samplingDatesQuery filters and groups on the dictionary date column', () => {
         expect(samplingDatesQuery(schema, { samplingDateFrom: '2024-01-01' }).render()).toBe(
-            "default.filter(samplingDate >= '2024-01-01'::date).groupBy({n := count()}, {date}).orderBy({date.asc()})",
+            "default.filter(date >= '2024-01-01').groupBy({n := count()}, {date}).orderBy({date.asc()})",
         );
     });
 });

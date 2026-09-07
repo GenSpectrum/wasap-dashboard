@@ -13,6 +13,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
 };
 
@@ -33,8 +34,7 @@ describe('mutationSpectrumQuery (phase 1 row list)', () => {
                 { sequenceType: 'amino acid', sequenceNames: ['S'] },
             ).render(),
         ).toBe(
-            "default.filter(locationName = 'Basel (BS)' && samplingDate >= '2026-06-01'::date && " +
-                "samplingDate <= '2026-06-30'::date)" +
+            "default.filter(locationName = 'Basel (BS)' && date >= '2026-06-01' && date <= '2026-06-30')" +
                 `.aminoAcidMutations(minProportion := 0.001, sequenceNames := {S}, fields := ${fields})`,
         );
     });

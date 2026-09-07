@@ -12,18 +12,27 @@ export type SiloSchema = {
     /** Dictionary / indexed-string column holding the human-readable sampling location. */
     locationName: string;
     /**
-     * The `DATE32` sampling-date column, present on every instance. Date
-     * *filters* compare against this one with a `'yyyy-mm-dd'::date` cast.
+     * The `DATE32` sampling-date column, present on every instance. Kept for
+     * reference; date *filters* and *grouping* both go through `groupingDate`.
      */
     samplingDate: string;
     /**
-     * The column to *group* sampling dates by. covid carries a
+     * The column to *group* and *filter* sampling dates by. covid carries a
      * dictionary-encoded copy of the sampling date (`date`); grouping a mapped
-     * `at()` column by it is fine, by the `DATE32` column it times out (doc 10),
-     * so rsv-a / rsv-b — which only have `samplingDate` — cannot do the
-     * over-time pileup until they gain a dictionary date column.
+     * `at()` column by it is fine, by the `DATE32` column it times out, and even
+     * a plain range *filter* on `DATE32` costs ~5 s on covid's ~600 M reads
+     * (doc 10). rsv-a / rsv-b have only `samplingDate`, so `groupingDate` is
+     * that same `DATE32` column there — the over-time pileup is blocked until
+     * they gain a dictionary date column.
      */
     groupingDate: string;
+    /**
+     * Whether `groupingDate` is dictionary-encoded (holds an ISO string).
+     * `true` on covid (`date`): filters use a plain string comparison, and SILO
+     * *rejects* a `::date` cast against it. `false` on rsv-a / rsv-b
+     * (`samplingDate` is `DATE32`): filters need the `'yyyy-mm-dd'::date` cast.
+     */
+    groupingDateIsDictionary: boolean;
     /** The single nucleotide-sequence column (`main` on every current instance). */
     nucleotideSequence: string;
 };

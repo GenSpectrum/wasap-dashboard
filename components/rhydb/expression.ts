@@ -133,8 +133,9 @@ export function str(value: string): Expr {
  * A `DATE32` literal: `'2026-06-01'::date`.
  *
  * SILO rejects a bare string in a comparison against a `DATE32` column; the
- * `::date` cast is how a date reaches such a comparison. Only used against the
- * `samplingDate` column (see `components/queries/filter.ts`).
+ * `::date` cast is how a date reaches such a comparison. Used for a date bound
+ * against a `DATE32` grouping column (see `components/queries/filter.ts`); a
+ * dictionary date column takes a plain string instead.
  */
 export function dateLiteral(value: string): Expr {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {

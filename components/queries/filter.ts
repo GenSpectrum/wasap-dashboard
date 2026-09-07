@@ -14,6 +14,21 @@ import { and, dateLiteral, field, str, type Expr } from '../rhydb/expression';
 import { table, type Relation } from '../rhydb/relation';
 import type { SiloSchema } from './schema';
 
+/**
+ * An ISO date as the right-hand side of a comparison against `groupingDate`.
+ *
+ * The dictionary date column holds an ISO string, so a plain string comparison
+ * is both correct (ISO dates sort lexically) and fast — and SILO rejects a
+ * `::date` cast against it. The `DATE32` column needs the cast. Either way the
+ * value is validated here, not at the instance.
+ */
+function dateComparand(schema: SiloSchema, value: string): Expr {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        throw new Error(`Not an ISO date (yyyy-mm-dd): ${JSON.stringify(value)}`);
+    }
+    return schema.groupingDateIsDictionary ? str(value) : dateLiteral(value);
+}
+
 export const siloReadFilterSchema = z.object({
     /** Exact match on the location-name column. */
     locationName: z.string().optional(),
@@ -51,17 +66,19 @@ export function normalizeFilter(filter: SiloReadFilter): SiloReadFilter {
  * nothing.
  *
  * Order is fixed — location, then the date bounds — so the same scope always
- * renders the same text.
+ * renders the same text. Date bounds compare against `groupingDate`: the
+ * dictionary date column where the instance has one (a plain, cheap string
+ * comparison), otherwise the `DATE32` column with a `::date` cast.
  */
 export function filterExpression(schema: SiloSchema, filter: SiloReadFilter): Expr | undefined {
     return and(
         filter.locationName === undefined ? undefined : field(schema.locationName).eq(str(filter.locationName)),
         filter.samplingDateFrom === undefined
             ? undefined
-            : field(schema.samplingDate).gte(dateLiteral(filter.samplingDateFrom)),
+            : field(schema.groupingDate).gte(dateComparand(schema, filter.samplingDateFrom)),
         filter.samplingDateTo === undefined
             ? undefined
-            : field(schema.samplingDate).lte(dateLiteral(filter.samplingDateTo)),
+            : field(schema.groupingDate).lte(dateComparand(schema, filter.samplingDateTo)),
     );
 }
 

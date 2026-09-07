@@ -13,6 +13,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
 };
 
