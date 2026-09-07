@@ -46,12 +46,41 @@ export type WasapPageConfigBase = {
     samplingDateField: string;
     locationNameField: string;
 
+    /**
+     * Native SILO (RhyDB) coordinates for this organism's wastewater data — the
+     * read path step 3 moves onto (standalone-wasap/04-step-3-native-silo-queries.md).
+     * The SILO service is the same backend that sits behind `lapisBaseUrl`;
+     * `components/rhydb` talks to it directly over SaneQL at `silo.url`.
+     * Nothing reads this yet — it is wired in as the components move off LAPIS.
+     */
+    silo: SiloInstanceConfig;
+
     defaultLocationName: string;
 
     browseDataUrl: string;
     browseDataDescription: string;
 
     defaultAnalysisMode?: WasapAnalysisMode;
+};
+
+export type SiloInstanceConfig = {
+    /** Base URL of the SILO instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
+    url: string;
+    /** Root table name. `default` for every current instance. */
+    table: string;
+    /**
+     * Column to group and range on for date-bucketed reads. covid's instance
+     * carries a dictionary-encoded `date` column (cheap to group); rsv-a / rsv-b
+     * have only `samplingDate` (DATE32), which SILO groups pathologically slowly —
+     * so date-bucketed RSV views stay blocked until those instances gain a dict
+     * date column (doc 04, "Date axis"). `samplingDateColumn` is the DATE32 column
+     * everywhere, for the min/max date-extent read.
+     */
+    dateColumn: string;
+    dateColumnIsDictionaryEncoded: boolean;
+    samplingDateColumn: string;
+    /** Dictionary/indexed string column backing the location dropdown. */
+    locationNameColumn: string;
 };
 
 /**

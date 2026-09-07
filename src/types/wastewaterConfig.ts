@@ -71,6 +71,14 @@ function buildWastewaterOrganismConfigs(env: DbIdSpace): Record<WastewaterOrgani
             lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/covid',
             samplingDateField: 'samplingDate',
             locationNameField: 'locationName',
+            silo: {
+                url: 'https://silo.wasap.genspectrum.org/covid',
+                table: 'default',
+                dateColumn: 'date',
+                dateColumnIsDictionaryEncoded: true,
+                samplingDateColumn: 'samplingDate',
+                locationNameColumn: 'locationName',
+            },
             predefinedVariantsSource: {
                 collectionsUserId: byEnv(env, { prod: 3, staging: 1, local: 1 }),
                 collectionsTag: 'pango-lineage',
@@ -143,6 +151,14 @@ function buildWastewaterOrganismConfigs(env: DbIdSpace): Record<WastewaterOrgani
             lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/rsva',
             samplingDateField: 'samplingDate',
             locationNameField: 'locationName',
+            silo: {
+                url: 'https://silo.wasap.genspectrum.org/rsva',
+                table: 'default',
+                dateColumn: 'samplingDate',
+                dateColumnIsDictionaryEncoded: false,
+                samplingDateColumn: 'samplingDate',
+                locationNameColumn: 'locationName',
+            },
             predefinedVariantsSource: {
                 collectionsUserId: byEnv(env, { prod: 3, staging: 1, local: 1 }),
                 collectionsTag: 'nextclade-lineage',
@@ -219,6 +235,14 @@ function buildWastewaterOrganismConfigs(env: DbIdSpace): Record<WastewaterOrgani
             lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/rsvb',
             samplingDateField: 'samplingDate',
             locationNameField: 'locationName',
+            silo: {
+                url: 'https://silo.wasap.genspectrum.org/rsvb',
+                table: 'default',
+                dateColumn: 'samplingDate',
+                dateColumnIsDictionaryEncoded: false,
+                samplingDateColumn: 'samplingDate',
+                locationNameColumn: 'locationName',
+            },
             predefinedVariantsSource: {
                 collectionsUserId: byEnv(env, { prod: 3, staging: 1, local: 1 }),
                 collectionsTag: 'nextclade-lineage',

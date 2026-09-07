@@ -22,6 +22,14 @@ const config: WasapPageConfig = {
         aminoAcidMutation:
             'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}',
     },
+    silo: {
+        url: '',
+        table: 'default',
+        dateColumn: 'date',
+        dateColumnIsDictionaryEncoded: true,
+        samplingDateColumn: 'samplingDate',
+        locationNameColumn: 'locationName',
+    },
     manualAnalysisModeEnabled: true,
     variantAnalysisModeEnabled: true,
     resistanceAnalysisModeEnabled: true,
