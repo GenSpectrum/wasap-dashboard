@@ -3,7 +3,12 @@ import { describe, expect, test } from 'vitest';
 import { filterExpression, normalizeFilter, scoped, type SiloReadFilter } from './filter';
 import type { SiloSchema } from './schema';
 
-const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
+const schema: SiloSchema = {
+    table: 'default',
+    locationName: 'locationName',
+    samplingDate: 'samplingDate',
+    groupingDate: 'date',
+};
 
 const render = (filter: SiloReadFilter) => filterExpression(schema, filter)?.render();
 

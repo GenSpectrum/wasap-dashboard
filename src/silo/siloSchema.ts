@@ -12,5 +12,8 @@ export function siloSchema(silo: SiloInstanceConfig): SiloSchema {
         table: silo.table,
         locationName: silo.locationNameColumn,
         samplingDate: silo.samplingDateColumn,
+        // `dateColumn` is the dictionary-encoded date where the instance has one
+        // (covid), otherwise the same DATE32 column as `samplingDate` (rsv-a/b).
+        groupingDate: silo.dateColumn,
     };
 }

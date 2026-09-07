@@ -5,7 +5,12 @@ import { describe, expect, it } from 'vitest';
 import { ConnectionProvider, useConnection, useSiloSchema } from './connection';
 import type { SiloSchema } from '../queries/schema';
 
-const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
+const schema: SiloSchema = {
+    table: 'default',
+    locationName: 'locationName',
+    samplingDate: 'samplingDate',
+    groupingDate: 'date',
+};
 
 const wrapper: FC<PropsWithChildren> = ({ children }) => (
     <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>

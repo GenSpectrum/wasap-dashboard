@@ -3,7 +3,12 @@ import { describe, expect, test } from 'vitest';
 import { samplingDatesQuery, stringFieldValuesQuery, totalReadCountQuery } from './catalogue';
 import type { SiloSchema } from './schema';
 
-const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
+const schema: SiloSchema = {
+    table: 'default',
+    locationName: 'locationName',
+    samplingDate: 'samplingDate',
+    groupingDate: 'date',
+};
 
 describe('the Tier-1 read catalogue', () => {
     test('totalReadCountQuery is a bare count, or a filtered one', () => {
@@ -19,15 +24,15 @@ describe('the Tier-1 read catalogue', () => {
         );
     });
 
-    test('samplingDatesQuery groups by the date column, oldest first', () => {
+    test('samplingDatesQuery groups by the grouping-date column, oldest first', () => {
         expect(samplingDatesQuery(schema).render()).toBe(
-            'default.groupBy({n := count()}, {samplingDate}).orderBy({samplingDate.asc()})',
+            'default.groupBy({n := count()}, {date}).orderBy({date.asc()})',
         );
     });
 
-    test('samplingDatesQuery carries the filter through', () => {
+    test('samplingDatesQuery filters on the DATE32 column but groups on the grouping-date column', () => {
         expect(samplingDatesQuery(schema, { samplingDateFrom: '2024-01-01' }).render()).toBe(
-            "default.filter(samplingDate >= '2024-01-01'::date).groupBy({n := count()}, {samplingDate}).orderBy({samplingDate.asc()})",
+            "default.filter(samplingDate >= '2024-01-01'::date).groupBy({n := count()}, {date}).orderBy({date.asc()})",
         );
     });
 });

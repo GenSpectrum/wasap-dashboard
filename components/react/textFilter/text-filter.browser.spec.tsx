@@ -8,7 +8,12 @@ import { ConnectionProvider } from '../../data/connection';
 import { gsEventNames } from '../../utils/gsEventNames';
 import type { SiloSchema } from '../../queries/schema';
 
-const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
+const schema: SiloSchema = {
+    table: 'default',
+    locationName: 'locationName',
+    samplingDate: 'samplingDate',
+    groupingDate: 'date',
+};
 
 function ndjson(rows: unknown[]): Response {
     return new Response(rows.map((row) => JSON.stringify(row)).join('\n'), {

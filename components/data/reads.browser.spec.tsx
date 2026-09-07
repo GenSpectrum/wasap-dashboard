@@ -7,7 +7,12 @@ import { ConnectionProvider } from './connection';
 import { useDataVersion, useDateExtent, useStringFieldOptions, useTotalReadCount } from './reads';
 import type { SiloSchema } from '../queries/schema';
 
-const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
+const schema: SiloSchema = {
+    table: 'default',
+    locationName: 'locationName',
+    samplingDate: 'samplingDate',
+    groupingDate: 'date',
+};
 
 /** An NDJSON `Response`, as SILO's `/query` returns. */
 function ndjson(rows: unknown[]): Response {
@@ -86,11 +91,11 @@ describe('useDataVersion', () => {
 });
 
 describe('useDateExtent', () => {
-    it('is the first and last row of the sorted result', async () => {
+    it('is the first and last row of the result, grouped on the grouping-date column', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { samplingDate: '2023-05-01', n: 1 },
-                { samplingDate: '2025-12-27', n: 3 },
+                { date: '2023-05-01', n: 1 },
+                { date: '2025-12-27', n: 3 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
@@ -99,5 +104,8 @@ describe('useDateExtent', () => {
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toEqual({ min: '2023-05-01', max: '2025-12-27' });
+
+        const [, init] = fetchMock.mock.calls[0]!;
+        expect(init.body).toBe('default.groupBy({n := count()}, {date}).orderBy({date.asc()})');
     });
 });

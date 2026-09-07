@@ -40,11 +40,12 @@ export function stringFieldValuesQuery(schema: SiloSchema, field: string): Relat
 
 /**
  * Every distinct sampling date in the dataset (oldest first), with its read
- * count. The date extent is the first and last row; the caller reads min/max
- * off the sorted result rather than paying for two queries.
+ * count, grouped on the dictionary-encoded date column where the instance has
+ * one. The date extent is the first and last row; the caller reads min/max off
+ * the sorted result rather than paying for two queries.
  */
 export function samplingDatesQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
     return scoped(schema, filter)
-        .groupBy(readCounts(), [schema.samplingDate])
-        .orderBy(field(schema.samplingDate).asc());
+        .groupBy(readCounts(), [schema.groupingDate])
+        .orderBy(field(schema.groupingDate).asc());
 }

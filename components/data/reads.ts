@@ -56,7 +56,7 @@ export function useDateExtent(filter: SiloReadFilter = {}): UseQueryResult<{ min
             const { rows } = await connection.query(samplingDatesQuery(schema, normalized), 'Sampling dates', {
                 signal,
             });
-            return readValueExtent(rows, schema.samplingDate);
+            return readValueExtent(rows, schema.groupingDate);
         },
     });
 }

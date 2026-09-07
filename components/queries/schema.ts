@@ -12,10 +12,16 @@ export type SiloSchema = {
     /** Dictionary / indexed-string column holding the human-readable sampling location. */
     locationName: string;
     /**
-     * `DATE32` sampling-date column — present on every instance, and what date
-     * filters compare against (`'yyyy-mm-dd'::date`). Date *grouping* over this
-     * column is slow at scale; that is a separate concern handled in the
-     * over-time phase (doc 04).
+     * The `DATE32` sampling-date column, present on every instance. Date
+     * *filters* compare against this one with a `'yyyy-mm-dd'::date` cast.
      */
     samplingDate: string;
+    /**
+     * The column to *group* sampling dates by (date extent, the over-time date
+     * axis). covid's instance carries a dictionary-encoded copy of the sampling
+     * date (`date`) that groups in ~0.2 s vs. ~15 s for the `DATE32` column;
+     * rsv-a / rsv-b have no such column, so this is just `samplingDate` there
+     * (their datasets are small enough that the `DATE32` grouping is tolerable).
+     */
+    groupingDate: string;
 };
