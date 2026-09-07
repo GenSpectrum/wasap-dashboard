@@ -6,7 +6,6 @@ export const gsEventNames = {
     mutationFilterChanged: 'gs-mutation-filter-changed',
     lineageFilterChanged: 'gs-lineage-filter-changed',
     lineageFilterMultiChanged: 'gs-lineage-filter-multi-changed',
-    locationChanged: 'gs-location-changed',
     textFilterChanged: 'gs-text-filter-changed',
     numberRangeFilterChanged: 'gs-number-range-filter-changed',
     numberRangeValueChanged: 'gs-number-range-value-changed',
