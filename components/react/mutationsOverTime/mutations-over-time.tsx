@@ -206,11 +206,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         [filteredMutationCodes, pageIndex, pageSize],
     );
 
-    const {
-        data: pageData,
-        isLoading: isPageLoading,
-        progress,
-    } = useMutationsOverTimePage(
+    const { data: pageData, isLoading: isPageLoading } = useMutationsOverTimePage(
         filter,
         granularity,
         sequenceType,
@@ -243,28 +239,21 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                 return {
                     title: 'Grid',
                     content: (
-                        <>
-                            {!isPageLoading && progress.counted < progress.total && (
-                                <div className='px-2 py-1 text-xs text-gray-500'>
-                                    Loading positions… {progress.counted}/{progress.total}
-                                </div>
-                            )}
-                            <FeaturesOverTimeGridServerPaginated
-                                rowLabelHeader='Mutation'
-                                data={pageData}
-                                isLoading={isPageLoading}
-                                loadingRowLabels={pageMutationCodes}
-                                requestedDateRanges={requestedDateRanges}
-                                colorScale={colorScale}
-                                pageSizes={originalComponentProps.pageSizes}
-                                pageIndex={pageIndex}
-                                totalRows={totalFilteredRows}
-                                onPageChange={setPageIndex}
-                                customColumns={originalComponentProps.customColumns}
-                                featureRenderer={mutationRenderer}
-                                tooltipPortalTarget={tooltipPortalTarget}
-                            />
-                        </>
+                        <FeaturesOverTimeGridServerPaginated
+                            rowLabelHeader='Mutation'
+                            data={pageData}
+                            isLoading={isPageLoading}
+                            loadingRowLabels={pageMutationCodes}
+                            requestedDateRanges={requestedDateRanges}
+                            colorScale={colorScale}
+                            pageSizes={originalComponentProps.pageSizes}
+                            pageIndex={pageIndex}
+                            totalRows={totalFilteredRows}
+                            onPageChange={setPageIndex}
+                            customColumns={originalComponentProps.customColumns}
+                            featureRenderer={mutationRenderer}
+                            tooltipPortalTarget={tooltipPortalTarget}
+                        />
                     ),
                 };
         }

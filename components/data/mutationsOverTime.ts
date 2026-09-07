@@ -131,12 +131,22 @@ export function useOverTimeMetadata(
 // --- page: the visible page's cells -----------------------------------------
 
 export type MutationsOverTimePage = {
-    /** The count/coverage/proportion matrix for the visible mutations, or `null` while the first pileup lands. */
+    /** The full count/coverage/proportion matrix for the visible mutations, or `null` while any pileup is still in flight. */
     data: MutationOverTimeDataMap | null;
-    /** True until at least one position's pileup has arrived. */
+    /** True until every position on the page has its pileup. */
     isLoading: boolean;
     error: unknown;
-    /** Positions answered so far / total, for a progress hint. */
+    /**
+     * Positions answered so far / total.
+     *
+     * Currently only informational — the grid waits for the whole page
+     * (`isLoading`) rather than filling in row by row, because at page size 20
+     * and a concurrency cap of 24 the pileups all land within one round-trip,
+     * and a half-built matrix renders not-yet-loaded rows as "no coverage",
+     * which reads as real data. If a large page (e.g. 250) ever makes the wait
+     * noticeable, switch to progressive rendering: build the matrix from
+     * `pileupByTarget` as it grows and let the grid show these counts.
+     */
     progress: { counted: number; total: number };
 };
 
@@ -200,8 +210,11 @@ export function useMutationsOverTimePage(
         if (error) {
             throw error instanceof Error ? error : new Error(String(error));
         }
-        const anyAnswered = pileupByTarget.size > 0;
-        const matrix = anyAnswered
+        // Wait for the whole page: a matrix built from a partial `pileupByTarget`
+        // shows the missing rows as "no coverage" (see `progress` above). One
+        // day we could render progressively from `pileupByTarget` instead.
+        const allAnswered = counted === targets.length;
+        const matrix = allAnswered
             ? buildMatrix(
                   visibleMutationCodes,
                   granularity,
@@ -214,7 +227,7 @@ export function useMutationsOverTimePage(
             : null;
         return {
             data: matrix === null ? null : applyHideGaps(matrix, hideGaps),
-            isLoading: !anyAnswered,
+            isLoading: !allAnswered,
             error: undefined,
             progress: { counted, total: targets.length },
         };
