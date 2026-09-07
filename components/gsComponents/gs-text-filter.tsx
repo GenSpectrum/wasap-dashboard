@@ -4,15 +4,14 @@ import { TextFilter, type TextFilterProps } from '../react/textFilter/text-filte
 import { type TextFilterChangedEvent } from '../react/textFilter/TextFilterChangedEvent';
 import { gsEventNames } from '../utils/gsEventNames';
 
-export type GsTextFilterProps = Omit<TextFilterProps, 'lapisField' | 'lapisFilter' | 'width'> & {
-    lapisField?: TextFilterProps['lapisField'];
-    lapisFilter?: TextFilterProps['lapisFilter'];
+export type GsTextFilterProps = Omit<TextFilterProps, 'field' | 'width'> & {
+    field?: TextFilterProps['field'];
     width?: TextFilterProps['width'];
 };
 
 // Defaults reproduce the old gs-text-filter Lit component's @property field initializers.
-export const GsTextFilter: FC<GsTextFilterProps> = ({ lapisField = '', lapisFilter = {}, width = '100%', ...rest }) => (
-    <TextFilter lapisField={lapisField} lapisFilter={lapisFilter} width={width} {...rest} />
+export const GsTextFilter: FC<GsTextFilterProps> = ({ field = '', width = '100%', ...rest }) => (
+    <TextFilter field={field} width={width} {...rest} />
 );
 
 declare global {

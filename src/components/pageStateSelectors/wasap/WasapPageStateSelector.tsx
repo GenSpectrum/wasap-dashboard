@@ -132,8 +132,7 @@ export function WasapPageStateSelector({
                 <LabeledField label='Sampling location'>
                     <GsTextFilter
                         placeholderText='Sampling location'
-                        lapisField={config.locationNameField}
-                        lapisFilter={{}}
+                        field={config.locationNameField}
                         onInputChange={({ locationName }) => {
                             setBaseFilterState({ ...baseFilterState, locationName });
                         }}

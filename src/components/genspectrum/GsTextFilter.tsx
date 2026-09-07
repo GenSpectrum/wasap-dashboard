@@ -1,21 +1,19 @@
-import { gsEventNames, type LapisFilter } from 'wasap-components/util';
+import { gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
 import { GsTextFilter as TextFilter } from 'wasap-components/gsComponents/gs-text-filter';
 
-export function GsTextFilter<LapisField extends string>({
-    lapisField,
+export function GsTextFilter<Field extends string>({
+    field,
     placeholderText,
-    lapisFilter,
     width,
     onInputChange = () => {},
     value,
     hideCounts,
 }: {
-    lapisField: LapisField;
+    field: Field;
     placeholderText?: string;
-    lapisFilter: LapisFilter;
     width?: string;
-    onInputChange?: (input: { [key in LapisField]: string | undefined }) => void;
+    onInputChange?: (input: { [key in Field]: string | undefined }) => void;
     value?: string | undefined;
     hideCounts?: true;
 }) {
@@ -43,9 +41,8 @@ export function GsTextFilter<LapisField extends string>({
     return (
         <div ref={textInputRef}>
             <TextFilter
-                lapisField={lapisField}
+                field={field}
                 placeholderText={placeholderText}
-                lapisFilter={lapisFilter}
                 width={width}
                 value={value ?? ''}
                 hideCounts={hideCounts}

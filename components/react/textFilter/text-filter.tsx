@@ -1,23 +1,20 @@
 import { type FC } from 'react';
 import z from 'zod';
 
-import { useLapisUrl } from '../LapisUrlContext';
 import { TextFilterChangedEvent } from './TextFilterChangedEvent';
-import { fetchStringAutocompleteList } from './fetchStringAutocompleteList';
-import { lapisFilterSchema } from '../../types';
 import { DownshiftCombobox } from '../components/downshift-combobox';
 import { ErrorBoundary } from '../components/error-boundary';
 import { LoadingDisplay } from '../components/loading-display';
 import { ResizeContainer } from '../components/resize-container';
-import { useQuery } from '../useQuery';
+import { useStringFieldOptions } from '../../data/reads';
 
 const textSelectorPropsSchema = z.object({
-    lapisField: z.string().min(1),
+    field: z.string().min(1),
     placeholderText: z.string().optional(),
     value: z.string().optional(),
     hideCounts: z.boolean().optional(),
 });
-const textFilterInnerPropsSchema = textSelectorPropsSchema.extend({ lapisFilter: lapisFilterSchema });
+const textFilterInnerPropsSchema = textSelectorPropsSchema;
 const textFilterPropsSchema = textFilterInnerPropsSchema.extend({
     width: z.string(),
 });
@@ -39,13 +36,8 @@ export const TextFilter: FC<TextFilterProps> = (props) => {
     );
 };
 
-const TextFilterInner: FC<TextFilterInnerProps> = ({ value, lapisField, placeholderText, hideCounts, lapisFilter }) => {
-    const lapis = useLapisUrl();
-
-    const { data, error, isLoading } = useQuery(
-        () => fetchStringAutocompleteList({ lapis, field: lapisField, lapisFilter }),
-        [lapisField, lapis, lapisFilter],
-    );
+const TextFilterInner: FC<TextFilterInnerProps> = ({ value, field, placeholderText, hideCounts }) => {
+    const { data, error, isLoading } = useStringFieldOptions(field);
 
     if (isLoading) {
         return <LoadingDisplay />;
@@ -57,11 +49,11 @@ const TextFilterInner: FC<TextFilterInnerProps> = ({ value, lapisField, placehol
 
     return (
         <TextSelector
-            lapisField={lapisField}
+            field={field}
             value={value}
             placeholderText={placeholderText}
             hideCounts={hideCounts}
-            data={data}
+            data={(data ?? []).map((option) => ({ value: option.name, count: option.count }))}
         />
     );
 };
@@ -72,7 +64,7 @@ type SelectItem = {
 };
 
 const TextSelector = ({
-    lapisField,
+    field,
     value,
     placeholderText,
     data,
@@ -87,7 +79,7 @@ const TextSelector = ({
             allItems={data}
             value={initialSelectedItem ?? null}
             filterItemsByInputValue={filterByInputValue}
-            createEvent={(item) => new TextFilterChangedEvent({ [lapisField]: item?.value ?? undefined })}
+            createEvent={(item) => new TextFilterChangedEvent({ [field]: item?.value ?? undefined })}
             itemToString={(item) => item?.value ?? ''}
             placeholderText={placeholderText}
             formatItemInList={(item: SelectItem) => {
