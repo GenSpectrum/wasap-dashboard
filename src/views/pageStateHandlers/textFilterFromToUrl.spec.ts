@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { parseTextFiltersFromUrl, setSearchFromTextFilters } from './textFilterFromToUrl';
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { BaselineFilterConfig } from './baselineFilterConfig';
 import type { Dataset } from '../View';
 
 const configs = [

@@ -1,4 +1,4 @@
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { BaselineFilterConfig } from './baselineFilterConfig';
 import type { Dataset } from '../View';
 import { getStringFromSearch, setSearchFromString } from '../helpers';
 

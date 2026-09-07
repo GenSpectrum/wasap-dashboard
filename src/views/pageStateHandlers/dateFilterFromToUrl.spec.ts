@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { parseDateRangesFromUrl, setSearchFromDateFilters } from './dateFilterFromToUrl';
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { BaselineFilterConfig } from './baselineFilterConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import type { Dataset } from '../View';
 

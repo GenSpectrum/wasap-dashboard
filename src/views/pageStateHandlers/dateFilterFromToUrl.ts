@@ -1,6 +1,6 @@
 import type { DateRangeOption } from 'wasap-components/util';
 
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { BaselineFilterConfig } from './baselineFilterConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import type { Dataset } from '../View';
 

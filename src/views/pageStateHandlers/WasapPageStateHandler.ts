@@ -3,7 +3,7 @@ import { type SequenceType, type TemporalGranularity } from 'wasap-components/ut
 import { type PageStateHandler } from './PageStateHandler';
 import { parseDateRangesFromUrl, setSearchFromDateRange } from './dateFilterFromToUrl';
 import { parseTextFiltersFromUrl } from './textFilterFromToUrl';
-import type { BaselineFilterConfig } from '../../components/pageStateSelectors/BaselineSelector';
+import type { BaselineFilterConfig } from './baselineFilterConfig';
 import {
     enabledAnalysisModes,
     type ExcludeSetName,
