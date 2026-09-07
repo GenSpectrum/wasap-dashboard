@@ -7,7 +7,7 @@ import { OrganismSelect } from './components/OrganismSelect';
 /**
  * The frame every route sits in: a minimal header with the organism selector,
  * and the routed content. Replaces the dashboards site chrome (`BaseLayout` /
- * `DataPageLayout` / `Breadcrumbs`).
+ * `Breadcrumbs`).
  */
 export function AppShell() {
     return (
