@@ -17,11 +17,13 @@ export type SiloSchema = {
      */
     samplingDate: string;
     /**
-     * The column to *group* sampling dates by (date extent, the over-time date
-     * axis). covid's instance carries a dictionary-encoded copy of the sampling
-     * date (`date`) that groups in ~0.2 s vs. ~15 s for the `DATE32` column;
-     * rsv-a / rsv-b have no such column, so this is just `samplingDate` there
-     * (their datasets are small enough that the `DATE32` grouping is tolerable).
+     * The column to *group* sampling dates by. covid carries a
+     * dictionary-encoded copy of the sampling date (`date`); grouping a mapped
+     * `at()` column by it is fine, by the `DATE32` column it times out (doc 10),
+     * so rsv-a / rsv-b — which only have `samplingDate` — cannot do the
+     * over-time pileup until they gain a dictionary date column.
      */
     groupingDate: string;
+    /** The single nucleotide-sequence column (`main` on every current instance). */
+    nucleotideSequence: string;
 };

@@ -8,6 +8,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    nucleotideSequence: 'main',
 };
 
 const render = (filter: SiloReadFilter) => filterExpression(schema, filter)?.render();

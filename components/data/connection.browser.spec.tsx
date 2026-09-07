@@ -10,6 +10,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    nucleotideSequence: 'main',
 };
 
 const wrapper: FC<PropsWithChildren> = ({ children }) => (

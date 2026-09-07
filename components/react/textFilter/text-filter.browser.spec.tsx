@@ -13,6 +13,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    nucleotideSequence: 'main',
 };
 
 function ndjson(rows: unknown[]): Response {

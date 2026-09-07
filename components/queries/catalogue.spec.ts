@@ -8,6 +8,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    nucleotideSequence: 'main',
 };
 
 describe('the Tier-1 read catalogue', () => {

@@ -13,6 +13,7 @@ const schema: SiloSchema = {
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
+    nucleotideSequence: 'main',
 };
 
 const fields = '{mutationFrom, mutationTo, sequenceName, position, count, coverage}';
