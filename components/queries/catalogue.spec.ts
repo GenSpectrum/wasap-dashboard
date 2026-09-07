@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { locationNamesQuery, samplingDatesQuery, totalReadCountQuery } from './catalogue';
+import { samplingDatesQuery, stringFieldValuesQuery, totalReadCountQuery } from './catalogue';
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
@@ -13,8 +13,10 @@ describe('the Tier-1 read catalogue', () => {
         );
     });
 
-    test('locationNamesQuery groups the whole table by the location column', () => {
-        expect(locationNamesQuery(schema).render()).toBe('default.groupBy({n := count()}, {locationName})');
+    test('stringFieldValuesQuery groups the whole table by the given column', () => {
+        expect(stringFieldValuesQuery(schema, 'locationName').render()).toBe(
+            'default.groupBy({n := count()}, {locationName})',
+        );
     });
 
     test('samplingDatesQuery groups by the date column, oldest first', () => {

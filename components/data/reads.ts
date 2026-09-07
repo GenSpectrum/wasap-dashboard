@@ -11,12 +11,12 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
 import {
-    locationNamesQuery,
     normalizeFilter,
     readNamedCounts,
     readTotalCount,
     readValueExtent,
     samplingDatesQuery,
+    stringFieldValuesQuery,
     totalReadCountQuery,
     type NamedCount,
     type SiloReadFilter,
@@ -24,19 +24,20 @@ import {
 import type { RhydbRow } from '../rhydb/row';
 
 /**
- * Every sampling location in the dataset, most reads first.
- *
- * Unfiltered and cheap (grouping a dictionary/indexed column) — the location
- * dropdown offers every location the instance holds.
+ * Every distinct value of a string column, with its read count, ordered by
+ * name. Unfiltered and cheap (grouping a dictionary/indexed column) — a filter
+ * dropdown offers every value the instance holds.
  */
-export function useLocationOptions(): UseQueryResult<NamedCount[]> {
+export function useStringFieldOptions(field: string): UseQueryResult<NamedCount[]> {
     const connection = useConnection();
     const schema = useSiloSchema();
     return useQuery({
-        queryKey: ['silo', 'location-options', ...connection.key],
+        queryKey: ['silo', 'string-field-options', ...connection.key, field],
         queryFn: async ({ signal }): Promise<NamedCount[]> => {
-            const { rows } = await connection.query(locationNamesQuery(schema), 'Sampling locations', { signal });
-            return readNamedCounts(rows, schema.locationName).sort((a, b) => b.count - a.count);
+            const { rows } = await connection.query(stringFieldValuesQuery(schema, field), `Options for ${field}`, {
+                signal,
+            });
+            return readNamedCounts(rows, field).sort((a, b) => a.name.localeCompare(b.name));
         },
     });
 }

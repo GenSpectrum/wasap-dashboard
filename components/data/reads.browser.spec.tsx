@@ -4,7 +4,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
-import { useDateExtent, useLocationOptions, useTotalReadCount } from './reads';
+import { useDateExtent, useStringFieldOptions, useTotalReadCount } from './reads';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
@@ -30,24 +30,24 @@ function wrapper(): FC<PropsWithChildren> {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('useLocationOptions', () => {
-    it('parses the grouped rows and sorts them by descending read count', async () => {
+describe('useStringFieldOptions', () => {
+    it('parses the grouped rows and sorts them by name', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { locationName: 'Basel (BS)', n: 10 },
                 { locationName: 'Zürich (ZH)', n: 30 },
+                { locationName: 'Basel (BS)', n: 10 },
                 { locationName: 'Genève (GE)', n: 20 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
 
-        const { result } = renderHook(() => useLocationOptions(), { wrapper: wrapper() });
+        const { result } = renderHook(() => useStringFieldOptions('locationName'), { wrapper: wrapper() });
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toEqual([
-            { name: 'Zürich (ZH)', count: 30 },
-            { name: 'Genève (GE)', count: 20 },
             { name: 'Basel (BS)', count: 10 },
+            { name: 'Genève (GE)', count: 20 },
+            { name: 'Zürich (ZH)', count: 30 },
         ]);
 
         const [, init] = fetchMock.mock.calls[0]!;

@@ -28,13 +28,14 @@ export function totalReadCountQuery(schema: SiloSchema, filter: SiloReadFilter =
 }
 
 /**
- * Every distinct location name in the dataset, with its read count.
+ * Every distinct value of a string column, with its read count.
  *
- * Unfiltered — the location dropdown offers every location the instance holds.
- * Grouping a dictionary/indexed column is close to free.
+ * Unfiltered — a filter dropdown offers every value the instance holds.
+ * Grouping a dictionary/indexed column is close to free. Used for the sampling
+ * location list; `field` must name a dictionary or indexed string column.
  */
-export function locationNamesQuery(schema: SiloSchema): Relation {
-    return table(schema.table).groupBy(readCounts(), [schema.locationName]);
+export function stringFieldValuesQuery(schema: SiloSchema, field: string): Relation {
+    return table(schema.table).groupBy(readCounts(), [field]);
 }
 
 /**
