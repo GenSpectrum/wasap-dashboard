@@ -20,7 +20,6 @@ export const GsDateRangeFilter: FC<GsDateRangeFilterProps> = ({
 
 declare global {
     interface HTMLElementEventMap {
-        [gsEventNames.dateRangeFilterChanged]: CustomEvent<Record<string, string>>;
         [gsEventNames.dateRangeOptionChanged]: DateRangeOptionChangedEvent;
     }
 }

@@ -142,8 +142,6 @@ export function WasapPageStateSelector({
 
                 <DynamicDateFilter
                     label='Sampling date'
-                    lapis={config.lapisBaseUrl}
-                    dateFieldName={config.samplingDateField}
                     generateOptions={recentDaysDateRangeOptions}
                     value={baseFilterState.samplingDate}
                     onChange={(newDateRange?) => setBaseFilterState({ ...baseFilterState, samplingDate: newDateRange })}

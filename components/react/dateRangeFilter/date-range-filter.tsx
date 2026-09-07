@@ -10,7 +10,6 @@ import {
     dateRangeOptionSchema,
     dateRangeValueSchema,
 } from './dateRangeOption';
-import { gsEventNames } from '../../utils/gsEventNames';
 import { ClearableSelect } from '../components/clearable-select';
 import { ErrorBoundary } from '../components/error-boundary';
 
@@ -19,7 +18,6 @@ const CUSTOM_OPTION = 'Custom';
 const dateRangeFilterInnerPropsSchema = z.object({
     dateRangeOptions: z.array(dateRangeOptionSchema),
     value: dateRangeValueSchema,
-    lapisDateField: z.string().min(1),
     placeholder: z.string().optional(),
 });
 
@@ -49,12 +47,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
     );
 };
 
-export const DateRangeFilterInner = ({
-    dateRangeOptions,
-    value,
-    lapisDateField,
-    placeholder,
-}: DateRangeFilterInnerProps) => {
+export const DateRangeFilterInner = ({ dateRangeOptions, value, placeholder }: DateRangeFilterInnerProps) => {
     const initialValues = useMemo(() => computeInitialValues(value, dateRangeOptions), [value, dateRangeOptions]);
 
     const divRef = useRef<HTMLDivElement>(null);
@@ -84,7 +77,6 @@ export const DateRangeFilterInner = ({
 
     function updateState(newState: DateRangeFilterState) {
         setState(newState);
-        fireFilterChangedEvent({ dateFrom: newState?.dateFrom, dateTo: newState?.dateTo, lapisDateField });
         fireOptionChangedEvent(newState);
     }
 
@@ -131,29 +123,6 @@ export const DateRangeFilterInner = ({
             dateTo: date,
         });
         setOptions([...dateRangeOptions, customComboboxValue]);
-    };
-
-    const fireFilterChangedEvent = ({
-        dateFrom,
-        dateTo,
-        lapisDateField,
-    }: {
-        dateFrom: Date | undefined;
-        dateTo: Date | undefined;
-        lapisDateField: string;
-    }) => {
-        const detail = {
-            ...(dateFrom !== undefined && { [`${lapisDateField}From`]: toYYYYMMDD(dateFrom) }),
-            ...(dateTo !== undefined && { [`${lapisDateField}To`]: toYYYYMMDD(dateTo) }),
-        };
-
-        divRef.current?.dispatchEvent(
-            new CustomEvent(gsEventNames.dateRangeFilterChanged, {
-                detail,
-                bubbles: true,
-                composed: true,
-            }),
-        );
     };
 
     const fireOptionChangedEvent = (state: DateRangeFilterState) => {

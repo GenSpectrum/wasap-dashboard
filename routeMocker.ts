@@ -5,7 +5,6 @@ import type { SetupServer } from 'msw/node';
 import { expect } from 'vitest';
 
 import type { CollectionRaw } from './src/covspectrum/types.ts';
-import type { LapisInfo } from './src/lapis/getLastUpdatedDate.ts';
 import type { ParsedQueryResult, ParseQueryRequest } from './src/lapis/parseQuery.ts';
 import type { Collection, CollectionSummary } from './src/types/Collection.ts';
 
@@ -53,10 +52,6 @@ export class CovSpectrumRouteMocker {
  */
 export class LapisRouteMocker {
     constructor(private workerOrServer: MSWWorkerOrServer) {}
-
-    mockInfo(response: LapisInfo, statusCode = 200) {
-        this.workerOrServer.use(http.get(`${DUMMY_LAPIS_URL}/sample/info`, resolver([{ statusCode, response }])));
-    }
 
     mockPostAggregated(
         body: Record<string, unknown>,

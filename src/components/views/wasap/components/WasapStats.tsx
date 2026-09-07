@@ -1,22 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 
-import { getDateRange } from '../../../../lapis/getDateRange';
-import { getTotalCount } from '../../../../lapis/getTotalCount';
-import type { WasapPageConfig } from '../wasapPageConfig';
+import { useDateExtent, useTotalReadCount } from 'wasap-components/data/reads';
 
-export const WasapStats: FC<{ config: WasapPageConfig }> = ({ config }) => (
+export const WasapStats: FC = () => (
     <div className='flex min-w-[180px] flex-col gap-4 rounded-md border-2 border-gray-100 sm:flex-row'>
-        <TotalCount config={config} />
-        <DateRange config={config} />
+        <TotalCount />
+        <DateRange />
     </div>
 );
 
-const TotalCount: FC<{ config: WasapPageConfig }> = ({ config }) => {
-    const { data, isPending, isError, error } = useQuery({
-        queryKey: ['aggregatedCount'],
-        queryFn: () => getTotalCount(config.lapisBaseUrl, {}),
-    });
+const TotalCount: FC = () => {
+    const { data, isPending, isError, error } = useTotalReadCount();
 
     return (
         <div className='stat'>
@@ -35,17 +29,14 @@ const TotalCount: FC<{ config: WasapPageConfig }> = ({ config }) => {
     );
 };
 
-const DateRange: FC<{ config: WasapPageConfig }> = ({ config }) => {
-    const { data, isPending, isError, error } = useQuery({
-        queryKey: ['dateRange'],
-        queryFn: () => getDateRange(config.lapisBaseUrl, config.samplingDateField),
-    });
+const DateRange: FC = () => {
+    const { data, isPending, isError, error } = useDateExtent();
 
     return (
         <div className='stat'>
             <div className='stat-title'>Sampling Dates</div>
             <div className='stat-value text-base'>
-                {isPending ? '…' : isError ? 'Error' : `${data.start} to ${data.end}`}
+                {isPending ? '…' : isError ? 'Error' : data === undefined ? 'No data' : `${data.min} to ${data.max}`}
             </div>
             <div className='stat-desc text-wrap'>
                 {isPending

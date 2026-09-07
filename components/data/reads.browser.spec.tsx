@@ -4,7 +4,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
-import { useDateExtent, useStringFieldOptions, useTotalReadCount } from './reads';
+import { useDataVersion, useDateExtent, useStringFieldOptions, useTotalReadCount } from './reads';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = { table: 'default', locationName: 'locationName', samplingDate: 'samplingDate' };
@@ -67,6 +67,21 @@ describe('useTotalReadCount', () => {
 
         const [, init] = fetchMock.mock.calls[0]!;
         expect(init.body).toBe("default.filter(locationName = 'Basel (BS)').groupBy({n := count()})");
+    });
+});
+
+describe('useDataVersion', () => {
+    it('is the data-version response header of a one-row probe query', async () => {
+        const fetchMock = vi.fn().mockResolvedValue(ndjson([{ readId: 'r1' }]));
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { result } = renderHook(() => useDataVersion(), { wrapper: wrapper() });
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+        expect(result.current.data).toBe('1750000000');
+
+        const [, init] = fetchMock.mock.calls[0]!;
+        expect(init.body).toBe('default.limit(1)');
     });
 });
 

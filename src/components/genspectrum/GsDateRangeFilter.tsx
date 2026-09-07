@@ -1,25 +1,16 @@
-import {
-    type DateRangeOption,
-    type DateRangeOptionChangedEvent,
-    gsEventNames,
-    type LapisFilter,
-} from 'wasap-components/util';
+import { type DateRangeOption, type DateRangeOptionChangedEvent, gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
 import { GsDateRangeFilter as DateRangeFilter } from 'wasap-components/gsComponents/gs-date-range-filter';
 
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 
 export function GsDateRangeFilter({
-    lapisDateField,
     onDateRangeChange = () => {},
-    onLapisFilterChange = () => {},
     value,
     dateRangeOptions,
     width,
 }: {
-    lapisDateField: string;
     onDateRangeChange?: (dateRange: DateRangeOption | null) => void;
-    onLapisFilterChange?: (lapisFilter: LapisFilter) => void;
     value?: DateRangeOption | null;
     dateRangeOptions?: DateRangeOption[];
     width?: string;
@@ -49,24 +40,15 @@ export function GsDateRangeFilter({
             }
         };
 
-        const handleLapisFilterChanged = (event: CustomEvent<Record<string, string>>) => {
-            onLapisFilterChange(event.detail);
-        };
-
         currentDateRangeSelectorRef.addEventListener(gsEventNames.dateRangeOptionChanged, handleDateRangeOptionChange);
-        currentDateRangeSelectorRef.addEventListener(gsEventNames.dateRangeFilterChanged, handleLapisFilterChanged);
 
         return () => {
             currentDateRangeSelectorRef.removeEventListener(
                 gsEventNames.dateRangeOptionChanged,
                 handleDateRangeOptionChange,
             );
-            currentDateRangeSelectorRef.removeEventListener(
-                gsEventNames.dateRangeFilterChanged,
-                handleLapisFilterChanged,
-            );
         };
-    }, [dateRangeOptions, lapisDateField, onDateRangeChange, dateRangeSelectorRef, onLapisFilterChange]);
+    }, [dateRangeOptions, onDateRangeChange, dateRangeSelectorRef]);
 
     const isCustom = value?.label === CustomDateRangeLabel;
 
@@ -76,7 +58,6 @@ export function GsDateRangeFilter({
             <DateRangeFilter
                 dateRangeOptions={dateRangeOptions}
                 value={(isCustom ? value : value?.label) ?? null}
-                lapisDateField={lapisDateField}
                 width={width}
             />
         </div>

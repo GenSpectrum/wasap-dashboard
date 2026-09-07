@@ -10,7 +10,7 @@ import type { ResistanceData } from './resistanceData';
 import { useWasapPageData } from './useWasapPageData';
 import type { WasapPageConfig } from './wasapPageConfig';
 import { getClientLogger } from '../../../clientLogger';
-import { LapisUnreachableWrapperClient } from '../../LapisUnreachableWrapperClient';
+import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
 import { Page } from '../../../types/pages';
 import { Loading } from '../../../util/Loading';
 import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
@@ -59,8 +59,8 @@ export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
     const schema = useMemo(() => siloSchema(config.silo), [config.silo]);
 
     return (
-        <LapisUnreachableWrapperClient lapisUrl={config.lapisBaseUrl}>
-            <ConnectionProvider url={config.silo.url} schema={schema}>
+        <ConnectionProvider url={config.silo.url} schema={schema}>
+            <SiloUnreachableWrapper>
                 <GsApp
                     lapis={config.lapisBaseUrl}
                     mutationAnnotations={mutationAnnotations}
@@ -202,12 +202,12 @@ export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
                                         />
                                     </>
                                 )}
-                                <WasapStats config={config} />
+                                <WasapStats />
                             </div>
                         )}
                     </div>
                 </GsApp>
-            </ConnectionProvider>
-        </LapisUnreachableWrapperClient>
+            </SiloUnreachableWrapper>
+        </ConnectionProvider>
     );
 };

@@ -1,47 +1,34 @@
 import { type DateRangeOption } from 'wasap-components/util';
-import { useQuery } from '@tanstack/react-query';
+import { useDateExtent } from 'wasap-components/data/reads';
 import { useMemo } from 'react';
 
-import { getDateRange } from '../../lapis/getDateRange';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { Loading } from '../../util/Loading';
 import { GsDateRangeFilter } from '../genspectrum/GsDateRangeFilter';
 
 /**
- * The `DynamicDateFilter` computes the available date range options dynamically,
- * based on the available dates in the data, for the given LAPIS and field name.
+ * Computes the available date-range options dynamically from the newest
+ * sampling date in the dataset (read from SILO via `useDateExtent`).
  */
 export function DynamicDateFilter({
     label,
-    lapis,
-    dateFieldName,
     generateOptions,
     value,
     onChange,
 }: {
     label: string;
-    lapis: string;
-    dateFieldName: string;
     generateOptions: ({ endDate }: { endDate: string }) => DateRangeOption[];
     value: DateRangeOption | undefined;
     onChange: (newValue: DateRangeOption | undefined) => void;
 }) {
-    const {
-        data: dateRange,
-        isPending,
-        isError,
-        error,
-    } = useQuery({
-        queryKey: ['dateRange', lapis, dateFieldName],
-        queryFn: () => getDateRange(lapis, dateFieldName),
-    });
+    const { data: dateExtent, isPending, isError, error } = useDateExtent();
 
     const generatedOptions = useMemo(() => {
-        if (!dateRange) {
+        if (!dateExtent) {
             return [];
         }
-        return generateOptions({ endDate: dateRange.end });
-    }, [dateRange, generateOptions]);
+        return generateOptions({ endDate: dateExtent.max });
+    }, [dateExtent, generateOptions]);
 
     // When the value has a "Custom" label, try to match it back to one of the generated options
     // by comparing dateFrom and dateTo. If there's a match, use that option's label instead of "Custom".
@@ -72,7 +59,6 @@ export function DynamicDateFilter({
                 </div>
             ) : (
                 <GsDateRangeFilter
-                    lapisDateField={dateFieldName}
                     onDateRangeChange={(dateRange: DateRangeOption | null) => onChange(dateRange ?? undefined)}
                     value={normalizedValue}
                     dateRangeOptions={generatedOptions}
