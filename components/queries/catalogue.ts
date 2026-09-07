@@ -1,0 +1,49 @@
+/**
+ * The SILO SaneQL queries the wastewater components send.
+ *
+ * Each is a builder returning a `Relation` (renderable query text). The exact
+ * text of each is pinned in `__snapshots__/catalogue.sanql`, so a change to how
+ * one is built arrives as a diff of that file.
+ *
+ * Grows as components move off LAPIS. Started with the Tier-1 reads (doc 04,
+ * sub-phase 2): each a single `groupBy(count(), …)`.
+ */
+
+import { count } from '../rhydb/functions';
+import { field, type Expr } from '../rhydb/expression';
+import { table, type Relation } from '../rhydb/relation';
+import { scoped, type SiloReadFilter } from './filter';
+import type { SiloSchema } from './schema';
+
+/** The aggregate every counting query names. */
+export const READS = 'n';
+
+function readCounts(): Record<string, Expr> {
+    return { [READS]: count() };
+}
+
+/** Total reads the filter admits — one row, `{ n }`. */
+export function totalReadCountQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
+    return scoped(schema, filter).groupBy(readCounts());
+}
+
+/**
+ * Every distinct location name in the dataset, with its read count.
+ *
+ * Unfiltered — the location dropdown offers every location the instance holds.
+ * Grouping a dictionary/indexed column is close to free.
+ */
+export function locationNamesQuery(schema: SiloSchema): Relation {
+    return table(schema.table).groupBy(readCounts(), [schema.locationName]);
+}
+
+/**
+ * Every distinct sampling date in the dataset (oldest first), with its read
+ * count. The date extent is the first and last row; the caller reads min/max
+ * off the sorted result rather than paying for two queries.
+ */
+export function samplingDatesQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
+    return scoped(schema, filter)
+        .groupBy(readCounts(), [schema.samplingDate])
+        .orderBy(field(schema.samplingDate).asc());
+}

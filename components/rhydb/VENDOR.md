@@ -19,6 +19,11 @@ experiment repo's own instance URLs.
 
 - `*.test.ts` → `*.spec.ts`, to match the test-file naming used everywhere else
   in `components/` and `src/`. No content change.
+- `expression.ts`: added `dateLiteral(value)` → `'yyyy-mm-dd'::date`. The W-ASAP
+  instances filter dates on the `samplingDate` (`DATE32`) column — a bare string
+  in that comparison is rejected, the `::date` cast is not. The experiment repo
+  sidesteps this by filtering on a dictionary-encoded `date` column instead, which
+  rsv-a / rsv-b do not have.
 
 Nothing consumes this yet — the connection provider, the query catalogue and the
 data-hook layer that sit on top are built in the following commits.

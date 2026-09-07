@@ -131,6 +131,22 @@ export function str(value: string): Expr {
     return new Expr(PRECEDENCE.atomic, stringLiteral(value));
 }
 
+/**
+ * A `DATE32` literal: `'2026-06-01'::date`.
+ *
+ * SILO rejects a bare string in a comparison against a `DATE32` column; the
+ * `::date` cast is how a date reaches such a comparison. Only used against the
+ * `samplingDate` column (see `components/queries/filter.ts`).
+ *
+ * (wasap-local addition to the vendored file — see `components/rhydb/VENDOR.md`.)
+ */
+export function dateLiteral(value: string): Expr {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        throw new Error(`Not an ISO date (yyyy-mm-dd): ${JSON.stringify(value)}`);
+    }
+    return new Expr(PRECEDENCE.atomic, `${stringLiteral(value)}::date`);
+}
+
 /** An integer literal. Zero and negatives included; the guards are on the callers that need them. */
 export function int(value: number): Expr {
     if (!Number.isInteger(value)) {
