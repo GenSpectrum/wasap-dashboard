@@ -28,6 +28,16 @@ export const namedLapisFilterSchema = z.object({
 });
 export type NamedLapisFilter = z.infer<typeof namedLapisFilterSchema>;
 
+// A `{ min, max }` numeric range and its `{ '<field>From': n, '<field>To': n }` LAPIS
+// projection. The `gs-number-range-filter` component that produced these was dropped (the
+// wasap dashboards never rendered it), but `src/views/View.ts` still names `NumberRange` in
+// its `NumberFilterState` shape, so the types outlive the component here.
+export const numberRangeSchema = z.object({
+    min: z.number().optional(),
+    max: z.number().optional(),
+});
+export type NumberRange = z.infer<typeof numberRangeSchema>;
+export type LapisNumberFilter = Record<string, number | undefined>;
 
 export const temporalGranularitySchema = z.union([
     z.literal('day'),

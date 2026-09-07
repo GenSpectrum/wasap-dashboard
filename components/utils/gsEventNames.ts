@@ -7,6 +7,4 @@ export const gsEventNames = {
     lineageFilterChanged: 'gs-lineage-filter-changed',
     lineageFilterMultiChanged: 'gs-lineage-filter-multi-changed',
     textFilterChanged: 'gs-text-filter-changed',
-    numberRangeFilterChanged: 'gs-number-range-filter-changed',
-    numberRangeValueChanged: 'gs-number-range-value-changed',
 } as const;

@@ -20,11 +20,7 @@ export {
 export type { DateRangeOption } from './react/dateRangeFilter/dateRangeOption';
 export { DateRangeOptionChangedEvent } from './react/dateRangeFilter/dateRangeOption';
 
-export type { LapisNumberFilter, NumberRange } from './react/numberRangeFilter/NumberRangeFilterChangedEvent';
-export {
-    NumberRangeFilterChangedEvent,
-    NumberRangeValueChangedEvent,
-} from './react/numberRangeFilter/NumberRangeFilterChangedEvent';
+export type { LapisNumberFilter, NumberRange } from './types';
 
 export { gsEventNames } from './utils/gsEventNames';
 

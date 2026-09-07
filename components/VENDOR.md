@@ -45,6 +45,13 @@ over time, relative growth advantage, statistics, sequences-by-location/leaflet,
 genome viewer, mutation comparison, mutation cooccurrence, …), their Storybook
 stories, and the Lit `.mdx` docs.
 
+Pruned afterwards (step 3, phase 0): `gs-location-filter` and
+`gs-number-range-filter` with their `react/{locationFilter,numberRangeFilter}/**`
+closures — the wasap "filter dataset" panel only renders text and date inputs, and
+these two only had the now-deleted dashboards-era `BaselineSelector` as a consumer.
+`NumberRange` / `LapisNumberFilter` moved to `types.ts` (still named by
+`src/views/View.ts`).
+
 ## Local modifications
 
 **None yet** — this commit is a verbatim copy; the code still imports `preact`,
