@@ -6,8 +6,6 @@
 // dependency. Grew from grepping every `@genspectrum/dashboard-components/util` import in `src/`;
 // keep it in sync with that when adding a new one.
 
-import { views } from './types';
-
 export {
     type LapisFilter,
     type SequenceType,
@@ -29,8 +27,3 @@ export type { MutationAnnotation, MutationAnnotations } from './gsComponents/mut
 export type { MeanProportionInterval } from './react/mutationsOverTime/mutations-over-time';
 export type { CountCoverageQuery } from './react/queriesOverTime/queries-over-time';
 export type { CustomColumn } from './react/components/features-over-time-grid';
-
-// Not vendored (the wasap dashboards don't render `gs-aggregate`) — `views.table | views.bar` is
-// its exact upstream definition (preact/aggregatedData/aggregate.tsx), reproduced here since only
-// the type, not the component, is needed (by src/views/OrganismConstants.ts).
-export type AggregateView = (typeof views)['table'] | (typeof views)['bar'];
