@@ -18,6 +18,7 @@ import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
 import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime';
 import { GsApp } from 'wasap-components/gsComponents/gs-app';
 import { ConnectionProvider } from 'wasap-components/data/connection';
+import { type SiloReadFilter } from 'wasap-components/queries';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
 import { usePageState } from '../usePageState';
 import { siloSchema } from '../../../silo/siloSchema';
@@ -50,7 +51,7 @@ export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
 
     const initialMeanProportionInterval = getInitialMeanProportionInterval(analysis);
 
-    const lapisFilter = {
+    const filter: SiloReadFilter = {
         ...(base.locationName && { locationName: base.locationName }),
         ...(base.samplingDate?.dateFrom && { samplingDateFrom: base.samplingDate.dateFrom }),
         ...(base.samplingDate?.dateTo && { samplingDateTo: base.samplingDate.dateTo }),
@@ -111,9 +112,8 @@ export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
                                             <NoDataHelperText analysisFilter={analysis} />
                                         ) : (
                                             <GsMutationsOverTime
-                                                lapisFilter={lapisFilter}
+                                                filter={filter}
                                                 granularity={base.granularity}
-                                                lapisDateField={config.samplingDateField}
                                                 sequenceType={
                                                     'sequenceType' in analysis ? analysis.sequenceType : 'nucleotide'
                                                 }
@@ -173,7 +173,7 @@ export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
                                         <div className='rounded-md border-2 border-gray-100 p-4'>
                                             <GsQueriesOverTime
                                                 collectionTitle={data.collection.title}
-                                                lapisFilter={lapisFilter}
+                                                lapisFilter={filter}
                                                 queries={data.collection.queries}
                                                 granularity={base.granularity}
                                                 lapisDateField={config.samplingDateField}

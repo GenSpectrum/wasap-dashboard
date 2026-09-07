@@ -1,21 +1,20 @@
 import {
     type TemporalGranularity,
-    type LapisFilter,
     type SequenceType,
     type MeanProportionInterval,
     type CustomColumn,
     views,
 } from 'wasap-components/util';
+import { type SiloReadFilter } from 'wasap-components/queries';
 import { type FC } from 'react';
 import { GsMutationsOverTime as MutationsOverTime } from 'wasap-components/gsComponents/gs-mutations-over-time';
 
 import { ComponentWrapper } from '../ComponentWrapper';
 
 export type GsMutationsOverTimeProps = {
-    lapisFilter: LapisFilter;
+    filter: SiloReadFilter;
     sequenceType: SequenceType;
     granularity: TemporalGranularity;
-    lapisDateField: string;
     displayMutations?: string[];
     height?: string;
     pageSizes?: number[];
@@ -25,10 +24,9 @@ export type GsMutationsOverTimeProps = {
 };
 
 export const GsMutationsOverTime: FC<GsMutationsOverTimeProps> = ({
-    lapisFilter,
+    filter,
     sequenceType,
     granularity,
-    lapisDateField,
     displayMutations,
     height,
     pageSizes,
@@ -44,11 +42,10 @@ export const GsMutationsOverTime: FC<GsMutationsOverTimeProps> = ({
             <MutationsOverTime
                 width='100%'
                 height={height ? '100%' : undefined}
-                lapisFilter={lapisFilter}
+                filter={filter}
                 sequenceType={sequenceType}
                 views={[views.grid]}
                 granularity={granularity}
-                lapisDateField={lapisDateField}
                 displayMutations={displayMutations}
                 hideGaps={hideGaps}
                 pageSizes={pageSizes ?? [10, 20, 30, 40, 50]}

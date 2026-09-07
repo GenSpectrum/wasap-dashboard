@@ -8,18 +8,22 @@
  * (see doc 04, "The `SiloReadFilter`").
  */
 
+import z from 'zod';
+
 import { and, dateLiteral, field, str, type Expr } from '../rhydb/expression';
 import { table, type Relation } from '../rhydb/relation';
 import type { SiloSchema } from './schema';
 
-export type SiloReadFilter = {
+export const siloReadFilterSchema = z.object({
     /** Exact match on the location-name column. */
-    locationName?: string;
+    locationName: z.string().optional(),
     /** Inclusive lower bound on the sampling date, ISO `yyyy-mm-dd`. */
-    samplingDateFrom?: string;
+    samplingDateFrom: z.string().optional(),
     /** Inclusive upper bound on the sampling date, ISO `yyyy-mm-dd`. */
-    samplingDateTo?: string;
-};
+    samplingDateTo: z.string().optional(),
+});
+
+export type SiloReadFilter = z.infer<typeof siloReadFilterSchema>;
 
 /**
  * The same filter written the same way every time.
