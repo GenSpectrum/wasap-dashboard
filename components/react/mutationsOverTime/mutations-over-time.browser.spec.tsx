@@ -27,7 +27,7 @@ function ndjson(rows: unknown[]): Response {
 /**
  * Routes the three SILO queries the component sends to canned NDJSON:
  *  - the date axis (`groupBy({n := count()}, {date})`) -> two day buckets
- *  - the phase-1 spectrum (`mutations(minProportion := 0.001, …)`) -> the two
+ *  - the metadata spectrum (`mutations(minProportion := 0.001, …)`) -> the two
  *    display mutations, each above the floor
  *  - one per-position pileup (`groupBy({count := count()}, {date, sym := main.at(P)})`)
  *    per distinct position -> a symbol distribution per day, so every cell resolves

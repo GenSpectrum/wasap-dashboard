@@ -19,7 +19,7 @@ const schema: SiloSchema = {
 
 const fields = '{mutationFrom, mutationTo, sequenceName, position, count, coverage}';
 
-describe('mutationSpectrumQuery (phase 1 row list)', () => {
+describe('mutationSpectrumQuery (metadata: which mutations get a row)', () => {
     test('nucleotide: mutations() with the proportion floor and trimmed fields', () => {
         expect(mutationSpectrumQuery(schema, {}, { sequenceType: 'nucleotide' }).render()).toBe(
             `default.mutations(minProportion := 0.001, fields := ${fields})`,
@@ -40,7 +40,7 @@ describe('mutationSpectrumQuery (phase 1 row list)', () => {
     });
 });
 
-describe('positionPileupQuery (phase 2 per-position pileup)', () => {
+describe('positionPileupQuery (page: per-position pileup)', () => {
     test('groups the symbol at one position by the grouping-date column, location only', () => {
         expect(
             positionPileupQuery(

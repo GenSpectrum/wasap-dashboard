@@ -1,16 +1,17 @@
 /**
- * `gs-mutations-over-time` over SILO, in two phases.
+ * `gs-mutations-over-time` over SILO, in two hooks: one for the grid's frame,
+ * one for the cells of whichever page is on screen.
  *
- * Phase 1 (`useOverTimeMetadata`): the date axis + per-bucket read totals, and
- * the sorted mutation list with each row's overall proportion. Two cheap
- * queries, independent of the page.
+ * `useOverTimeMetadata` — the frame, and page-independent: the date axis +
+ * per-bucket read totals, and the sorted mutation list with each row's overall
+ * proportion. Two cheap queries.
  *
- * Phase 2 (`usePositionPileups`): one symbol-pileup query per distinct position
- * of the *visible page's* mutations — `groupBy(count(), {date, seq.at(pos)})`,
- * location-scoped, the whole date range. Cached per position (`staleTime:
- * Infinity`), so paging, filter changes and revisits reuse whatever positions
- * are already in hand. The count/coverage matrix is a pure function of the
- * pileups (`buildMatrix`).
+ * `useMutationsOverTimePage` — the cells for the *visible page*: one
+ * symbol-pileup query per distinct position of that page's mutations —
+ * `groupBy(count(), {date, seq.at(pos)})`, location-scoped, the whole date
+ * range. Cached per position (`staleTime: Infinity`), so paging, filter changes
+ * and revisits reuse whatever positions are already in hand. The count/coverage
+ * matrix is a pure function of the pileups (`buildMatrix`).
  */
 
 import { useMemo } from 'react';
@@ -57,7 +58,7 @@ function unknownSymbol(sequenceType: OverTimeSequenceType): string {
     return sequenceType === 'nucleotide' ? 'N' : 'X';
 }
 
-// --- phase 1 -------------------------------------------------------------------
+// --- metadata: the grid's frame ----------------------------------------------
 
 export type OverTimeMetadata = {
     /** Every bucket in range, gap-filled and sorted. */
@@ -127,7 +128,7 @@ export function useOverTimeMetadata(
     });
 }
 
-// --- phase 2 -------------------------------------------------------------------
+// --- page: the visible page's cells -----------------------------------------
 
 export type MutationsOverTimePage = {
     /** The count/coverage/proportion matrix for the visible mutations, or `null` while the first pileup lands. */
@@ -286,9 +287,9 @@ function segmentFor(sequenceName: string | null, sequenceType: OverTimeSequenceT
 }
 
 /**
- * The genes to restrict the phase-1 `mutations()` scan to, given a fixed display
- * set — `['S']` for Spike codes, `undefined` (all sequences) for nucleotides or
- * an open set. A big speed-up on the spectrum scan.
+ * The genes to restrict the metadata `mutations()` scan to, given a fixed
+ * display set — `['S']` for Spike codes, `undefined` (all sequences) for
+ * nucleotides or an open set. A big speed-up on the spectrum scan.
  */
 export function genesOf(
     displayMutations: string[] | undefined,

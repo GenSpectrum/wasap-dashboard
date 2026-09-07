@@ -5,15 +5,17 @@
  * options don't hold (grouping by a `unionAll` tag literal, or by the `DATE32`
  * column alongside a mapped `at()`, both time out — see
  * standalone-wasap/10-silo-over-time-findings.md). So the matrix is assembled
- * from a **symbol pileup per position**:
+ * from a **symbol pileup per position**, and the two queries here back the two
+ * data hooks in `components/data/mutationsOverTime.ts`:
  *
- *   phase 1 — one `mutations()` call: the row list and each row's overall
- *             proportion (drives the "minimum proportion" filter across pages).
- *   phase 2 — one `groupBy(count(), {date, seq.at(pos)})` per distinct position
- *             of the visible page: the full symbol distribution there, per day.
- *             `coverage = Σ count(known symbols)`, `count = Σ count(alt)`.
- *             No date filter — the whole range comes back and is bucketed
- *             client-side, so one cached result serves any window.
+ *   `mutationSpectrumQuery` — one `mutations()` call for the *metadata*: which
+ *     mutations get a grid row, and each one's overall proportion over the
+ *     whole span (drives the "minimum proportion" filter across pages).
+ *   `positionPileupQuery` — one `groupBy(count(), {date, seq.at(pos)})` per
+ *     distinct position of the visible *page*: the full symbol distribution
+ *     there, per day. `coverage = Σ count(known symbols)`,
+ *     `count = Σ count(alt)`. No date filter — the whole range comes back and
+ *     is bucketed client-side, so one cached result serves any window.
  */
 
 import { field } from '../rhydb/expression';
@@ -28,7 +30,7 @@ export type OverTimeSequenceType = 'nucleotide' | 'amino acid';
 /** Below this overall proportion a mutation is not offered as a row (matches the old LAPIS path). */
 export const OVER_TIME_MIN_PROPORTION = 0.001;
 
-// --- phase 1: the row list -------------------------------------------------
+// --- metadata: which mutations get a row ----------------------------------
 
 const SPECTRUM_FIELDS = ['mutationFrom', 'mutationTo', 'sequenceName', 'position', 'count', 'coverage'] as const;
 
@@ -79,7 +81,7 @@ export function readMutationSpectrum(rows: readonly RhydbRow[]): MutationSpectru
     }));
 }
 
-// --- phase 2: the per-position pileup over time ---------------------------
+// --- page: the per-position pileup over time -----------------------------
 
 /** The sequence + position one pileup query answers for. */
 export type PileupTarget = {
