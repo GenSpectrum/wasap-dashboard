@@ -1,4 +1,5 @@
-import { type UseQueryResult } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, type UseQueryResult } from '@tanstack/react-query';
+import { type ReactElement } from 'react';
 import { userEvent } from 'vitest/browser';
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
@@ -9,6 +10,10 @@ import { it } from '../../../../../test-extend';
 import type { WasapUntrackedFilter } from '../../../views/wasap/wasapPageConfig';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
+
+/** The lineage picker reads via TanStack Query; the app provides the client at its root. */
+const renderWithQueryClient = (ui: ReactElement) =>
+    render(<QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>);
 
 describe('UntrackedFilter - custom variants textarea', () => {
     const mockCladeLineageQueryResult = {
@@ -28,7 +33,7 @@ describe('UntrackedFilter - custom variants textarea', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
+        const { getByRole } = renderWithQueryClient(
             <UntrackedFilter
                 pageState={defaultPageState}
                 setPageState={mockSetPageState}

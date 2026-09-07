@@ -1,27 +1,22 @@
 import { type FC, useMemo } from 'react';
 import z from 'zod';
 
-import { useLapisUrl } from '../LapisUrlContext';
 import { LineageFilterChangedEvent, LineageMultiFilterChangedEvent } from './LineageFilterChangedEvent';
-import { type LineageItem, fetchLineageAutocompleteList } from './fetchLineageAutocompleteList';
-import { lapisFilterSchema } from '../../types';
 import { DownshiftCombobox, DownshiftMultiCombobox } from '../components/downshift-combobox';
 import { ErrorBoundary } from '../components/error-boundary';
 import { LoadingDisplay } from '../components/loading-display';
 import { ResizeContainer } from '../components/resize-container';
-import { useQuery } from '../useQuery';
+import { useLineageOptions, type LineageItem } from '../../data/lineageOptions';
 
 const lineageSelectorPropsSchema = z.object({
-    lapisField: z.string().min(1),
+    field: z.string().min(1),
     placeholderText: z.string().optional(),
     value: z.union([z.string(), z.array(z.string())]),
     hideCounts: z.boolean().optional(),
     multiSelect: z.boolean().optional(),
 });
 
-const lineageFilterInnerPropsSchema = lineageSelectorPropsSchema.extend({
-    lapisFilter: lapisFilterSchema,
-});
+const lineageFilterInnerPropsSchema = lineageSelectorPropsSchema;
 
 const lineageFilterPropsSchema = lineageFilterInnerPropsSchema
     .extend({
@@ -63,19 +58,13 @@ export const LineageFilter: FC<LineageFilterProps> = (props) => {
 };
 
 const LineageFilterInner: FC<LineageFilterInnerProps> = ({
-    lapisField,
+    field,
     placeholderText,
     value,
-    lapisFilter,
     hideCounts,
     multiSelect = false,
 }) => {
-    const lapisUrl = useLapisUrl();
-
-    const { data, error, isLoading } = useQuery(
-        () => fetchLineageAutocompleteList({ lapisUrl, lapisField, lapisFilter }),
-        [lapisField, lapisUrl, lapisFilter],
-    );
+    const { data, error, isLoading } = useLineageOptions(field);
 
     if (isLoading) {
         return <LoadingDisplay />;
@@ -87,10 +76,10 @@ const LineageFilterInner: FC<LineageFilterInnerProps> = ({
 
     return (
         <LineageSelector
-            lapisField={lapisField}
+            field={field}
             value={value}
             placeholderText={placeholderText}
-            data={data}
+            data={data ?? []}
             hideCounts={hideCounts}
             multiSelect={multiSelect}
         />
@@ -98,7 +87,7 @@ const LineageFilterInner: FC<LineageFilterInnerProps> = ({
 };
 
 const LineageSelector = ({
-    lapisField,
+    field,
     value,
     placeholderText,
     data,
@@ -134,7 +123,7 @@ const LineageSelector = ({
                 filterItemsByInputValue={filterByInputValue}
                 createEvent={(items) => {
                     const lineages = items.length > 0 ? items.map((item) => item.lineage) : undefined;
-                    return new LineageMultiFilterChangedEvent({ [lapisField]: lineages });
+                    return new LineageMultiFilterChangedEvent({ [field]: lineages });
                 }}
                 itemToString={(item) => item?.lineage ?? ''}
                 placeholderText={placeholderText ?? 'Select lineages'}
@@ -148,7 +137,7 @@ const LineageSelector = ({
             allItems={data}
             value={selectedItem}
             filterItemsByInputValue={filterByInputValue}
-            createEvent={(item) => new LineageFilterChangedEvent({ [lapisField]: item?.lineage ?? undefined })}
+            createEvent={(item) => new LineageFilterChangedEvent({ [field]: item?.lineage ?? undefined })}
             itemToString={(item) => item?.lineage ?? ''}
             placeholderText={placeholderText}
             formatItemInList={formatItemInList}

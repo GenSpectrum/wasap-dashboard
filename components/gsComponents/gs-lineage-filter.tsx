@@ -7,19 +7,15 @@ import {
 } from '../react/lineageFilter/LineageFilterChangedEvent';
 import { gsEventNames } from '../utils/gsEventNames';
 
-export type GsLineageFilterProps = Omit<LineageFilterProps, 'lapisField' | 'lapisFilter' | 'width'> & {
-    lapisField?: LineageFilterProps['lapisField'];
-    lapisFilter?: LineageFilterProps['lapisFilter'];
+export type GsLineageFilterProps = Omit<LineageFilterProps, 'field' | 'width'> & {
+    field?: LineageFilterProps['field'];
     width?: LineageFilterProps['width'];
 };
 
 // Defaults reproduce the old gs-lineage-filter Lit component's @property field initializers.
-export const GsLineageFilter: FC<GsLineageFilterProps> = ({
-    lapisField = '',
-    lapisFilter = {},
-    width = '100%',
-    ...rest
-}) => <LineageFilter lapisField={lapisField} lapisFilter={lapisFilter} width={width} {...rest} />;
+export const GsLineageFilter: FC<GsLineageFilterProps> = ({ field = '', width = '100%', ...rest }) => (
+    <LineageFilter field={field} width={width} {...rest} />
+);
 
 declare global {
     interface HTMLElementEventMap {

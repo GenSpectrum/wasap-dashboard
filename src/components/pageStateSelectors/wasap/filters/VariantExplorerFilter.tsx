@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { Inset } from '../../../../styles/Inset';
 import { type CollectionSummary } from '../../../../types/Collection';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
-import { GsApp } from 'wasap-components/gsComponents/gs-app';
+import { LapisClientProvider } from 'wasap-components/lapis/LapisClientContext';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
@@ -75,10 +75,9 @@ export function VariantExplorerFilter({
                         Define Clinical Signature
                     </SelectorHeadline>
                     <LabeledField label='Variant'>
-                        <GsApp lapis={clinicalSequenceLapisBaseUrl}>
+                        <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
                             <GsLineageFilter
-                                lapisField={clinicalSequenceLapisLineageField}
-                                lapisFilter={{}}
+                                field={clinicalSequenceLapisLineageField}
                                 placeholderText='Variant'
                                 value={pageState.variant}
                                 onLineageChange={(lineages) => {
@@ -89,7 +88,7 @@ export function VariantExplorerFilter({
                                 }}
                                 hideCounts={true}
                             />
-                        </GsApp>
+                        </LapisClientProvider>
                     </LabeledField>
                     <div className='mb-2'>
                         <NumericInput

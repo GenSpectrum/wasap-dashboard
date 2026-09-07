@@ -1,4 +1,5 @@
-import { type UseQueryResult } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, type UseQueryResult } from '@tanstack/react-query';
+import { type ReactElement } from 'react';
 import { page, userEvent } from 'vitest/browser';
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
@@ -11,6 +12,10 @@ import type { CollectionSummary } from '../../../../types/Collection';
 import type { WasapVariantFilter } from '../../../views/wasap/wasapPageConfig';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
+
+/** The lineage picker reads via TanStack Query; the app provides the client at its root. */
+const renderWithQueryClient = (ui: ReactElement) =>
+    render(<QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>);
 
 const DUMMY_COLLECTIONS: CollectionSummary[] = [
     { id: 1, name: 'XBB.1.5', ownedBy: 1, organism: 'SARS-CoV-2', description: null, variantCount: 5, tags: [] },
@@ -39,7 +44,7 @@ describe('VariantExplorerFilter', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByLabelText } = render(
+        const { getByLabelText } = renderWithQueryClient(
             <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
@@ -63,7 +68,7 @@ describe('VariantExplorerFilter', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
+        const { getByRole } = renderWithQueryClient(
             <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
@@ -94,7 +99,7 @@ describe('VariantExplorerFilter', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
+        const { getByRole } = renderWithQueryClient(
             <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
@@ -118,7 +123,7 @@ describe('VariantExplorerFilter', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        render(
+        renderWithQueryClient(
             <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
@@ -143,7 +148,7 @@ describe('VariantExplorerFilter', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
+        const { getByRole } = renderWithQueryClient(
             <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={predefinedPageState}
@@ -174,7 +179,7 @@ describe('VariantExplorerFilter', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByLabelText } = render(
+        const { getByLabelText } = renderWithQueryClient(
             <GsApp lapis={DUMMY_LAPIS_URL}>
                 <VariantExplorerFilter
                     pageState={predefinedPageState}

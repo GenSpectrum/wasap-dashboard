@@ -1,11 +1,10 @@
-import { gsEventNames, type LapisFilter } from 'wasap-components/util';
+import { gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
 import { GsLineageFilter as LineageFilter } from 'wasap-components/gsComponents/gs-lineage-filter';
 
 export function GsLineageFilter<Lineage extends string>({
-    lapisField,
+    field,
     value,
-    lapisFilter,
     placeholderText,
     width,
     onLineageChange = () => {},
@@ -13,9 +12,8 @@ export function GsLineageFilter<Lineage extends string>({
     hideCounts,
     multiSelect,
 }: {
-    lapisField: Lineage;
+    field: Lineage;
     value?: string | string[];
-    lapisFilter: LapisFilter;
     placeholderText?: string;
     width?: string;
     onLineageChange?: (lineage: { [key in Lineage]: string | undefined }) => void;
@@ -66,11 +64,10 @@ export function GsLineageFilter<Lineage extends string>({
     return (
         <div ref={lineageFilterRef}>
             <LineageFilter
-                lapisField={lapisField}
+                field={field}
                 placeholderText={placeholderText}
                 value={value ?? (multiSelect ? [] : '')}
                 width={width}
-                lapisFilter={lapisFilter}
                 hideCounts={hideCounts}
                 multiSelect={multiSelect}
             />
