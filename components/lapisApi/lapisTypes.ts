@@ -24,49 +24,6 @@ export const lapisBaseRequest = z
     .catchall(filterValue);
 export type LapisBaseRequest = z.infer<typeof lapisBaseRequest>;
 
-export const mutationsRequest = lapisBaseRequest.extend({ minProportion: z.number().optional() });
-export type MutationsRequest = z.infer<typeof mutationsRequest>;
-
-const mutationProportionCount = z.object({
-    mutation: z.string(),
-    proportion: z.number(),
-    count: z.number(),
-    sequenceName: z.union([z.string(), z.null()]),
-    mutationFrom: z.string(),
-    mutationTo: z.string(),
-    position: z.number(),
-});
-export const mutationsResponse = makeLapisResponse(z.array(mutationProportionCount));
-export type MutationsResponse = z.infer<typeof mutationsResponse>;
-
-export const mutationsOverTimeRequest = z.object({
-    filters: z.record(filterValue),
-    downloadAsFile: z.boolean().optional(),
-    downloadFileBasename: z.string().optional(),
-    compression: z.enum(['gzip', 'none']).optional(),
-    includeMutations: z.array(z.string()).optional(),
-    dateRanges: z.array(dateRange).optional(),
-    dateField: z.string().optional(),
-});
-export type MutationsOverTimeRequest = z.infer<typeof mutationsOverTimeRequest>;
-
-export const mutationsOverTimeResponse = makeLapisResponse(
-    z.object({
-        mutations: z.array(z.string()),
-        dateRanges: z.array(dateRange),
-        data: z.array(
-            z.array(
-                z.object({
-                    count: z.number(),
-                    coverage: z.number(),
-                }),
-            ),
-        ),
-        totalCountsByDateRange: z.array(z.number()),
-    }),
-);
-export type MutationsOverTimeResponse = z.infer<typeof mutationsOverTimeResponse>;
-
 const queryDefinition = z.object({
     displayLabel: z.string().optional(),
     countQuery: z.string(),

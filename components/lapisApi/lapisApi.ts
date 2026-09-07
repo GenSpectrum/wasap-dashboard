@@ -6,12 +6,8 @@ import {
     insertionsResponse,
     type LapisBaseRequest,
     lapisError,
-    type MutationsRequest,
-    mutationsResponse,
     problemDetail,
     type ProblemDetail,
-    type MutationsOverTimeRequest,
-    mutationsOverTimeResponse,
     type QueriesOverTimeRequest,
     queriesOverTimeResponse,
 } from './lapisTypes';
@@ -92,50 +88,6 @@ export async function fetchInsertions(
     );
 
     return insertionsResponse.parse(await response.json());
-}
-
-export async function fetchSubstitutionsOrDeletions(
-    lapisUrl: string,
-    body: MutationsRequest,
-    sequenceType: SequenceType,
-    signal?: AbortSignal,
-) {
-    const response = await callLapis(
-        substitutionsOrDeletionsEndpoint(lapisUrl, sequenceType),
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-            signal,
-        },
-        `${sequenceType} mutations`,
-    );
-
-    return mutationsResponse.parse(await response.json());
-}
-
-export async function fetchMutationsOverTime(
-    lapisUrl: string,
-    body: MutationsOverTimeRequest,
-    sequenceType: SequenceType,
-    signal?: AbortSignal,
-) {
-    const response = await callLapis(
-        mutationsOverTimeEndpoint(lapisUrl, sequenceType),
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-            signal,
-        },
-        `${sequenceType} mutations over time`,
-    );
-
-    return mutationsOverTimeResponse.parse(await response.json());
 }
 
 export async function fetchQueriesOverTime(lapisUrl: string, body: QueriesOverTimeRequest, signal?: AbortSignal) {
@@ -252,16 +204,6 @@ export const insertionsEndpoint = (lapisUrl: string, sequenceType: SequenceType)
     return sequenceType === 'amino acid'
         ? `${lapisUrl}/sample/aminoAcidInsertions`
         : `${lapisUrl}/sample/nucleotideInsertions`;
-};
-export const substitutionsOrDeletionsEndpoint = (lapisUrl: string, sequenceType: SequenceType) => {
-    return sequenceType === 'amino acid'
-        ? `${lapisUrl}/sample/aminoAcidMutations`
-        : `${lapisUrl}/sample/nucleotideMutations`;
-};
-export const mutationsOverTimeEndpoint = (lapisUrl: string, sequenceType: SequenceType) => {
-    return sequenceType === 'amino acid'
-        ? `${lapisUrl}/component/aminoAcidMutationsOverTime`
-        : `${lapisUrl}/component/nucleotideMutationsOverTime`;
 };
 export const queriesOverTimeEndpoint = (lapisUrl: string) => `${lapisUrl}/component/queriesOverTime`;
 export const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;
