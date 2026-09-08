@@ -7,11 +7,11 @@
  * proportion. Two cheap queries.
  *
  * `useMutationsOverTimePage` — the cells for the *visible page*: one
- * symbol-pileup query per distinct position of that page's mutations —
+ * position-over-time query per distinct position of that page's mutations —
  * `groupBy(count(), {date, seq.at(pos)})`, location-scoped, the whole date
  * range. Cached per position (`staleTime: Infinity`), so paging, filter changes
  * and revisits reuse whatever positions are already in hand. The count/coverage
- * matrix is a pure function of the pileups (`buildMatrix`).
+ * matrix is a pure function of those rows (`buildMatrix`).
  */
 
 import { useMemo } from 'react';
@@ -21,14 +21,14 @@ import { useConnection, useSiloSchema } from './connection';
 import {
     overallMutationsQuery,
     normalizeFilter,
-    positionPileupQuery,
+    positionOverTimeQuery,
     readOverallMutations,
-    readPositionPileup,
+    readPositionOverTime,
     samplingDatesQuery,
     type OverallMutationRow,
     type OverTimeSequenceType,
-    type PileupTarget,
-    type PositionPileupRow,
+    type PositionTarget,
+    type PositionOverTimeRow,
     type SiloReadFilter,
 } from '../queries';
 import { readNamedCounts } from '../queries/rows';
@@ -131,9 +131,9 @@ export function useOverTimeMetadata(
 // --- page: the visible page's cells -----------------------------------------
 
 export type MutationsOverTimePage = {
-    /** The full count/coverage/proportion matrix for the visible mutations, or `null` while any pileup is still in flight. */
+    /** The full count/coverage/proportion matrix for the visible mutations, or `null` while any position query is still in flight. */
     data: MutationOverTimeDataMap | null;
-    /** True until every position on the page has its pileup. */
+    /** True until every position on the page has answered. */
     isLoading: boolean;
     error: unknown;
     /**
@@ -141,11 +141,11 @@ export type MutationsOverTimePage = {
      *
      * Currently only informational — the grid waits for the whole page
      * (`isLoading`) rather than filling in row by row, because at page size 20
-     * and a concurrency cap of 24 the pileups all land within one round-trip,
-     * and a half-built matrix renders not-yet-loaded rows as "no coverage",
-     * which reads as real data. If a large page (e.g. 250) ever makes the wait
-     * noticeable, switch to progressive rendering: build the matrix from
-     * `pileupByTarget` as it grows and let the grid show these counts.
+     * and a concurrency cap of 24 the position queries all land within one
+     * round-trip, and a half-built matrix renders not-yet-loaded rows as "no
+     * coverage", which reads as real data. If a large page (e.g. 250) ever makes
+     * the wait noticeable, switch to progressive rendering: build the matrix from
+     * `rowsByPosition` as it grows and let the grid show these counts.
      */
     progress: { counted: number; total: number };
 };
@@ -165,7 +165,7 @@ export function useMutationsOverTimePage(
     const location = normalizeFilter(filter).locationName;
 
     const targets = useMemo(
-        () => pileupTargets(visibleMutationCodes, sequenceType, schemaNucleotideSequence),
+        () => positionTargets(visibleMutationCodes, sequenceType, schemaNucleotideSequence),
         [visibleMutationCodes, sequenceType, schemaNucleotideSequence],
     );
 
@@ -173,20 +173,20 @@ export function useMutationsOverTimePage(
         queries: targets.map((target) => ({
             queryKey: [
                 'silo',
-                'over-time-pileup',
+                'over-time-position',
                 ...connection.key,
                 location ?? null,
                 target.sequenceName,
                 target.position,
             ],
             staleTime: Infinity,
-            queryFn: async ({ signal }: { signal: AbortSignal }): Promise<PositionPileupRow[]> => {
+            queryFn: async ({ signal }: { signal: AbortSignal }): Promise<PositionOverTimeRow[]> => {
                 const { rows } = await connection.query(
-                    positionPileupQuery(schema, { locationName: location }, target),
+                    positionOverTimeQuery(schema, { locationName: location }, target),
                     `Over-time position ${target.sequenceName}:${target.position}`,
                     { signal },
                 );
-                return readPositionPileup(rows, schema.groupingDate);
+                return readPositionOverTime(rows, schema.groupingDate);
             },
         })),
     });
@@ -194,8 +194,8 @@ export function useMutationsOverTimePage(
     const error = results.find((result) => result.error)?.error;
     const counted = results.filter((result) => result.data !== undefined).length;
 
-    const pileupByTarget = useMemo(() => {
-        const map = new Map<string, PositionPileupRow[]>();
+    const rowsByPosition = useMemo(() => {
+        const map = new Map<string, PositionOverTimeRow[]>();
         targets.forEach((target, index) => {
             const rows = results[index]?.data;
             if (rows !== undefined) {
@@ -210,9 +210,9 @@ export function useMutationsOverTimePage(
         if (error) {
             throw error instanceof Error ? error : new Error(String(error));
         }
-        // Wait for the whole page: a matrix built from a partial `pileupByTarget`
+        // Wait for the whole page: a matrix built from a partial `rowsByPosition`
         // shows the missing rows as "no coverage" (see `progress` above). One
-        // day we could render progressively from `pileupByTarget` instead.
+        // day we could render progressively from `rowsByPosition` instead.
         const allAnswered = counted === targets.length;
         const matrix = allAnswered
             ? buildMatrix(
@@ -222,7 +222,7 @@ export function useMutationsOverTimePage(
                   schemaNucleotideSequence,
                   requestedDateRanges,
                   totalCountsByBucket,
-                  pileupByTarget,
+                  rowsByPosition,
               )
             : null;
         return {
@@ -233,7 +233,7 @@ export function useMutationsOverTimePage(
         };
     }, [
         error,
-        pileupByTarget,
+        rowsByPosition,
         visibleMutationCodes,
         granularity,
         sequenceType,
@@ -321,14 +321,14 @@ export function genesOf(
     return genes.size === 0 ? undefined : [...genes];
 }
 
-/** One pileup query per distinct `(sequence, position)` among the codes. */
-export function pileupTargets(
+/** One position-over-time query per distinct `(sequence, position)` among the codes. */
+export function positionTargets(
     mutationCodes: string[],
     sequenceType: OverTimeSequenceType,
     nucleotideSequence: string,
-): PileupTarget[] {
+): PositionTarget[] {
     const seen = new Set<string>();
-    const targets: PileupTarget[] = [];
+    const targets: PositionTarget[] = [];
     for (const code of mutationCodes) {
         const mutation = parseMutationCode(code);
         if (mutation === null) {
@@ -338,7 +338,7 @@ export function pileupTargets(
         if (sequenceName === undefined) {
             continue;
         }
-        const target: PileupTarget = { sequenceName, position: mutation.position };
+        const target: PositionTarget = { sequenceName, position: mutation.position };
         const key = targetKey(target);
         if (!seen.has(key)) {
             seen.add(key);
@@ -348,7 +348,7 @@ export function pileupTargets(
     return targets;
 }
 
-function targetKey(target: PileupTarget): string {
+function targetKey(target: PositionTarget): string {
     return `${target.sequenceName}:${target.position}`;
 }
 
@@ -359,19 +359,19 @@ export function buildMatrix(
     nucleotideSequence: string,
     requestedDateRanges: TemporalClass[],
     totalCountsByBucket: number[],
-    pileupByTarget: ReadonlyMap<string, PositionPileupRow[]>,
+    rowsByPosition: ReadonlyMap<string, PositionOverTimeRow[]>,
 ): BaseMutationOverTimeDataMap {
     const unknown = unknownSymbol(sequenceType);
     const mutations = visibleMutationCodes
         .map((code) => parseMutationCode(code))
         .filter((mutation): mutation is SubstitutionClass | DeletionClass => mutation !== null);
 
-    // Per target: per-bucket coverage and per-bucket per-symbol counts, from the pileup rows.
+    // Per position: per-bucket coverage and per-bucket per-symbol counts, from the rows.
     const perTarget = new Map<string, { coverage: number[]; bySymbol: Map<string, number[]> }>();
     const bucketIndexByKey = new Map(requestedDateRanges.map((bucket, index) => [bucket.dateString, index]));
     const bucketIndexOf = (day: string): number | undefined =>
         bucketIndexByKey.get(parseDateStringToTemporal(day, granularity).dateString);
-    for (const [key, rows] of pileupByTarget) {
+    for (const [key, rows] of rowsByPosition) {
         const coverage = new Array<number>(requestedDateRanges.length).fill(0);
         const bySymbol = new Map<string, number[]>();
         for (const row of rows) {

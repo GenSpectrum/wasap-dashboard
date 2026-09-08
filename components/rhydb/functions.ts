@@ -26,11 +26,7 @@ export function aminoAcidEquals(options: { position: number; symbol: string; seq
     return symbolEquals('aminoAcidEquals', options);
 }
 
-/**
- * Whether a read has any value for this sequence at all.
- *
- * `symbolState` in `domain/pileup.ts` interprets the result.
- */
+/** Whether a read has any value for this sequence at all. */
 export function isNotNull(sequence: Expr): Expr {
     return fn('isNotNull', [sequence]);
 }

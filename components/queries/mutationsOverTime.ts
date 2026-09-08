@@ -5,13 +5,13 @@
  * options don't hold (grouping by a `unionAll` tag literal, or by the `DATE32`
  * column alongside a mapped `at()`, both time out — see
  * standalone-wasap/10-silo-over-time-findings.md). So the matrix is assembled
- * from a **symbol pileup per position**, and the two queries here back the two
- * data hooks in `components/data/mutationsOverTime.ts`:
+ * from **one symbol distribution per position, per day**, and the two queries
+ * here back the two data hooks in `components/data/mutationsOverTime.ts`:
  *
  *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
  *     mutations get a grid row, and each one's proportion over the whole shown
  *     span (drives the "minimum proportion" filter across pages).
- *   `positionPileupQuery` — one `groupBy(count(), {date, seq.at(pos)})` per
+ *   `positionOverTimeQuery` — one `groupBy(count(), {date, seq.at(pos)})` per
  *     distinct position of the visible *page*: the full symbol distribution
  *     there, per day. `coverage = Σ count(known symbols)`,
  *     `count = Σ count(alt)`. No date filter — the whole range comes back and
@@ -53,7 +53,7 @@ export type OverallMutationsOptions = {
  * Every mutation the filtered reads carry above the proportion floor, as
  * `{ mutationFrom, mutationTo, sequenceName, position, count, coverage }` — one
  * `mutations()` call, scoped to the shown date span. This is the whole-range
- * ("overall") figure per mutation; the per-day breakdown is the pileup.
+ * ("overall") figure per mutation; the per-day breakdown is the position query.
  */
 export function overallMutationsQuery(
     schema: SiloSchema,
@@ -90,10 +90,10 @@ export function readOverallMutations(rows: readonly RhydbRow[]): OverallMutation
     }));
 }
 
-// --- page: the per-position pileup over time -----------------------------
+// --- page: one position's symbol distribution over time -----------------
 
-/** The sequence + position one pileup query answers for. */
-export type PileupTarget = {
+/** The sequence + position one position-over-time query answers for. */
+export type PositionTarget = {
     sequenceName: string;
     position: number;
 };
@@ -107,10 +107,10 @@ export type PileupTarget = {
  * the instance has one; on a `DATE32`-only instance this query times out (known
  * gap, doc 10).
  */
-export function positionPileupQuery(
+export function positionOverTimeQuery(
     schema: SiloSchema,
     filter: Pick<SiloReadFilter, 'locationName'>,
-    target: PileupTarget,
+    target: PositionTarget,
 ): Relation {
     return scoped(schema, { locationName: filter.locationName }).groupBy(
         { count: count() },
@@ -118,7 +118,7 @@ export function positionPileupQuery(
     );
 }
 
-export type PositionPileupRow = {
+export type PositionOverTimeRow = {
     /** ISO `yyyy-mm-dd`. */
     date: string;
     /** The symbol at the position: a base / amino acid, `-`, `N`/`X`, or `null` (absent). */
@@ -126,7 +126,7 @@ export type PositionPileupRow = {
     count: number;
 };
 
-export function readPositionPileup(rows: readonly RhydbRow[], dateColumn: string): PositionPileupRow[] {
+export function readPositionOverTime(rows: readonly RhydbRow[], dateColumn: string): PositionOverTimeRow[] {
     return rows.map((row) => ({
         date: readText(row, dateColumn),
         sym: readOptionalText(row, 'sym'),

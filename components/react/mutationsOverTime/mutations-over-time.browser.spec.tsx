@@ -29,7 +29,7 @@ function ndjson(rows: unknown[]): Response {
  *  - the date axis (`groupBy({n := count()}, {date})`) -> two day buckets
  *  - the metadata `mutations(minProportion := 0.001, …)` call -> the two
  *    display mutations, each above the floor
- *  - one per-position pileup (`groupBy({count := count()}, {date, sym := main.at(P)})`)
+ *  - one position-over-time query (`groupBy({count := count()}, {date, sym := main.at(P)})`)
  *    per distinct position -> a symbol distribution per day, so every cell resolves
  *
  * Position 241: alt `T` = 90% of coverage in both buckets.
@@ -117,7 +117,7 @@ function renderOverTime() {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('MutationsOverTime (SILO pileup)', () => {
+describe('MutationsOverTime (SILO position-over-time)', () => {
     it('renders a column per date bucket, a row per display mutation, cells = alt / coverage', async () => {
         stubSilo();
         const screen = renderOverTime();
@@ -133,16 +133,16 @@ describe('MutationsOverTime (SILO pileup)', () => {
         await expect.element(screen.getByText('10%').first()).toBeInTheDocument();
     });
 
-    it('sends one pileup query per distinct position, location-scoped, no date bounds', async () => {
+    it('sends one position query per distinct position, location-scoped, no date bounds', async () => {
         const fetchMock = stubSilo();
         const screen = renderOverTime();
         await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
 
-        const pileupBodies = fetchMock.mock.calls
+        const positionBodies = fetchMock.mock.calls
             .map(([, init]) => String((init as RequestInit | undefined)?.body ?? ''))
             .filter((body) => body.includes('sym := main.at('));
 
-        expect(pileupBodies).toEqual([
+        expect(positionBodies).toEqual([
             'default.groupBy({count := count()}, {date := date, sym := main.at(241)})',
             'default.groupBy({count := count()}, {date := date, sym := main.at(3037)})',
         ]);

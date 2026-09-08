@@ -2,9 +2,9 @@ import { describe, expect, test } from 'vitest';
 
 import {
     overallMutationsQuery,
-    positionPileupQuery,
+    positionOverTimeQuery,
     readOverallMutations,
-    readPositionPileup,
+    readPositionOverTime,
 } from './mutationsOverTime';
 import type { SiloSchema } from './schema';
 
@@ -40,10 +40,10 @@ describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
     });
 });
 
-describe('positionPileupQuery (page: per-position pileup)', () => {
+describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
     test('groups the symbol at one position by the grouping-date column, location only', () => {
         expect(
-            positionPileupQuery(
+            positionOverTimeQuery(
                 schema,
                 { locationName: 'Zürich (ZH)' },
                 { sequenceName: 'main', position: 241 },
@@ -55,7 +55,7 @@ describe('positionPileupQuery (page: per-position pileup)', () => {
     });
 
     test('no location narrows nothing; amino acid uses the gene column', () => {
-        expect(positionPileupQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
+        expect(positionOverTimeQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
             'default.groupBy({count := count()}, {date := date, sym := S.at(19)})',
         );
     });
@@ -74,9 +74,9 @@ describe('readers', () => {
         ]);
     });
 
-    test('readPositionPileup carries a null symbol through (an absent read)', () => {
+    test('readPositionOverTime carries a null symbol through (an absent read)', () => {
         expect(
-            readPositionPileup(
+            readPositionOverTime(
                 [
                     { date: '2026-06-01', sym: 'T', count: 900 },
                     { date: '2026-06-01', sym: 'N', count: 50 },

@@ -22,8 +22,8 @@ export type SiloSchema = {
      * `at()` column by it is fine, by the `DATE32` column it times out, and even
      * a plain range *filter* on `DATE32` costs ~5 s on covid's ~600 M reads
      * (doc 10). rsv-a / rsv-b have only `samplingDate`, so `groupingDate` is
-     * that same `DATE32` column there — the over-time pileup is blocked until
-     * they gain a dictionary date column.
+     * that same `DATE32` column there — the over-time position query is blocked
+     * until they gain a dictionary date column.
      */
     groupingDate: string;
     /**
