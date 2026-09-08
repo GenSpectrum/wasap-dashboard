@@ -21,6 +21,12 @@ import type { SiloSchema } from './schema';
  * is both correct (ISO dates sort lexically) and fast — and SILO rejects a
  * `::date` cast against it. The `DATE32` column needs the cast. Either way the
  * value is validated here, not at the instance.
+ *
+ * TODO: this function should not exist. It is here only for the transition
+ * period where covid has a dictionary `date` column and rsv-a / rsv-b do not
+ * (see `SiloSchema.groupingDateIsDictionary`). Once every instance has one,
+ * every date bound is a plain `str(value)` against the dict column and this
+ * collapses back into `filterExpression`.
  */
 function dateComparand(schema: SiloSchema, value: string): Expr {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {

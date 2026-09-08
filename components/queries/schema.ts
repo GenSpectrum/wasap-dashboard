@@ -31,6 +31,11 @@ export type SiloSchema = {
      * `true` on covid (`date`): filters use a plain string comparison, and SILO
      * *rejects* a `::date` cast against it. `false` on rsv-a / rsv-b
      * (`samplingDate` is `DATE32`): filters need the `'yyyy-mm-dd'::date` cast.
+     *
+     * TODO: temporary. This flag only exists because covid has a dictionary
+     * `date` column and rsv-a / rsv-b do not yet. When every instance has one,
+     * `groupingDate` is always the dict column, this is always `true`, and both
+     * this field and `dateComparand` (`filter.ts`) go away.
      */
     groupingDateIsDictionary: boolean;
     /** The single nucleotide-sequence column (`main` on every current instance). */
