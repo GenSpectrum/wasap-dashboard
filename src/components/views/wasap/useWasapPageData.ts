@@ -1,4 +1,4 @@
-import type { CountCoverageQuery, CustomColumn, LapisFilter } from 'wasap-components/util';
+import type { CustomColumn, LapisFilter, QueriesOverTimeQuery } from 'wasap-components/util';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
@@ -352,14 +352,19 @@ function extractBackendVariantData(variants: Variant[]): VariantExtractionResult
 
 /**
  * Takes a list of variant queries (from a collection) and validates them all against a LAPIS.
- * For valid variant queries, it constructs a `CountCoverageQuery` to use with the `GsQueriesOverTime`
- * component. For invalid queries, an `InvalidVariantInfo` is returned.
+ * For valid variant queries, it builds a `QueriesOverTimeQuery` (the parsed,
+ * genome-only expression the SILO grid asks) to use with `GsQueriesOverTime`.
+ * For invalid queries, an `InvalidVariantInfo` is returned.
+ *
+ * `/query/parse` is the one LAPIS call the SILO build keeps — SILO has no parse
+ * endpoint. The count / coverage (`q || !maybe(q)`) split happens SILO-side now,
+ * on the parsed AST, not by string-mangling here.
  */
 async function parseAndBuildQueries(
     lapisBaseUrl: string,
     variantData: VariantQueryInput[],
-): Promise<{ queries: CountCoverageQuery[]; invalidVariants: InvalidVariantInfo[] }> {
-    const queries: CountCoverageQuery[] = [];
+): Promise<{ queries: QueriesOverTimeQuery[]; invalidVariants: InvalidVariantInfo[] }> {
+    const queries: QueriesOverTimeQuery[] = [];
     const invalidVariants: InvalidVariantInfo[] = [];
 
     if (variantData.length === 0) {
@@ -379,9 +384,7 @@ async function parseAndBuildQueries(
             invalidVariants.push({ name, error: validationResult.error });
             return;
         }
-        // coverage query formula: https://github.com/GenSpectrum/LAPIS/pull/1558
-        const coverageQuery = `(${queryString}) or (not maybe(${queryString}))`;
-        queries.push({ displayLabel: name, description, countQuery: queryString, coverageQuery });
+        queries.push({ displayLabel: name, description, query: queryString, filter: parseResult.filter });
     });
 
     return { queries, invalidVariants };
@@ -461,7 +464,7 @@ export type WasapCollectionData = {
     collection: {
         id: number;
         title: string;
-        queries: CountCoverageQuery[];
+        queries: QueriesOverTimeQuery[];
     };
     invalidVariants?: InvalidVariantInfo[];
 };

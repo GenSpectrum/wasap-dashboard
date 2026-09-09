@@ -33,11 +33,8 @@ import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '..
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
 const MAX_GRID_COLUMNS = 200;
 
-/** One collection query: a label for the grid row, and the genome-only expression behind it. */
-export type QueriesOverTimeQuery = {
-    displayLabel: string;
-    filter: SiloFilterExpression;
-};
+/** What the hook needs of a collection query: a grid-row label and the genome-only expression. */
+type QuerySpec = { displayLabel: string; filter: SiloFilterExpression };
 
 export type QueriesOverTimeData = {
     /** Queries × dates → count/coverage/proportion, or `null` while anything is still loading. */
@@ -52,7 +49,7 @@ type QueryDailyCounts = { count: NamedCount[]; coverage: NamedCount[] };
 export function useQueriesOverTime(
     filter: SiloReadFilter,
     granularity: TemporalGranularity,
-    queries: QueriesOverTimeQuery[],
+    queries: readonly QuerySpec[],
 ): QueriesOverTimeData {
     const connection = useConnection();
     const schema = useSiloSchema();
