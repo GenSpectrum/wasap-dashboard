@@ -14,12 +14,14 @@ import { getFilteredQueryOverTimeData, type QueryFilter } from './getFilteredQue
 import { QueriesOverTimeFilter } from './queries-over-time-filter';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
+import { useConnection } from '../../data/connection';
+import { useQueriesOverTime } from '../../data/queriesOverTime';
+import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../queries';
 import { type ProportionValue, getProportion } from '../../query/queryMutationsOverTime';
-import { queryQueriesOverTimeData } from '../../query/queryQueriesOverTime';
-import { lapisFilterSchema, temporalGranularitySchema, views } from '../../types';
+import { temporalGranularitySchema, views } from '../../types';
+import { type Map2DContents } from '../../utils/map2d';
 import { type Temporal, toTemporalClass } from '../../utils/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../utils/useDispatchFinishedLoadingEvent';
-import { useLapisUrl } from '../LapisUrlContext';
 import { type ColorScale } from '../components/color-scale-selector';
 import { ColorScaleSelectorDropdown } from '../components/color-scale-selector-dropdown';
 import { CsvDownloadButton } from '../components/csv-download-button';
@@ -49,18 +51,20 @@ const meanProportionIntervalSchema = z.object({
 });
 export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema>;
 
-const countCoverageQuerySchema = z.object({
+const queriesOverTimeQuerySchema = z.object({
     displayLabel: z.string(),
     description: z.string().optional(),
-    countQuery: z.string(),
-    coverageQuery: z.string(),
+    /** The advanced-query string, kept for display in the row-label tooltip. */
+    query: z.string(),
+    /** The parsed, genome-only expression that SILO is asked (see `data/queriesOverTime.ts`). */
+    filter: siloFilterExpressionSchema,
 });
-export type CountCoverageQuery = z.infer<typeof countCoverageQuerySchema>;
+export type QueriesOverTimeQuery = z.infer<typeof queriesOverTimeQuerySchema>;
 
 const queriesOverTimeSchema = z.object({
-    lapisFilter: lapisFilterSchema,
+    filter: siloReadFilterSchema,
     queries: z
-        .array(countCoverageQuerySchema)
+        .array(queriesOverTimeQuerySchema)
         .min(1)
         .superRefine((queries, ctx) => {
             const duplicateDisplayLabels = findDuplicateStrings(queries.map((v) => v.displayLabel));
@@ -73,7 +77,6 @@ const queriesOverTimeSchema = z.object({
         }),
     views: z.array(queriesOverTimeViewSchema),
     granularity: temporalGranularitySchema,
-    lapisDateField: z.string().min(1),
     initialMeanProportionInterval: meanProportionIntervalSchema,
     hideGaps: z.boolean().optional(),
     width: z.string(),
@@ -100,26 +103,15 @@ export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
 };
 
 export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentProps }) => {
-    const lapis = useLapisUrl();
-    const { lapisFilter, queries, granularity, lapisDateField } = componentProps;
+    const { filter, queries, granularity } = componentProps;
 
-    const { data, error, isLoading } = useQuery(
-        () => queryQueriesOverTimeData(lapisFilter, queries, lapis, lapisDateField, granularity),
-        [granularity, lapis, lapisDateField, lapisFilter, queries],
-    );
+    const { data: queryOverTimeData, isLoading } = useQueriesOverTime(filter, granularity, queries);
 
     if (isLoading) {
         return <LoadingDisplay />;
     }
 
-    if (error !== null) {
-        throw error;
-    }
-
-    const { queryOverTimeData } = data;
-
-    // Check if there's any data
-    if (queryOverTimeData.keysFirstAxis.size === 0) {
+    if (queryOverTimeData === null || queryOverTimeData.keysFirstAxis.size === 0) {
         return <NoDataDisplay />;
     }
 
@@ -127,7 +119,7 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
 };
 
 type QueriesOverTimeTabsProps = {
-    queryOverTimeData: Awaited<ReturnType<typeof queryQueriesOverTimeData>>['queryOverTimeData'];
+    queryOverTimeData: Map2DContents<string, Temporal, ProportionValue>;
     originalComponentProps: QueriesOverTimeProps;
 };
 
@@ -174,14 +166,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
                     <PortalTooltip
                         content={
                             <QueriesOverTimeRowLabelTooltip
-                                query={
-                                    queryObject ?? {
-                                        displayLabel: value,
-                                        description: undefined,
-                                        countQuery: '',
-                                        coverageQuery: '',
-                                    }
-                                }
+                                query={queryObject ?? { displayLabel: value, description: undefined, query: '' }}
                             />
                         }
                         position='right'
@@ -304,7 +289,7 @@ type QueriesOverTimeInfoProps = {
 };
 
 const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentProps }) => {
-    const lapis = useLapisUrl();
+    const connection = useConnection();
     return (
         <Info>
             <InfoHeadline1>Queries over time</InfoHeadline1>
@@ -319,7 +304,11 @@ const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentPr
                 that match the count query and the count of samples that match the coverage query in this timeframe. It
                 also shows the total count of samples in this timeframe.
             </InfoParagraph>
-            <InfoComponentCode componentName='queries-over-time' params={originalComponentProps} lapisUrl={lapis} />
+            <InfoComponentCode
+                componentName='queries-over-time'
+                params={originalComponentProps}
+                lapisUrl={connection.url}
+            />
         </Info>
     );
 };

@@ -23,5 +23,5 @@ export { gsEventNames } from './utils/gsEventNames';
 export type { MutationAnnotation, MutationAnnotations } from './gsComponents/mutation-annotations-context';
 
 export type { MeanProportionInterval } from './react/mutationsOverTime/mutations-over-time';
-export type { CountCoverageQuery } from './react/queriesOverTime/queries-over-time';
+export type { QueriesOverTimeQuery } from './react/queriesOverTime/queries-over-time';
 export type { CustomColumn } from './react/components/features-over-time-grid';

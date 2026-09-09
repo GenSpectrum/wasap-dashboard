@@ -173,10 +173,9 @@ export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
                                         <div className='rounded-md border-2 border-gray-100 p-4'>
                                             <GsQueriesOverTime
                                                 collectionTitle={data.collection.title}
-                                                lapisFilter={filter}
+                                                filter={filter}
                                                 queries={data.collection.queries}
                                                 granularity={base.granularity}
-                                                lapisDateField={config.samplingDateField}
                                                 pageSizes={[20, 50, 100, 250]}
                                                 initialMeanProportionInterval={initialMeanProportionInterval}
                                                 hideGaps={base.excludeEmpty ? true : undefined}

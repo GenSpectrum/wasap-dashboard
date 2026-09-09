@@ -1,11 +1,11 @@
 import {
     views,
     type CustomColumn,
-    type LapisFilter,
     type MeanProportionInterval,
     type TemporalGranularity,
-    type CountCoverageQuery,
+    type QueriesOverTimeQuery,
 } from 'wasap-components/util';
+import { type SiloReadFilter } from 'wasap-components/queries';
 import { type FC } from 'react';
 import { GsQueriesOverTime as QueriesOverTime } from 'wasap-components/gsComponents/gs-queries-over-time';
 
@@ -13,10 +13,9 @@ import { ComponentWrapper } from '../ComponentWrapper';
 
 export type GsQueriesOverTimeProps = {
     collectionTitle?: string;
-    lapisFilter: LapisFilter;
-    queries: CountCoverageQuery[];
+    filter: SiloReadFilter;
+    queries: QueriesOverTimeQuery[];
     granularity: TemporalGranularity;
-    lapisDateField: string;
     height?: string;
     pageSizes?: number[];
     hideGaps?: true;
@@ -26,10 +25,9 @@ export type GsQueriesOverTimeProps = {
 
 export const GsQueriesOverTime: FC<GsQueriesOverTimeProps> = ({
     collectionTitle,
-    lapisFilter,
+    filter,
     queries,
     granularity,
-    lapisDateField,
     height,
     pageSizes,
     hideGaps,
@@ -44,11 +42,10 @@ export const GsQueriesOverTime: FC<GsQueriesOverTimeProps> = ({
             <QueriesOverTime
                 width='100%'
                 height={height ? '100%' : undefined}
-                lapisFilter={lapisFilter}
+                filter={filter}
                 queries={queries}
                 views={[views.grid]}
                 granularity={granularity}
-                lapisDateField={lapisDateField}
                 hideGaps={hideGaps}
                 pageSizes={pageSizes ?? [10, 20, 30, 40, 50]}
                 initialMeanProportionInterval={initialMeanProportionInterval}
