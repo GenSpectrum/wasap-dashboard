@@ -9,11 +9,6 @@ export const orderBy = z.object({
 
 const filterValue = z.union([z.string(), z.number(), z.boolean(), z.null(), z.undefined(), z.array(z.string())]);
 
-const dateRange = z.object({
-    dateFrom: z.string(),
-    dateTo: z.string(),
-});
-
 export const lapisBaseRequest = z
     .object({
         limit: z.number().optional(),
@@ -23,42 +18,6 @@ export const lapisBaseRequest = z
     })
     .catchall(filterValue);
 export type LapisBaseRequest = z.infer<typeof lapisBaseRequest>;
-
-const queryDefinition = z.object({
-    displayLabel: z.string().optional(),
-    countQuery: z.string(),
-    coverageQuery: z.string(),
-});
-
-export type QueryDefinition = z.infer<typeof queryDefinition>;
-
-export const queriesOverTimeRequest = z.object({
-    filters: z.record(filterValue),
-    queries: z.array(queryDefinition),
-    dateRanges: z.array(dateRange),
-    dateField: z.string(),
-    downloadAsFile: z.boolean().optional(),
-    downloadFileBasename: z.string().optional(),
-    compression: z.enum(['gzip', 'none']).optional(),
-});
-export type QueriesOverTimeRequest = z.infer<typeof queriesOverTimeRequest>;
-
-export const queriesOverTimeResponse = makeLapisResponse(
-    z.object({
-        queries: z.array(z.string()),
-        dateRanges: z.array(dateRange),
-        data: z.array(
-            z.array(
-                z.object({
-                    count: z.number(),
-                    coverage: z.number(),
-                }),
-            ),
-        ),
-        totalCountsByDateRange: z.array(z.number()),
-    }),
-);
-export type QueriesOverTimeResponse = z.infer<typeof queriesOverTimeResponse>;
 
 const insertionCount = z.object({
     insertion: z.string(),

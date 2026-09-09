@@ -8,8 +8,6 @@ import {
     lapisError,
     problemDetail,
     type ProblemDetail,
-    type QueriesOverTimeRequest,
-    queriesOverTimeResponse,
 } from './lapisTypes';
 import { type SequenceType } from '../types';
 
@@ -88,23 +86,6 @@ export async function fetchInsertions(
     );
 
     return insertionsResponse.parse(await response.json());
-}
-
-export async function fetchQueriesOverTime(lapisUrl: string, body: QueriesOverTimeRequest, signal?: AbortSignal) {
-    const response = await callLapis(
-        queriesOverTimeEndpoint(lapisUrl),
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-            signal,
-        },
-        'queries over time',
-    );
-
-    return queriesOverTimeResponse.parse(await response.json());
 }
 
 export async function fetchReferenceGenome(lapisUrl: string, signal?: AbortSignal) {
@@ -205,7 +186,6 @@ export const insertionsEndpoint = (lapisUrl: string, sequenceType: SequenceType)
         ? `${lapisUrl}/sample/aminoAcidInsertions`
         : `${lapisUrl}/sample/nucleotideInsertions`;
 };
-export const queriesOverTimeEndpoint = (lapisUrl: string) => `${lapisUrl}/component/queriesOverTime`;
 export const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;
 export const lineageDefinitionEndpoint = (lapisUrl: string, lapisField: string) =>
     `${lapisUrl}/sample/lineageDefinition/${lapisField}`;
