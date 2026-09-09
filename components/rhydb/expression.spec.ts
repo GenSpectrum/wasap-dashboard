@@ -1,7 +1,18 @@
 import { describe, expect, test } from 'vitest';
 
 import { and, bool, field, fn, int, not, nullLiteral, num, or, record, set, str, PRECEDENCE } from './expression';
-import { aminoAcidEquals, count, isNotNull, nucleotideEquals } from './functions';
+import {
+    aminoAcidEquals,
+    aminoAcidInsertionContains,
+    count,
+    hasAAMutation,
+    hasMutation,
+    insertionContains,
+    isNotNull,
+    maybe,
+    nOf,
+    nucleotideEquals,
+} from './functions';
 
 describe('literals and fields', () => {
     test('escape where they are built', () => {
@@ -115,5 +126,38 @@ describe('the named functions', () => {
 
     test('reject a position the instance cannot have', () => {
         expect(() => nucleotideEquals({ position: 0, symbol: 'A', sequenceName: 'main' })).toThrow();
+    });
+
+    test('has-mutation / insertion-contains carry their names and require a sequence', () => {
+        expect(hasMutation({ position: 241, sequenceName: 'main' }).render()).toBe(
+            "hasMutation(position := 241, sequenceName := 'main')",
+        );
+        expect(hasAAMutation({ position: 501, sequenceName: 'S' }).render()).toBe(
+            "hasAAMutation(position := 501, sequenceName := 'S')",
+        );
+        expect(insertionContains({ position: 22204, value: 'GAGCCAGAA', sequenceName: 'main' }).render()).toBe(
+            "insertionContains(position := 22204, value := 'GAGCCAGAA', sequenceName := 'main')",
+        );
+        expect(aminoAcidInsertionContains({ position: 214, value: 'EPE', sequenceName: 'S' }).render()).toBe(
+            "aminoAcidInsertionContains(position := 214, value := 'EPE', sequenceName := 'S')",
+        );
+    });
+
+    test('maybe wraps a child; nOf mixes a count, a set and an optional flag', () => {
+        expect(maybe(nucleotideEquals({ position: 241, symbol: 'T', sequenceName: 'main' })).render()).toBe(
+            "maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))",
+        );
+        const matchers = [
+            nucleotideEquals({ position: 1, symbol: 'T', sequenceName: 'main' }),
+            nucleotideEquals({ position: 2, symbol: 'A', sequenceName: 'main' }),
+        ];
+        expect(nOf(1, matchers).render()).toBe(
+            "nOf(1, {nucleotideEquals(position := 1, symbol := 'T', sequenceName := 'main'), " +
+                "nucleotideEquals(position := 2, symbol := 'A', sequenceName := 'main')})",
+        );
+        expect(nOf(2, matchers, { matchExactly: true }).render()).toBe(
+            "nOf(2, {nucleotideEquals(position := 1, symbol := 'T', sequenceName := 'main'), " +
+                "nucleotideEquals(position := 2, symbol := 'A', sequenceName := 'main')}, matchExactly := true)",
+        );
     });
 });
