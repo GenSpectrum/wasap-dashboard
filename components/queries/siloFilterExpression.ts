@@ -1,3 +1,14 @@
+/**
+ * The SILO filter-expression AST — the tree LAPIS's `/query/parse` returns for
+ * an advanced-query string, and the input to the `queries-over-time` SILO
+ * translation (`queriesOverTime.ts`).
+ *
+ * `src/` posts the query strings to `/query/parse` (the one LAPIS call the
+ * SILO build keeps) and hands the parsed expressions down as the
+ * `gs-queries-over-time` `queries` prop; `validateGenomeOnly` gates them first,
+ * so the translator only ever sees the node types it lists.
+ */
+
 import { z } from 'zod';
 
 const stringEqualsSchema = z.object({
@@ -221,3 +232,55 @@ export const siloFilterExpressionSchema = z.union([
     maybeSchema,
     nOfSchema,
 ]);
+
+export type GenomeCheckResult = { isGenomeOnly: true } | { isGenomeOnly: false; error: string };
+
+/** The node types `queriesOverTime.ts` can translate to SaneQL — the leaves. */
+const GENOME_CHECK_TYPES = new Set([
+    'NucleotideEquals',
+    'HasNucleotideMutation',
+    'AminoAcidEquals',
+    'HasAminoAcidMutation',
+    'InsertionContains',
+    'AminoAcidInsertionContains',
+]);
+
+/**
+ * Whether an expression is made only of genome checks and the boolean
+ * combinators — no metadata predicates (`StringEquals`, `DateBetween`,
+ * `Lineage`, …). `queries-over-time` rejects a query that isn't, so the SaneQL
+ * translator (`queriesOverTime.ts`) only ever sees `True`, the six genome
+ * checks, and `And` / `Or` / `Not` / `Maybe` / `N-Of` around them.
+ */
+export function validateGenomeOnly(expression: SiloFilterExpression): GenomeCheckResult {
+    const nonGenomeTypes: string[] = [];
+
+    function traverse(expr: SiloFilterExpression): void {
+        const { type } = expr;
+
+        if (type === 'And' || type === 'Or' || type === 'N-Of') {
+            expr.children.forEach(traverse);
+            return;
+        }
+        if (type === 'Not' || type === 'Maybe') {
+            traverse(expr.child);
+            return;
+        }
+        if (type === 'True' || GENOME_CHECK_TYPES.has(type)) {
+            return;
+        }
+
+        nonGenomeTypes.push(type);
+    }
+
+    traverse(expression);
+
+    if (nonGenomeTypes.length > 0) {
+        return {
+            isGenomeOnly: false,
+            error: `Expression contains non-genome check types: ${nonGenomeTypes.join(', ')}`,
+        };
+    }
+
+    return { isGenomeOnly: true };
+}

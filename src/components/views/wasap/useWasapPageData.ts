@@ -22,7 +22,7 @@ import { getJaccardForMutations, getMutations, getMutationsForVariant } from '..
 import { parseQuery } from '../../../lapis/parseQuery';
 import { getLineageFields } from '../../../types/Collection';
 import type { FilterObject, Variant } from '../../../types/Collection';
-import { validateGenomeOnly } from '../../../util/siloExpressionUtils';
+import { validateGenomeOnly } from 'wasap-components/queries';
 
 /**
  * Hook that fetches and returns `WasapPageData` for the W-ASAP page,

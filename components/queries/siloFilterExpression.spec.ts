@@ -1,6 +1,11 @@
 import { describe, expect, test } from 'vitest';
 
-import { type SiloFilterExpression, extractMetadataFields, siloFilterExpressionSchema } from './siloFilterExpression';
+import {
+    type SiloFilterExpression,
+    extractMetadataFields,
+    siloFilterExpressionSchema,
+    validateGenomeOnly,
+} from './siloFilterExpression';
 
 describe('siloFilterExpressionSchema', () => {
     test('should parse StringEquals', () => {
@@ -289,6 +294,53 @@ describe('siloFilterExpressionSchema (parse)', () => {
         expect(result.success).toBe(true);
         if (result.success) {
             expect(result.data).toEqual(data);
+        }
+    });
+});
+
+describe('validateGenomeOnly', () => {
+    test('accepts the six genome checks, True, and boolean combinators around them', () => {
+        const expr: SiloFilterExpression = {
+            type: 'And',
+            children: [
+                { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' },
+                { type: 'Maybe', child: { type: 'HasNucleotideMutation', position: 3037 } },
+                {
+                    type: 'N-Of',
+                    numberOfMatchers: 1,
+                    matchExactly: false,
+                    children: [
+                        { type: 'AminoAcidEquals', sequenceName: 'S', position: 501, symbol: 'Y' },
+                        { type: 'HasAminoAcidMutation', sequenceName: 'S', position: 484 },
+                    ],
+                },
+                { type: 'Not', child: { type: 'True' } },
+            ],
+        };
+
+        expect(validateGenomeOnly(expr)).toEqual({ isGenomeOnly: true });
+    });
+
+    test('rejects a metadata predicate anywhere in the tree, naming the offending types', () => {
+        const expr: SiloFilterExpression = {
+            type: 'And',
+            children: [
+                { type: 'NucleotideEquals', position: 241, symbol: 'T' },
+                {
+                    type: 'Or',
+                    children: [
+                        { type: 'StringEquals', column: 'country', value: 'USA' },
+                        { type: 'DateBetween', column: 'date', from: '2024-01-01', to: null },
+                    ],
+                },
+            ],
+        };
+
+        const result = validateGenomeOnly(expr);
+        expect(result.isGenomeOnly).toBe(false);
+        if (!result.isGenomeOnly) {
+            expect(result.error).toContain('StringEquals');
+            expect(result.error).toContain('DateBetween');
         }
     });
 });
