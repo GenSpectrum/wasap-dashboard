@@ -24,7 +24,7 @@ import {
     type SiloReadFilter,
 } from '../queries';
 import { readNamedCounts, type NamedCount } from '../queries/rows';
-import { UserFacingError } from '../dashboard-components/react/components/error-display';
+import { UserFacingError } from '../components/shared/error-display';
 import { type ProportionValue } from '../query/queryMutationsOverTime';
 import { type TemporalGranularity } from '../types/dashboardComponents';
 import { type Map2DContents } from '../util/map2d';

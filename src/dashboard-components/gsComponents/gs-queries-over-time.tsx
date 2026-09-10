@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 
-import { QueriesOverTime, type QueriesOverTimeProps } from '../react/queriesOverTime/queries-over-time';
+import { QueriesOverTime, type QueriesOverTimeProps } from '../../components/queriesOverTime/queries-over-time';
 
 export type GsQueriesOverTimeProps = Omit<QueriesOverTimeProps, 'initialMeanProportionInterval'> & {
     initialMeanProportionInterval?: QueriesOverTimeProps['initialMeanProportionInterval'];

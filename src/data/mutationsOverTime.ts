@@ -32,12 +32,12 @@ import {
     type SiloReadFilter,
 } from '../queries';
 import { readNamedCounts } from '../queries/rows';
-import { UserFacingError } from '../dashboard-components/react/components/error-display';
+import { UserFacingError } from '../components/shared/error-display';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
-} from '../dashboard-components/react/mutationsOverTime/MutationOverTimeData';
-import { sortSubstitutionsAndDeletions } from '../dashboard-components/react/shared/sort/sortSubstitutionsAndDeletions';
+} from '../components/mutationsOverTime/MutationOverTimeData';
+import { sortSubstitutionsAndDeletions } from '../components/shared/sort/sortSubstitutionsAndDeletions';
 import { hideGapsInPlace, type ProportionValue } from '../query/queryMutationsOverTime';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../types/dashboardComponents';
 import { Map2dView, type Map2DContents } from '../util/map2d';

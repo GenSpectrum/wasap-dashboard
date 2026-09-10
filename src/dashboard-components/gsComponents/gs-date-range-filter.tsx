@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import { DateRangeFilter, type DateRangeFilterProps } from '../react/dateRangeFilter/date-range-filter';
-import { type DateRangeOptionChangedEvent } from '../react/dateRangeFilter/dateRangeOption';
+import { DateRangeFilter, type DateRangeFilterProps } from '../../components/dateRangeFilter/date-range-filter';
+import { type DateRangeOptionChangedEvent } from '../../components/dateRangeFilter/dateRangeOption';
 import { gsEventNames } from '../../util/gsEventNames';
 
 export type GsDateRangeFilterProps = Omit<DateRangeFilterProps, 'dateRangeOptions' | 'value' | 'width'> & {

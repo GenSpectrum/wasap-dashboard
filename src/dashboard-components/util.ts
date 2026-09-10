@@ -13,8 +13,8 @@ export {
     views,
 } from '../types/dashboardComponents';
 
-export type { DateRangeOption } from './react/dateRangeFilter/dateRangeOption';
-export { DateRangeOptionChangedEvent } from './react/dateRangeFilter/dateRangeOption';
+export type { DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
+export { DateRangeOptionChangedEvent } from '../components/dateRangeFilter/dateRangeOption';
 
 export type { LapisNumberFilter, NumberRange } from '../types/dashboardComponents';
 
@@ -22,6 +22,6 @@ export { gsEventNames } from '../util/gsEventNames';
 
 export type { MutationAnnotation, MutationAnnotations } from './gsComponents/mutation-annotations-context';
 
-export type { MeanProportionInterval } from './react/mutationsOverTime/mutations-over-time';
-export type { QueriesOverTimeQuery } from './react/queriesOverTime/queries-over-time';
-export type { CustomColumn } from './react/components/features-over-time-grid';
+export type { MeanProportionInterval } from '../components/mutationsOverTime/mutations-over-time';
+export type { QueriesOverTimeQuery } from '../components/queriesOverTime/queries-over-time';
+export type { CustomColumn } from '../components/shared/features-over-time-grid';
