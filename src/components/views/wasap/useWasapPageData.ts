@@ -1,4 +1,6 @@
-import type { CustomColumn, LapisFilter, QueriesOverTimeQuery } from 'wasap-components/util';
+import { type QueriesOverTimeQuery } from '../../queriesOverTime/queries-over-time';
+import { type CustomColumn } from '../../shared/features-over-time-grid';
+import { type LapisFilter } from '../../../types/dashboardComponents';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 

@@ -1,4 +1,4 @@
-import type { MeanProportionInterval } from 'wasap-components/util';
+import { type MeanProportionInterval } from '../../mutationsOverTime/mutations-over-time';
 
 import type { WasapAnalysisFilter } from './wasapPageConfig';
 

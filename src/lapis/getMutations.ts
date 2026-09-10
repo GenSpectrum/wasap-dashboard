@@ -1,4 +1,4 @@
-import type { LapisFilter, SequenceType } from 'wasap-components/util';
+import { type LapisFilter, type SequenceType } from '../types/dashboardComponents';
 import axios from 'axios';
 import { z } from 'zod';
 

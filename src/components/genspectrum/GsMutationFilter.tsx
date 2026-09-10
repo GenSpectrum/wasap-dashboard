@@ -1,4 +1,5 @@
-import { type MutationType, gsEventNames } from 'wasap-components/util';
+import { type MutationType } from '../../types/dashboardComponents';
+import { gsEventNames } from '../../util/gsEventNames';
 import { useEffect, useRef } from 'react';
 import { GsMutationFilter as MutationFilterComponent } from './gs-mutation-filter';
 

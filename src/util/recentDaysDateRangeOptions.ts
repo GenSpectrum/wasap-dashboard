@@ -1,4 +1,4 @@
-import { type DateRangeOption } from 'wasap-components/util';
+import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
 import dayjs from 'dayjs';
 
 /**

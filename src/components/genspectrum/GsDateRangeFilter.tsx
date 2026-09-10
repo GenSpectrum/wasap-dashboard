@@ -1,4 +1,5 @@
-import { type DateRangeOption, type DateRangeOptionChangedEvent, gsEventNames } from 'wasap-components/util';
+import { type DateRangeOption, type DateRangeOptionChangedEvent } from '../dateRangeFilter/dateRangeOption';
+import { gsEventNames } from '../../util/gsEventNames';
 import { useEffect, useRef } from 'react';
 import { GsDateRangeFilter as DateRangeFilter } from './gs-date-range-filter';
 

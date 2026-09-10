@@ -1,4 +1,5 @@
-import type { DateRangeOption, SequenceType, TemporalGranularity } from 'wasap-components/util';
+import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
+import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
 
 import type { Organism } from '../../../types/Organism';
 

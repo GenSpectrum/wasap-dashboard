@@ -1,4 +1,5 @@
-import type { DateRangeOption, NumberRange } from 'wasap-components/util';
+import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
+import { type NumberRange } from '../types/dashboardComponents';
 
 import type { LapisLineageQuery, LapisMutationQuery } from './helpers';
 import type { LapisLocation } from './pageStateHandlers/locationFilterFromToUrl';

@@ -1,10 +1,6 @@
-import {
-    type TemporalGranularity,
-    type SequenceType,
-    type MeanProportionInterval,
-    type CustomColumn,
-    views,
-} from 'wasap-components/util';
+import { type MeanProportionInterval } from '../mutationsOverTime/mutations-over-time';
+import { type CustomColumn } from '../shared/features-over-time-grid';
+import { type TemporalGranularity, type SequenceType, views } from '../../types/dashboardComponents';
 import { type SiloReadFilter } from '../../queries';
 import { type FC } from 'react';
 import { GsMutationsOverTime as MutationsOverTime } from './gs-mutations-over-time';

@@ -1,4 +1,4 @@
-import { type SequenceType } from 'wasap-components/util';
+import { type SequenceType } from '../../../../types/dashboardComponents';
 
 import { RadioSelect } from './RadioSelect';
 

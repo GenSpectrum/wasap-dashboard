@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -9,14 +8,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     base: process.env.BASE_PATH ?? '/',
     plugins: [react(), tailwindcss()],
-    resolve: {
-        alias: {
-            // The ported dashboard-components code, being dispersed into `src/` (branch
-            // `inline-components`). Alias kept until every subtree has moved; then this and
-            // the `src/dashboard-components/` dir go away.
-            'wasap-components': resolve(import.meta.dirname, 'src/dashboard-components'),
-        },
-    },
     server: {
         // Match the port the Astro `dashboards` app uses, so muscle memory and
         // any bookmarks carry over.

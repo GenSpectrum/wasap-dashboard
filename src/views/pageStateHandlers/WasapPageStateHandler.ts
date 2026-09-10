@@ -1,4 +1,4 @@
-import { type SequenceType, type TemporalGranularity } from 'wasap-components/util';
+import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
 
 import { type PageStateHandler } from './PageStateHandler';
 import { parseDateRangesFromUrl, setSearchFromDateRange } from './dateFilterFromToUrl';

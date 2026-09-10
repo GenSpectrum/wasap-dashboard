@@ -1,4 +1,4 @@
-import { type DateRangeOption } from 'wasap-components/util';
+import { type DateRangeOption } from '../dateRangeFilter/dateRangeOption';
 import { useDateExtent } from '../../data/reads';
 import { useMemo } from 'react';
 
