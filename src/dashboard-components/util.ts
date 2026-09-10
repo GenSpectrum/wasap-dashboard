@@ -18,7 +18,7 @@ export { DateRangeOptionChangedEvent } from './react/dateRangeFilter/dateRangeOp
 
 export type { LapisNumberFilter, NumberRange } from './types';
 
-export { gsEventNames } from './utils/gsEventNames';
+export { gsEventNames } from '../util/gsEventNames';
 
 export type { MutationAnnotation, MutationAnnotations } from './gsComponents/mutation-annotations-context';
 

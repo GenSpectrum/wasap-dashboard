@@ -7,7 +7,7 @@ import {
     type ResolvedMutationAnnotation,
     useMutationAnnotationsProvider,
 } from './MutationAnnotationsContext';
-import { SubstitutionClass } from '../utils/mutations';
+import { SubstitutionClass } from '../../util/mutations';
 import { type MutationAnnotation, type MutationAnnotations } from '../gsComponents/mutation-annotations-context';
 
 function resolved(annotation: MutationAnnotation): ResolvedMutationAnnotation {

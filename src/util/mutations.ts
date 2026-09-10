@@ -1,4 +1,4 @@
-import { type SubstitutionOrDeletionOrInsertion, type SequenceType } from '../types';
+import { type SubstitutionOrDeletionOrInsertion, type SequenceType } from '../dashboard-components/types';
 
 export interface Mutation {
     readonly position: number;

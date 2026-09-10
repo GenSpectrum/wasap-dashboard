@@ -1,7 +1,7 @@
 import z from 'zod';
 
 import { toYYYYMMDD } from './dateConversion';
-import { gsEventNames } from '../../utils/gsEventNames';
+import { gsEventNames } from '../../../util/gsEventNames';
 
 /**
  * A date range option that can be used in the `gs-date-range-filter` component.

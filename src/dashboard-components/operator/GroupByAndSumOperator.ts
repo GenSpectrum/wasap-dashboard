@@ -1,6 +1,6 @@
 import { GroupByOperator } from './GroupByOperator';
 import { type Operator } from './Operator';
-import { type NumberFields } from '../utils/type-utils';
+import { type NumberFields } from '../../util/type-utils';
 
 type Result<Data, KeyToGroupBy extends keyof Data, KeyToSumBy extends keyof Data> = {
     [P in KeyToGroupBy | KeyToSumBy]: P extends KeyToGroupBy ? Data[KeyToGroupBy] : number;

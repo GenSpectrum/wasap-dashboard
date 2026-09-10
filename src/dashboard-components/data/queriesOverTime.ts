@@ -27,8 +27,8 @@ import { readNamedCounts, type NamedCount } from '../queries/rows';
 import { UserFacingError } from '../react/components/error-display';
 import { type ProportionValue } from '../query/queryMutationsOverTime';
 import { type TemporalGranularity } from '../types';
-import { type Map2DContents } from '../utils/map2d';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../utils/temporalClass';
+import { type Map2DContents } from '../../util/map2d';
+import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';
 
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
 const MAX_GRID_COLUMNS = 200;

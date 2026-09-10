@@ -1,4 +1,4 @@
-import { gsEventNames } from '../../utils/gsEventNames';
+import { gsEventNames } from '../../../util/gsEventNames';
 
 type LapisTextFilter = Record<string, string | undefined>;
 

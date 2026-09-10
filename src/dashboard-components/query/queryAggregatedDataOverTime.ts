@@ -12,7 +12,7 @@ import {
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
-} from '../utils/temporalClass';
+} from '../../util/temporalClass';
 
 export function queryAggregatedDataOverTime(
     filter: LapisFilter,

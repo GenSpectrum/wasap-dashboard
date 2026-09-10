@@ -10,7 +10,7 @@ import {
     styleGridHeader,
 } from './features-over-time-grid-shared';
 import { type ProportionValue } from '../../query/queryMutationsOverTime';
-import { type Temporal } from '../../utils/temporalClass';
+import { type Temporal } from '../../../util/temporalClass';
 import { type TemporalDataMap } from '../mutationsOverTime/MutationOverTimeData';
 import { type PageSizes } from '../shared/tanstackTable/pagination';
 import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';

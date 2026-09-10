@@ -1,6 +1,6 @@
 import { type FC, type ReactNode } from 'react';
 import { MUTATIONS_OVER_TIME_MIN_PROPORTION, type ProportionValue } from '../../query/queryMutationsOverTime';
-import { type Temporal, type TemporalClass, toTemporalClass, YearMonthDayClass } from '../../utils/temporalClass';
+import { type Temporal, type TemporalClass, toTemporalClass, YearMonthDayClass } from '../../../util/temporalClass';
 import { formatProportion } from '../shared/table/formatProportion';
 
 type OverTimeGridTooltipProps = {

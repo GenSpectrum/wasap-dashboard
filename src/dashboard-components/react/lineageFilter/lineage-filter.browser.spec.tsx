@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { LineageFilter } from './lineage-filter';
 import { LapisClientProvider } from '../../lapis/LapisClientContext';
-import { gsEventNames } from '../../utils/gsEventNames';
+import { gsEventNames } from '../../../util/gsEventNames';
 
 /** Stubs the two clinical-LAPIS calls the lineage picker makes. */
 function stubLapis({ aggregated, lineageDefinition }: { aggregated: unknown; lineageDefinition: unknown }) {

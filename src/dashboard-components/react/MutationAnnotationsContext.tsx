@@ -7,7 +7,7 @@ import {
 } from '../gsComponents/mutation-annotations-context';
 import { ErrorDisplay } from './components/error-display';
 import { ResizeContainer } from './components/resize-container';
-import { type Mutation } from '../utils/mutations';
+import { type Mutation } from '../../util/mutations';
 
 export type ResolvedMutationAnnotation = {
     annotation: MutationAnnotation;

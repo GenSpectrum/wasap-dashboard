@@ -1,6 +1,6 @@
 import { createContext, type Dispatch, type FC, type ReactNode, type SetStateAction, useContext } from 'react';
 import type { PageSizes } from './pagination';
-import { useControlledState } from '../../../utils/useControlledState';
+import { useControlledState } from '../../../../util/useControlledState';
 
 type PageSizeContext = {
     pageSize: number;

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { sortSubstitutionsAndDeletions } from './sortSubstitutionsAndDeletions';
-import { DeletionClass, SubstitutionClass } from '../../../utils/mutations';
+import { DeletionClass, SubstitutionClass } from '../../../../util/mutations';
 
 describe('sortSubstitutionsAndDeletions with no segments', () => {
     test('should sort for positions first', () => {

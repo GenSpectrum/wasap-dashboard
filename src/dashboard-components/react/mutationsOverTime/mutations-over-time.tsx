@@ -22,9 +22,9 @@ import {
     type OverTimeMetadata,
 } from '../../data/mutationsOverTime';
 import { useConnection, useSiloSchema } from '../../data/connection';
-import { type Deletion, type Substitution } from '../../utils/mutations';
-import { type Temporal, toTemporalClass } from '../../utils/temporalClass';
-import { useDispatchFinishedLoadingEvent } from '../../utils/useDispatchFinishedLoadingEvent';
+import { type Deletion, type Substitution } from '../../../util/mutations';
+import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
+import { useDispatchFinishedLoadingEvent } from '../../../util/useDispatchFinishedLoadingEvent';
 import { useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { AnnotatedMutation } from '../components/annotated-mutation';

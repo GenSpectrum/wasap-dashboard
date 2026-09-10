@@ -1,4 +1,4 @@
-import type { Deletion, Substitution } from '../../../utils/mutations';
+import type { Deletion, Substitution } from '../../../../util/mutations';
 
 export const sortSubstitutionsAndDeletions = (a: Substitution | Deletion, b: Substitution | Deletion) => {
     if (a.segment !== b.segment) {

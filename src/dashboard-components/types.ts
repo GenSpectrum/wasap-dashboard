@@ -7,7 +7,7 @@ import {
     type InsertionClass,
     type Substitution,
     type SubstitutionClass,
-} from './utils/mutations';
+} from '../util/mutations';
 
 export const mutationsFilterSchema = z.object({
     nucleotideMutations: z.array(z.string()),

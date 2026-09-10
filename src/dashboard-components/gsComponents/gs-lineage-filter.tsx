@@ -5,7 +5,7 @@ import {
     type LineageFilterChangedEvent,
     type LineageMultiFilterChangedEvent,
 } from '../react/lineageFilter/LineageFilterChangedEvent';
-import { gsEventNames } from '../utils/gsEventNames';
+import { gsEventNames } from '../../util/gsEventNames';
 
 export type GsLineageFilterProps = Omit<LineageFilterProps, 'field' | 'width'> & {
     field?: LineageFilterProps['field'];

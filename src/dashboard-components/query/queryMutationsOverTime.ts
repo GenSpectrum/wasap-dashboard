@@ -1,6 +1,6 @@
-import { type Map2dView } from '../utils/map2d';
-import { type Deletion, type Substitution } from '../utils/mutations';
-import { type Temporal } from '../utils/temporalClass';
+import { type Map2dView } from '../../util/map2d';
+import { type Deletion, type Substitution } from '../../util/mutations';
+import { type Temporal } from '../../util/temporalClass';
 
 export type ProportionValue =
     | {

@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TextFilter } from './text-filter';
 import { ConnectionProvider } from '../../data/connection';
-import { gsEventNames } from '../../utils/gsEventNames';
+import { gsEventNames } from '../../../util/gsEventNames';
 import type { SiloSchema } from '../../queries/schema';
 
 const schema: SiloSchema = {

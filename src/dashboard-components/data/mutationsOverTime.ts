@@ -40,15 +40,15 @@ import {
 import { sortSubstitutionsAndDeletions } from '../react/shared/sort/sortSubstitutionsAndDeletions';
 import { hideGapsInPlace, type ProportionValue } from '../query/queryMutationsOverTime';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../types';
-import { Map2dView, type Map2DContents } from '../utils/map2d';
-import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../utils/mutations';
+import { Map2dView, type Map2DContents } from '../../util/map2d';
+import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';
 import {
     generateAllInRange,
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type Temporal,
     type TemporalClass,
-} from '../utils/temporalClass';
+} from '../../util/temporalClass';
 
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
 const MAX_GRID_COLUMNS = 200;

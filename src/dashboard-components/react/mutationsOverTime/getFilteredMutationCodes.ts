@@ -1,7 +1,7 @@
 import z from 'zod';
 
 import { type SequenceType, type SubstitutionOrDeletionEntry } from '../../types';
-import type { Deletion, Mutation, Substitution } from '../../utils/mutations';
+import type { Deletion, Mutation, Substitution } from '../../../util/mutations';
 import { type useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 import type { DisplayedMutationType } from '../components/mutation-type-selector';
 import type { DisplayedSegment } from '../components/segment-selector';

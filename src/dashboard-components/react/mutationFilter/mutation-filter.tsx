@@ -13,8 +13,8 @@ import {
     mutationTypeSchema,
     type MutationType,
 } from '../../types';
-import { gsEventNames } from '../../utils/gsEventNames';
-import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../utils/mutations';
+import { gsEventNames } from '../../../util/gsEventNames';
+import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
 import { ErrorBoundary } from '../components/error-boundary';
 import { UserFacingError } from '../components/error-display';

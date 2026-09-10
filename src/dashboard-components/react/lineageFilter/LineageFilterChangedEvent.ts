@@ -1,4 +1,4 @@
-import { gsEventNames } from '../../utils/gsEventNames';
+import { gsEventNames } from '../../../util/gsEventNames';
 
 type LapisLineageFilter = Record<string, string | undefined>;
 type LapisLineageMultiFilter = Record<string, string[] | undefined>;
