@@ -11,10 +11,10 @@ export default defineConfig({
     plugins: [react(), tailwindcss()],
     resolve: {
         alias: {
-            // `components/` holds the dashboard-components internals the app renders directly.
-            // A bare-specifier alias, rather than relative imports, so `src/`'s many import sites
-            // at varying depths only ever need one path regardless of where they live.
-            'wasap-components': resolve(import.meta.dirname, 'components'),
+            // The ported dashboard-components code, being dispersed into `src/` (branch
+            // `inline-components`). Alias kept until every subtree has moved; then this and
+            // the `src/dashboard-components/` dir go away.
+            'wasap-components': resolve(import.meta.dirname, 'src/dashboard-components'),
         },
     },
     server: {

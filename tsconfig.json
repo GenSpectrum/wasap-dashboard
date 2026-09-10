@@ -8,8 +8,9 @@
         "jsxImportSource": "react",
 
         // Matches the `wasap-components` alias in vite.config.ts / vitest.config.ts.
+        // Temporary — the dashboard-components code is being dispersed into `src/`.
         "paths": {
-            "wasap-components/*": ["./components/*"]
+            "wasap-components/*": ["./src/dashboard-components/*"]
         },
 
         // Strictness: `strict` only. The stricter checks
@@ -29,5 +30,5 @@
         "noEmit": true,
         "types": ["vite/client", "vitest/globals", "node"]
     },
-    "include": ["src", "components", "vite.config.ts", "vitest.config.ts"]
+    "include": ["src", "vite.config.ts", "vitest.config.ts"]
 }
