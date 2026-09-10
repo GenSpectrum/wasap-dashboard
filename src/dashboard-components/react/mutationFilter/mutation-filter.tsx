@@ -12,7 +12,7 @@ import {
     mutationType,
     mutationTypeSchema,
     type MutationType,
-} from '../../types';
+} from '../../../types/dashboardComponents';
 import { gsEventNames } from '../../../util/gsEventNames';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';

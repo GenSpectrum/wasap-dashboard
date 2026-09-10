@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type FC, type PropsWithChildren } from 'react';
 
-import type { SequenceType } from '../types';
+import type { SequenceType } from '../../types/dashboardComponents';
 import type { Deletion, Substitution } from '../../util/mutations';
 import { mutationLinkTemplateSchema } from '../gsComponents/mutation-link-template-context';
 import { ErrorDisplay } from './components/error-display';

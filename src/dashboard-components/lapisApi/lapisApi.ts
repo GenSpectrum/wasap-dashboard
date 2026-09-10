@@ -9,7 +9,7 @@ import {
     problemDetail,
     type ProblemDetail,
 } from './lapisTypes';
-import { type SequenceType } from '../types';
+import { type SequenceType } from '../../types/dashboardComponents';
 
 export class UnknownLapisError extends Error {
     constructor(

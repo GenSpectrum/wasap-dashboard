@@ -11,12 +11,12 @@ export {
     type MutationType,
     mutationType,
     views,
-} from './types';
+} from '../types/dashboardComponents';
 
 export type { DateRangeOption } from './react/dateRangeFilter/dateRangeOption';
 export { DateRangeOptionChangedEvent } from './react/dateRangeFilter/dateRangeOption';
 
-export type { LapisNumberFilter, NumberRange } from './types';
+export type { LapisNumberFilter, NumberRange } from '../types/dashboardComponents';
 
 export { gsEventNames } from '../util/gsEventNames';
 

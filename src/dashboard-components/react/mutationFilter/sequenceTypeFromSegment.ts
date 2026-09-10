@@ -1,5 +1,5 @@
 import { isSingleSegmented, type ReferenceGenome } from '../../lapisApi/ReferenceGenome';
-import type { SequenceType } from '../../types';
+import type { SequenceType } from '../../../types/dashboardComponents';
 
 export const sequenceTypeFromSegment = (
     possibleSegment: string | undefined,

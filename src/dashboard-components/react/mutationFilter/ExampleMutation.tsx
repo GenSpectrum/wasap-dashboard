@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import type { FC } from 'react';
 
 import { type ReferenceGenome } from '../../lapisApi/ReferenceGenome';
-import type { SequenceType } from '../../types';
+import type { SequenceType } from '../../../types/dashboardComponents';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
 
 type ExampleMutationProps = {

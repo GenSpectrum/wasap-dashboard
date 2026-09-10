@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 
 import { InfoHeadline1, InfoHeadline2, InfoParagraph } from './info';
 import { ButtonWithModalDialog, useModalRef } from './modal';
-import type { SequenceType } from '../../types';
+import type { SequenceType } from '../../../types/dashboardComponents';
 import type { Deletion, Substitution } from '../../../util/mutations';
 import { useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 import { useMutationLinkProvider } from '../MutationLinkTemplateContext';

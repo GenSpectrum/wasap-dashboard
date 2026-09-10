@@ -2,7 +2,7 @@ import { type FC } from 'react';
 
 import { ReferenceGenomesAwaiter } from '../react/components/ReferenceGenomesAwaiter';
 import { MutationFilter, type MutationFilterProps } from '../react/mutationFilter/mutation-filter';
-import { type MutationsFilter } from '../types';
+import { type MutationsFilter } from '../../types/dashboardComponents';
 import { gsEventNames } from '../../util/gsEventNames';
 
 export type GsMutationFilterProps = Omit<MutationFilterProps, 'width'> & { width?: MutationFilterProps['width'] };

@@ -39,7 +39,7 @@ import {
 } from '../react/mutationsOverTime/MutationOverTimeData';
 import { sortSubstitutionsAndDeletions } from '../react/shared/sort/sortSubstitutionsAndDeletions';
 import { hideGapsInPlace, type ProportionValue } from '../query/queryMutationsOverTime';
-import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../types';
+import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../types/dashboardComponents';
 import { Map2dView, type Map2DContents } from '../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';
 import {

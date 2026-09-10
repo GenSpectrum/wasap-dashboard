@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { type CheckboxItem, CheckboxSelector } from './checkbox-selector';
-import type { SubstitutionOrDeletion } from '../../types';
+import type { SubstitutionOrDeletion } from '../../../types/dashboardComponents';
 
 export type DisplayedMutationType = CheckboxItem & {
     type: SubstitutionOrDeletion;

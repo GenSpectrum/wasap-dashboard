@@ -5,7 +5,7 @@ import { MapOperator } from '../operator/MapOperator';
 import { RenameFieldOperator } from '../operator/RenameFieldOperator';
 import { SlidingOperator } from '../operator/SlidingOperator';
 import { SortOperator } from '../operator/SortOperator';
-import type { LapisFilter, TemporalGranularity } from '../types';
+import type { LapisFilter, TemporalGranularity } from '../../types/dashboardComponents';
 import {
     dateRangeCompare,
     generateAllInRange,

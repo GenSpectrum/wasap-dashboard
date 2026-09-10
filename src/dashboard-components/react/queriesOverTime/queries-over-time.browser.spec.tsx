@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { QueriesOverTime } from './queries-over-time';
 import { ConnectionProvider } from '../../data/connection';
-import { views } from '../../types';
+import { views } from '../../../types/dashboardComponents';
 import type { SiloSchema } from '../../queries/schema';
 
 const schema: SiloSchema = {

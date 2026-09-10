@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import type { SequenceType } from '../types';
+import type { SequenceType } from '../../types/dashboardComponents';
 
 export const referenceGenomeResponse = z.object({
     nucleotideSequences: z.array(

@@ -18,7 +18,7 @@ import { useConnection } from '../../data/connection';
 import { useQueriesOverTime } from '../../data/queriesOverTime';
 import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../queries';
 import { type ProportionValue, getProportion } from '../../query/queryMutationsOverTime';
-import { temporalGranularitySchema, views } from '../../types';
+import { temporalGranularitySchema, views } from '../../../types/dashboardComponents';
 import { type Map2DContents } from '../../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../../util/useDispatchFinishedLoadingEvent';
