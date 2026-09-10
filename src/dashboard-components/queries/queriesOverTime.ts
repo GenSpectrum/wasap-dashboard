@@ -20,7 +20,7 @@
  * 12 node types `validateGenomeOnly` lets through, each to a `rhydb` builder.
  */
 
-import { and, bool, not, or, type Expr } from '../rhydb/expression';
+import { and, bool, not, or, type Expr } from '../../rhydb/expression';
 import {
     aminoAcidEquals,
     aminoAcidInsertionContains,
@@ -31,8 +31,8 @@ import {
     maybe,
     nOf,
     nucleotideEquals,
-} from '../rhydb/functions';
-import { type Relation } from '../rhydb/relation';
+} from '../../rhydb/functions';
+import { type Relation } from '../../rhydb/relation';
 import { READS } from './catalogue';
 import { scoped, type SiloReadFilter } from './filter';
 import type { SiloSchema } from './schema';
