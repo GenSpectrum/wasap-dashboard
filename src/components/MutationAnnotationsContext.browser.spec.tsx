@@ -8,10 +8,7 @@ import {
     useMutationAnnotationsProvider,
 } from './MutationAnnotationsContext';
 import { SubstitutionClass } from '../util/mutations';
-import {
-    type MutationAnnotation,
-    type MutationAnnotations,
-} from '../dashboard-components/gsComponents/mutation-annotations-context';
+import { type MutationAnnotation, type MutationAnnotations } from './genspectrum/mutation-annotations-context';
 
 function resolved(annotation: MutationAnnotation): ResolvedMutationAnnotation {
     return { annotation, name: annotation.name, description: annotation.description };

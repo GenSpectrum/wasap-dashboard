@@ -1,6 +1,6 @@
 import { gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-import { GsLineageFilter as LineageFilter } from 'wasap-components/gsComponents/gs-lineage-filter';
+import { GsLineageFilter as LineageFilter } from './gs-lineage-filter';
 
 export function GsLineageFilter<Lineage extends string>({
     field,

@@ -1,6 +1,6 @@
 import { type MutationType, gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-import { GsMutationFilter as MutationFilterComponent } from 'wasap-components/gsComponents/gs-mutation-filter';
+import { GsMutationFilter as MutationFilterComponent } from './gs-mutation-filter';
 
 export type MutationFilter = {
     nucleotideMutations: string[];

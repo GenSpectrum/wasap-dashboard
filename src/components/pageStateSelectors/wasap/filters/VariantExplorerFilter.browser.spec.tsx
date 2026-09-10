@@ -3,7 +3,7 @@ import { type ReactElement } from 'react';
 import { page, userEvent } from 'vitest/browser';
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { GsApp } from 'wasap-components/gsComponents/gs-app';
+import { GsApp } from '../../../genspectrum/gs-app';
 
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';

@@ -20,7 +20,7 @@ export type { LapisNumberFilter, NumberRange } from '../types/dashboardComponent
 
 export { gsEventNames } from '../util/gsEventNames';
 
-export type { MutationAnnotation, MutationAnnotations } from './gsComponents/mutation-annotations-context';
+export type { MutationAnnotation, MutationAnnotations } from '../components/genspectrum/mutation-annotations-context';
 
 export type { MeanProportionInterval } from '../components/mutationsOverTime/mutations-over-time';
 export type { QueriesOverTimeQuery } from '../components/queriesOverTime/queries-over-time';

@@ -1,6 +1,6 @@
 import { gsEventNames } from 'wasap-components/util';
 import { useEffect, useRef } from 'react';
-import { GsTextFilter as TextFilter } from 'wasap-components/gsComponents/gs-text-filter';
+import { GsTextFilter as TextFilter } from './gs-text-filter';
 
 export function GsTextFilter<Field extends string>({
     field,

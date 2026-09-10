@@ -7,7 +7,7 @@ import {
 } from 'wasap-components/util';
 import { type SiloReadFilter } from '../../queries';
 import { type FC } from 'react';
-import { GsQueriesOverTime as QueriesOverTime } from 'wasap-components/gsComponents/gs-queries-over-time';
+import { GsQueriesOverTime as QueriesOverTime } from './gs-queries-over-time';
 
 import { ComponentWrapper } from '../ComponentWrapper';
 

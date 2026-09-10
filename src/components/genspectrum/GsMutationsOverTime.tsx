@@ -7,7 +7,7 @@ import {
 } from 'wasap-components/util';
 import { type SiloReadFilter } from '../../queries';
 import { type FC } from 'react';
-import { GsMutationsOverTime as MutationsOverTime } from 'wasap-components/gsComponents/gs-mutations-over-time';
+import { GsMutationsOverTime as MutationsOverTime } from './gs-mutations-over-time';
 
 import { ComponentWrapper } from '../ComponentWrapper';
 

@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 
-import { MutationsOverTime, type MutationsOverTimeProps } from '../../components/mutationsOverTime/mutations-over-time';
+import { MutationsOverTime, type MutationsOverTimeProps } from '../mutationsOverTime/mutations-over-time';
 
 export type GsMutationsOverTimeProps = Omit<MutationsOverTimeProps, 'initialMeanProportionInterval'> & {
     initialMeanProportionInterval?: MutationsOverTimeProps['initialMeanProportionInterval'];
