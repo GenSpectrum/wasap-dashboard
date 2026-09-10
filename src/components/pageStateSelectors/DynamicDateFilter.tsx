@@ -1,5 +1,5 @@
 import { type DateRangeOption } from 'wasap-components/util';
-import { useDateExtent } from 'wasap-components/data/reads';
+import { useDateExtent } from '../../data/reads';
 import { useMemo } from 'react';
 
 import { CustomDateRangeLabel } from '../../types/DateWindow';

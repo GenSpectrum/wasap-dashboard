@@ -20,8 +20,8 @@ import {
     totalReadCountQuery,
     type NamedCount,
     type SiloReadFilter,
-} from '../../queries';
-import type { RhydbRow } from '../../rhydb/row';
+} from '../queries';
+import type { RhydbRow } from '../rhydb/row';
 
 /**
  * Every distinct value of a string column, with its read count, ordered by

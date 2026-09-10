@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ConnectionProvider, useConnection, useSiloSchema } from './connection';
-import type { SiloSchema } from '../../queries/schema';
+import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
     table: 'default',

@@ -1,7 +1,7 @@
 import { type FC, type ReactNode } from 'react';
 
-import { useTotalReadCount } from 'wasap-components/data/reads';
-import { useConnection } from 'wasap-components/data/connection';
+import { useTotalReadCount } from '../data/reads';
+import { useConnection } from '../data/connection';
 
 /**
  * Renders its children only once the SILO instance has answered a trivial

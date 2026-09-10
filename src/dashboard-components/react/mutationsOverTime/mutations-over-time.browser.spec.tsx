@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { MutationsOverTime } from './mutations-over-time';
-import { ConnectionProvider } from '../../data/connection';
+import { ConnectionProvider } from '../../../data/connection';
 import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
 import { views } from '../../../types/dashboardComponents';
 import type { SiloSchema } from '../../../queries/schema';

@@ -6,7 +6,7 @@ import { DownshiftCombobox } from '../components/downshift-combobox';
 import { ErrorBoundary } from '../components/error-boundary';
 import { LoadingDisplay } from '../components/loading-display';
 import { ResizeContainer } from '../components/resize-container';
-import { useStringFieldOptions } from '../../data/reads';
+import { useStringFieldOptions } from '../../../data/reads';
 
 const textSelectorPropsSchema = z.object({
     field: z.string().min(1),

@@ -6,7 +6,7 @@ import { DownshiftCombobox, DownshiftMultiCombobox } from '../components/downshi
 import { ErrorBoundary } from '../components/error-boundary';
 import { LoadingDisplay } from '../components/loading-display';
 import { ResizeContainer } from '../components/resize-container';
-import { useLineageOptions, type LineageItem } from '../../data/lineageOptions';
+import { useLineageOptions, type LineageItem } from '../../../data/lineageOptions';
 
 const lineageSelectorPropsSchema = z.object({
     field: z.string().min(1),

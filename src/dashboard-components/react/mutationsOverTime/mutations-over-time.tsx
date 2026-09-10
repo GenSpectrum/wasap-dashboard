@@ -20,8 +20,8 @@ import {
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
-} from '../../data/mutationsOverTime';
-import { useConnection, useSiloSchema } from '../../data/connection';
+} from '../../../data/mutationsOverTime';
+import { useConnection, useSiloSchema } from '../../../data/connection';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../../util/useDispatchFinishedLoadingEvent';

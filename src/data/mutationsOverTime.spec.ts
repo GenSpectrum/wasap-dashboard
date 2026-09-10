@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
 import { buildDateAxis, buildMatrix, genesOf, positionTargets, toMutationEntries } from './mutationsOverTime';
-import { type OverallMutationRow, type PositionOverTimeRow } from '../../queries';
-import { getProportion } from '../../query/queryMutationsOverTime';
+import { type OverallMutationRow, type PositionOverTimeRow } from '../queries';
+import { getProportion } from '../query/queryMutationsOverTime';
 
 describe('buildDateAxis', () => {
     test('buckets days, gap-fills, aligns totals', () => {

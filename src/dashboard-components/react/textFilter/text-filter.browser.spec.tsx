@@ -4,7 +4,7 @@ import { render } from 'vitest-browser-react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TextFilter } from './text-filter';
-import { ConnectionProvider } from '../../data/connection';
+import { ConnectionProvider } from '../../../data/connection';
 import { gsEventNames } from '../../../util/gsEventNames';
 import type { SiloSchema } from '../../../queries/schema';
 

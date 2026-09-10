@@ -25,7 +25,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import { pool } from './pool';
-import { RhydbError } from '../../rhydb/query';
+import { RhydbError } from '../rhydb/query';
 
 /** How often a partially filled result is published to React. */
 const PUBLISH_INTERVAL_MS = 200;
