@@ -1,6 +1,6 @@
 import { type MutationFilterItem } from './mutation-filter';
 import { sequenceTypeFromSegment } from './sequenceTypeFromSegment';
-import type { ReferenceGenome } from '../../lapisApi/ReferenceGenome';
+import type { ReferenceGenome } from '../../../lapisApi/ReferenceGenome';
 import { type SequenceType, mutationType } from '../../../types/dashboardComponents';
 import { DeletionClass, InsertionClass, type Mutation, SubstitutionClass } from '../../../util/mutations';
 

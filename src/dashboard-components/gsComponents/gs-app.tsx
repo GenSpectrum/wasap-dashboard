@@ -1,8 +1,8 @@
 import { type FC, type PropsWithChildren } from 'react';
 import z from 'zod';
 
-import { fetchReferenceGenome } from '../lapisApi/lapisApi';
-import { type ReferenceGenome } from '../lapisApi/ReferenceGenome';
+import { fetchReferenceGenome } from '../../lapisApi/lapisApi';
+import { type ReferenceGenome } from '../../lapisApi/ReferenceGenome';
 import { LapisUrlContextProvider } from '../react/LapisUrlContext';
 import { MutationAnnotationsContextProvider } from '../react/MutationAnnotationsContext';
 import { MutationLinkTemplateContextProvider } from '../react/MutationLinkTemplateContext';

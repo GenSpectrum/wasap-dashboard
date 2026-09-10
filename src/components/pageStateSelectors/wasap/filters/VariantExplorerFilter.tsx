@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { Inset } from '../../../../styles/Inset';
 import { type CollectionSummary } from '../../../../types/Collection';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
-import { LapisClientProvider } from 'wasap-components/lapis/LapisClientContext';
+import { LapisClientProvider } from '../../../../lapis/LapisClientContext';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,

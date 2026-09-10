@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { assembleLineageOptions } from './lineageOptions';
-import type { LineageDefinitionResponse } from '../lapisApi/LineageDefinition';
+import type { LineageDefinitionResponse } from '../../lapisApi/LineageDefinition';
 
 describe('assembleLineageOptions', () => {
     test('emits each lineage and its wildcard form, wildcard counts including sublineages', () => {
