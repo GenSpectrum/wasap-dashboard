@@ -10,8 +10,8 @@
 
 import z from 'zod';
 
-import { and, dateLiteral, field, str, type Expr } from '../../rhydb/expression';
-import { table, type Relation } from '../../rhydb/relation';
+import { and, dateLiteral, field, str, type Expr } from '../rhydb/expression';
+import { table, type Relation } from '../rhydb/relation';
 import type { SiloSchema } from './schema';
 
 /**

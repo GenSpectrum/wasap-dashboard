@@ -20,7 +20,7 @@ import {
     totalReadCountQuery,
     type NamedCount,
     type SiloReadFilter,
-} from '../queries';
+} from '../../queries';
 import type { RhydbRow } from '../../rhydb/row';
 
 /**

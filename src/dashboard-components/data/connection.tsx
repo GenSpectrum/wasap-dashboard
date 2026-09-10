@@ -17,7 +17,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 
 import { connect, type Connection } from '../../rhydb/connection';
-import type { SiloSchema } from '../queries/schema';
+import type { SiloSchema } from '../../queries/schema';
 
 type SiloInstance = { connection: Connection; schema: SiloSchema };
 

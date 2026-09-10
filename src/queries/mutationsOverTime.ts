@@ -18,10 +18,10 @@
  *     is bucketed client-side, so one cached result serves any window.
  */
 
-import { field } from '../../rhydb/expression';
-import { count } from '../../rhydb/functions';
-import { type Relation } from '../../rhydb/relation';
-import { readCount, readOptionalText, readText, type RhydbRow } from '../../rhydb/row';
+import { field } from '../rhydb/expression';
+import { count } from '../rhydb/functions';
+import { type Relation } from '../rhydb/relation';
+import { readCount, readOptionalText, readText, type RhydbRow } from '../rhydb/row';
 import { scoped, type SiloReadFilter } from './filter';
 import type { SiloSchema } from './schema';
 

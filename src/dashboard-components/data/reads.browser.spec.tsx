@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
 import { useDataVersion, useDateExtent, useStringFieldOptions, useTotalReadCount } from './reads';
-import type { SiloSchema } from '../queries/schema';
+import type { SiloSchema } from '../../queries/schema';
 
 const schema: SiloSchema = {
     table: 'default',

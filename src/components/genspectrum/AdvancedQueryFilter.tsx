@@ -3,7 +3,7 @@ import { type FC, type InputEvent, useEffect, useRef, useState } from 'react';
 
 import { getClientLogger } from '../../clientLogger';
 import { parseQuery } from '../../lapis/parseQuery';
-import { extractMetadataFields } from 'wasap-components/queries';
+import { extractMetadataFields } from '../../queries';
 
 const logger = getClientLogger('AdvancedQueryFilter');
 

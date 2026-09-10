@@ -30,8 +30,8 @@ import {
     type PositionTarget,
     type PositionOverTimeRow,
     type SiloReadFilter,
-} from '../queries';
-import { readNamedCounts } from '../queries/rows';
+} from '../../queries';
+import { readNamedCounts } from '../../queries/rows';
 import { UserFacingError } from '../react/components/error-display';
 import {
     BaseMutationOverTimeDataMap,

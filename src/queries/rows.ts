@@ -5,7 +5,7 @@
  * values.
  */
 
-import { readCount, readText, type RhydbRow } from '../../rhydb/row';
+import { readCount, readText, type RhydbRow } from '../rhydb/row';
 import { READS } from './catalogue';
 
 /** The single `{ n }` row of a total-count query. Zero rows means zero reads. */

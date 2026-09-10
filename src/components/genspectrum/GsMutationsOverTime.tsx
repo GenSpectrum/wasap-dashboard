@@ -5,7 +5,7 @@ import {
     type CustomColumn,
     views,
 } from 'wasap-components/util';
-import { type SiloReadFilter } from 'wasap-components/queries';
+import { type SiloReadFilter } from '../../queries';
 import { type FC } from 'react';
 import { GsMutationsOverTime as MutationsOverTime } from 'wasap-components/gsComponents/gs-mutations-over-time';
 

@@ -18,7 +18,7 @@ import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
 import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime';
 import { GsApp } from 'wasap-components/gsComponents/gs-app';
 import { ConnectionProvider } from 'wasap-components/data/connection';
-import { type SiloReadFilter } from 'wasap-components/queries';
+import { type SiloReadFilter } from '../../../queries';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
 import { usePageState } from '../usePageState';
 import { siloSchema } from '../../../silo/siloSchema';

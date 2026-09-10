@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { buildQueriesMatrix } from './queriesOverTime';
 import { buildDateAxis } from './mutationsOverTime';
 import { getProportion } from '../../query/queryMutationsOverTime';
-import { type NamedCount } from '../queries/rows';
+import { type NamedCount } from '../../queries/rows';
 
 const axis = buildDateAxis(
     [
