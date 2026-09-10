@@ -25,7 +25,7 @@ import {
 } from '../queries';
 import { readNamedCounts, type NamedCount } from '../queries/rows';
 import { UserFacingError } from '../react/components/error-display';
-import { type ProportionValue } from '../query/queryMutationsOverTime';
+import { type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';

@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { type ProportionValue, MUTATIONS_OVER_TIME_MIN_PROPORTION } from '../../query/queryMutationsOverTime';
+import { type ProportionValue, MUTATIONS_OVER_TIME_MIN_PROPORTION } from '../../../query/queryMutationsOverTime';
 import type { Deletion, Substitution } from '../../../util/mutations';
 import { type Temporal } from '../../../util/temporalClass';
 import { OverTimeGridTooltip } from '../components/over-time-grid-tooltip';

@@ -1,4 +1,4 @@
-import { type Temporal } from '../../util/temporalClass';
+import { type Temporal } from '../util/temporalClass';
 
 /** A query's grid-row key is just its display label. */
 export function serializeQuery(displayLabel: string): string {

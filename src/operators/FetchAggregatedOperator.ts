@@ -1,8 +1,8 @@
 import { type Dataset } from './Dataset';
 import { type Operator } from './Operator';
-import { fetchAggregated } from '../../lapisApi/lapisApi';
-import { type AggregatedItem } from '../../lapisApi/lapisTypes';
-import { type LapisFilter } from '../../types/dashboardComponents';
+import { fetchAggregated } from '../lapisApi/lapisApi';
+import { type AggregatedItem } from '../lapisApi/lapisTypes';
+import { type LapisFilter } from '../types/dashboardComponents';
 
 export class FetchAggregatedOperator<Fields extends Record<string, unknown>> implements Operator<
     Fields & { count: number }

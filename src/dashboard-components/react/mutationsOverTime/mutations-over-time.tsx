@@ -12,7 +12,7 @@ import z from 'zod';
 
 import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
-import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
+import { getProportion, type ProportionValue } from '../../../query/queryMutationsOverTime';
 import { sequenceTypeSchema, temporalGranularitySchema, views } from '../../../types/dashboardComponents';
 import { siloReadFilterSchema } from '../../queries/filter';
 import {

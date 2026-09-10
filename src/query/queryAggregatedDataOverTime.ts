@@ -1,18 +1,18 @@
-import { FetchAggregatedOperator } from '../operator/FetchAggregatedOperator';
-import { FillMissingOperator } from '../operator/FillMissingOperator';
-import { GroupByAndSumOperator } from '../operator/GroupByAndSumOperator';
-import { MapOperator } from '../operator/MapOperator';
-import { RenameFieldOperator } from '../operator/RenameFieldOperator';
-import { SlidingOperator } from '../operator/SlidingOperator';
-import { SortOperator } from '../operator/SortOperator';
-import type { LapisFilter, TemporalGranularity } from '../../types/dashboardComponents';
+import { FetchAggregatedOperator } from '../operators/FetchAggregatedOperator';
+import { FillMissingOperator } from '../operators/FillMissingOperator';
+import { GroupByAndSumOperator } from '../operators/GroupByAndSumOperator';
+import { MapOperator } from '../operators/MapOperator';
+import { RenameFieldOperator } from '../operators/RenameFieldOperator';
+import { SlidingOperator } from '../operators/SlidingOperator';
+import { SortOperator } from '../operators/SortOperator';
+import type { LapisFilter, TemporalGranularity } from '../types/dashboardComponents';
 import {
     dateRangeCompare,
     generateAllInRange,
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
-} from '../../util/temporalClass';
+} from '../util/temporalClass';
 
 export function queryAggregatedDataOverTime(
     filter: LapisFilter,

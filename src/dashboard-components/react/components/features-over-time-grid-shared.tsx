@@ -4,7 +4,7 @@ import { type FC, type ReactElement } from 'react';
 import { type ColorScale, getColorWithinScale, getTextColorForScale } from './color-scale-selector';
 import PortalTooltip from './portal-tooltip';
 import { type TooltipPosition } from './tooltip';
-import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
+import { getProportion, type ProportionValue } from '../../../query/queryMutationsOverTime';
 import { formatProportion } from '../shared/table/formatProportion';
 import { type PageSizes, Pagination } from '../shared/tanstackTable/pagination';
 import { flexRender } from '../shared/tanstackTable/tanstackTable';
