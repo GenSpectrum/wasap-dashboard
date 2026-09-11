@@ -1,9 +1,17 @@
 import { describe, expect, test } from 'vitest';
 
 import { wastewaterOrganismConfigs, wastewaterOrganisms } from './wastewaterConfig';
-import { enabledAnalysisModes } from '../components/views/wasap/wasapPageConfig';
+import { enabledAnalysisModes, wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig';
 
 describe.each(Object.entries(wastewaterOrganismConfigs()))('wastewaterConfig %s', (_configName, config) => {
+    // Proves the zod schema actually accepts the real per-organism data — the
+    // point of turning `WasapPageConfig` into a schema is to validate a
+    // deployment's `config.json`, so a schema that silently rejects (or, worse,
+    // silently strips) real config data would defeat the purpose.
+    test('validates against wasapPageConfigSchema, round-tripping unchanged', () => {
+        expect(wasapPageConfigSchema.parse(config)).toEqual(config);
+    });
+
     test('default resistance set name is valid', () => {
         if (config.resistanceAnalysisModeEnabled) {
             const resistanceSetNames = config.resistanceMutationCollections.map((s) => s.name);
