@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { wastewaterBreadcrumb, wastewaterPathFragment } from './wastewaterConfig';
-
 export const Organisms = {
     covid: 'covid' as const,
     influenzaA: 'influenzaA' as const,
@@ -517,9 +515,15 @@ export const paths = {
     [Organisms.denv3]: getDefaultPathConfig(Organisms.denv3),
     [Organisms.denv4]: getDefaultPathConfig(Organisms.denv4),
     [Organisms.measles]: getDefaultPathConfig(Organisms.measles),
+    // Inlined rather than imported from `wastewaterConfig.ts` (which mirrors
+    // these two values as `wastewaterPathFragment` / `wastewaterBreadcrumb`):
+    // that module imports `WasapPageConfig` from `wasapPageConfig.ts`, which
+    // imports `organismSchema` from here, so an import the other way round
+    // would be a live circular dependency (breaks at runtime — see
+    // external-config commit history for the concrete failure).
     swissWastewater: {
-        basePath: `/${wastewaterPathFragment}`,
-        breadcrumbs: [wastewaterBreadcrumb],
+        basePath: '/swiss-wastewater',
+        breadcrumbs: [{ name: 'Swiss Wastewater', href: '/swiss-wastewater' }],
     },
 };
 

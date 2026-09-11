@@ -1,320 +1,305 @@
 import { type MutationAnnotation } from '../components/genspectrum/mutation-annotations-context';
 
-import { getDbIdSpace, dbIdSpaces, type DbIdSpace } from './dbIdSpace';
-import type { ResistanceMutationCollectionConfig } from '../components/views/wasap/wasapPageConfig';
 import { VARIANT_TIME_FRAME, type WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
-
-function byEnv<T>(env: DbIdSpace, vars: { prod: T; staging: T; local: T }): T {
-    switch (env) {
-        case dbIdSpaces.prod:
-            return vars.prod;
-        case dbIdSpaces.staging:
-            return vars.staging;
-        case dbIdSpaces.local:
-            return vars.local;
-    }
-}
-
-export const wastewaterOrganisms = {
-    covid: 'covid',
-    rsvA: 'rsvA',
-    rsvB: 'rsvB',
-} as const;
-
-export type WastewaterOrganismName = (typeof wastewaterOrganisms)[keyof typeof wastewaterOrganisms];
 
 export const wastewaterPathFragment = 'swiss-wastewater';
 
-function buildWastewaterOrganismConfigs(env: DbIdSpace): Record<WastewaterOrganismName, WasapPageConfig> {
-    return {
-        [wastewaterOrganisms.covid]: {
-            internalName: wastewaterOrganisms.covid,
-            name: 'SARS-CoV-2',
-            path: `/${wastewaterPathFragment}/covid`,
-            description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',
-            linkTemplate: {
-                nucleotideMutation:
-                    'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}',
-                aminoAcidMutation:
-                    'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}',
+/**
+ * The GenSpectrum-hosted deployment's organism list — today's hardcoded "prod"
+ * data, moved here verbatim from the old `byEnv(env, {...})`-keyed
+ * `buildWastewaterOrganismConfigs` (each `byEnv` call below is now just its
+ * `prod` value). Used only as `appConfig.ts`'s fallback when no `config.json`
+ * is present.
+ *
+ * TODO(external-config): delete this once the organism data lives in
+ * `public/config.example.json` (+ the staging / local-dev example configs) —
+ * at that point "no config.json" means "no organisms configured", not "prod",
+ * and this array (along with the schema default that reads it) goes away.
+ */
+export const defaultOrganisms: WasapPageConfig[] = [
+    {
+        internalName: 'covid',
+        name: 'SARS-CoV-2',
+        path: `/${wastewaterPathFragment}/covid`,
+        description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',
+        linkTemplate: {
+            nucleotideMutation:
+                'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}',
+            aminoAcidMutation:
+                'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}',
+        },
+        manualAnalysisModeEnabled: true,
+        variantAnalysisModeEnabled: true,
+        resistanceAnalysisModeEnabled: true,
+        untrackedAnalysisModeEnabled: true,
+        covSpectrumCollectionAnalysisModeEnabled: true,
+        collectionAnalysisModeEnabled: true,
+        defaultAnalysisMode: 'resistance',
+        resistanceMutationCollections: [
+            {
+                collectionId: 4,
+                name: '3CLpro',
+                annotationSymbol: 'c',
+                description:
+                    'SARS-CoV-2 3C-like protease (3CLpro, or Mpro for Main protease) inhibitor resistance mutation as per <a class="link" href="https://covdb.stanford.edu/drms">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024).',
             },
-            manualAnalysisModeEnabled: true,
-            variantAnalysisModeEnabled: true,
-            resistanceAnalysisModeEnabled: true,
-            untrackedAnalysisModeEnabled: true,
-            covSpectrumCollectionAnalysisModeEnabled: true,
-            collectionAnalysisModeEnabled: true,
-            defaultAnalysisMode: 'resistance',
-            resistanceMutationCollections: [
-                {
-                    collectionId: byEnv(env, { prod: 4, staging: 1, local: 1 }),
-                    name: '3CLpro',
-                    annotationSymbol: 'c',
-                    description:
-                        'SARS-CoV-2 3C-like protease (3CLpro, or Mpro for Main protease) inhibitor resistance mutation as per <a class="link" href="https://covdb.stanford.edu/drms">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024).',
-                },
-                {
-                    collectionId: byEnv(env, { prod: 5, staging: 2, local: 2 }),
-                    name: 'RdRp',
-                    annotationSymbol: 'r',
-                    description:
-                        'SARS-CoV-2 RNA-dependent RNA polymerase (RdRP) inhibitor resistance mutation as per <a class="link" href="https://covdb.stanford.edu/drms">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024).',
-                },
-                {
-                    collectionId: byEnv(env, { prod: 6, staging: 3, local: 3 }),
-                    name: 'Spike',
-                    annotationSymbol: 's',
-                    description:
-                        'SARS-CoV-2 Spike monoclonal antibody (mAb) resistance mutation as per <a class="link" href="https://covdb.stanford.edu/drms">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024).',
-                },
-            ] satisfies ResistanceMutationCollectionConfig[],
-            lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/covid',
-            samplingDateField: 'samplingDate',
-            locationNameField: 'locationName',
-            silo: {
-                url: 'https://silo.wasap.genspectrum.org/covid',
-                table: 'default',
-                dateColumn: 'date',
-                dateColumnIsDictionaryEncoded: true,
-                samplingDateColumn: 'samplingDate',
-                locationNameColumn: 'locationName',
+            {
+                collectionId: 5,
+                name: 'RdRp',
+                annotationSymbol: 'r',
+                description:
+                    'SARS-CoV-2 RNA-dependent RNA polymerase (RdRP) inhibitor resistance mutation as per <a class="link" href="https://covdb.stanford.edu/drms">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024).',
             },
-            predefinedVariantsSource: {
-                collectionsUserId: byEnv(env, { prod: 3, staging: 1, local: 1 }),
-                collectionsTag: 'pango-lineage',
-                variantSourceLabel: 'Nextclade',
+            {
+                collectionId: 6,
+                name: 'Spike',
+                annotationSymbol: 's',
+                description:
+                    'SARS-CoV-2 Spike monoclonal antibody (mAb) resistance mutation as per <a class="link" href="https://covdb.stanford.edu/drms">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024).',
             },
-            clinicalLapis: {
-                lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
-                dateField: 'date',
-                cladeField: 'nextstrainClade',
-                lineageField: 'nextcladePangoLineage',
+        ],
+        lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/covid',
+        samplingDateField: 'samplingDate',
+        locationNameField: 'locationName',
+        silo: {
+            url: 'https://silo.wasap.genspectrum.org/covid',
+            table: 'default',
+            dateColumn: 'date',
+            dateColumnIsDictionaryEncoded: true,
+            samplingDateColumn: 'samplingDate',
+            locationNameColumn: 'locationName',
+        },
+        predefinedVariantsSource: {
+            collectionsUserId: 3,
+            collectionsTag: 'pango-lineage',
+            variantSourceLabel: 'Nextclade',
+        },
+        clinicalLapis: {
+            lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
+            dateField: 'date',
+            cladeField: 'nextstrainClade',
+            lineageField: 'nextcladePangoLineage',
+        },
+        browseDataUrl: 'https://db.wasap.genspectrum.org/covid/search',
+        browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
+        collectionsApiBaseUrl: 'https://cov-spectrum.org/api/v2',
+        collectionTitleFilter: 'wastewater',
+        defaultLocationName: 'Zürich (ZH)',
+        clinicalSequenceCountWarningThreshold: 50,
+        filterDefaults: {
+            manual: {
+                mode: 'manual',
+                sequenceType: 'nucleotide',
+                mutations: undefined,
             },
-            browseDataUrl: 'https://db.wasap.genspectrum.org/covid/search',
-            browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
-            collectionsApiBaseUrl: 'https://cov-spectrum.org/api/v2',
-            collectionTitleFilter: 'wastewater',
-            defaultLocationName: 'Zürich (ZH)',
-            clinicalSequenceCountWarningThreshold: 50,
-            filterDefaults: {
-                manual: {
-                    mode: 'manual',
-                    sequenceType: 'nucleotide',
-                    mutations: undefined,
-                },
-                variant: {
-                    mode: 'variant',
-                    signatureType: 'computed',
-                    sequenceType: 'nucleotide',
-                    variant: 'XFG*',
-                    minProportion: 0.8,
-                    minCount: 15,
-                    minJaccard: 0.75,
-                    timeFrame: VARIANT_TIME_FRAME.all,
-                    collectionId: byEnv(env, { prod: 4943, staging: 4944, local: 5019 }),
-                },
-                resistance: {
-                    mode: 'resistance',
-                    sequenceType: 'amino acid',
-                    resistanceSet: 'Spike',
-                },
-                untracked: {
-                    mode: 'untracked',
-                    sequenceType: 'nucleotide',
-                    excludeSet: 'predefined',
-                },
-                covSpectrumCollection: {
-                    mode: 'covSpectrumCollection',
-                    collectionId: 1,
-                },
-                collection: {
-                    mode: 'collection',
-                    collectionId: undefined,
-                },
+            variant: {
+                mode: 'variant',
+                signatureType: 'computed',
+                sequenceType: 'nucleotide',
+                variant: 'XFG*',
+                minProportion: 0.8,
+                minCount: 15,
+                minJaccard: 0.75,
+                timeFrame: VARIANT_TIME_FRAME.all,
+                collectionId: 4943,
+            },
+            resistance: {
+                mode: 'resistance',
+                sequenceType: 'amino acid',
+                resistanceSet: 'Spike',
+            },
+            untracked: {
+                mode: 'untracked',
+                sequenceType: 'nucleotide',
+                excludeSet: 'predefined',
+            },
+            covSpectrumCollection: {
+                mode: 'covSpectrumCollection',
+                collectionId: 1,
+            },
+            collection: {
+                mode: 'collection',
+                collectionId: undefined,
             },
         },
-        [wastewaterOrganisms.rsvA]: {
-            internalName: wastewaterOrganisms.rsvA,
-            name: 'RSV-A',
-            path: `/${wastewaterPathFragment}/rsv-a`,
-            description: 'Analyze RSV-A data that was collected by the WISE project.',
-            linkTemplate: {
-                nucleotideMutation:
-                    'https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}',
-                aminoAcidMutation:
-                    'https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}',
+    },
+    {
+        internalName: 'rsvA',
+        name: 'RSV-A',
+        path: `/${wastewaterPathFragment}/rsv-a`,
+        description: 'Analyze RSV-A data that was collected by the WISE project.',
+        linkTemplate: {
+            nucleotideMutation:
+                'https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}',
+            aminoAcidMutation:
+                'https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}',
+        },
+        manualAnalysisModeEnabled: true,
+        variantAnalysisModeEnabled: true,
+        resistanceAnalysisModeEnabled: true,
+        collectionAnalysisModeEnabled: true,
+        lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/rsva',
+        samplingDateField: 'samplingDate',
+        locationNameField: 'locationName',
+        silo: {
+            url: 'https://silo.wasap.genspectrum.org/rsva',
+            table: 'default',
+            dateColumn: 'samplingDate',
+            dateColumnIsDictionaryEncoded: false,
+            samplingDateColumn: 'samplingDate',
+            locationNameColumn: 'locationName',
+        },
+        predefinedVariantsSource: {
+            collectionsUserId: 3,
+            collectionsTag: 'nextclade-lineage',
+            variantSourceLabel: 'Nextclade',
+        },
+        clinicalLapis: {
+            lapisBaseUrl: 'https://lapis.pathoplexus.org/rsv-a',
+            dateField: 'sampleCollectionDateRangeLower',
+            lineageField: 'lineage',
+        },
+        browseDataUrl: 'https://db.wasap.genspectrum.org/rsva/search',
+        browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
+        defaultLocationName: 'Geneva',
+        clinicalSequenceCountWarningThreshold: 50,
+        resistanceMutationCollections: [
+            {
+                collectionId: 4983,
+                name: 'Nirsevimab',
+                annotationSymbol: 'n',
+                description:
+                    'RSV-A F protein resistance mutations against Nirsevimab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
             },
-            manualAnalysisModeEnabled: true,
-            variantAnalysisModeEnabled: true,
-            resistanceAnalysisModeEnabled: true,
-            collectionAnalysisModeEnabled: true,
-            lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/rsva',
-            samplingDateField: 'samplingDate',
-            locationNameField: 'locationName',
-            silo: {
-                url: 'https://silo.wasap.genspectrum.org/rsva',
-                table: 'default',
-                dateColumn: 'samplingDate',
-                dateColumnIsDictionaryEncoded: false,
-                samplingDateColumn: 'samplingDate',
-                locationNameColumn: 'locationName',
+            {
+                collectionId: 4984,
+                name: 'Palivizumab',
+                annotationSymbol: 'p',
+                description:
+                    'RSV-A F protein resistance mutations against Palivizumab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
             },
-            predefinedVariantsSource: {
-                collectionsUserId: byEnv(env, { prod: 3, staging: 1, local: 1 }),
-                collectionsTag: 'nextclade-lineage',
-                variantSourceLabel: 'Nextclade',
+        ],
+        filterDefaults: {
+            manual: {
+                mode: 'manual',
+                sequenceType: 'nucleotide',
+                mutations: undefined,
             },
-            clinicalLapis: {
-                lapisBaseUrl: 'https://lapis.pathoplexus.org/rsv-a',
-                dateField: 'sampleCollectionDateRangeLower',
-                lineageField: 'lineage',
+            variant: {
+                mode: 'variant',
+                signatureType: 'computed',
+                sequenceType: 'nucleotide',
+                variant: 'A.D.1*',
+                minProportion: 0.8,
+                minCount: 15,
+                minJaccard: 0.75,
+                timeFrame: VARIANT_TIME_FRAME.all,
+                collectionId: 5000,
             },
-            browseDataUrl: 'https://db.wasap.genspectrum.org/rsva/search',
-            browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
-            defaultLocationName: 'Geneva',
-            clinicalSequenceCountWarningThreshold: 50,
-            resistanceMutationCollections: [
-                {
-                    collectionId: byEnv(env, { prod: 4983, staging: 4, local: 4 }),
-                    name: 'Nirsevimab',
-                    annotationSymbol: 'n',
-                    description:
-                        'RSV-A F protein resistance mutations against Nirsevimab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
-                },
-                {
-                    collectionId: byEnv(env, { prod: 4984, staging: 5, local: 5 }),
-                    name: 'Palivizumab',
-                    annotationSymbol: 'p',
-                    description:
-                        'RSV-A F protein resistance mutations against Palivizumab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
-                },
-            ] satisfies ResistanceMutationCollectionConfig[],
-            filterDefaults: {
-                manual: {
-                    mode: 'manual',
-                    sequenceType: 'nucleotide',
-                    mutations: undefined,
-                },
-                variant: {
-                    mode: 'variant',
-                    signatureType: 'computed',
-                    sequenceType: 'nucleotide',
-                    variant: 'A.D.1*',
-                    minProportion: 0.8,
-                    minCount: 15,
-                    minJaccard: 0.75,
-                    timeFrame: VARIANT_TIME_FRAME.all,
-                    collectionId: byEnv(env, { prod: 5000, staging: 4997, local: 21 }),
-                },
-                resistance: {
-                    mode: 'resistance',
-                    sequenceType: 'amino acid',
-                    resistanceSet: 'Nirsevimab',
-                },
-                collection: {
-                    mode: 'collection',
-                    collectionId: undefined,
-                },
+            resistance: {
+                mode: 'resistance',
+                sequenceType: 'amino acid',
+                resistanceSet: 'Nirsevimab',
+            },
+            collection: {
+                mode: 'collection',
+                collectionId: undefined,
             },
         },
-        [wastewaterOrganisms.rsvB]: {
-            internalName: wastewaterOrganisms.rsvB,
-            name: 'RSV-B',
-            path: `/${wastewaterPathFragment}/rsv-b`,
-            description: 'Analyze RSV-B data that was collected by the WISE project.',
-            linkTemplate: {
-                nucleotideMutation:
-                    'https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}',
-                aminoAcidMutation:
-                    'https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}',
+    },
+    {
+        internalName: 'rsvB',
+        name: 'RSV-B',
+        path: `/${wastewaterPathFragment}/rsv-b`,
+        description: 'Analyze RSV-B data that was collected by the WISE project.',
+        linkTemplate: {
+            nucleotideMutation:
+                'https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}',
+            aminoAcidMutation:
+                'https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}',
+        },
+        manualAnalysisModeEnabled: true,
+        variantAnalysisModeEnabled: true,
+        resistanceAnalysisModeEnabled: true,
+        collectionAnalysisModeEnabled: true,
+        lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/rsvb',
+        samplingDateField: 'samplingDate',
+        locationNameField: 'locationName',
+        silo: {
+            url: 'https://silo.wasap.genspectrum.org/rsvb',
+            table: 'default',
+            dateColumn: 'samplingDate',
+            dateColumnIsDictionaryEncoded: false,
+            samplingDateColumn: 'samplingDate',
+            locationNameColumn: 'locationName',
+        },
+        predefinedVariantsSource: {
+            collectionsUserId: 3,
+            collectionsTag: 'nextclade-lineage',
+            variantSourceLabel: 'Nextclade',
+        },
+        clinicalLapis: {
+            lapisBaseUrl: 'https://lapis.pathoplexus.org/rsv-b',
+            dateField: 'sampleCollectionDateRangeLower',
+            lineageField: 'lineage',
+        },
+        browseDataUrl: 'https://db.wasap.genspectrum.org/rsvb/search',
+        browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
+        defaultLocationName: 'Zurich',
+        clinicalSequenceCountWarningThreshold: 50,
+        resistanceMutationCollections: [
+            {
+                collectionId: 4985,
+                name: 'Nirsevimab',
+                annotationSymbol: 'n',
+                description:
+                    'RSV-B F protein resistance mutations against Nirsevimab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
             },
-            manualAnalysisModeEnabled: true,
-            variantAnalysisModeEnabled: true,
-            resistanceAnalysisModeEnabled: true,
-            collectionAnalysisModeEnabled: true,
-            lapisBaseUrl: 'https://lapis.wasap.genspectrum.org/rsvb',
-            samplingDateField: 'samplingDate',
-            locationNameField: 'locationName',
-            silo: {
-                url: 'https://silo.wasap.genspectrum.org/rsvb',
-                table: 'default',
-                dateColumn: 'samplingDate',
-                dateColumnIsDictionaryEncoded: false,
-                samplingDateColumn: 'samplingDate',
-                locationNameColumn: 'locationName',
+            {
+                collectionId: 4986,
+                name: 'Palivizumab',
+                annotationSymbol: 'p',
+                description:
+                    'RSV-B F protein resistance mutations against Palivizumab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
             },
-            predefinedVariantsSource: {
-                collectionsUserId: byEnv(env, { prod: 3, staging: 1, local: 1 }),
-                collectionsTag: 'nextclade-lineage',
-                variantSourceLabel: 'Nextclade',
+        ],
+        filterDefaults: {
+            manual: {
+                mode: 'manual',
+                sequenceType: 'nucleotide',
+                mutations: undefined,
             },
-            clinicalLapis: {
-                lapisBaseUrl: 'https://lapis.pathoplexus.org/rsv-b',
-                dateField: 'sampleCollectionDateRangeLower',
-                lineageField: 'lineage',
+            variant: {
+                mode: 'variant',
+                signatureType: 'computed',
+                sequenceType: 'nucleotide',
+                variant: 'B.D.E.1*',
+                minProportion: 0.8,
+                minCount: 15,
+                minJaccard: 0.75,
+                timeFrame: VARIANT_TIME_FRAME.all,
+                collectionId: 5053,
             },
-            browseDataUrl: 'https://db.wasap.genspectrum.org/rsvb/search',
-            browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
-            defaultLocationName: 'Zurich',
-            clinicalSequenceCountWarningThreshold: 50,
-            resistanceMutationCollections: [
-                {
-                    collectionId: byEnv(env, { prod: 4985, staging: 6, local: 6 }),
-                    name: 'Nirsevimab',
-                    annotationSymbol: 'n',
-                    description:
-                        'RSV-B F protein resistance mutations against Nirsevimab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
-                },
-                {
-                    collectionId: byEnv(env, { prod: 4986, staging: 7, local: 7 }),
-                    name: 'Palivizumab',
-                    annotationSymbol: 'p',
-                    description:
-                        'RSV-B F protein resistance mutations against Palivizumab as per <a class="link" href="https://viralzone.expasy.org/11605">ViralZone</a>.',
-                },
-            ] satisfies ResistanceMutationCollectionConfig[],
-            filterDefaults: {
-                manual: {
-                    mode: 'manual',
-                    sequenceType: 'nucleotide',
-                    mutations: undefined,
-                },
-                variant: {
-                    mode: 'variant',
-                    signatureType: 'computed',
-                    sequenceType: 'nucleotide',
-                    variant: 'B.D.E.1*',
-                    minProportion: 0.8,
-                    minCount: 15,
-                    minJaccard: 0.75,
-                    timeFrame: VARIANT_TIME_FRAME.all,
-                    collectionId: byEnv(env, { prod: 5053, staging: 5050, local: 74 }),
-                },
-                resistance: {
-                    mode: 'resistance',
-                    sequenceType: 'amino acid',
-                    resistanceSet: 'Nirsevimab',
-                },
-                collection: {
-                    mode: 'collection',
-                    collectionId: undefined,
-                },
+            resistance: {
+                mode: 'resistance',
+                sequenceType: 'amino acid',
+                resistanceSet: 'Nirsevimab',
+            },
+            collection: {
+                mode: 'collection',
+                collectionId: undefined,
             },
         },
-    };
-}
+    },
+];
 
-export function wastewaterOrganismConfigs() {
-    switch (getDbIdSpace()) {
-        case dbIdSpaces.prod:
-            return buildWastewaterOrganismConfigs(dbIdSpaces.prod);
-        case dbIdSpaces.staging:
-            return buildWastewaterOrganismConfigs(dbIdSpaces.staging);
-        case dbIdSpaces.local:
-            return buildWastewaterOrganismConfigs(dbIdSpaces.local);
-    }
-}
-
+// TODO(dead-code): `wastewaterConfig`, `wastewaterBreadcrumb`'s siblings under
+// it (`pages.rsv` / `pages.influenza`), `RSVTypes`, `InfluenzaTypes` and the
+// N1/N2 mutation-annotation data below look like leftovers ported wholesale
+// from the dashboards repo's RSV + Influenza `.astro` pages, which are
+// explicitly out of scope for this standalone app (README.md). `RSVTypes` /
+// `InfluenzaTypes` have no references anywhere in `src/`. Worth a real audit —
+// not done here to keep this change to the config move.
 export const wastewaterConfig = {
     menuListEntryDecoration: 'decoration-teal',
     backgroundColor: 'bg-tealMuted',

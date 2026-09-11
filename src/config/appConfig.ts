@@ -1,24 +1,31 @@
 import { z } from 'zod';
 
+import { wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig';
+import { defaultOrganisms } from '../types/wastewaterConfig';
+
 /**
  * Runtime configuration for the standalone app.
  *
  * Replaces the dashboards repo's server-side `config.ts` (which read a YAML
  * file from disk per request) and its `DB_ID_SPACE` / `DASHBOARDS_ENVIRONMENT`
- * environment variables. Here the config is a single `config.json` fetched once
- * at startup (see `main.tsx`), falling back to the `prod` defaults below when
- * the file is absent — so the app works with no configuration at all.
+ * environment variables, and — as of this commit — the `dbIdSpace` /
+ * `byEnv(...)` scheme this file used to carry (three near-identical copies of
+ * the organism data baked into TypeScript, switched on one enum). Now the
+ * organisms themselves are external data: `config.json`'s `organisms` array
+ * *is* the per-organism config, not a selector into hardcoded ones.
+ *
+ * Here the config is a single `config.json` fetched once at startup (see
+ * `main.tsx`). `organisms` still falls back to `defaultOrganisms` (today's
+ * hardcoded prod data) when the file is absent, for now — TODO(external-config):
+ * that fallback goes away once `defaultOrganisms` is deleted in favour of the
+ * example config files, at which point "no config.json" genuinely means "no
+ * organisms configured", not "prod".
  *
  * This is the seam that `09-third-party-hosting.md` grows into: a self-hoster
  * ships their own `config.json`.
  */
 
 const appConfigSchema = z.object({
-    /**
-     * Which set of collection / variant database IDs the per-organism config
-     * resolves to (`byEnv(...)` in `wastewaterConfig.ts`).
-     */
-    dbIdSpace: z.enum(['prod', 'staging', 'local']).default('prod'),
     /**
      * Base URL of the GenSpectrum collections backend (resistance-mutation
      * collections, predefined variants, `collection` mode). May be absolute or
@@ -30,6 +37,12 @@ const appConfigSchema = z.object({
         .string()
         .min(1)
         .default(import.meta.env.DEV ? '/collections-backend' : 'https://genspectrum.org/api'),
+    /**
+     * Every wastewater dashboard this deployment serves, keyed by nothing —
+     * order is display order. `config/wastewaterOrganisms.ts` maps URL path
+     * segments (`covid`, `rsv-a`, …) onto entries of this array.
+     */
+    organisms: z.array(wasapPageConfigSchema).default(defaultOrganisms),
 });
 
 export type AppConfig = z.infer<typeof appConfigSchema>;
