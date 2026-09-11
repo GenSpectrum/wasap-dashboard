@@ -1,25 +1,26 @@
 import { z } from 'zod';
 
 import { wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig';
-import { defaultOrganisms } from '../types/wastewaterConfig';
 
 /**
  * Runtime configuration for the standalone app.
  *
  * Replaces the dashboards repo's server-side `config.ts` (which read a YAML
  * file from disk per request) and its `DB_ID_SPACE` / `DASHBOARDS_ENVIRONMENT`
- * environment variables, and — as of this commit — the `dbIdSpace` /
- * `byEnv(...)` scheme this file used to carry (three near-identical copies of
- * the organism data baked into TypeScript, switched on one enum). Now the
- * organisms themselves are external data: `config.json`'s `organisms` array
- * *is* the per-organism config, not a selector into hardcoded ones.
+ * environment variables, and the `dbIdSpace` / `byEnv(...)` scheme this file
+ * used to carry (three near-identical copies of the organism data baked into
+ * TypeScript, switched on one enum). Now the organisms themselves are
+ * external data: `config.json`'s `organisms` array *is* the per-organism
+ * config, not a selector into hardcoded ones.
  *
  * Here the config is a single `config.json` fetched once at startup (see
- * `main.tsx`). `organisms` still falls back to `defaultOrganisms` (today's
- * hardcoded prod data) when the file is absent, for now — TODO(external-config):
- * that fallback goes away once `defaultOrganisms` is deleted in favour of the
- * example config files, at which point "no config.json" genuinely means "no
- * organisms configured", not "prod".
+ * `main.tsx`). Unlike `collectionsBackendUrl`, `organisms` has **no built-in
+ * default** — a deployment with no `config.json` (or one that omits
+ * `organisms`) genuinely serves zero wastewater dashboards (`WasapRoute`'s
+ * empty state), rather than silently falling back to GenSpectrum's own data.
+ * `public/config.example.json` (+ the staging / local-dev example configs)
+ * are that data now, checked in as *examples* to copy from, not defaults this
+ * module reaches for.
  *
  * This is the seam that `09-third-party-hosting.md` grows into: a self-hoster
  * ships their own `config.json`.
@@ -29,9 +30,15 @@ const appConfigSchema = z.object({
     /**
      * Base URL of the GenSpectrum collections backend (resistance-mutation
      * collections, predefined variants, `collection` mode). May be absolute or
-     * a same-origin path. The backend sends no CORS headers, so in dev the
-     * default is the Vite proxy path (`vite.config.ts`); a deployment must set
-     * an absolute URL to a backend that allows its origin, or its own proxy.
+     * a same-origin path.
+     *
+     * TODO(cors): the backend sends no CORS headers (verified against both
+     * genspectrum.org/api and staging.genspectrum.org/api), so a browser can't
+     * call it directly from a different origin — hence the Vite dev proxy
+     * (`vite.config.ts`) and the dev-only default below. Once that header
+     * ships on the backend (a bug in a codebase we control, not a limitation
+     * here), every environment's example config can name the real URL
+     * directly, dev included, and the proxy + this DEV branch go away.
      */
     collectionsBackendUrl: z
         .string()
@@ -40,9 +47,10 @@ const appConfigSchema = z.object({
     /**
      * Every wastewater dashboard this deployment serves, keyed by nothing —
      * order is display order. `config/wastewaterOrganisms.ts` maps URL path
-     * segments (`covid`, `rsv-a`, …) onto entries of this array.
+     * segments (`covid`, `rsv-a`, …) onto entries of this array. No default:
+     * an absent or organisms-less config.json means zero dashboards.
      */
-    organisms: z.array(wasapPageConfigSchema).default(defaultOrganisms),
+    organisms: z.array(wasapPageConfigSchema).default([]),
 });
 
 export type AppConfig = z.infer<typeof appConfigSchema>;

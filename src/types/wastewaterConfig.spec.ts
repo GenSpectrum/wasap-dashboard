@@ -1,19 +1,21 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-import { defaultOrganisms } from './wastewaterConfig';
-import { enabledAnalysisModes, wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig';
+import {
+    enabledAnalysisModes,
+    wasapPageConfigSchema,
+    type WasapPageConfig,
+} from '../components/views/wasap/wasapPageConfig';
 
-describe.each(defaultOrganisms.map((config) => [config.internalName, config] as const))(
-    'wastewaterConfig %s',
-    (_internalName, config) => {
-        // Proves the zod schema actually accepts the real per-organism data — the
-        // point of turning `WasapPageConfig` into a schema is to validate a
-        // deployment's `config.json`, so a schema that silently rejects (or, worse,
-        // silently strips) real config data would defeat the purpose.
-        test('validates against wasapPageConfigSchema, round-tripping unchanged', () => {
-            expect(wasapPageConfigSchema.parse(config)).toEqual(config);
-        });
+// These pin behaviour of the GenSpectrum-hosted deployment's own data, which
+// now lives in `public/config.example.json` rather than in TypeScript.
+const prodOrganisms = (
+    JSON.parse(readFileSync('public/config.example.json', 'utf-8')) as { organisms: unknown[] }
+).organisms.map((organism) => wasapPageConfigSchema.parse(organism));
 
+describe.each(prodOrganisms.map((config) => [config.internalName, config] as const))(
+    'config.example.json %s',
+    (_internalName, config: WasapPageConfig) => {
         test('default resistance set name is valid', () => {
             if (config.resistanceAnalysisModeEnabled) {
                 const resistanceSetNames = config.resistanceMutationCollections.map((s) => s.name);
@@ -35,9 +37,9 @@ describe.each(defaultOrganisms.map((config) => [config.internalName, config] as 
 );
 
 test('COVID wastewater opens on Spike resistance mutations by default', () => {
-    const covidConfig = defaultOrganisms.find((config) => config.internalName === 'covid');
+    const covidConfig = prodOrganisms.find((config) => config.internalName === 'covid');
     if (covidConfig === undefined) {
-        throw new Error('No default covid config found.');
+        throw new Error('No covid config found in config.example.json.');
     }
 
     // This pins the default requested for the COVID wastewater dashboard landing state.

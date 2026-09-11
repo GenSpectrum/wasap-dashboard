@@ -15,12 +15,24 @@ export default defineConfig({
         proxy: {
             // The GenSpectrum collections backend has no CORS headers (it was
             // only ever called same-origin through the Astro `/api` proxy). In
-            // dev, appConfig points `collectionsBackendUrl` at this path so the
-            // browser talks same-origin and Vite forwards. A real deployment
-            // needs the backend to allow its origin, or its own proxy — see
-            // standalone-wasap/09-third-party-hosting.md.
+            // dev, `config.local-dev.example.json` points `collectionsBackendUrl`
+            // at this path so the browser talks same-origin and Vite forwards to
+            // the real backend. A real deployment needs the backend to allow its
+            // origin, or its own proxy — see standalone-wasap/09-third-party-hosting.md.
+            //
+            // Target is staging, not prod: local dev's own example config uses
+            // staging's collection IDs (see `public/config.local-dev.example.json`),
+            // and querying prod with staging IDs would return the wrong data —
+            // that mismatch is exactly the bug the external-config-file split
+            // was meant to fix.
+            //
+            // TODO(cors): this whole proxy is a workaround, not a design choice —
+            // once the backend sends Access-Control-Allow-Origin (a fix in a
+            // codebase we control), delete this block and point
+            // `config.local-dev.example.json`'s `collectionsBackendUrl` straight
+            // at `https://staging.genspectrum.org/api`.
             '/collections-backend': {
-                target: 'https://genspectrum.org/api',
+                target: 'https://staging.genspectrum.org/api',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/collections-backend/, ''),
             },

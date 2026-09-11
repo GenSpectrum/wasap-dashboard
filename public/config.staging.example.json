@@ -1,5 +1,5 @@
 {
-    "collectionsBackendUrl": "https://genspectrum.org/api",
+    "collectionsBackendUrl": "https://staging.genspectrum.org/api",
     "organisms": [
         {
             "internalName": "covid",
@@ -19,19 +19,19 @@
             "defaultAnalysisMode": "resistance",
             "resistanceMutationCollections": [
                 {
-                    "collectionId": 4,
+                    "collectionId": 1,
                     "name": "3CLpro",
                     "annotationSymbol": "c",
                     "description": "SARS-CoV-2 3C-like protease (3CLpro, or Mpro for Main protease) inhibitor resistance mutation as per <a class=\"link\" href=\"https://covdb.stanford.edu/drms\">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024)."
                 },
                 {
-                    "collectionId": 5,
+                    "collectionId": 2,
                     "name": "RdRp",
                     "annotationSymbol": "r",
                     "description": "SARS-CoV-2 RNA-dependent RNA polymerase (RdRP) inhibitor resistance mutation as per <a class=\"link\" href=\"https://covdb.stanford.edu/drms\">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024)."
                 },
                 {
-                    "collectionId": 6,
+                    "collectionId": 3,
                     "name": "Spike",
                     "annotationSymbol": "s",
                     "description": "SARS-CoV-2 Spike monoclonal antibody (mAb) resistance mutation as per <a class=\"link\" href=\"https://covdb.stanford.edu/drms\">Stanford Coronavirus Antiviral & Resistance database</a> (last updated on 21 August 2024)."
@@ -49,7 +49,7 @@
                 "locationNameColumn": "locationName"
             },
             "predefinedVariantsSource": {
-                "collectionsUserId": 3,
+                "collectionsUserId": 1,
                 "collectionsTag": "pango-lineage",
                 "variantSourceLabel": "Nextclade"
             },
@@ -79,7 +79,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 4943
+                    "collectionId": 4944
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -125,7 +125,7 @@
                 "locationNameColumn": "locationName"
             },
             "predefinedVariantsSource": {
-                "collectionsUserId": 3,
+                "collectionsUserId": 1,
                 "collectionsTag": "nextclade-lineage",
                 "variantSourceLabel": "Nextclade"
             },
@@ -140,13 +140,13 @@
             "clinicalSequenceCountWarningThreshold": 50,
             "resistanceMutationCollections": [
                 {
-                    "collectionId": 4983,
+                    "collectionId": 4,
                     "name": "Nirsevimab",
                     "annotationSymbol": "n",
                     "description": "RSV-A F protein resistance mutations against Nirsevimab as per <a class=\"link\" href=\"https://viralzone.expasy.org/11605\">ViralZone</a>."
                 },
                 {
-                    "collectionId": 4984,
+                    "collectionId": 5,
                     "name": "Palivizumab",
                     "annotationSymbol": "p",
                     "description": "RSV-A F protein resistance mutations against Palivizumab as per <a class=\"link\" href=\"https://viralzone.expasy.org/11605\">ViralZone</a>."
@@ -166,7 +166,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 5000
+                    "collectionId": 4997
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -203,7 +203,7 @@
                 "locationNameColumn": "locationName"
             },
             "predefinedVariantsSource": {
-                "collectionsUserId": 3,
+                "collectionsUserId": 1,
                 "collectionsTag": "nextclade-lineage",
                 "variantSourceLabel": "Nextclade"
             },
@@ -218,13 +218,13 @@
             "clinicalSequenceCountWarningThreshold": 50,
             "resistanceMutationCollections": [
                 {
-                    "collectionId": 4985,
+                    "collectionId": 6,
                     "name": "Nirsevimab",
                     "annotationSymbol": "n",
                     "description": "RSV-B F protein resistance mutations against Nirsevimab as per <a class=\"link\" href=\"https://viralzone.expasy.org/11605\">ViralZone</a>."
                 },
                 {
-                    "collectionId": 4986,
+                    "collectionId": 7,
                     "name": "Palivizumab",
                     "annotationSymbol": "p",
                     "description": "RSV-B F protein resistance mutations against Palivizumab as per <a class=\"link\" href=\"https://viralzone.expasy.org/11605\">ViralZone</a>."
@@ -244,7 +244,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 5053
+                    "collectionId": 5050
                 },
                 "resistance": {
                     "mode": "resistance",
