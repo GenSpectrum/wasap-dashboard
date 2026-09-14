@@ -8,6 +8,9 @@ const logger = getClientLogger('getCollection');
 /**
  * Fetches a single variant collection by ID from the CoV-Spectrum API.
  *
+ * Note: a CoV-Spectrum "collection" is not a GenSpectrum "collection" (see the comment on
+ * `./types.ts`) — this intentionally doesn't go through `backendApi`'s `ApiService`.
+ *
  * @param covSpectrumApiBaseUrl The base URL of the CoV-Spectrum API (e.g., 'https://cov-spectrum.org/api/v2')
  * @param id The ID of the collection to fetch
  * @returns A promise that resolves to a Collection object
