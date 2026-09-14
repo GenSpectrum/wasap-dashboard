@@ -23,11 +23,7 @@ export type WastewaterOrganismEntry = {
     pathSegment: string;
 };
 
-/**
- * The organism the root path and an unresolvable `:organismPath` redirect to.
- * A `config.json` that doesn't configure this organism (or configures none at
- * all) is handled by `WasapRoute`'s empty state, not by falling back further.
- */
+/** The organism the bare `/swiss-wastewater` path redirects to (`routes.tsx`). */
 export const DEFAULT_ORGANISM_PATH = 'covid';
 
 export function listWastewaterOrganisms(): WastewaterOrganismEntry[] {
@@ -42,37 +38,4 @@ export function resolveWasapConfig(pathSegment: string | undefined): WasapPageCo
         return undefined;
     }
     return listWastewaterOrganisms().find((entry) => entry.pathSegment === pathSegment)?.config;
-}
-
-/**
- * What `WasapRoute` should do for a `:organismPath` that didn't resolve —
- * pulled out of the component so the "don't redirect to where we already are"
- * loop guard is unit-testable without rendering anything. `organisms` is
- * `listWastewaterOrganisms()`'s result; `requestedPathSegment` is the URL
- * param that failed to resolve.
- */
-export type UnresolvedOrganismOutcome =
-    | { type: 'empty' }
-    | {
-          type: 'redirect';
-          pathSegment: string;
-      };
-
-export function resolveUnresolvedOrganism(
-    organisms: readonly WastewaterOrganismEntry[],
-    requestedPathSegment: string | undefined,
-): UnresolvedOrganismOutcome {
-    if (organisms.length === 0) {
-        return { type: 'empty' };
-    }
-    const fallbackSegment = organisms.some((entry) => entry.pathSegment === DEFAULT_ORGANISM_PATH)
-        ? DEFAULT_ORGANISM_PATH
-        : organisms[0]!.pathSegment;
-    if (requestedPathSegment === fallbackSegment) {
-        // Already at the computed fallback and it *still* doesn't resolve —
-        // config.json is internally inconsistent (duplicate / mismatched path
-        // segments). Report "empty" rather than have the caller loop the redirect.
-        return { type: 'empty' };
-    }
-    return { type: 'redirect', pathSegment: fallbackSegment };
 }
