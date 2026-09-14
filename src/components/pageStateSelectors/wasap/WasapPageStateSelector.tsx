@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { type Dispatch, type SetStateAction, useState } from 'react';
 
-import { getBackendServiceForClientside } from '../../../backendApi/backendService';
+import { getBackendServiceForClientside } from '../../../externalData/backendApi/backendService';
+import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { ApplyFilterButton } from '../ApplyFilterButton';
 import { DynamicDateFilter } from '../DynamicDateFilter';
 import { SelectorHeadline } from '../SelectorHeadline';
@@ -14,7 +15,6 @@ import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
 import { LabeledField } from './utils/LabeledField';
 import { RadioSelect } from './utils/RadioSelect';
-import { getCladeLineages } from '../../../lapis/getCladeLineages';
 import { Inset } from '../../../styles/Inset';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import { getCollection } from './getCollection';
 import { type CollectionRaw } from './types';
-import { testServer } from '../../vitest.setup';
+import { testServer } from '../../../vitest.setup';
 
 const DUMMY_COV_SPECTRUM_URL = 'http://cov-spectrum.dummy/api/v2';
 

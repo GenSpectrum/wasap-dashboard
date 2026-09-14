@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import { getClientLogger } from '../clientLogger';
 import { aggregatedResponse } from './types';
+import { getClientLogger } from '../../clientLogger';
 
 const logger = getClientLogger('getCladeLineages');
 

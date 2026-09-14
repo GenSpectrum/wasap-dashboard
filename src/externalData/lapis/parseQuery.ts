@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../clientLogger';
-import { siloFilterExpressionSchema } from '../queries';
+import { getClientLogger } from '../../clientLogger';
+import { siloFilterExpressionSchema } from '../../queries';
 
 const logger = getClientLogger('parseQuery');
 

@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { type FC, type InputEvent, useEffect, useRef, useState } from 'react';
 
 import { getClientLogger } from '../../clientLogger';
-import { parseQuery } from '../../lapis/parseQuery';
+import { parseQuery } from '../../externalData/lapis/parseQuery';
 import { extractMetadataFields } from '../../queries';
 
 const logger = getClientLogger('AdvancedQueryFilter');

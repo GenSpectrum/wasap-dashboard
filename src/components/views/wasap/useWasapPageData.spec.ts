@@ -13,10 +13,10 @@ import {
 } from './wasapPageConfig';
 import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker';
 import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup';
-import type * as BackendServiceModule from '../../../backendApi/backendService';
+import type * as BackendServiceModule from '../../../externalData/backendApi/backendService';
 import type { Collection } from '../../../types/Collection';
 
-vi.mock('../../../backendApi/backendService.ts', async (importOriginal) => {
+vi.mock('../../../externalData/backendApi/backendService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof BackendServiceModule>();
     return {
         ...mod,

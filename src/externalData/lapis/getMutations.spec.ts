@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from './getMutations';
-import { DUMMY_LAPIS_URL } from '../../routeMocker';
-import { lapisRouteMocker } from '../../vitest.setup';
+import { DUMMY_LAPIS_URL } from '../../../routeMocker';
+import { lapisRouteMocker } from '../../../vitest.setup';
 
 describe('getMutations', () => {
     beforeEach(() => {});

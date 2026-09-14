@@ -1,5 +1,5 @@
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from './wasapPageConfig';
-import type { BackendService } from '../../../backendApi/backendService';
+import type { BackendService } from '../../../externalData/backendApi/backendService';
 import type { Collection } from '../../../types/Collection';
 import { type MutationAnnotations } from '../../genspectrum/mutation-annotations-context';
 

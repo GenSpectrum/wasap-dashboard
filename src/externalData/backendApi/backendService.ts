@@ -1,10 +1,10 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { z, type ZodSchema } from 'zod';
 
-import { UserFacingError } from '../components/ErrorReportInstruction';
-import { getAppConfig } from '../config/appConfig';
-import { collectionSchema, collectionSummarySchema } from '../types/Collection';
-import { type ProblemDetail, problemDetailSchema } from '../types/ProblemDetail';
+import { UserFacingError } from '../../components/ErrorReportInstruction';
+import { getAppConfig } from '../../config/appConfig';
+import { collectionSchema, collectionSummarySchema } from '../../types/Collection';
+import { type ProblemDetail, problemDetailSchema } from '../../types/ProblemDetail';
 
 const X_REQUEST_ID_HEADER = 'x-request-id';
 

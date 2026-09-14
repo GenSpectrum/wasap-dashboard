@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { getBackendServiceForClientside } from '../../../../backendApi/backendService';
+import { getBackendServiceForClientside } from '../../../../externalData/backendApi/backendService';
 import type { WasapCollectionFilter } from '../../../views/wasap/wasapPageConfig';
 import { LabeledField } from '../utils/LabeledField';
 

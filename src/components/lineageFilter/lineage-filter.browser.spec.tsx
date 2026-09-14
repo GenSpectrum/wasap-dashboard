@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { LineageFilter } from './lineage-filter';
-import { LapisClientProvider } from '../../lapis/LapisClientContext';
+import { LapisClientProvider } from '../../externalData/lapis/LapisClientContext';
 import { gsEventNames } from '../../util/gsEventNames';
 
 /** Stubs the two clinical-LAPIS calls the lineage picker makes. */

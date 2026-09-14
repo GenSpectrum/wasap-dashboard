@@ -12,13 +12,13 @@ import type {
     WasapUntrackedFilter,
     WasapVariantFilter,
 } from './wasapPageConfig';
-import { getBackendServiceForClientside } from '../../../backendApi/backendService';
-import { getCollection } from '../../../covspectrum/getCollection';
-import type { CollectionVariant } from '../../../covspectrum/types';
-import { detailedMutationsToQuery } from '../../../covspectrum/variantConversionUtil';
-import { getCladeLineages } from '../../../lapis/getCladeLineages';
-import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../lapis/getMutations';
-import { parseQuery } from '../../../lapis/parseQuery';
+import { getBackendServiceForClientside } from '../../../externalData/backendApi/backendService';
+import { getCollection } from '../../../externalData/covspectrum/getCollection';
+import type { CollectionVariant } from '../../../externalData/covspectrum/types';
+import { detailedMutationsToQuery } from '../../../externalData/covspectrum/variantConversionUtil';
+import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
+import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
+import { parseQuery } from '../../../externalData/lapis/parseQuery';
 import { validateGenomeOnly } from '../../../queries';
 import { getLineageFields } from '../../../types/Collection';
 import type { FilterObject, Variant } from '../../../types/Collection';
