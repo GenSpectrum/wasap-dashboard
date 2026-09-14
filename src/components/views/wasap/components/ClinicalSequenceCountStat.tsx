@@ -38,7 +38,10 @@ export const ClinicalSequenceCountStat: FC<ClinicalSequenceCountStatProps> = ({
     };
 
     const { data, isPending, isError, error } = useQuery({
-        queryKey: [queryKeyPrefix, lineage, analysis.timeFrame],
+        // `clinicalLapisBaseUrl`/`lapisFilter` vary with the organism, not just
+        // `lineage`/`timeFrame` — without them in the key, switching organisms
+        // without changing lineage or time frame would serve the stale count.
+        queryKey: [queryKeyPrefix, lineage, analysis.timeFrame, clinicalLapisBaseUrl, lapisFilter],
         queryFn: () => getTotalCount(clinicalLapisBaseUrl, lapisFilter),
     });
 

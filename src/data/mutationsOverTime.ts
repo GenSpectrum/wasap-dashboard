@@ -81,6 +81,11 @@ export function useOverTimeMetadata(
     const normalized = normalizeFilter(filter);
     const sequenceNamesKey = sequenceNames === undefined ? undefined : [...sequenceNames].sort();
 
+    // `schema` stands in for `connection.key` (same memoized SiloInstance);
+    // `normalized`/`sequenceNamesKey` stand in for `filter`/`sequenceNames`
+    // — they're pure, order-independent derivations of them, deliberately
+    // used instead so equivalent filters/sets share a cache entry.
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
         queryKey: [
             'silo',
@@ -170,6 +175,8 @@ export function useMutationsOverTimePage(
     );
 
     const results = useQueries({
+        // `schema` stands in for `connection.key` (same memoized SiloInstance).
+        // eslint-disable-next-line @tanstack/query/exhaustive-deps
         queries: targets.map((target) => ({
             queryKey: [
                 'silo',

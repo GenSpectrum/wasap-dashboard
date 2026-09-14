@@ -55,6 +55,10 @@ export function useQueriesOverTime(
     const schema = useSiloSchema();
     const normalized = normalizeFilter(filter);
 
+    // `schema` stands in for `connection.key` (same memoized SiloInstance);
+    // `normalized` stands in for `filter` — a pure derivation of it,
+    // deliberately used instead so equivalent filters share a cache entry.
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     const axis = useQuery({
         queryKey: ['silo', 'queries-over-time-axis', ...connection.key, normalized, granularity],
         queryFn: async ({ signal }) => {
@@ -127,7 +131,9 @@ export function useQueriesOverTime(
         if (error) {
             throw error instanceof Error ? error : new Error(String(error));
         }
-        if (!allAnswered || axis.data === undefined) {
+        // `allAnswered` already implies `axis.data !== undefined` (see its
+        // definition above); TS tracks that, so `axis.data` narrows below.
+        if (!allAnswered) {
             return { data: null, isLoading: true, error: undefined };
         }
         const matrix = buildQueriesMatrix(
@@ -183,8 +189,11 @@ export function buildQueriesMatrix(
                     query.displayLabel,
                     new Map(
                         requestedDateRanges.map((bucket, index): [string, ProportionValue] => {
+                            // `totalCountsByBucket` is built by mapping over `requestedDateRanges`
+                            // (see `buildDateAxis`), so it's always the same length — `index` is
+                            // never out of range.
                             const totalCount = totalCountsByBucket[index];
-                            if (totalCount === undefined || totalCount === 0) {
+                            if (totalCount === 0) {
                                 return [bucket.dateString, null];
                             }
                             const coverage = coverages[index] ?? 0;

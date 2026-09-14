@@ -91,7 +91,15 @@ export function WasapPageStateSelector({
     // data for the 'untracked' analysis mode - loaded here already so it's available when the mode is selected
     const cladeLineageQueryResult = useQuery({
         enabled: config.untrackedAnalysisModeEnabled,
-        queryKey: ['cladeLineages'],
+        // Keyed on the clinical-LAPIS coordinates the query actually targets, not
+        // just 'cladeLineages' — this component doesn't remount on organism switch.
+        queryKey: [
+            'cladeLineages',
+            config.untrackedAnalysisModeEnabled,
+            config.untrackedAnalysisModeEnabled ? config.clinicalLapis.lapisBaseUrl : null,
+            config.untrackedAnalysisModeEnabled ? config.clinicalLapis.cladeField : null,
+            config.untrackedAnalysisModeEnabled ? config.clinicalLapis.lineageField : null,
+        ],
         queryFn: () => {
             if (!config.untrackedAnalysisModeEnabled) {
                 throw Error(
@@ -109,7 +117,11 @@ export function WasapPageStateSelector({
 
     const predefinedVariantsQueryResult = useQuery({
         enabled: config.variantAnalysisModeEnabled && config.predefinedVariantsSource !== undefined,
-        queryKey: ['predefinedVariants', config.variantAnalysisModeEnabled && config.predefinedVariantsSource],
+        queryKey: [
+            'predefinedVariants',
+            config.variantAnalysisModeEnabled && config.predefinedVariantsSource,
+            config.internalName,
+        ],
         queryFn: async () => {
             if (!config.variantAnalysisModeEnabled || config.predefinedVariantsSource === undefined) {
                 throw Error(

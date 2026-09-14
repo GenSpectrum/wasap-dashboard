@@ -33,6 +33,9 @@ export function WasapRoute() {
 }
 
 function WasapDashboard({ config }: { config: WasapPageConfig }) {
+    // `config.internalName` stands in for `config` — it's 1:1 with it (one
+    // static config per organism).
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     const { data, isPending } = useQuery({
         queryKey: ['resistanceData', config.internalName, getAppConfig().collectionsBackendUrl],
         queryFn: async () => {

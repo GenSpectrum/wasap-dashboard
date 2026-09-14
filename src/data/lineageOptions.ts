@@ -18,6 +18,9 @@ export type LineageItem = { lineage: string; count: number };
 
 export function useLineageOptions(field: string): UseQueryResult<LineageItem[]> {
     const client = useLapisClient();
+    // `client.url` stands in for `client` — it's memoized per url (see
+    // `useLapisClient`), so it fully determines the client's behaviour.
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
         queryKey: ['lapis', 'lineage-options', client.url, field],
         queryFn: ({ signal }) => fetchLineageOptions(client, field, signal),

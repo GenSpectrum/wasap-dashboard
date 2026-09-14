@@ -36,7 +36,7 @@ const DateRange: FC = () => {
         <div className='stat'>
             <div className='stat-title'>Sampling Dates</div>
             <div className='stat-value text-base'>
-                {isPending ? '…' : isError ? 'Error' : data === undefined ? 'No data' : `${data.min} to ${data.max}`}
+                {isPending ? '…' : isError ? 'Error' : data === null ? 'No data' : `${data.min} to ${data.max}`}
             </div>
             <div className='stat-desc text-wrap'>
                 {isPending
