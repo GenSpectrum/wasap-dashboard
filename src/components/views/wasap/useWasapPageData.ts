@@ -12,9 +12,9 @@ import type {
     WasapUntrackedFilter,
     WasapVariantFilter,
 } from './wasapPageConfig';
-import { getCollection } from '../../../externalData/covspectrum/getCollection';
-import type { CollectionVariant } from '../../../externalData/covspectrum/types';
-import { detailedMutationsToQuery } from '../../../externalData/covspectrum/variantConversionUtil';
+import { getCollection } from '../../../externalData/covSpectrum/getCollection';
+import type { CollectionVariant } from '../../../externalData/covSpectrum/types';
+import { detailedMutationsToQuery } from '../../../externalData/covSpectrum/variantConversionUtil';
 import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
 import { getCollection as getGenSpectrumCollection } from '../../../externalData/genSpectrum/getCollection';
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
