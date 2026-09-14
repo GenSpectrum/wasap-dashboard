@@ -1,0 +1,269 @@
+import { Fragment, useId, useMemo } from 'react';
+
+import { type TemporalDataMap } from './MutationOverTimeData';
+import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
+import { type Temporal } from '../../util/temporalClass';
+import { type ColorScale, getColorWithinScale } from '../shared/color-scale-selector';
+import { type FeatureRenderer } from '../shared/features-over-time-grid';
+import { getTooltipPosition } from '../shared/features-over-time-grid-shared';
+import PortalTooltip from '../shared/portal-tooltip';
+
+/**
+ * Prototype: the mutation x time-bucket matrix drawn as one band per mutation,
+ * instead of a grid of colour-scaled cells.
+ *
+ * A grid cell says what share of the reads carried a mutation but not how many
+ * reads that was, so one read in four and a thousand in four thousand look the
+ * same. Here each row is a band along the time axis whose thickness at a bucket
+ * is the reads covering it and whose fill is the proportion measured in them,
+ * so a share of a handful of reads is a thread and a deeply read bucket is wide
+ * whatever was found in it.
+ *
+ * Spike scope: reuses whatever page of rows/dates the grid already fetched, and
+ * the grid's own colour scale and tooltip. No legend, no thickness-mode toggle,
+ * no column windowing yet - see the follow-up commits on the design this is
+ * ported from (wastewater-analytics-experiment, MutationViolins.tsx) for those.
+ */
+
+/** Half the thickness, in pixels, of the band at its thickest bucket. */
+const COVERAGE_BAND_MAX_HALF = 15;
+/** A covered bucket never thins away to nothing, or it can't be told from an uncovered one. */
+const COVERAGE_BAND_MIN_HALF = 1.5;
+/** Room for the thickest band, with a little air above and below it. */
+const ROW_HEIGHT = COVERAGE_BAND_MAX_HALF * 2 + 6;
+/** The band is drawn in a stretched space, so x is an arbitrary round number. */
+const SPAN = 1000;
+
+function coverageHalfThickness(coverage: number, maxCoverage: number): number {
+    if (coverage <= 0 || maxCoverage <= 0) {
+        return 0;
+    }
+    const share = Math.log10(coverage + 1) / Math.log10(maxCoverage + 1);
+    return Math.max(COVERAGE_BAND_MIN_HALF, Math.min(1, share) * COVERAGE_BAND_MAX_HALF);
+}
+
+function coverageOf(value: ProportionValue): number {
+    return value?.type === 'valueWithCoverage' ? value.coverage : 0;
+}
+
+export interface MutationBandsProps<F> {
+    rowLabelHeader: string;
+    data: TemporalDataMap<F> | null;
+    isLoading: boolean;
+    loadingRowLabels: string[];
+    requestedDateRanges: Temporal[];
+    colorScale: ColorScale;
+    featureRenderer: FeatureRenderer<F>;
+    tooltipPortalTarget: HTMLElement | null;
+}
+
+export function MutationBands<F>({
+    rowLabelHeader,
+    data,
+    isLoading,
+    loadingRowLabels,
+    requestedDateRanges,
+    colorScale,
+    featureRenderer,
+    tooltipPortalTarget,
+}: MutationBandsProps<F>) {
+    const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
+    const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
+    const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
+    const gradientPrefix = useId();
+
+    // Over every loaded cell, so a band's thickness doesn't shift between pages.
+    const maxCoverage = useMemo(
+        () =>
+            rows.reduce((max, row) => row.reduce((rowMax, cell) => Math.max(rowMax, coverageOf(cell ?? null)), max), 0),
+        [rows],
+    );
+
+    return (
+        <div className='w-full overflow-auto'>
+            <table className='w-full'>
+                <thead>
+                    <tr>
+                        <th>{rowLabelHeader}</th>
+                        {columns.map((column) => (
+                            <th key={column.dateString} className='p-0 align-bottom font-normal'>
+                                <div
+                                    className='mx-auto text-[10px] whitespace-nowrap'
+                                    style={{ writingMode: 'vertical-rl', rotate: '180deg' }}
+                                >
+                                    {column.dateString}
+                                </div>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {isLoading
+                        ? loadingRowLabels.map((label, rowIndex) => (
+                              <tr key={label}>
+                                  <td className='text-center'>{label}</td>
+                                  {rowIndex === 0 && (
+                                      <td
+                                          rowSpan={loadingRowLabels.length}
+                                          colSpan={columns.length}
+                                          className='text-center'
+                                      >
+                                          <span className='loading loading-spinner loading-sm' />
+                                      </td>
+                                  )}
+                              </tr>
+                          ))
+                        : features.map((feature, rowIndex) => (
+                              <tr key={featureRenderer.asString(feature)}>
+                                  <th className='font-medium whitespace-nowrap'>
+                                      {featureRenderer.renderRowLabel(feature)}
+                                  </th>
+                                  <td className='p-0' colSpan={columns.length}>
+                                      <BandRow
+                                          feature={feature}
+                                          values={rows[rowIndex] ?? []}
+                                          columns={columns}
+                                          colorScale={colorScale}
+                                          maxCoverage={maxCoverage}
+                                          gradientId={`${gradientPrefix}-${rowIndex}`}
+                                          rowIndex={rowIndex}
+                                          numberOfRows={features.length}
+                                          featureRenderer={featureRenderer}
+                                          tooltipPortalTarget={tooltipPortalTarget}
+                                      />
+                                  </td>
+                              </tr>
+                          ))}
+                    {!isLoading && features.length === 0 && (
+                        <tr>
+                            <td colSpan={columns.length + 1}>
+                                <div className='text-center'>No data available for your filters.</div>
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+/** One mutation's band across the loaded date columns. */
+function BandRow<F>({
+    feature,
+    values,
+    columns,
+    colorScale,
+    maxCoverage,
+    gradientId,
+    rowIndex,
+    numberOfRows,
+    featureRenderer,
+    tooltipPortalTarget,
+}: {
+    feature: F;
+    values: (ProportionValue | undefined)[];
+    columns: Temporal[];
+    colorScale: ColorScale;
+    maxCoverage: number;
+    gradientId: string;
+    rowIndex: number;
+    numberOfRows: number;
+    featureRenderer: FeatureRenderer<F>;
+    tooltipPortalTarget: HTMLElement | null;
+}) {
+    const width = SPAN / columns.length;
+    const centre = ROW_HEIGHT / 2;
+
+    // A bucket is measured at the middle of its column, and the band is drawn
+    // from nothing at either edge of the row, as a violin tapers.
+    const knots = [
+        { x: 0, half: 0 },
+        ...columns.map((_, index) => ({
+            x: (index + 0.5) * width,
+            half: coverageHalfThickness(coverageOf(values[index] ?? null), maxCoverage),
+        })),
+        { x: SPAN, half: 0 },
+    ];
+
+    return (
+        <div className='border-base-200 relative border-b' style={{ height: `${ROW_HEIGHT}px` }}>
+            <svg
+                className='absolute inset-0 h-full w-full'
+                viewBox={`0 0 ${SPAN} ${ROW_HEIGHT}`}
+                preserveAspectRatio='none'
+                aria-hidden='true'
+            >
+                <defs>
+                    {/* Hard stops, one slice per bucket: the colour of a bucket is
+                        the proportion measured in it, and nothing is measured
+                        between two buckets. */}
+                    <linearGradient id={gradientId} gradientUnits='userSpaceOnUse' x1={0} x2={SPAN}>
+                        {columns.map((column, index) => {
+                            const value = values[index] ?? null;
+                            const color = getColorWithinScale(getProportion(value), colorScale);
+                            return (
+                                <Fragment key={column.dateString}>
+                                    <stop offset={index / columns.length} stopColor={color} />
+                                    <stop offset={(index + 1) / columns.length} stopColor={color} />
+                                </Fragment>
+                            );
+                        })}
+                    </linearGradient>
+                </defs>
+                <path
+                    d={bandPath(knots, centre)}
+                    fill={`url(#${gradientId})`}
+                    stroke='rgba(0, 0, 0, 0.3)'
+                    strokeWidth={1}
+                    vectorEffect='non-scaling-stroke'
+                />
+            </svg>
+
+            <div className='absolute inset-0 flex'>
+                {columns.map((column, index) => {
+                    const value = values[index] ?? null;
+                    const tooltip = featureRenderer.renderTooltip(feature, column, value);
+                    return (
+                        // PortalTooltip's own wrapper div isn't a flex item itself, so
+                        // give it one to stretch into - otherwise it collapses to the
+                        // width of its (empty) content and there's nothing to hover.
+                        <div key={column.dateString} className='flex-1'>
+                            <PortalTooltip
+                                content={tooltip}
+                                position={getTooltipPosition(rowIndex, numberOfRows, index, columns.length)}
+                                portalTarget={tooltipPortalTarget}
+                            >
+                                <div className='cursor-default' style={{ height: `${ROW_HEIGHT}px` }} />
+                            </PortalTooltip>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+/**
+ * The outline of a band through its knots, mirrored about the centre line.
+ *
+ * Each segment is a cubic whose control points sit at the height of the knots
+ * it joins, so the curve is smooth and never rises above the thicker of the
+ * two: a bulge between two buckets would be coverage that was never measured.
+ */
+function bandPath(knots: { x: number; half: number }[], centre: number): string {
+    const edge = (sign: number, reversed: boolean) => {
+        const points = reversed ? [...knots].reverse() : knots;
+        return points
+            .map((knot, index) => {
+                const y = centre + sign * knot.half;
+                if (index === 0) {
+                    return `${reversed ? 'L' : 'M'} ${knot.x} ${y}`;
+                }
+                const previous = points[index - 1];
+                const handle = (knot.x - previous.x) / 3;
+                return `C ${previous.x + handle} ${centre + sign * previous.half} ${knot.x - handle} ${y} ${knot.x} ${y}`;
+            })
+            .join(' ');
+    };
+    return `${edge(-1, false)} ${edge(1, true)} Z`;
+}
