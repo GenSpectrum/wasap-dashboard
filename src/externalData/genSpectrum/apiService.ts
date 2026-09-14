@@ -1,9 +1,8 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
-import { z, type ZodSchema } from 'zod';
+import { type ZodSchema } from 'zod';
 
 import { UserFacingError } from '../../components/ErrorReportInstruction';
 import { getAppConfig } from '../../config/appConfig';
-import { collectionSchema, collectionSummarySchema } from '../../types/Collection';
 import { type ProblemDetail, problemDetailSchema } from '../../types/ProblemDetail';
 
 const X_REQUEST_ID_HEADER = 'x-request-id';
@@ -16,7 +15,7 @@ type EndpointParameters<Response> = {
 
 type EndpointParametersWithBody<Request, Response> = EndpointParameters<Response> & { data: Request };
 
-class ApiService {
+export class ApiService {
     private readonly axiosInstance: AxiosInstance;
 
     constructor(baseURL: string) {
@@ -118,45 +117,12 @@ export class BackendNotAvailable extends UserFacingError {
     }
 }
 
-export class BackendService extends ApiService {
-    public async getCollectionSummaries({
-        organism,
-        userId,
-        excludeSystemCollections,
-        tags,
-    }: { organism?: string; userId?: number; excludeSystemCollections?: boolean; tags?: string | string[] } = {}) {
-        const requestParams: Record<string, string | string[]> = {};
-        if (organism !== undefined) {
-            requestParams.organism = organism;
-        }
-        if (userId !== undefined) {
-            requestParams.userId = String(userId);
-        }
-        if (excludeSystemCollections !== undefined) {
-            requestParams.excludeSystemCollections = String(excludeSystemCollections);
-        }
-        if (tags !== undefined) {
-            requestParams.tags = tags;
-        }
-        return this.get({
-            url: '/collections',
-            requestParams: Object.keys(requestParams).length > 0 ? requestParams : undefined,
-            schema: z.array(collectionSummarySchema),
-        });
-    }
+let apiServiceForClientside: ApiService | null = null;
 
-    public async getCollection({ id }: { id: string }) {
-        return this.get({ url: `/collections/${id}`, schema: collectionSchema });
-    }
-}
-
-let backendServiceForClientside: BackendService | null = null;
-
-export function getBackendServiceForClientside(): BackendService {
+export function getApiServiceForClientside(): ApiService {
     // Standalone: the collections backend URL comes from `config.json`
     // (`getAppConfig().collectionsBackendUrl`) rather than a same-origin
     // `/api` proxy as in the dashboards deployment.
-    backendServiceForClientside =
-        backendServiceForClientside ?? new BackendService(getAppConfig().collectionsBackendUrl);
-    return backendServiceForClientside;
+    apiServiceForClientside = apiServiceForClientside ?? new ApiService(getAppConfig().collectionsBackendUrl);
+    return apiServiceForClientside;
 }

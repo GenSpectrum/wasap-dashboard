@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { type Dispatch, type SetStateAction, useState } from 'react';
 
-import { getBackendServiceForClientside } from '../../../externalData/backendApi/backendService';
+import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
+import { getCollections } from '../../../externalData/genSpectrum/getCollections';
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { ApplyFilterButton } from '../ApplyFilterButton';
 import { DynamicDateFilter } from '../DynamicDateFilter';
@@ -128,7 +129,7 @@ export function WasapPageStateSelector({
                 );
             }
             const { collectionsUserId, collectionsTag } = config.predefinedVariantsSource;
-            return getBackendServiceForClientside().getCollectionSummaries({
+            return getCollections(getApiServiceForClientside(), {
                 userId: collectionsUserId,
                 organism: config.internalName,
                 tags: collectionsTag,

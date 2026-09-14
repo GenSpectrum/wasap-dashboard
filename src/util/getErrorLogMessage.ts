@@ -1,4 +1,4 @@
-import { BackendError, UnknownBackendError } from '../externalData/backendApi/backendService';
+import { BackendError, UnknownBackendError } from '../externalData/genSpectrum/apiService';
 
 export function getErrorLogMessage(error: unknown): string {
     if (error instanceof BackendError) {

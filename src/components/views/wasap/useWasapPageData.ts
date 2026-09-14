@@ -12,10 +12,11 @@ import type {
     WasapUntrackedFilter,
     WasapVariantFilter,
 } from './wasapPageConfig';
-import { getBackendServiceForClientside } from '../../../externalData/backendApi/backendService';
 import { getCollection } from '../../../externalData/covspectrum/getCollection';
 import type { CollectionVariant } from '../../../externalData/covspectrum/types';
 import { detailedMutationsToQuery } from '../../../externalData/covspectrum/variantConversionUtil';
+import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
+import { getCollection as getGenSpectrumCollection } from '../../../externalData/genSpectrum/getCollection';
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
 import { parseQuery } from '../../../externalData/lapis/parseQuery';
@@ -135,7 +136,7 @@ async function fetchVariantPredefinedModeData(
     if (analysis.collectionId === undefined) {
         throw new Error('No collection selected for predefined variant mode.');
     }
-    const collection = await getBackendServiceForClientside().getCollection({ id: String(analysis.collectionId) });
+    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(analysis.collectionId));
 
     // These names match the variant names hardcoded in the collection seeder.
     let variantName: string;
@@ -281,7 +282,7 @@ async function fetchCollectionModeData(
     if (analysis.collectionId === undefined) {
         throw Error('No collection selected');
     }
-    const collection = await getBackendServiceForClientside().getCollection({ id: String(analysis.collectionId) });
+    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(analysis.collectionId));
 
     const { variantData, invalidVariants } = extractBackendVariantData(collection.variants);
     const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(

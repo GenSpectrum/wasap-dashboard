@@ -3,11 +3,11 @@ import { z } from 'zod';
 /**
  * CoV-Spectrum "collections" (variant collections, e.g. `Collection`/`CollectionRaw` below)
  * are a distinct concept from the GenSpectrum "collections" backend's collections
- * (`src/types/Collection.ts`, served via `src/externalData/backendApi`) — different API, different owner,
+ * (`src/types/Collection.ts`, served via `src/externalData/genSpectrum`) — different API, different owner,
  * different shape (a CoV-Spectrum variant's `query` is a raw string parsed client-side into
  * `variantQuery`/`detailedMutations`, vs. the GenSpectrum backend's `countQuery`/`coverageQuery`/
  * `filterObject`). They just happen to share the word "collection". This module deliberately
- * doesn't reuse `backendApi`'s `ApiService` — it's a different backend, not the same one done twice.
+ * doesn't reuse `genSpectrum`'s `ApiService` — it's a different backend, not the same one done twice.
  */
 export const collectionVariantRawSchema = z.object({
     query: z.string(),
