@@ -3,9 +3,6 @@ import { organismConfig, paths, type Organism } from './Organism';
 import { advancedQueryUrlParamForVariant } from '../components/genspectrum/advancedQueryUrlParamConstants';
 
 export const Page = {
-    apiKey: '/api-key',
-    createSubscription: '/subscriptions/create',
-    subscriptionsOverview: '/subscriptions',
     dataSources: '/data',
     collectionsOverview: '/collections',
     collectionsForOrganism: (organism: Organism) => `/collections/${organismConfig[organism].pathFragment}`,

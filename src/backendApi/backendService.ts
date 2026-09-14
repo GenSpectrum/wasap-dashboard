@@ -3,21 +3,8 @@ import { z, type ZodSchema } from 'zod';
 
 import { UserFacingError } from '../components/ErrorReportInstruction';
 import { getAppConfig } from '../config/appConfig';
-import { apiKeyMetadataSchema, generatedApiKeySchema } from '../types/ApiKey';
-import {
-    collectionSchema,
-    collectionSummarySchema,
-    type CollectionRequest,
-    type CollectionUpdate,
-} from '../types/Collection';
+import { collectionSchema, collectionSummarySchema } from '../types/Collection';
 import { type ProblemDetail, problemDetailSchema } from '../types/ProblemDetail';
-import { publicUserSchema } from '../types/PublicUser';
-import {
-    type SubscriptionPutRequest,
-    type SubscriptionRequest,
-    subscriptionResponseSchema,
-    triggerEvaluationResponseSchema,
-} from '../types/Subscription';
 
 const X_REQUEST_ID_HEADER = 'x-request-id';
 
@@ -132,52 +119,6 @@ export class BackendNotAvailable extends UserFacingError {
 }
 
 export class BackendService extends ApiService {
-    public async getSubscriptions() {
-        const url = `/subscriptions`;
-        return this.get({ url, schema: z.array(subscriptionResponseSchema) });
-    }
-
-    public async getEvaluateTrigger({ subscriptionId }: { subscriptionId: string }) {
-        const url = `/subscriptions/evaluateTrigger`;
-        return this.get({
-            url,
-            requestParams: { id: subscriptionId },
-            schema: triggerEvaluationResponseSchema,
-        });
-    }
-
-    public async postSubscription({ subscription }: { subscription: SubscriptionRequest }) {
-        const url = `/subscriptions`;
-        return this.post({ url, data: subscription, schema: subscriptionResponseSchema });
-    }
-
-    public async putSubscription({
-        subscription,
-        subscriptionId,
-    }: {
-        subscription: SubscriptionPutRequest;
-        subscriptionId: string;
-    }) {
-        const url = `/subscriptions/${subscriptionId}`;
-        return this.put({
-            url,
-            data: subscription,
-            schema: subscriptionResponseSchema,
-        });
-    }
-
-    public async deleteSubscription({ subscriptionId }: { subscriptionId: string }) {
-        const url = `/subscriptions/${subscriptionId}`;
-        return this.delete({
-            url,
-            schema: z.literal('').refine((_input): _input is never => true),
-        });
-    }
-
-    public async getUser({ id }: { id: number }) {
-        return this.get({ url: `/users/${id}`, schema: publicUserSchema });
-    }
-
     public async getCollectionSummaries({
         organism,
         userId,
@@ -204,64 +145,8 @@ export class BackendService extends ApiService {
         });
     }
 
-    public async getCollections({ organism }: { organism?: string } = {}) {
-        const requestParams: Record<string, string> = { includeVariants: 'true' };
-        if (organism !== undefined) {
-            requestParams.organism = organism;
-        }
-        return this.get({ url: '/collections', requestParams, schema: z.array(collectionSchema) });
-    }
-
     public async getCollection({ id }: { id: string }) {
         return this.get({ url: `/collections/${id}`, schema: collectionSchema });
-    }
-
-    public async postCollection({ collection }: { collection: CollectionRequest }) {
-        return this.post({
-            url: '/collections',
-            data: collection,
-            schema: collectionSchema,
-        });
-    }
-
-    public async putCollection({ id, collection }: { id: string; collection: CollectionUpdate }) {
-        return this.put({
-            url: `/collections/${id}`,
-            data: collection,
-            schema: collectionSchema,
-        });
-    }
-
-    public async deleteCollection({ id }: { id: string }) {
-        return this.delete({
-            url: `/collections/${id}`,
-            schema: z.literal('').refine((_input): _input is never => true),
-        });
-    }
-
-    /** Returns metadata for the current API key, or throws a 404 BackendError if none exists. */
-    public async getApiKey() {
-        return this.get({ url: '/api-keys', schema: apiKeyMetadataSchema });
-    }
-
-    /** Generates a new API key and returns it. The raw key is shown once and cannot be retrieved again. Throws 409 if a key already exists. */
-    public async generateApiKey() {
-        return this.post({ url: '/api-keys', data: undefined, schema: generatedApiKeySchema });
-    }
-
-    /** Revokes the current API key. Throws 404 if no key exists. */
-    public async revokeApiKey() {
-        return this.delete({
-            url: '/api-keys',
-            schema: z.literal('').refine((_input): _input is never => true),
-        });
-    }
-
-    public async getCollectionTags() {
-        return this.get({
-            url: '/collections/tags',
-            schema: z.object({ tags: z.array(z.string()) }),
-        });
     }
 }
 
