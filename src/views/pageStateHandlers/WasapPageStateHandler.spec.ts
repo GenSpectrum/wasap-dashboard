@@ -223,7 +223,7 @@ describe('WasapPageStateHandler', () => {
             const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
             const newUrl = handler.toUrl(filter);
-            expect(newUrl).toContain('samplingDate=Most+recent+30+days&');
+            expect(newUrl).toContain('samplingDate=Most+recent+90+days&');
         });
 
         it('still serializes an explicit custom date range as literal dates', () => {

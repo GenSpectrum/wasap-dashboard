@@ -15,7 +15,7 @@ const RECENT_DAYS_OPTIONS = [7, 14, 30, 60, 90] as const;
  * column limit ("Too many dates"); this bounds it without guessing at a fixed
  * window size.
  */
-export const DEFAULT_RECENT_DAYS_LABEL = recentDaysLabel(RECENT_DAYS_OPTIONS[2]);
+export const DEFAULT_RECENT_DAYS_LABEL = recentDaysLabel(RECENT_DAYS_OPTIONS[4]);
 
 /**
  * Generates date range options for "most recent X days" where X is 7, 14, 30,
