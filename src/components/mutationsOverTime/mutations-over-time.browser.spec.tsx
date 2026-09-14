@@ -29,7 +29,7 @@ function ndjson(rows: unknown[]): Response {
  *  - the date axis (`groupBy({n := count()}, {date})`) -> two day buckets
  *  - the metadata `mutations(minProportion := 0.001, …)` call -> the two
  *    display mutations, each above the floor
- *  - one position-over-time query (`groupBy({count := count()}, {date, sym := main.at(P)})`)
+ *  - one position-over-time query (`map({sym := main.at(P)}).groupBy({count := count()}, {date, sym})`)
  *    per distinct position -> a symbol distribution per day, so every cell resolves
  *
  * Position 241: alt `T` = 90% of coverage in both buckets.
@@ -143,8 +143,8 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
             .filter((body) => body.includes('sym := main.at('));
 
         expect(positionBodies).toEqual([
-            'default.groupBy({count := count()}, {date := date, sym := main.at(241)})',
-            'default.groupBy({count := count()}, {date := date, sym := main.at(3037)})',
+            'default.map({sym := main.at(241)}).groupBy({count := count()}, {date, sym})',
+            'default.map({sym := main.at(3037)}).groupBy({count := count()}, {date, sym})',
         ]);
     });
 });

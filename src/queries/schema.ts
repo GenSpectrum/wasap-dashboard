@@ -18,12 +18,20 @@ export type SiloSchema = {
     samplingDate: string;
     /**
      * The column to *group* and *filter* sampling dates by. covid carries a
-     * dictionary-encoded copy of the sampling date (`date`); grouping a mapped
-     * `at()` column by it is fine, by the `DATE32` column it times out, and even
-     * a plain range *filter* on `DATE32` costs ~5 s on covid's ~600 M reads
-     * (doc 10). rsv-a / rsv-b have only `samplingDate`, so `groupingDate` is
-     * that same `DATE32` column there — the over-time position query is blocked
-     * until they gain a dictionary date column.
+     * dictionary-encoded copy of the sampling date (`date`); a plain range
+     * *filter* on the `DATE32` column instead costs ~5 s on covid's ~600 M
+     * reads (doc 10). rsv-a / rsv-b have only `samplingDate`, so `groupingDate`
+     * is that same `DATE32` column there.
+     *
+     * Grouping a mapped `at()` column alongside it is sub-second on both —
+     * verified live on rsv-a's ~17 M reads — as long as the query uses the
+     * `.map(sym := …).groupBy(count(), {groupingDate, sym})` shape
+     * (`positionOverTimeQuery`). An earlier, unverified assumption that this
+     * *always* times out on a `DATE32` column turned out to be a different bug
+     * (a `groupBy` column-list syntax rejected outright by the older SILO
+     * version behind rsv-a / rsv-b — see that function's docstring), not a
+     * performance wall. Whether grouping by `DATE32` itself degrades at
+     * covid-scale row counts (~600 M vs rsv's ~17 M) is still untested.
      */
     groupingDate: string;
     /**

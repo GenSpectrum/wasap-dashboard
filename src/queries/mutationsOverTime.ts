@@ -11,8 +11,8 @@
  *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
  *     mutations get a grid row, and each one's proportion over the whole shown
  *     span (drives the "minimum proportion" filter across pages).
- *   `positionOverTimeQuery` — one `groupBy(count(), {date, seq.at(pos)})` per
- *     distinct position of the visible *page*: the full symbol distribution
+ *   `positionOverTimeQuery` — one `map(sym := seq.at(pos)).groupBy(count(), {date, sym})`
+ *     per distinct position of the visible *page*: the full symbol distribution
  *     there, per day. `coverage = Σ count(known symbols)`,
  *     `count = Σ count(alt)`. No date filter — the whole range comes back and
  *     is bucketed client-side, so one cached result serves any window.
@@ -100,22 +100,28 @@ export type PositionTarget = {
 
 /**
  * The symbol every read carries at one position, per day:
- * `filter(location).groupBy({count := count()}, {<date> := <date>, sym := <seq>.at(<pos>)})`.
+ * `filter(location).map({sym := <seq>.at(<pos>)}).groupBy({count := count()}, {<date>, sym})`.
+ *
+ * The computed `sym` column is `.map()`-ed *before* `groupBy`, and both
+ * grouping columns are named bare rather than re-assigned inline
+ * (`{<date>, sym}`, not `{<date> := <date>, sym := sym}`) — the older SILO
+ * version behind rsv-a / rsv-b rejects an inline `:=` assignment in a
+ * `groupBy` column list outright (400, "expected set literal"; not a timeout).
+ * This form parses and runs sub-second on both that version and covid's newer
+ * one, so there's no per-instance branching.
  *
  * Location only — no date bounds — so the whole date range is returned and the
  * caller buckets it. `schema.groupingDate` is the dictionary date column where
- * the instance has one; on a `DATE32`-only instance this query times out (known
- * gap, doc 10).
+ * the instance has one, else the `DATE32` column.
  */
 export function positionOverTimeQuery(
     schema: SiloSchema,
     filter: Pick<SiloReadFilter, 'locationName'>,
     target: PositionTarget,
 ): Relation {
-    return scoped(schema, { locationName: filter.locationName }).groupBy(
-        { count: count() },
-        { [schema.groupingDate]: field(schema.groupingDate), sym: field(target.sequenceName).at(target.position) },
-    );
+    return scoped(schema, { locationName: filter.locationName })
+        .map({ sym: field(target.sequenceName).at(target.position) })
+        .groupBy({ count: count() }, [schema.groupingDate, 'sym']);
 }
 
 export type PositionOverTimeRow = {
