@@ -276,6 +276,10 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                     colorScale={colorScale}
                     featureRenderer={mutationRenderer}
                     tooltipPortalTarget={tooltipPortalTarget}
+                    pageSizes={originalComponentProps.pageSizes}
+                    pageIndex={pageIndex}
+                    totalRows={totalFilteredRows}
+                    onPageChange={setPageIndex}
                 />
             ),
         },

@@ -1,4 +1,5 @@
-import { Fragment, useId, useMemo } from 'react';
+import { getCoreRowModel } from '@tanstack/table-core';
+import { Fragment, useId, useMemo, type Dispatch, type SetStateAction } from 'react';
 
 import { type TemporalDataMap } from './MutationOverTimeData';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
@@ -7,6 +8,9 @@ import { type ColorScale, getColorWithinScale } from '../shared/color-scale-sele
 import { type FeatureRenderer } from '../shared/features-over-time-grid';
 import { getTooltipPosition, styleGridHeader } from '../shared/features-over-time-grid-shared';
 import PortalTooltip from '../shared/portal-tooltip';
+import { Pagination, type PageSizes } from '../shared/tanstackTable/pagination';
+import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';
+import { useReactTable } from '../shared/tanstackTable/tanstackTable';
 
 /**
  * Prototype: the mutation x time-bucket matrix drawn as one band per mutation,
@@ -55,6 +59,12 @@ export interface MutationBandsProps<F> {
     colorScale: ColorScale;
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
+    pageSizes: PageSizes;
+    /** Controlled page index (0-based); shared with the grid tab. */
+    pageIndex: number;
+    /** Total number of rows across all pages. */
+    totalRows: number;
+    onPageChange: Dispatch<SetStateAction<number>>;
 }
 
 export function MutationBands<F>({
@@ -66,11 +76,38 @@ export function MutationBands<F>({
     colorScale,
     featureRenderer,
     tooltipPortalTarget,
+    pageSizes,
+    pageIndex,
+    totalRows,
+    onPageChange,
 }: MutationBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
+
+    // A table instance with no columns of its own: it exists only to drive the
+    // shared `Pagination` control the same way the grid tab's table does - the
+    // rows it's given are just for `Pagination` to read a correct row count off.
+    const { pageSize, setPageSize } = usePageSizeContext();
+    const paginationTable = useReactTable({
+        data: features,
+        columns: [],
+        getCoreRowModel: getCoreRowModel(),
+        manualPagination: true,
+        pageCount: Math.ceil(totalRows / pageSize),
+        state: { pagination: { pageIndex, pageSize } },
+        onPaginationChange: (updater) => {
+            const current = { pageIndex, pageSize };
+            const next = typeof updater === 'function' ? updater(current) : updater;
+            if (next.pageIndex !== current.pageIndex) {
+                onPageChange(next.pageIndex);
+            }
+            if (next.pageSize !== current.pageSize) {
+                setPageSize(next.pageSize);
+            }
+        },
+    });
 
     // Over every loaded cell, so a band's thickness doesn't shift between pages.
     const maxCoverage = useMemo(
@@ -80,75 +117,80 @@ export function MutationBands<F>({
     );
 
     return (
-        <div className='w-full overflow-auto'>
-            {/* The date columns hold one colSpan'd band each rather than the grid's
+        <div className='w-full'>
+            <div className='overflow-auto'>
+                {/* The date columns hold one colSpan'd band each rather than the grid's
                 one cell per column, so auto layout can't size them from their own
                 content - it would hand all the spare width to the label column
                 instead. Fixed layout, with an explicit width on the label column
                 only, keeps the date columns even and the label column the width
                 the grid's own content-driven sizing settles on. */}
-            <table className='w-full' style={{ tableLayout: 'fixed' }}>
-                <thead>
-                    <tr>
-                        <th className='w-24'>{rowLabelHeader}</th>
-                        {/* Same header treatment as the grid: only the first and last
+                <table className='w-full' style={{ tableLayout: 'fixed' }}>
+                    <thead>
+                        <tr>
+                            <th className='w-24'>{rowLabelHeader}</th>
+                            {/* Same header treatment as the grid: only the first and last
                             date are labelled, the rest hide behind a container query
                             unless there's room, so the two views read the same way. */}
-                        {columns.map((column, index) => (
-                            <th key={column.dateString} className='p-0 align-bottom font-normal'>
-                                <div className='@container min-w-[0.05rem]'>
-                                    <p {...styleGridHeader(index, columns.length)}>{column.dateString}</p>
-                                </div>
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {isLoading
-                        ? loadingRowLabels.map((label, rowIndex) => (
-                              <tr key={label}>
-                                  <td className='text-center'>{label}</td>
-                                  {rowIndex === 0 && (
-                                      <td
-                                          rowSpan={loadingRowLabels.length}
-                                          colSpan={columns.length}
-                                          className='text-center'
-                                      >
-                                          <span className='loading loading-spinner loading-sm' />
-                                      </td>
-                                  )}
-                              </tr>
-                          ))
-                        : features.map((feature, rowIndex) => (
-                              <tr key={featureRenderer.asString(feature)}>
-                                  {/* A plain `<td>`, matching the grid's row-label cell,
-                                      so both tables size this column the same way. */}
-                                  <td>{featureRenderer.renderRowLabel(feature)}</td>
-                                  <td className='p-0' colSpan={columns.length}>
-                                      <BandRow
-                                          feature={feature}
-                                          values={rows[rowIndex] ?? []}
-                                          columns={columns}
-                                          colorScale={colorScale}
-                                          maxCoverage={maxCoverage}
-                                          gradientId={`${gradientPrefix}-${rowIndex}`}
-                                          rowIndex={rowIndex}
-                                          numberOfRows={features.length}
-                                          featureRenderer={featureRenderer}
-                                          tooltipPortalTarget={tooltipPortalTarget}
-                                      />
-                                  </td>
-                              </tr>
-                          ))}
-                    {!isLoading && features.length === 0 && (
-                        <tr>
-                            <td colSpan={columns.length + 1}>
-                                <div className='text-center'>No data available for your filters.</div>
-                            </td>
+                            {columns.map((column, index) => (
+                                <th key={column.dateString} className='p-0 align-bottom font-normal'>
+                                    <div className='@container min-w-[0.05rem]'>
+                                        <p {...styleGridHeader(index, columns.length)}>{column.dateString}</p>
+                                    </div>
+                                </th>
+                            ))}
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {isLoading
+                            ? loadingRowLabels.map((label, rowIndex) => (
+                                  <tr key={label}>
+                                      <td className='text-center'>{label}</td>
+                                      {rowIndex === 0 && (
+                                          <td
+                                              rowSpan={loadingRowLabels.length}
+                                              colSpan={columns.length}
+                                              className='text-center'
+                                          >
+                                              <span className='loading loading-spinner loading-sm' />
+                                          </td>
+                                      )}
+                                  </tr>
+                              ))
+                            : features.map((feature, rowIndex) => (
+                                  <tr key={featureRenderer.asString(feature)}>
+                                      {/* A plain `<td>`, matching the grid's row-label cell,
+                                      so both tables size this column the same way. */}
+                                      <td>{featureRenderer.renderRowLabel(feature)}</td>
+                                      <td className='p-0' colSpan={columns.length}>
+                                          <BandRow
+                                              feature={feature}
+                                              values={rows[rowIndex] ?? []}
+                                              columns={columns}
+                                              colorScale={colorScale}
+                                              maxCoverage={maxCoverage}
+                                              gradientId={`${gradientPrefix}-${rowIndex}`}
+                                              rowIndex={rowIndex}
+                                              numberOfRows={features.length}
+                                              featureRenderer={featureRenderer}
+                                              tooltipPortalTarget={tooltipPortalTarget}
+                                          />
+                                      </td>
+                                  </tr>
+                              ))}
+                        {!isLoading && features.length === 0 && (
+                            <tr>
+                                <td colSpan={columns.length + 1}>
+                                    <div className='text-center'>No data available for your filters.</div>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+            <div className='mt-2'>
+                <Pagination table={paginationTable} pageSizes={pageSizes} totalRows={totalRows} />
+            </div>
         </div>
     );
 }
