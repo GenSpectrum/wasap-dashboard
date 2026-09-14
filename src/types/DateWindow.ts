@@ -17,6 +17,9 @@ export const dateWindowConfig = {
 
 export const CustomDateRangeLabel = 'Custom';
 
+/** The "no restriction" date-range option label — deliberate, not the default (see doc on `DEFAULT_RECENT_DAYS_LABEL`). */
+export const ALL_TIMES_LABEL = 'All times';
+
 export type DateWindow = keyof typeof dateWindowConfig;
 
 export const allDateWindows = Object.keys(dateWindowConfig) as DateWindow[];

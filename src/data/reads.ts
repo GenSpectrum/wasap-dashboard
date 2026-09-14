@@ -44,9 +44,13 @@ export function useStringFieldOptions(field: string): UseQueryResult<NamedCount[
 
 /**
  * The oldest and newest sampling date the filter admits, or `undefined` where
- * the filter admits nothing.
+ * the filter admits nothing. Pass `enabled: false` to skip the query, e.g.
+ * when the caller doesn't need the extent for the render at hand.
  */
-export function useDateExtent(filter: SiloReadFilter = {}): UseQueryResult<{ min: string; max: string } | undefined> {
+export function useDateExtent(
+    filter: SiloReadFilter = {},
+    { enabled = true }: { enabled?: boolean } = {},
+): UseQueryResult<{ min: string; max: string } | undefined> {
     const connection = useConnection();
     const schema = useSiloSchema();
     const normalized = normalizeFilter(filter);
@@ -58,6 +62,7 @@ export function useDateExtent(filter: SiloReadFilter = {}): UseQueryResult<{ min
             });
             return readValueExtent(rows, schema.groupingDate);
         },
+        enabled,
     });
 }
 

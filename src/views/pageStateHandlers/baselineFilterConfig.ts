@@ -10,6 +10,13 @@ import { type DateRangeOption } from '../../components/dateRangeFilter/dateRange
  *
  * (Extracted from the now-deleted `BaselineSelector` component — a dashboards
  * leftover whose type this was co-located with.)
+ *
+ * TODO: the `'date'` variant (and `DateRangeFilterConfig`) is dead —
+ * `generateWasapFilterConfig` no longer emits one; `samplingDate` now has its
+ * own dedicated URL parsing in `WasapPageStateHandler` (see
+ * `parseSamplingDateFromUrl`/`useResolvedSamplingDate`). Left in place rather
+ * than deleted since the shared parsing helpers in `dateFilterFromToUrl.ts`
+ * still reference it; circle back and remove both together.
  */
 
 export type LocationFilterConfig = {

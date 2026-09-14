@@ -1,7 +1,8 @@
+import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
 
 import { type PageStateHandler } from './PageStateHandler';
-import { parseDateRangesFromUrl, setSearchFromDateRange } from './dateFilterFromToUrl';
+import { setSearchFromDateRange } from './dateFilterFromToUrl';
 import { parseTextFiltersFromUrl } from './textFilterFromToUrl';
 import type { BaselineFilterConfig } from './baselineFilterConfig';
 import {
@@ -17,6 +18,7 @@ import {
 } from '../../components/views/wasap/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { formatUrl } from '../../util/formatUrl';
+import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 import { setSearchFromString } from '../helpers';
 
 export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
@@ -31,7 +33,7 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     parsePageStateFromUrl(searchParams: URLSearchParams): WasapFilter {
         // URL-parsed settings
         const texts = parseTextFiltersFromUrl(searchParams, this.filterConfig);
-        const dateRanges = parseDateRangesFromUrl(searchParams, this.filterConfig);
+        const samplingDate = parseSamplingDateFromUrl(searchParams, this.config.samplingDateField);
         const providedSequenceType = texts.sequenceType as SequenceType | undefined;
         const providedMode = texts.analysisMode as WasapAnalysisMode | undefined;
 
@@ -125,9 +127,15 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
                 break;
         }
 
+        // An unrestricted date range at 'day' granularity can span more days than
+        // mutations-over-time supports (it refuses past 200 columns, "Too many
+        // dates"), so a bare URL defaults to a recent window instead. Users can
+        // still pick "All times" explicitly from the date filter's dropdown.
+        const defaultSamplingDate: DateRangeOption = { label: DEFAULT_RECENT_DAYS_LABEL };
+
         const base: WasapBaseFilter = {
             locationName: texts.locationName ?? this.config.defaultLocationName,
-            samplingDate: dateRanges.samplingDate,
+            samplingDate: samplingDate ?? defaultSamplingDate,
             granularity: (texts.granularity as TemporalGranularity | undefined) ?? 'day',
             excludeEmpty: texts.excludeEmpty !== 'false',
         };
@@ -145,9 +153,12 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
 
         // general dataset settings
         setSearchFromString(search, this.config.locationNameField, base.locationName);
-        // Force the date range to always use the Custom label for URL serialization
-        const customDateRange = base.samplingDate ? { ...base.samplingDate, label: CustomDateRangeLabel } : undefined;
-        setSearchFromDateRange(search, this.config.samplingDateField, customDateRange);
+        // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
+        // the URL re-resolves them against the dataset's current date range instead of
+        // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
+        // still serialize as literal dates — setSearchFromDateRange already branches
+        // on the label.
+        setSearchFromDateRange(search, this.config.samplingDateField, base.samplingDate);
         setSearchFromString(search, 'granularity', base.granularity);
         if (!base.excludeEmpty) {
             setSearchFromString(search, 'excludeEmpty', 'false');
@@ -219,16 +230,51 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     }
 }
 
+/**
+ * Parses the `samplingDate` URL param, which is either literal `dateFrom--dateTo`
+ * dates or a preset's label (e.g. "Most recent 14 days") written by `toUrl`. A
+ * label-only value has no concrete dates yet: WASAP's presets are relative to
+ * the dataset's actual latest sample date (which can lag behind today), not to
+ * today, so they can only be resolved once that date range has been read from
+ * SILO. See `useResolvedSamplingDate`, which does that resolution — this
+ * function only parses, deliberately not against a fixed options list (the old
+ * `{ type: 'date', dateRangeOptions: () => [] }` mechanism never had one to
+ * match against, which is why a preset label from the URL never resolved).
+ */
+function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRangeOption | undefined {
+    const value = search.get(name);
+    if (value === null) {
+        return undefined;
+    }
+    if (value.includes('--')) {
+        const [from, to] = value.split('--').map((part) => part.trim());
+        return {
+            label: CustomDateRangeLabel,
+            dateFrom: from === '' ? undefined : from,
+            dateTo: to === '' ? undefined : to,
+        };
+    }
+    return { label: value };
+}
+
+/**
+ * A `samplingDate` that's a preset label without concrete dates yet — needs to
+ * be resolved against the dataset's actual date range before it can be used to
+ * build a SILO query.
+ */
+export function isUnresolvedSamplingDate(samplingDate: DateRangeOption): boolean {
+    return (
+        samplingDate.label !== CustomDateRangeLabel &&
+        samplingDate.dateFrom === undefined &&
+        samplingDate.dateTo === undefined
+    );
+}
+
 function generateWasapFilterConfig(pageConfig: WasapPageConfig): BaselineFilterConfig[] {
     return [
         {
             type: 'text',
             lapisField: pageConfig.locationNameField,
-        },
-        {
-            type: 'date',
-            dateColumn: pageConfig.samplingDateField,
-            dateRangeOptions: () => [],
         },
         // below are not really LAPIS fields, but we still want to use the URL parsing mechanism
         {

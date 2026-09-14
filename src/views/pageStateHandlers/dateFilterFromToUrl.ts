@@ -4,6 +4,11 @@ import type { BaselineFilterConfig } from './baselineFilterConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import type { Dataset } from '../View';
 
+// TODO: `parseDateRangesFromUrl`/`getDateRangeFromSearch` are dead — no
+// `BaselineFilterConfig` of type 'date' is produced any more (WASAP's
+// samplingDate has its own parsing in `WasapPageStateHandler` now). Left in
+// place since `baselineFilterConfig.ts`'s 'date' variant still references
+// this file's types; circle back and remove both together.
 export function parseDateRangesFromUrl(
     search: URLSearchParams | Map<string, string>,
     baselineFilterConfigs: BaselineFilterConfig[] | undefined,
