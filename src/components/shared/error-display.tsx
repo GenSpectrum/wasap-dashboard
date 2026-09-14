@@ -4,6 +4,7 @@ import { type ZodError } from 'zod';
 import { InfoHeadline1, InfoParagraph } from './info';
 import { Modal } from './modal';
 import { LapisError, UnknownLapisError } from '../../lapisApi/lapisApi';
+import { RhydbError } from '../../rhydb/query';
 import { gsEventNames } from '../../util/gsEventNames';
 
 export class ErrorEvent extends Event {
@@ -117,6 +118,16 @@ function getDisplayedErrorMessage(error: Error) {
             details: {
                 headline: `LAPIS request failed: An unexpected error occurred while fetching ${error.requestedData}`,
                 message: error.message,
+            },
+        };
+    }
+
+    if (error instanceof RhydbError) {
+        return {
+            headline: 'Error - Failed fetching data from RhyDB',
+            details: {
+                headline: `RhyDB request failed (${error.kind})`,
+                message: error.userMessage,
             },
         };
     }
