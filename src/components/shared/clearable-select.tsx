@@ -48,7 +48,7 @@ export function ClearableSelect({
     return (
         <div className={`relative inline min-w-24 ${className}`}>
             <select
-                className={`w-full select pr-14 ${selectClassName}`}
+                className={`select w-full pr-14 ${selectClassName}`}
                 value={selectedOption ?? undefinedValue}
                 onChange={handleChange}
             >
@@ -64,7 +64,7 @@ export function ClearableSelect({
             {selectedOption && (
                 <button
                     onClick={handleClear}
-                    className='absolute right-10 top-1/2 -translate-y-1/2 bg-transparent border-0 cursor-pointer'
+                    className='absolute top-1/2 right-10 -translate-y-1/2 cursor-pointer border-0 bg-transparent'
                 >
                     <DeleteIcon />
                 </button>

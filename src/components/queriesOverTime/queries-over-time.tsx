@@ -172,7 +172,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
                         position='right'
                         portalTarget={tooltipPortalTarget}
                     >
-                        <div className='text-center whitespace-nowrap mr-2'>
+                        <div className='mr-2 text-center whitespace-nowrap'>
                             <span>{value}</span>
                         </div>
                     </PortalTooltip>

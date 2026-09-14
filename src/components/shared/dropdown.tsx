@@ -29,7 +29,7 @@ export const Dropdown: FC<DropdownProps> = ({ children, buttonTitle, placement }
 
     return (
         <>
-            <button type='button' className='btn btn-xs whitespace-nowrap w-full' onClick={toggle} ref={referenceRef}>
+            <button type='button' className='btn btn-xs w-full whitespace-nowrap' onClick={toggle} ref={referenceRef}>
                 <span className={'w-full truncate'}>{buttonTitle}</span>
             </button>
             <div ref={floatingRef} className={`${dropdownClass} ${showContent ? '' : 'hidden'}`}>

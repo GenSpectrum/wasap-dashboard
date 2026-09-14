@@ -6,13 +6,13 @@ export type QueriesOverTimeRowLabelTooltipProps = {
 
 export const QueriesOverTimeRowLabelTooltip: FC<QueriesOverTimeRowLabelTooltipProps> = ({ query }) => {
     return (
-        <div className='flex flex-col gap-2 max-w-xl'>
+        <div className='flex max-w-xl flex-col gap-2'>
             <div className='font-bold'>{query.displayLabel}</div>
             {query.description && <div className='text-sm text-gray-700'>{query.description}</div>}
             {query.query !== '' && (
                 <div className='text-sm'>
                     <span className='text-gray-600'>Query:</span>
-                    <div className='p-2 border border-gray-200 rounded bg-gray-50'>
+                    <div className='rounded border border-gray-200 bg-gray-50 p-2'>
                         <pre className='text-xs whitespace-pre-wrap'>
                             <code>{query.query}</code>
                         </pre>

@@ -56,10 +56,10 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, resetError, layout 
     return (
         <div
             ref={containerRef}
-            className={`h-full w-full rounded-md border-2 border-gray-100 p-2 flex items-center justify-center ${layout === 'horizontal' ? 'flex-row' : 'flex-col'}`}
+            className={`flex h-full w-full items-center justify-center rounded-md border-2 border-gray-100 p-2 ${layout === 'horizontal' ? 'flex-row' : 'flex-col'}`}
         >
             <div>
-                <div className='text-red-700 font-bold'>{headline}</div>
+                <div className='font-bold text-red-700'>{headline}</div>
                 <div>
                     Oops! Something went wrong.
                     {details !== undefined && (
@@ -81,7 +81,7 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, resetError, layout 
                 </div>
             </div>
             {resetError !== undefined && (
-                <button onClick={resetError} className='btn btn-sm flex items-center m-4'>
+                <button onClick={resetError} className='btn btn-sm m-4 flex items-center'>
                     <span className='iconify mdi--reload text-lg' />
                     Try again
                 </button>
@@ -150,7 +150,7 @@ function ZodErrorDetails({ error }: { error: InvalidPropsError }) {
                 </p>
             )}
             <p>This is a summary of the unexpected attribute values:</p>
-            <ul className='m-4 list-outside list-disc '>
+            <ul className='m-4 list-outside list-disc'>
                 {error.zodError.issues.map((issue, index) => {
                     const actual =
                         issue.path[0] in error.componentProps

@@ -91,9 +91,9 @@ export function DownshiftCombobox<Item>({
 
     return (
         <div ref={divRef} className={'relative w-full'}>
-            <div className='w-full flex flex-col gap-1'>
+            <div className='flex w-full flex-col gap-1'>
                 <div
-                    className={`flex gap-0.5 input min-w-32 w-full ${inputClassName} ${inputIsInvalid ? 'input-error' : ''}`}
+                    className={`input flex w-full min-w-32 gap-0.5 ${inputClassName} ${inputIsInvalid ? 'input-error' : ''}`}
                     onBlur={(event) => {
                         if (event.relatedTarget != buttonRef.current) {
                             closeMenu();
@@ -241,9 +241,9 @@ export function DownshiftMultiCombobox<Item>({
 
     return (
         <div ref={divRef} className={'relative w-full'}>
-            <div className='w-full flex flex-col gap-1'>
+            <div className='flex w-full flex-col gap-1'>
                 <div
-                    className={`flex gap-1 flex-wrap p-1.5 input min-w-24 h-fit w-full ${inputClassName}`}
+                    className={`input flex h-fit w-full min-w-24 flex-wrap gap-1 p-1.5 ${inputClassName}`}
                     onBlur={(event) => {
                         if (event.relatedTarget != buttonRef.current) {
                             closeMenu();
@@ -253,7 +253,7 @@ export function DownshiftMultiCombobox<Item>({
                     {selectedItems.map((selectedItem, index) => (
                         <span
                             key={`${itemToString(selectedItem)}-${index}`}
-                            className='inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-black rounded'
+                            className='inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-black'
                         >
                             {formatSelectedItem ? formatSelectedItem(selectedItem) : itemToString(selectedItem)}
                             <button
@@ -270,10 +270,10 @@ export function DownshiftMultiCombobox<Item>({
                             </button>
                         </span>
                     ))}
-                    <div className='flex gap-0.5 grow min-w-32'>
+                    <div className='flex min-w-32 grow gap-0.5'>
                         <input
                             placeholder={placeholderText}
-                            className='w-full px-1 py-0.5 focus:outline-none min-w-24'
+                            className='w-full min-w-24 px-1 py-0.5 focus:outline-none'
                             {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
                         />
                         <ClearButton onClick={clearAll} isHidden={selectedItems.length === 0} />
@@ -363,13 +363,13 @@ function DropdownMenu<Item>({
 
     return (
         <ul
-            className={`absolute bg-white mt-1 shadow-md max-h-80 overflow-scroll z-10 w-full min-w-32 ${isOpen ? '' : 'hidden'}`}
+            className={`absolute z-10 mt-1 max-h-80 w-full min-w-32 overflow-scroll bg-white shadow-md ${isOpen ? '' : 'hidden'}`}
             {...getMenuProps()}
         >
             {items.length > 0 ? (
                 items.map((item, index) => (
                     <li
-                        className={`${highlightedIndex === index ? 'bg-blue-300' : ''} ${isItemSelected(item) ? 'font-bold' : ''} py-2 px-3 shadow-xs cursor-pointer`}
+                        className={`${highlightedIndex === index ? 'bg-blue-300' : ''} ${isItemSelected(item) ? 'font-bold' : ''} cursor-pointer px-3 py-2 shadow-xs`}
                         key={itemToString(item)}
                         {...getItemProps({ item, index })}
                     >
@@ -377,7 +377,7 @@ function DropdownMenu<Item>({
                     </li>
                 ))
             ) : (
-                <li className='py-2 px-3 shadow-xs'>{emptyMessage}</li>
+                <li className='px-3 py-2 shadow-xs'>{emptyMessage}</li>
             )}
         </ul>
     );

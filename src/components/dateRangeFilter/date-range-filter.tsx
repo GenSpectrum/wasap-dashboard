@@ -157,9 +157,9 @@ export const DateRangeFilterInner = ({ dateRangeOptions, value, placeholder }: D
                         selectClassName={'rounded-t-md rounded-b-none @md:rounded-l-md @md:rounded-r-none'}
                     />
                 </div>
-                <div className={'flex grow flex-col @4xs:flex-row'}>
+                <div className={'@4xs:flex-row flex grow flex-col'}>
                     <DatePicker
-                        className={'grow min-w-[7.5rem] @4xs:rounded-bl-md @md:rounded-l-none rounded-none'}
+                        className={'@4xs:rounded-bl-md min-w-[7.5rem] grow rounded-none @md:rounded-l-none'}
                         value={state?.dateFrom}
                         onChange={onChangeDateFrom}
                         maxDate={state?.dateTo}
@@ -167,7 +167,7 @@ export const DateRangeFilterInner = ({ dateRangeOptions, value, placeholder }: D
                     />
                     <DatePicker
                         className={
-                            'grow min-w-[7.5rem] rounded-b-md rounded-t-none @4xs:rounded-tr-none @4xs:rounded-l-none @md:rounded-r-md '
+                            '@4xs:rounded-tr-none @4xs:rounded-l-none min-w-[7.5rem] grow rounded-t-none rounded-b-md @md:rounded-r-md'
                         }
                         value={state?.dateTo}
                         onChange={onChangeDateTo}

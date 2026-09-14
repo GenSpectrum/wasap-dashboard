@@ -16,14 +16,14 @@ export const InfoHeadline1: FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const InfoHeadline2: FC<PropsWithChildren> = ({ children }) => {
-    return <h2 className='text-justify text-base font-bold mt-4'>{children}</h2>;
+    return <h2 className='mt-4 text-justify text-base font-bold'>{children}</h2>;
 };
 
 export const InfoParagraph: FC<PropsWithChildren> = ({ children }) => {
     // A <div>, not a <p>: several callers nest block content (lists, a code block, a
     // form) inside this, which isn't valid inside <p> and made the browser silently
     // close the tag early, breaking the DOM structure React expected.
-    return <div className='text-justify text-base font-normal my-1 text-wrap'>{children}</div>;
+    return <div className='my-1 text-justify text-base font-normal text-wrap'>{children}</div>;
 };
 
 export const InfoLink: FC<PropsWithChildren<{ href: string }>> = ({ children, href }) => {
@@ -53,7 +53,7 @@ export const InfoComponentCode: FC<InfoComponentCodeProps> = ({ componentName, p
             <InfoHeadline2>Use this component yourself</InfoHeadline2>
             <InfoParagraph>
                 This component was created using the following parameters:
-                <div className='p-4 border border-gray-200 rounded-lg overflow-x-auto'>
+                <div className='overflow-x-auto rounded-lg border border-gray-200 p-4'>
                     <pre>
                         <code>{componentCode}</code>
                     </pre>

@@ -16,7 +16,7 @@ export const MutationTypeSelector: FC<MutationTypeSelectorProps> = ({
     setDisplayedMutationTypes,
 }) => {
     return (
-        <div className='w-[6rem] inline-flex'>
+        <div className='inline-flex w-[6rem]'>
             <CheckboxSelector
                 items={displayedMutationTypes}
                 label={getMutationTypesSelectorLabel(displayedMutationTypes)}

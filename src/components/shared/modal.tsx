@@ -46,12 +46,12 @@ export const ModalDialog: FC<ModalProps> = ({ children, modalRef }) => {
         <dialog ref={modalRef} className={'modal modal-bottom sm:modal-middle'}>
             <div className='modal-box sm:max-w-5xl'>
                 <form method='dialog'>
-                    <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
+                    <button className='btn btn-sm btn-circle btn-ghost absolute top-2 right-2'>✕</button>
                 </form>
                 <div className={'flex flex-col'}>{children}</div>
                 <div className='modal-action'>
                     <form method='dialog'>
-                        <button className={'float-right underline text-sm hover:text-blue-700 mr-2'}>Close</button>
+                        <button className={'float-right mr-2 text-sm underline hover:text-blue-700'}>Close</button>
                     </form>
                 </div>
             </div>

@@ -21,7 +21,7 @@ export type MutationsOverTimeMutationsFilterProps = {
 
 export function MutationsOverTimeMutationsFilter({ setFilterValue, value }: MutationsOverTimeMutationsFilterProps) {
     return (
-        <div className={'w-28 inline-flex'}>
+        <div className={'inline-flex w-28'}>
             <Dropdown buttonTitle={getButtonTitle(value)} placement={'bottom-start'}>
                 <TextInput value={value} setFilterValue={setFilterValue} />
                 <AnnotationCheckboxes value={value} setFilterValue={setFilterValue} />
@@ -58,7 +58,7 @@ const TextInput: FC<MutationsOverTimeMutationsFilterProps> = ({ setFilterValue, 
 
     return (
         <div>
-            <label className='flex gap-1 input input-xs'>
+            <label className='input input-xs flex gap-1'>
                 <DebouncedInput placeholder={'Filter'} onInput={onInput} value={value.textFilter} type='text' />
                 {value.textFilter !== '' && (
                     <button className={'cursor-pointer'} onClick={onDeleteClick}>
@@ -112,7 +112,7 @@ const AnnotationCheckboxes: FC<MutationsOverTimeMutationsFilterProps> = ({ value
         <>
             <div className='divider mt-0.5 mb-0' />
             <div className='text-sm'>
-                <div className='font-bold mb-1'>Filter by annotations</div>
+                <div className='mb-1 font-bold'>Filter by annotations</div>
                 <div className='max-h-72 overflow-scroll'>
                     {mutationAnnotations.map((annotation, index) => (
                         <li className='flex flex-row items-center' key={annotation.name}>

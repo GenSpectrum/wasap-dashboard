@@ -214,7 +214,7 @@ function MutationFilterInner({
 
     return (
         <div className='w-full' ref={filterRef}>
-            <div className={`flex gap-x-1 flex-wrap p-1 input h-fit w-full ${showErrorIndicator ? 'input-error' : ''}`}>
+            <div className={`input flex h-fit w-full flex-wrap gap-x-1 p-1 ${showErrorIndicator ? 'input-error' : ''}`}>
                 {selectedItems.map((selectedItemForRender, index) => {
                     return (
                         <div className='my-1' key={`selected-item-${index}`}>
@@ -227,10 +227,10 @@ function MutationFilterInner({
                         </div>
                     );
                 })}
-                <div className='flex gap-0.5 grow p-1'>
+                <div className='flex grow gap-0.5 p-1'>
                     <input
                         placeholder={getPlaceholder(referenceGenome, enabledMutationTypes)}
-                        className='w-full focus:outline-none min-w-8'
+                        className='w-full min-w-8 focus:outline-none'
                         {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
                         onBlur={() => {
                             setShowErrorIndicator(inputValue !== '');
@@ -241,14 +241,14 @@ function MutationFilterInner({
                 </div>
             </div>
             <ul
-                className={`absolute w-inherit bg-white mt-1 shadow-md max-h-80 overflow-scroll p-0 z-10 ${
+                className={`w-inherit absolute z-10 mt-1 max-h-80 overflow-scroll bg-white p-0 shadow-md ${
                     !isOpen && 'hidden'
                 }`}
                 {...getMenuProps()}
             >
                 {items.map((item, index) => (
                     <li
-                        className={`${highlightedIndex === index && 'bg-blue-300'} ${selectedItem === item && 'font-bold'} py-2 px-3 shadow-sm flex flex-col cursor-pointer`}
+                        className={`${highlightedIndex === index && 'bg-blue-300'} ${selectedItem === item && 'font-bold'} flex cursor-pointer flex-col px-3 py-2 shadow-sm`}
                         key={`${item.value.code}${index}`}
                         {...getItemProps({ item, index })}
                         style={{
@@ -334,7 +334,7 @@ const SelectedFilter = ({ handleRemoveValue, mutationFilter }: SelectedFilterPro
     return (
         <span
             key={mutationFilter.value.toString()}
-            className='center px-2 py-1 inline-flex text-black rounded-md'
+            className='center inline-flex rounded-md px-2 py-1 text-black'
             style={{
                 backgroundColor: backgroundColorMap(mutationFilter),
             }}

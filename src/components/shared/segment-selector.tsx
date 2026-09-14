@@ -24,7 +24,7 @@ export const SegmentSelector: FC<SegmentSelectorProps> = ({
     }
 
     return (
-        <div className='w-24 inline-flex'>
+        <div className='inline-flex w-24'>
             <CheckboxSelector
                 items={displayedSegments}
                 label={getSegmentSelectorLabel(displayedSegments, sequenceType)}

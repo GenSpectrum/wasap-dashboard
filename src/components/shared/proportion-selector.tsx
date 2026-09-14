@@ -58,8 +58,8 @@ export const ProportionSelector: FC<ProportionSelectorProps> = ({
     const indicateError = internalMinProportion > internalMaxProportion;
 
     return (
-        <div className='flex flex-col w-64 mb-2'>
-            <div className='flex items-center '>
+        <div className='mb-2 flex w-64 flex-col'>
+            <div className='flex items-center'>
                 <PercentInput
                     percentage={internalMinProportion * 100}
                     setPercentage={updateMinPercentage}

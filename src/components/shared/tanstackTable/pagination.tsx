@@ -21,10 +21,10 @@ export function Pagination({
 }) {
     return (
         <div className='@container'>
-            <div className='flex items-center gap-x-6 gap-y-2 flex-wrap @xl:justify-end justify-center'>
+            <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 @xl:justify-end'>
                 <PageSizeSelector table={table} pageSizes={pageSizes} />
                 <PageIndicator table={table} totalRows={totalRows} />
-                <div className='@xl:block hidden'>
+                <div className='hidden @xl:block'>
                     <GotoPageSelector table={table} totalRows={totalRows} />
                 </div>
                 <SelectPageButtons table={table} />
@@ -64,7 +64,7 @@ function PageSizeSelector({
 
     return (
         <label className='flex items-center'>
-            <div className={'text-nowrap text-sm'}>Rows per page:</div>
+            <div className={'text-sm text-nowrap'}>Rows per page:</div>
             <select
                 className={`select select-ghost select-sm ${heightForSmallerLines}`}
                 value={pageSize}
@@ -96,8 +96,8 @@ function GotoPageSelector({ table, totalRows }: PaginationProps & { totalRows: n
     }
 
     return (
-        <label className='items-center flex'>
-            <span className='text-nowrap text-sm'>Go to page:</span>
+        <label className='flex items-center'>
+            <span className='text-sm text-nowrap'>Go to page:</span>
             <input
                 type='number'
                 min='1'

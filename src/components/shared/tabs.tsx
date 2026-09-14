@@ -19,7 +19,7 @@ const Tabs = forwardRef<HTMLDivElement, ComponentTabsProps>(({ tabs, toolbar }, 
                 return (
                     <button
                         key={tab.title}
-                        className={`px-4 py-2 text-sm font-medium leading-5 transition-colors duration-150 ${
+                        className={`px-4 py-2 text-sm leading-5 font-medium transition-colors duration-150 ${
                             activeTab === tab.title
                                 ? 'border-b-2 border-gray-500'
                                 : 'border-b border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-700'
@@ -38,12 +38,12 @@ const Tabs = forwardRef<HTMLDivElement, ComponentTabsProps>(({ tabs, toolbar }, 
     const toolbarElement = typeof toolbar === 'function' ? toolbar(activeTab) : toolbar;
 
     return (
-        <div ref={ref} className='h-full w-full flex flex-col bg-white'>
-            <div className='flex flex-row justify-between flex-wrap'>
+        <div ref={ref} className='flex h-full w-full flex-col bg-white'>
+            <div className='flex flex-row flex-wrap justify-between'>
                 {tabElements}
-                {toolbar && <div className='py-2 flex flex-wrap gap-y-1'>{toolbarElement}</div>}
+                {toolbar && <div className='flex flex-wrap gap-y-1 py-2'>{toolbarElement}</div>}
             </div>
-            <div className={`p-2 grow overflow-scroll border-2 border-gray-100 rounded-b-md rounded-tr-md`}>
+            <div className={`grow overflow-scroll rounded-tr-md rounded-b-md border-2 border-gray-100 p-2`}>
                 {tabs.map((tab) => (
                     <div className='h-full' key={tab.title} hidden={activeTab !== tab.title}>
                         {tab.content}

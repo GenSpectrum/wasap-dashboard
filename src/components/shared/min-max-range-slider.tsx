@@ -76,7 +76,7 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
     `;
 
     return (
-        <div className='my-4 relative w-full h-full'>
+        <div className='relative my-4 h-full w-full'>
             <input
                 id='fromSlider'
                 type='range'

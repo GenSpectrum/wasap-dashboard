@@ -27,7 +27,7 @@ export const TOOLTIP_BASE_STYLES = 'z-10 w-max bg-white p-4 border border-gray-2
  */
 const Tooltip: FC<PropsWithChildren<TooltipProps>> = ({ children, content, position = 'bottom', tooltipStyle }) => {
     return (
-        <div className={`relative group`}>
+        <div className={`group relative`}>
             <div>{children}</div>
             <div
                 className={`absolute ${TOOLTIP_BASE_STYLES} invisible group-hover:visible ${getPositionCss(position)}`}

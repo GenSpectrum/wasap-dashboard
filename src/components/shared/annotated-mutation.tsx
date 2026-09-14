@@ -60,7 +60,7 @@ const AnnotatedMutationWithoutContext: FC<AnnotatedMutationWithoutContextProps> 
     if (link !== undefined) {
         innerLabel = (
             <a
-                className='hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 underline'
+                className='underline hover:text-blue-800 focus:ring-2 focus:ring-blue-300 focus:outline-none'
                 href={link}
             >
                 {mutation.code}
@@ -96,7 +96,7 @@ const AnnotatedMutationWithoutContext: FC<AnnotatedMutationWithoutContextProps> 
                 modalContent={modalContent}
                 modalRef={modalRef}
             >
-                <sup className='hover:underline focus-visible:underline decoration-red-600'>
+                <sup className='decoration-red-600 hover:underline focus-visible:underline'>
                     {mutationAnnotations
                         .map((resolved) => resolved.annotation.symbol)
                         .map((symbol, index) => (

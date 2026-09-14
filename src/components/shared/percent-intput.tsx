@@ -35,7 +35,7 @@ export const PercentInput: FC<PercentInputProps> = ({ percentage, setPercentage,
 
     const isError = indicateError || !percentageInRange(internalPercentage);
     return (
-        <label className={`input flex items-center w-32 ${isError ? 'input-error' : ''}`}>
+        <label className={`input flex w-32 items-center ${isError ? 'input-error' : ''}`}>
             <span className='label'>%</span>
             <input
                 type='number'
@@ -45,7 +45,7 @@ export const PercentInput: FC<PercentInputProps> = ({ percentage, setPercentage,
                 value={internalPercentage}
                 onInput={handleInputChange}
                 lang='en'
-                className={`grow w-12`}
+                className={`w-12 grow`}
             />
         </label>
     );

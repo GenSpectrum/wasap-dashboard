@@ -27,7 +27,7 @@ const QuickStart = () => {
         <>
             <InfoHeadline2>Quickstart</InfoHeadline2>
             <InfoParagraph>
-                <ul className='list-disc list-inside'>
+                <ul className='list-inside list-disc'>
                     {referenceGenome.nucleotideSequences.length > 0 && (
                         <li>
                             Filter for nucleotide mutations:{' '}

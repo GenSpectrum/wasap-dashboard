@@ -26,14 +26,14 @@ export const ProportionCell: FC<{
     const proportion = getProportion(value);
 
     return (
-        <div className={'py-1 w-full h-full'}>
+        <div className={'h-full w-full py-1'}>
             <PortalTooltip content={tooltip} position={tooltipPosition} portalTarget={tooltipPortalTarget}>
                 <div
                     style={{
                         backgroundColor: getColorWithinScale(proportion, colorScale),
                         color: getTextColorForScale(proportion, colorScale),
                     }}
-                    className={`w-full h-full hover:font-bold text-xs group @container text-nowrap`}
+                    className={`group @container h-full w-full text-xs text-nowrap hover:font-bold`}
                 >
                     {value === null ? (
                         <span className='invisible'>No data</span>

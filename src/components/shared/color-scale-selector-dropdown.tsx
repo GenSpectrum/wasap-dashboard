@@ -6,7 +6,7 @@ export type ColorScaleSelectorDropdownProps = ColorScaleSelectorProps;
 
 export const ColorScaleSelectorDropdown: FC<ColorScaleSelectorDropdownProps> = ({ colorScale, setColorScale }) => {
     return (
-        <div className='w-20 inline-flex'>
+        <div className='inline-flex w-20'>
             <Dropdown buttonTitle={`Color scale`} placement={'bottom-start'}>
                 <ColorScaleSelector colorScale={colorScale} setColorScale={setColorScale} />
             </Dropdown>

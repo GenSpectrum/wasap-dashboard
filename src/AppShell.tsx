@@ -11,8 +11,8 @@ import { OrganismSelect } from './components/OrganismSelect';
  */
 export function AppShell() {
     return (
-        <div className='flex min-h-full flex-col bg-base-100'>
-            <header className='border-b border-base-300'>
+        <div className='bg-base-100 flex min-h-full flex-col'>
+            <header className='border-base-300 border-b'>
                 <div className='mx-auto flex w-full max-w-[110rem] flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3'>
                     <span className='text-lg leading-tight font-semibold'>W-ASAP — Wastewater Dashboards</span>
                     <div className='ml-auto'>

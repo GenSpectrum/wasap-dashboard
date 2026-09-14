@@ -38,7 +38,7 @@ export const OverTimeGridTooltip: FC<OverTimeGridTooltipProps> = ({
 
     return (
         <div>
-            <div className='flex flex-row justify-between gap-4 items-baseline'>
+            <div className='flex flex-row items-baseline justify-between gap-4'>
                 <div className='flex flex-col text-left'>
                     {label}
                     <span>{proportionText}</span>
