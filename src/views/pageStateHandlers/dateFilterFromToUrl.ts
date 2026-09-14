@@ -1,6 +1,5 @@
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
-
 import type { BaselineFilterConfig } from './baselineFilterConfig';
+import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import type { Dataset } from '../View';
 

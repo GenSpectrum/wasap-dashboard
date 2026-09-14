@@ -1,6 +1,7 @@
-import { gsEventNames } from '../../util/gsEventNames';
 import { useEffect, useRef } from 'react';
+
 import { GsLineageFilter as LineageFilter } from './gs-lineage-filter';
+import { gsEventNames } from '../../util/gsEventNames';
 
 export function GsLineageFilter<Lineage extends string>({
     field,

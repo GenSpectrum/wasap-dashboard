@@ -5,15 +5,15 @@
  * values.
  */
 
-import { readCount, readText, type RhydbRow } from '../rhydb/row';
 import { READS } from './catalogue';
+import { readCount, readText, type RhydbRow } from '../rhydb/row';
 
 /** The single `{ n }` row of a total-count query. Zero rows means zero reads. */
 export function readTotalCount(rows: readonly RhydbRow[]): number {
     if (rows.length === 0) {
         return 0;
     }
-    return readCount(rows[0]!, READS);
+    return readCount(rows[0], READS);
 }
 
 export type NamedCount = { name: string; count: number };
@@ -30,5 +30,5 @@ export function readValueExtent(rows: readonly RhydbRow[], column: string): { mi
     if (rows.length === 0) {
         return undefined;
     }
-    return { min: readText(rows[0]!, column), max: readText(rows[rows.length - 1]!, column) };
+    return { min: readText(rows[0], column), max: readText(rows[rows.length - 1], column) };
 }

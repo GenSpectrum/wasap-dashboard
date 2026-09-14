@@ -1,5 +1,5 @@
-import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
 import { getAppConfig } from './appConfig';
+import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
 
 /**
  * The organism-selection layer for the standalone app.

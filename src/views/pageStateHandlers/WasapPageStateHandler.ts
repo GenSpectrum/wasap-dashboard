@@ -1,10 +1,9 @@
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
-import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
 
 import { type PageStateHandler } from './PageStateHandler';
+import type { BaselineFilterConfig } from './baselineFilterConfig';
 import { setSearchFromDateRange } from './dateFilterFromToUrl';
 import { parseTextFiltersFromUrl } from './textFilterFromToUrl';
-import type { BaselineFilterConfig } from './baselineFilterConfig';
+import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import {
     enabledAnalysisModes,
     type ExcludeSetName,
@@ -17,6 +16,7 @@ import {
     type WasapPageConfig,
 } from '../../components/views/wasap/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
+import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
 import { formatUrl } from '../../util/formatUrl';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 import { setSearchFromString } from '../helpers';

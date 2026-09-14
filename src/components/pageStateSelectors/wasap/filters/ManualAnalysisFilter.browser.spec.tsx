@@ -1,10 +1,11 @@
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { GsApp } from '../../../genspectrum/gs-app';
+
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
 import { it } from '../../../../../test-extend';
+import { GsApp } from '../../../genspectrum/gs-app';
 import type { WasapManualFilter } from '../../../views/wasap/wasapPageConfig';
 
 describe('ManualAnalysisFilter', () => {

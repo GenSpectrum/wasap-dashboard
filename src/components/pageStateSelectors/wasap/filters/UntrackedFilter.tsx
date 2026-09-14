@@ -1,8 +1,8 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
+import { LapisClientProvider } from '../../../../lapis/LapisClientContext';
 import { Loading } from '../../../../util/Loading';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
-import { LapisClientProvider } from '../../../../lapis/LapisClientContext';
 import type { ExcludeSetName, WasapUntrackedFilter } from '../../../views/wasap/wasapPageConfig';
 import { KnownVariantsExclusionInfo } from '../InfoBlocks';
 import { LabeledField } from '../utils/LabeledField';

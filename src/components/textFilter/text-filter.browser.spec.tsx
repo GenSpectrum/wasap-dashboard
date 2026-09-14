@@ -1,12 +1,12 @@
-import { useRef, type ReactElement } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render } from 'vitest-browser-react';
+import { useRef, type ReactElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render } from 'vitest-browser-react';
 
 import { TextFilter } from './text-filter';
 import { ConnectionProvider } from '../../data/connection';
-import { gsEventNames } from '../../util/gsEventNames';
 import type { SiloSchema } from '../../queries/schema';
+import { gsEventNames } from '../../util/gsEventNames';
 
 const schema: SiloSchema = {
     table: 'default',

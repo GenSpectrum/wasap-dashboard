@@ -1,9 +1,9 @@
-import { type DateRangeOption } from '../dateRangeFilter/dateRangeOption';
-import { useDateExtent } from '../../data/reads';
 import { useMemo } from 'react';
 
+import { useDateExtent } from '../../data/reads';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { Loading } from '../../util/Loading';
+import { type DateRangeOption } from '../dateRangeFilter/dateRangeOption';
 import { GsDateRangeFilter } from '../genspectrum/GsDateRangeFilter';
 
 /**

@@ -10,11 +10,12 @@
  * pure function of the folded counts (`buildQueriesMatrix`).
  */
 
-import { useMemo } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
+import { UserFacingError } from '../components/shared/error-display';
 import {
     countOverTimeQuery,
     coverageOverTimeQuery,
@@ -24,7 +25,6 @@ import {
     type SiloReadFilter,
 } from '../queries';
 import { readNamedCounts, type NamedCount } from '../queries/rows';
-import { UserFacingError } from '../components/shared/error-display';
 import { type ProportionValue } from '../query/queryMutationsOverTime';
 import { type TemporalGranularity } from '../types/dashboardComponents';
 import { type Map2DContents } from '../util/map2d';

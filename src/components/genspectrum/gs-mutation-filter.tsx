@@ -1,9 +1,9 @@
 import { type FC } from 'react';
 
-import { ReferenceGenomesAwaiter } from '../shared/ReferenceGenomesAwaiter';
-import { MutationFilter, type MutationFilterProps } from '../mutationFilter/mutation-filter';
 import { type MutationsFilter } from '../../types/dashboardComponents';
-import { gsEventNames } from '../../util/gsEventNames';
+import { type gsEventNames } from '../../util/gsEventNames';
+import { MutationFilter, type MutationFilterProps } from '../mutationFilter/mutation-filter';
+import { ReferenceGenomesAwaiter } from '../shared/ReferenceGenomesAwaiter';
 
 export type GsMutationFilterProps = Omit<MutationFilterProps, 'width'> & { width?: MutationFilterProps['width'] };
 

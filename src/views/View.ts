@@ -1,7 +1,6 @@
+import type { LapisLineageQuery, LapisMutationQuery } from './helpers';
 import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
 import { type NumberRange } from '../types/dashboardComponents';
-
-import type { LapisLineageQuery, LapisMutationQuery } from './helpers';
 import type { LapisLocation } from './pageStateHandlers/locationFilterFromToUrl';
 
 export type DatasetFilter = {

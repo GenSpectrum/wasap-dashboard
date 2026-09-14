@@ -1,6 +1,7 @@
-import { gsEventNames } from '../../util/gsEventNames';
 import { useEffect, useRef } from 'react';
+
 import { GsTextFilter as TextFilter } from './gs-text-filter';
+import { gsEventNames } from '../../util/gsEventNames';
 
 export function GsTextFilter<Field extends string>({
     field,

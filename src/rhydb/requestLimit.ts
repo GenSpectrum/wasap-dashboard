@@ -52,11 +52,11 @@ function release(): void {
     // Lowest priority first, and first-come within a priority.
     let best = 0;
     for (let index = 1; index < waiting.length; index++) {
-        if (waiting[index]!.priority < waiting[best]!.priority) {
+        if (waiting[index].priority < waiting[best].priority) {
             best = index;
         }
     }
-    waiting.splice(best, 1)[0]!.resume();
+    waiting.splice(best, 1)[0].resume();
 }
 
 /** Read through a call so narrowing does not carry across the await. */

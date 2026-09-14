@@ -1,12 +1,14 @@
+import { type FC } from 'react';
+
+import { GsQueriesOverTime as QueriesOverTime } from './gs-queries-over-time';
+import { type SiloReadFilter } from '../../queries';
+import { views, type TemporalGranularity } from '../../types/dashboardComponents';
+import { ComponentWrapper } from '../ComponentWrapper';
 import { type MeanProportionInterval } from '../mutationsOverTime/mutations-over-time';
 import { type QueriesOverTimeQuery } from '../queriesOverTime/queries-over-time';
 import { type CustomColumn } from '../shared/features-over-time-grid';
-import { views, type TemporalGranularity } from '../../types/dashboardComponents';
-import { type SiloReadFilter } from '../../queries';
-import { type FC } from 'react';
-import { GsQueriesOverTime as QueriesOverTime } from './gs-queries-over-time';
 
-import { ComponentWrapper } from '../ComponentWrapper';
+
 
 export type GsQueriesOverTimeProps = {
     collectionTitle?: string;

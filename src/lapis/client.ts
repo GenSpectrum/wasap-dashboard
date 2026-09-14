@@ -13,8 +13,8 @@
  * functions. Everything else in `lapisApi` is on the SILO chopping block.
  */
 
-import { fetchAggregated, fetchLineageDefinition } from '../lapisApi/lapisApi';
 import type { LineageDefinitionResponse } from '../lapisApi/LineageDefinition';
+import { fetchAggregated, fetchLineageDefinition } from '../lapisApi/lapisApi';
 
 export type FieldCount = { value: string; count: number };
 

@@ -1,4 +1,5 @@
 import { type Dispatch, type FC, type SetStateAction } from 'react';
+
 import { type QueryFilter } from './getFilteredQueriesOverTimeData';
 
 type QueriesOverTimeFilterProps = {

@@ -2,11 +2,11 @@ import { type FC } from 'react';
 import z from 'zod';
 
 import { TextFilterChangedEvent } from './TextFilterChangedEvent';
+import { useStringFieldOptions } from '../../data/reads';
 import { DownshiftCombobox } from '../shared/downshift-combobox';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { LoadingDisplay } from '../shared/loading-display';
 import { ResizeContainer } from '../shared/resize-container';
-import { useStringFieldOptions } from '../../data/reads';
 
 const textSelectorPropsSchema = z.object({
     field: z.string().min(1),

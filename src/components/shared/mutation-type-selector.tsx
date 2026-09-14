@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+
 import { type CheckboxItem, CheckboxSelector } from './checkbox-selector';
 import type { SubstitutionOrDeletion } from '../../types/dashboardComponents';
 

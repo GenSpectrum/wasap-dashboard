@@ -2,11 +2,11 @@ import { type FC, useMemo } from 'react';
 import z from 'zod';
 
 import { LineageFilterChangedEvent, LineageMultiFilterChangedEvent } from './LineageFilterChangedEvent';
+import { useLineageOptions, type LineageItem } from '../../data/lineageOptions';
 import { DownshiftCombobox, DownshiftMultiCombobox } from '../shared/downshift-combobox';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { LoadingDisplay } from '../shared/loading-display';
 import { ResizeContainer } from '../shared/resize-container';
-import { useLineageOptions, type LineageItem } from '../../data/lineageOptions';
 
 const lineageSelectorPropsSchema = z.object({
     field: z.string().min(1),

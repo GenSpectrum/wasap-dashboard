@@ -1,6 +1,7 @@
 import { type FC } from 'react';
-import { MinMaxRangeSlider } from './min-max-range-slider';
+
 import { type GraphColor, singleGraphColorRGBByName } from './charts/colors';
+import { MinMaxRangeSlider } from './min-max-range-slider';
 import { formatProportion } from './table/formatProportion';
 
 export interface ColorScale {

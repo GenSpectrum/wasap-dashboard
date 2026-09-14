@@ -185,11 +185,11 @@ export class BackendService extends ApiService {
         tags,
     }: { organism?: string; userId?: number; excludeSystemCollections?: boolean; tags?: string | string[] } = {}) {
         const requestParams: Record<string, string | string[]> = {};
-        if (organism !== undefined) requestParams.organism = organism;
-        if (userId !== undefined) requestParams.userId = String(userId);
+        if (organism !== undefined) {requestParams.organism = organism;}
+        if (userId !== undefined) {requestParams.userId = String(userId);}
         if (excludeSystemCollections !== undefined)
-            requestParams.excludeSystemCollections = String(excludeSystemCollections);
-        if (tags !== undefined) requestParams.tags = tags;
+            {requestParams.excludeSystemCollections = String(excludeSystemCollections);}
+        if (tags !== undefined) {requestParams.tags = tags;}
         return this.get({
             url: '/collections',
             requestParams: Object.keys(requestParams).length > 0 ? requestParams : undefined,
@@ -199,7 +199,7 @@ export class BackendService extends ApiService {
 
     public async getCollections({ organism }: { organism?: string } = {}) {
         const requestParams: Record<string, string> = { includeVariants: 'true' };
-        if (organism !== undefined) requestParams.organism = organism;
+        if (organism !== undefined) {requestParams.organism = organism;}
         return this.get({ url: '/collections', requestParams, schema: z.array(collectionSchema) });
     }
 

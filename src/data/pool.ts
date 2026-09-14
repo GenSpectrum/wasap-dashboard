@@ -25,7 +25,7 @@ export async function pool<T, R>(
             if (index >= items.length) {
                 return;
             }
-            results[index] = await run(items[index]!, index, controller.signal);
+            results[index] = await run(items[index], index, controller.signal);
         }
     };
 

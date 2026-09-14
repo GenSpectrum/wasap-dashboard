@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render } from 'vitest-browser-react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render } from 'vitest-browser-react';
 
 import { QueriesOverTime } from './queries-over-time';
 import { ConnectionProvider } from '../../data/connection';
-import { views } from '../../types/dashboardComponents';
 import type { SiloSchema } from '../../queries/schema';
+import { views } from '../../types/dashboardComponents';
 
 const schema: SiloSchema = {
     table: 'default',
@@ -111,7 +111,7 @@ describe('QueriesOverTime (SILO)', () => {
         const screen = renderOverTime();
         await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
 
-        const bodies = fetchMock.mock.calls.map(([, init]) => String((init as RequestInit | undefined)?.body ?? ''));
+        const bodies = fetchMock.mock.calls.map(([, init]) => String((init)?.body ?? ''));
 
         expect(
             bodies.some(

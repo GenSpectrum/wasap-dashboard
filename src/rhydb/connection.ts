@@ -8,9 +8,9 @@
  * instance.
  */
 
-import { PRIORITY, withRequestLimit } from './requestLimit';
 import { curlFor, query as send, type QueryResult } from './query';
 import { table as tableRelation, type Queryable, type Relation } from './relation';
+import { PRIORITY, withRequestLimit } from './requestLimit';
 import type { RhydbRow } from './row';
 
 export type Connection = {

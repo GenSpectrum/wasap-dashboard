@@ -1,5 +1,5 @@
-import { type ComponentType, type ReactElement, useEffect, useState } from 'react';
 import { createTable, type RowData, type TableOptions, type TableOptionsResolved } from '@tanstack/table-core';
+import { type ComponentType, type ReactElement, useEffect, useState } from 'react';
 
 import { usePageSizeContext } from './pagination-context';
 

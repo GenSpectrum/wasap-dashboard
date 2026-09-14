@@ -1,5 +1,4 @@
 import { mutationType, type MutationType } from '../../../../types/dashboardComponents';
-
 import { GsMutationFilter } from '../../../genspectrum/GsMutationFilter';
 import type { WasapManualFilter } from '../../../views/wasap/wasapPageConfig';
 import { SequenceTypeSelector } from '../utils/SequenceTypeSelector';
@@ -20,7 +19,7 @@ export function ManualAnalysisFilter({
             <SequenceTypeSelector
                 value={pageState.sequenceType}
                 onChange={(sequenceType) => {
-                    if (sequenceType === pageState.sequenceType) return;
+                    if (sequenceType === pageState.sequenceType) {return;}
                     setPageState({ ...pageState, sequenceType, mutations: undefined });
                 }}
             />

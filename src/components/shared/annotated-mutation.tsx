@@ -1,5 +1,5 @@
-import { Fragment, type FC, type RefObject, useRef } from 'react';
 import DOMPurify from 'dompurify';
+import { Fragment, type FC, type RefObject, useRef } from 'react';
 
 import { InfoHeadline1, InfoHeadline2, InfoParagraph } from './info';
 import { ButtonWithModalDialog, useModalRef } from './modal';

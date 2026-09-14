@@ -1,4 +1,5 @@
 import { type FC, useContext, useState } from 'react';
+
 import { type CheckboxItem, CheckboxSelector } from './checkbox-selector';
 import { getSegmentNames } from '../../lapisApi/ReferenceGenome';
 import { type SequenceType } from '../../types/dashboardComponents';

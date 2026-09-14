@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render } from 'vitest-browser-react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render } from 'vitest-browser-react';
 
 import { MutationsOverTime } from './mutations-over-time';
 import { ConnectionProvider } from '../../data/connection';
-import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
-import { views } from '../../types/dashboardComponents';
 import type { SiloSchema } from '../../queries/schema';
+import { views } from '../../types/dashboardComponents';
+import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
 
 const schema: SiloSchema = {
     table: 'default',
@@ -139,7 +139,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
 
         const positionBodies = fetchMock.mock.calls
-            .map(([, init]) => String((init as RequestInit | undefined)?.body ?? ''))
+            .map(([, init]) => String((init)?.body ?? ''))
             .filter((body) => body.includes('sym := main.at('));
 
         expect(positionBodies).toEqual([

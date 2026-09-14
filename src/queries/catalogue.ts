@@ -7,11 +7,11 @@
  * single `groupBy(count(), …)`.
  */
 
-import { count } from '../rhydb/functions';
-import { field, type Expr } from '../rhydb/expression';
-import { table, type Relation } from '../rhydb/relation';
 import { scoped, type SiloReadFilter } from './filter';
 import type { SiloSchema } from './schema';
+import { field, type Expr } from '../rhydb/expression';
+import { count } from '../rhydb/functions';
+import { table, type Relation } from '../rhydb/relation';
 
 /** The aggregate every counting query names. */
 export const READS = 'n';

@@ -68,7 +68,7 @@ export function useStreamedResults<T, K, V>(
     options: Fanout<T, { key: K; value: V }>,
 ): { data: StreamedResults<K, V> | undefined; error: unknown } {
     return useFanout(options, (answers, progress) => ({
-        values: new Map(answers.filter((answer) => answer !== undefined).map((answer) => [answer!.key, answer!.value])),
+        values: new Map(answers.filter((answer) => answer !== undefined).map((answer) => [answer.key, answer.value])),
         ...progress,
     }));
 }

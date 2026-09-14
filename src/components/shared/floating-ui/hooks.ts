@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
 import { autoUpdate, computePosition, type Middleware } from '@floating-ui/dom';
 import type { Placement } from '@floating-ui/utils';
+import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
 
 export function useFloatingUi(

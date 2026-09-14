@@ -14,10 +14,16 @@
  * matrix is a pure function of those rows (`buildMatrix`).
  */
 
-import { useMemo } from 'react';
 import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { useConnection, useSiloSchema } from './connection';
+import {
+    BaseMutationOverTimeDataMap,
+    type MutationOverTimeDataMap,
+} from '../components/mutationsOverTime/MutationOverTimeData';
+import { UserFacingError } from '../components/shared/error-display';
+import { sortSubstitutionsAndDeletions } from '../components/shared/sort/sortSubstitutionsAndDeletions';
 import {
     overallMutationsQuery,
     normalizeFilter,
@@ -32,12 +38,6 @@ import {
     type SiloReadFilter,
 } from '../queries';
 import { readNamedCounts } from '../queries/rows';
-import { UserFacingError } from '../components/shared/error-display';
-import {
-    BaseMutationOverTimeDataMap,
-    type MutationOverTimeDataMap,
-} from '../components/mutationsOverTime/MutationOverTimeData';
-import { sortSubstitutionsAndDeletions } from '../components/shared/sort/sortSubstitutionsAndDeletions';
 import { hideGapsInPlace, type ProportionValue } from '../query/queryMutationsOverTime';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../types/dashboardComponents';
 import { Map2dView, type Map2DContents } from '../util/map2d';

@@ -29,12 +29,12 @@ describe('getCladeLineages', () => {
 
         const result = await getCladeLineages(DUMMY_LAPIS_URL, cladeField, lineageField);
 
-        /* eslint-disable @typescript-eslint/naming-convention */
+         
         expect(result).toEqual({
             '23B': 'XBB.1.16',
             '22A': 'YAA.2',
         });
-        /* eslint-enable @typescript-eslint/naming-convention */
+         
     });
 
     test('should throw on failed request', async () => {

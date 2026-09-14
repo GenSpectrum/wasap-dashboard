@@ -1,8 +1,8 @@
 import { type FC } from 'react';
 
-import { TextFilter, type TextFilterProps } from '../textFilter/text-filter';
+import { type gsEventNames } from '../../util/gsEventNames';
 import { type TextFilterChangedEvent } from '../textFilter/TextFilterChangedEvent';
-import { gsEventNames } from '../../util/gsEventNames';
+import { TextFilter, type TextFilterProps } from '../textFilter/text-filter';
 
 export type GsTextFilterProps = Omit<TextFilterProps, 'field' | 'width'> & {
     field?: TextFilterProps['field'];

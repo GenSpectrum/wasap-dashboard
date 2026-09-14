@@ -1,9 +1,9 @@
-import { type DateRangeOption, type DateRangeOptionChangedEvent } from '../dateRangeFilter/dateRangeOption';
-import { gsEventNames } from '../../util/gsEventNames';
 import { useEffect, useRef } from 'react';
-import { GsDateRangeFilter as DateRangeFilter } from './gs-date-range-filter';
 
+import { GsDateRangeFilter as DateRangeFilter } from './gs-date-range-filter';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
+import { gsEventNames } from '../../util/gsEventNames';
+import { type DateRangeOption, type DateRangeOptionChangedEvent } from '../dateRangeFilter/dateRangeOption';
 
 export function GsDateRangeFilter({
     onDateRangeChange = () => {},

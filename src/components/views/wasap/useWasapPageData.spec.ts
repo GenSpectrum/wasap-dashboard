@@ -93,7 +93,7 @@ describe('fetchWasapPageData', () => {
         test('returns mutations for the given resistance set', async () => {
             const result = await fetchWasapPageData(
                 baseConfigFields,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
+                 
                 { Spike: ['S:E484K', 'S:N501Y'] },
                 { mode: WASAP_ANALYSIS_MODE.resistance, sequenceType: SEQUENCE_TYPE.aminoAcid, resistanceSet: 'Spike' },
             );
@@ -174,7 +174,7 @@ describe('fetchWasapPageData', () => {
             expect(result).toEqual({
                 type: 'mutations',
                 displayMutations: ['A123T'],
-                // eslint-disable-next-line @typescript-eslint/naming-convention
+                 
                 customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
             });
         });
@@ -293,7 +293,7 @@ describe('fetchWasapPageData', () => {
                 type: 'mutations',
                 displayMutations: ['A123T'],
                 lineageForJaccard: 'XEC*',
-                // eslint-disable-next-line @typescript-eslint/naming-convention
+                 
                 customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
             });
         });

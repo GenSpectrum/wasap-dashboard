@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 
 import { getBackendServiceForClientside } from '../backendApi/backendService';
 import { getClientLogger } from '../clientLogger';
+import { NoDataDisplay } from '../components/shared/no-data-display';
+import { WasapPage } from '../components/views/wasap/WasapPage';
+import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
+import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
 import { getAppConfig } from '../config/appConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
-import { NoDataDisplay } from '../components/shared/no-data-display';
-import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
-import { WasapPage } from '../components/views/wasap/WasapPage';
-import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
-import { getErrorLogMessage } from '../util/getErrorLogMessage';
 import { Loading } from '../util/Loading';
+import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
 const logger = getClientLogger('WasapRoute');
 

@@ -20,6 +20,10 @@
  * 12 node types `validateGenomeOnly` lets through, each to a `rhydb` builder.
  */
 
+import { READS } from './catalogue';
+import { scoped, type SiloReadFilter } from './filter';
+import type { SiloSchema } from './schema';
+import type { SiloFilterExpression } from './siloFilterExpression';
 import { and, bool, not, or, type Expr } from '../rhydb/expression';
 import {
     aminoAcidEquals,
@@ -33,10 +37,6 @@ import {
     nucleotideEquals,
 } from '../rhydb/functions';
 import { type Relation } from '../rhydb/relation';
-import { READS } from './catalogue';
-import { scoped, type SiloReadFilter } from './filter';
-import type { SiloSchema } from './schema';
-import type { SiloFilterExpression } from './siloFilterExpression';
 
 /**
  * A genome-only `SiloFilterExpression` as a SaneQL predicate.

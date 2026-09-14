@@ -18,12 +18,12 @@
  *     is bucketed client-side, so one cached result serves any window.
  */
 
+import { scoped, type SiloReadFilter } from './filter';
+import type { SiloSchema } from './schema';
 import { field } from '../rhydb/expression';
 import { count } from '../rhydb/functions';
 import { type Relation } from '../rhydb/relation';
 import { readCount, readOptionalText, readText, type RhydbRow } from '../rhydb/row';
-import { scoped, type SiloReadFilter } from './filter';
-import type { SiloSchema } from './schema';
 
 export type OverTimeSequenceType = 'nucleotide' | 'amino acid';
 

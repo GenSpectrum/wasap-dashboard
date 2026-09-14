@@ -10,23 +10,23 @@ import {
 } from 'react';
 import z from 'zod';
 
+import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
-import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
-import { sequenceTypeSchema, temporalGranularitySchema, views } from '../../types/dashboardComponents';
-import { siloReadFilterSchema } from '../../queries/filter';
+import { useConnection, useSiloSchema } from '../../data/connection';
 import {
     genesOf,
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
 } from '../../data/mutationsOverTime';
-import { useConnection, useSiloSchema } from '../../data/connection';
+import { siloReadFilterSchema } from '../../queries/filter';
+import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
+import { sequenceTypeSchema, temporalGranularitySchema, views } from '../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
 import { useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
-import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { AnnotatedMutation } from '../shared/annotated-mutation';
 import { type ColorScale } from '../shared/color-scale-selector';
 import { ColorScaleSelectorDropdown } from '../shared/color-scale-selector-dropdown';

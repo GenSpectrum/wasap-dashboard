@@ -1,4 +1,5 @@
 import { type FC, type ReactNode, useContext } from 'react';
+
 import { isNotInitialized, ReferenceGenomeContext } from '../ReferenceGenomeContext';
 
 /**

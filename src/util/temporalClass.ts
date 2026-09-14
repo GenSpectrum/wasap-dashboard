@@ -92,11 +92,11 @@ export class YearMonthDayClass implements YearMonthDay {
         return this.dayjs.format('dddd, MMMM D, YYYY');
     }
 
-    get firstDay(): YearMonthDayClass {
+    get firstDay(): this {
         return this;
     }
 
-    get lastDay(): YearMonthDayClass {
+    get lastDay(): this {
         return this;
     }
 

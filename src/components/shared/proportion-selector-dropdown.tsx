@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+
 import { Dropdown } from './dropdown';
 import { ProportionSelector, type ProportionSelectorProps } from './proportion-selector';
 

@@ -93,7 +93,7 @@ export function useDataVersion(): UseQueryResult<string | null> {
     return useQuery({
         queryKey: ['silo', 'data-version', ...connection.key],
         queryFn: async ({ signal }) => {
-            const { dataVersion } = await connection.query<RhydbRow>(connection.root().limit(1), 'Data version', {
+            const { dataVersion } = await connection.query(connection.root().limit(1), 'Data version', {
                 signal,
             });
             return dataVersion;

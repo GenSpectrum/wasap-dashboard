@@ -1,8 +1,8 @@
-import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
 import { useDateExtent } from '../../../data/reads';
 import { ALL_TIMES_LABEL } from '../../../types/DateWindow';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { isUnresolvedSamplingDate } from '../../../views/pageStateHandlers/WasapPageStateHandler';
+import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
 
 const allTimes: DateRangeOption = { label: ALL_TIMES_LABEL };
 

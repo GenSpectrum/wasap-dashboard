@@ -1,5 +1,5 @@
-import { type FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useCombobox, useMultipleSelection } from 'downshift';
+import { type FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 import { getExampleMutation } from './ExampleMutation';
@@ -16,9 +16,9 @@ import {
 import { gsEventNames } from '../../util/gsEventNames';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../util/mutations';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
+import { singleGraphColorRGBByName } from '../shared/charts/colors';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { UserFacingError } from '../shared/error-display';
-import { singleGraphColorRGBByName } from '../shared/charts/colors';
 
 const mutationFilterInnerPropsSchema = z.object({
     initialValue: z.union([mutationsFilterSchema.optional(), z.array(z.string()), z.undefined()]),
@@ -98,7 +98,7 @@ function MutationFilterInner({
         // — Array.prototype.filter returns a new array reference even when nothing was removed,
         // so setSelectedItems always changes `selectedItems`' identity, which would immediately
         // re-trigger this effect if it were listed here.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [enabledMutationTypes]);
 
     const fireChangeEvent = (selectedFilters: MutationFilterItem[]) => {

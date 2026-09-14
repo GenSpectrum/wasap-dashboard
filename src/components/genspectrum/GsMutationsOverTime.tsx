@@ -1,11 +1,11 @@
+import { type FC } from 'react';
+
+import { GsMutationsOverTime as MutationsOverTime } from './gs-mutations-over-time';
+import { type SiloReadFilter } from '../../queries';
+import { type TemporalGranularity, type SequenceType, views } from '../../types/dashboardComponents';
+import { ComponentWrapper } from '../ComponentWrapper';
 import { type MeanProportionInterval } from '../mutationsOverTime/mutations-over-time';
 import { type CustomColumn } from '../shared/features-over-time-grid';
-import { type TemporalGranularity, type SequenceType, views } from '../../types/dashboardComponents';
-import { type SiloReadFilter } from '../../queries';
-import { type FC } from 'react';
-import { GsMutationsOverTime as MutationsOverTime } from './gs-mutations-over-time';
-
-import { ComponentWrapper } from '../ComponentWrapper';
 
 export type GsMutationsOverTimeProps = {
     filter: SiloReadFilter;

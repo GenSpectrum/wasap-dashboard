@@ -1,6 +1,6 @@
-import { type FC, type ReactNode, useRef, useState } from 'react';
 import { flip, offset, shift } from '@floating-ui/dom';
 import { type Placement } from '@floating-ui/utils';
+import { type FC, type ReactNode, useRef, useState } from 'react';
 
 import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from './floating-ui/hooks';
 

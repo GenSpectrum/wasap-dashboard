@@ -1,4 +1,5 @@
 import { type FC, type PropsWithChildren } from 'react';
+
 import { Modal } from './modal';
 
 const Info: FC<PropsWithChildren> = ({ children }) => {

@@ -1,5 +1,5 @@
-import { type FC, type PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
+import { type FC, type PropsWithChildren } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { ConnectionProvider, useConnection, useSiloSchema } from './connection';

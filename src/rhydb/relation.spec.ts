@@ -53,7 +53,7 @@ describe('the pipeline', () => {
         // The annotation is the assertion: `tsc` fails if offsetting after a
         // limit ever starts typechecking again.
         // @ts-expect-error a limited pipeline has no offset
-        void limited.offset;
+        limited.offset;
         expect(limited.render()).toBe('default.limit(60)');
     });
 

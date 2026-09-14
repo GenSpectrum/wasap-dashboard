@@ -1,14 +1,15 @@
 import { QueryClient, QueryClientProvider, type UseQueryResult } from '@tanstack/react-query';
 import { type ReactElement } from 'react';
-import { page, userEvent } from 'vitest/browser';
 import { describe, expect, vi } from 'vitest';
+import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
-import { GsApp } from '../../../genspectrum/gs-app';
+
 
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
 import { it } from '../../../../../test-extend';
 import type { CollectionSummary } from '../../../../types/Collection';
+import { GsApp } from '../../../genspectrum/gs-app';
 import type { WasapVariantFilter } from '../../../views/wasap/wasapPageConfig';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
@@ -207,13 +208,13 @@ function setupLapisMocks(lapisRouteMocker: LapisRouteMocker) {
         nucleotideSequences: [{ name: 'main', sequence }],
         genes: [{ name: 'S', sequence }],
     });
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     lapisRouteMocker.mockLineageDefinition('pangoLineage', {
         'JN.1': { parents: ['BA.2'], aliases: [] },
         'KP.2': { parents: ['JN.1'], aliases: [] },
         'BA.2': { parents: ['B.1.1.529'], aliases: [] },
     });
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     // Mocks for the internal gs-app that uses the other LAPIS URL
 
@@ -222,13 +223,13 @@ function setupLapisMocks(lapisRouteMocker: LapisRouteMocker) {
         genes: [{ name: 'S', sequence }],
     });
 
-    /* eslint-disable @typescript-eslint/naming-convention */
+     
     lapisRouteMocker.mockLineageDefinitionWithUrl(DUMMY_LAPIS_URL_2, 'pangoLineage', {
         'JN.1': { parents: ['BA.2'], aliases: [] },
         'KP.2': { parents: ['JN.1'], aliases: [] },
         'BA.2': { parents: ['B.1.1.529'], aliases: [] },
     });
-    /* eslint-enable @typescript-eslint/naming-convention */
+     
 
     lapisRouteMocker.mockPostAggregatedWithUrl(
         DUMMY_LAPIS_URL_2,

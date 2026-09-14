@@ -1,6 +1,3 @@
-import { type QueriesOverTimeQuery } from '../../queriesOverTime/queries-over-time';
-import { type CustomColumn } from '../../shared/features-over-time-grid';
-import { type LapisFilter } from '../../../types/dashboardComponents';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
@@ -22,9 +19,12 @@ import { detailedMutationsToQuery } from '../../../covspectrum/variantConversion
 import { getCladeLineages } from '../../../lapis/getCladeLineages';
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../lapis/getMutations';
 import { parseQuery } from '../../../lapis/parseQuery';
+import { validateGenomeOnly } from '../../../queries';
 import { getLineageFields } from '../../../types/Collection';
 import type { FilterObject, Variant } from '../../../types/Collection';
-import { validateGenomeOnly } from '../../../queries';
+import { type LapisFilter } from '../../../types/dashboardComponents';
+import { type QueriesOverTimeQuery } from '../../queriesOverTime/queries-over-time';
+import { type CustomColumn } from '../../shared/features-over-time-grid';
 
 /**
  * Hook that fetches and returns `WasapPageData` for the W-ASAP page,
@@ -178,7 +178,7 @@ async function fetchVariantPredefinedModeData(
                         .filter(
                             (m) => jaccardByMutation.has(m) && (jaccardByMutation.get(m) ?? 0) >= analysis.minJaccard,
                         )
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                         
                         .map((m) => [m, jaccardByMutation.get(m)!.toPrecision(2)]),
                 ),
             },

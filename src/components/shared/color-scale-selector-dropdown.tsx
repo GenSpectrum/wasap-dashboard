@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+
 import { ColorScaleSelector, type ColorScaleSelectorProps } from './color-scale-selector';
 import { Dropdown } from './dropdown';
 

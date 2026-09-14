@@ -1,6 +1,6 @@
-import { type FC, type PropsWithChildren } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
+import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
@@ -57,7 +57,7 @@ describe('useStringFieldOptions', () => {
             { name: 'Zürich (ZH)', count: 30 },
         ]);
 
-        const [, init] = fetchMock.mock.calls[0]!;
+        const [, init] = fetchMock.mock.calls[0];
         expect(init.body).toBe('default.groupBy({n := count()}, {locationName})');
     });
 });
@@ -72,7 +72,7 @@ describe('useTotalReadCount', () => {
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toBe(596520334);
 
-        const [, init] = fetchMock.mock.calls[0]!;
+        const [, init] = fetchMock.mock.calls[0];
         expect(init.body).toBe("default.filter(locationName = 'Basel (BS)').groupBy({n := count()})");
     });
 });
@@ -87,7 +87,7 @@ describe('useDataVersion', () => {
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toBe('1750000000');
 
-        const [, init] = fetchMock.mock.calls[0]!;
+        const [, init] = fetchMock.mock.calls[0];
         expect(init.body).toBe('default.limit(1)');
     });
 });
@@ -107,7 +107,7 @@ describe('useDateExtent', () => {
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toEqual({ min: '2023-05-01', max: '2025-12-27' });
 
-        const [, init] = fetchMock.mock.calls[0]!;
+        const [, init] = fetchMock.mock.calls[0];
         expect(init.body).toBe('default.groupBy({n := count()}, {date}).orderBy({date.asc()})');
     });
 });
