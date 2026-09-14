@@ -1,13 +1,10 @@
 {
     "printWidth": 120,
     "tabWidth": 4,
-    "singleQuote": true,
-    "jsxSingleQuote": true,
     "trailingComma": "all",
-    "overrides": [
-        {
-            "files": "*.md",
-            "options": { "tabWidth": 2, "proseWrap": "preserve" }
-        }
-    ]
+    "semi": true,
+    "jsxSingleQuote": true,
+    "singleQuote": true,
+    "quoteProps": "as-needed",
+    "plugins": ["prettier-plugin-tailwindcss"]
 }
