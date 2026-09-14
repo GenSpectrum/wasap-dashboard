@@ -5,7 +5,7 @@ import z from 'zod';
 import { getExampleMutation } from './ExampleMutation';
 import { MutationFilterInfo } from './mutation-filter-info';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
-import { type ReferenceGenome } from '../../lapisApi/ReferenceGenome';
+import { type ReferenceGenome } from '../../externalData/lapisApi/ReferenceGenome';
 import {
     type MutationsFilter,
     mutationsFilterSchema,

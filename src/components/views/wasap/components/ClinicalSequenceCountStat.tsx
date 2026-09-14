@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 
-import { getTotalCount } from '../../../../lapis/getTotalCount';
+import { getTotalCount } from '../../../../externalData/lapis/getTotalCount';
 import { getLapisFilterForTimeFrame } from '../useWasapPageData';
 import { variantTimeFrameLabel, type WasapVariantFilter } from '../wasapPageConfig';
 

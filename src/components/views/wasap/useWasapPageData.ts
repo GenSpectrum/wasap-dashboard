@@ -12,13 +12,14 @@ import type {
     WasapUntrackedFilter,
     WasapVariantFilter,
 } from './wasapPageConfig';
-import { getBackendServiceForClientside } from '../../../backendApi/backendService';
-import { getCollection } from '../../../covspectrum/getCollection';
-import type { CollectionVariant } from '../../../covspectrum/types';
-import { detailedMutationsToQuery } from '../../../covspectrum/variantConversionUtil';
-import { getCladeLineages } from '../../../lapis/getCladeLineages';
-import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../lapis/getMutations';
-import { parseQuery } from '../../../lapis/parseQuery';
+import { getCollection } from '../../../externalData/covSpectrum/getCollection';
+import type { CollectionVariant } from '../../../externalData/covSpectrum/types';
+import { detailedMutationsToQuery } from '../../../externalData/covSpectrum/variantConversionUtil';
+import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
+import { getCollection as getGenSpectrumCollection } from '../../../externalData/genSpectrum/getCollection';
+import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
+import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
+import { parseQuery } from '../../../externalData/lapis/parseQuery';
 import { validateGenomeOnly } from '../../../queries';
 import { getLineageFields } from '../../../types/Collection';
 import type { FilterObject, Variant } from '../../../types/Collection';
@@ -135,7 +136,7 @@ async function fetchVariantPredefinedModeData(
     if (analysis.collectionId === undefined) {
         throw new Error('No collection selected for predefined variant mode.');
     }
-    const collection = await getBackendServiceForClientside().getCollection({ id: String(analysis.collectionId) });
+    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(analysis.collectionId));
 
     // These names match the variant names hardcoded in the collection seeder.
     let variantName: string;
@@ -281,7 +282,7 @@ async function fetchCollectionModeData(
     if (analysis.collectionId === undefined) {
         throw Error('No collection selected');
     }
-    const collection = await getBackendServiceForClientside().getCollection({ id: String(analysis.collectionId) });
+    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(analysis.collectionId));
 
     const { variantData, invalidVariants } = extractBackendVariantData(collection.variants);
     const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(

@@ -4,7 +4,7 @@ import { render } from 'vitest-browser-react';
 
 import { CovSpectrumCollectionAnalysisFilter } from './CovSpectrumCollectionAnalysisFilter';
 import { it } from '../../../../../test-extend';
-import type { CollectionRaw } from '../../../../covspectrum/types';
+import type { CollectionRaw } from '../../../../externalData/covSpectrum/types';
 import type { WasapCovSpectrumCollectionFilter } from '../../../views/wasap/wasapPageConfig';
 
 const DUMMY_COV_SPECTRUM_URL = 'https://cov-spectrum-dummy.com/api';

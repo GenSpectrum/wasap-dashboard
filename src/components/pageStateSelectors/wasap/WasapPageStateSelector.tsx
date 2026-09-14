@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { type Dispatch, type SetStateAction, useState } from 'react';
 
-import { getBackendServiceForClientside } from '../../../backendApi/backendService';
+import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
+import { getCollections } from '../../../externalData/genSpectrum/getCollections';
+import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { ApplyFilterButton } from '../ApplyFilterButton';
 import { DynamicDateFilter } from '../DynamicDateFilter';
 import { SelectorHeadline } from '../SelectorHeadline';
@@ -14,7 +16,6 @@ import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
 import { LabeledField } from './utils/LabeledField';
 import { RadioSelect } from './utils/RadioSelect';
-import { getCladeLineages } from '../../../lapis/getCladeLineages';
 import { Inset } from '../../../styles/Inset';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';
@@ -128,7 +129,7 @@ export function WasapPageStateSelector({
                 );
             }
             const { collectionsUserId, collectionsTag } = config.predefinedVariantsSource;
-            return getBackendServiceForClientside().getCollectionSummaries({
+            return getCollections(getApiServiceForClientside(), {
                 userId: collectionsUserId,
                 organism: config.internalName,
                 tags: collectionsTag,

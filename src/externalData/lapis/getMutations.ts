@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../clientLogger';
 import { getTotalCount } from './getTotalCount';
-import { type LapisFilter, type SequenceType } from '../types/dashboardComponents';
+import { getClientLogger } from '../../clientLogger';
+import { type LapisFilter, type SequenceType } from '../../types/dashboardComponents';
 
 const mutationsSchema = z.object({
     data: z.array(

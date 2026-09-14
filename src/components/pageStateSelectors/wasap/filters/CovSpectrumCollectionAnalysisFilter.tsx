@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getCollections } from '../../../../covspectrum/getCollections';
+import { getCollections } from '../../../../externalData/covSpectrum/getCollections';
 import type { WasapCovSpectrumCollectionFilter } from '../../../views/wasap/wasapPageConfig';
 import { CollectionInfo } from '../InfoBlocks';
 import { LabeledField } from '../utils/LabeledField';

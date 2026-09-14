@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../clientLogger';
-import { type LapisFilter } from '../types/dashboardComponents';
+import { getClientLogger } from '../../clientLogger';
+import { type LapisFilter } from '../../types/dashboardComponents';
 
 const lapisTotalCountSchema = z.object({
     data: z.tuple([z.object({ count: z.number() })]),

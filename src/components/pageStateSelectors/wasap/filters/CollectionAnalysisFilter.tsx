@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { getBackendServiceForClientside } from '../../../../backendApi/backendService';
+import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
+import { getCollections } from '../../../../externalData/genSpectrum/getCollections';
 import type { WasapCollectionFilter } from '../../../views/wasap/wasapPageConfig';
 import { LabeledField } from '../utils/LabeledField';
 
@@ -18,7 +19,7 @@ export function CollectionAnalysisFilter({ pageState, setPageState, organism }: 
         isError,
     } = useQuery({
         queryKey: ['collections', organism],
-        queryFn: () => getBackendServiceForClientside().getCollectionSummaries({ organism }),
+        queryFn: () => getCollections(getApiServiceForClientside(), { organism }),
     });
 
     const firstCollectionId = collections?.[0]?.id;

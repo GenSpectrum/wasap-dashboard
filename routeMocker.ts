@@ -4,8 +4,8 @@ import type { SetupWorker } from 'msw/browser';
 import type { SetupServer } from 'msw/node';
 import { expect } from 'vitest';
 
-import type { CollectionRaw } from './src/covspectrum/types.ts';
-import type { ParsedQueryResult, ParseQueryRequest } from './src/lapis/parseQuery.ts';
+import type { CollectionRaw } from './src/externalData/covSpectrum/types.ts';
+import type { ParsedQueryResult, ParseQueryRequest } from './src/externalData/lapis/parseQuery.ts';
 import type { Collection } from './src/types/Collection.ts';
 
 // Standalone: the AstroApiRouteMocker (the `/api` proxy), the Subscription

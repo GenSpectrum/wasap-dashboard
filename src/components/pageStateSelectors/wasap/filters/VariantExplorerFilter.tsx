@@ -1,7 +1,7 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 import { useId } from 'react';
 
-import { LapisClientProvider } from '../../../../lapis/LapisClientContext';
+import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import { Inset } from '../../../../styles/Inset';
 import { type CollectionSummary } from '../../../../types/Collection';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';

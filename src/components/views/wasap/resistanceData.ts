@@ -1,5 +1,6 @@
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from './wasapPageConfig';
-import type { BackendService } from '../../../backendApi/backendService';
+import type { ApiService } from '../../../externalData/genSpectrum/apiService';
+import { getCollection } from '../../../externalData/genSpectrum/getCollection';
 import type { Collection } from '../../../types/Collection';
 import { type MutationAnnotations } from '../../genspectrum/mutation-annotations-context';
 
@@ -16,19 +17,16 @@ export type ResistanceData = {
 };
 
 /**
- * Given a wastewater dashboard config and backend service, fetch resistance mutation data.
+ * Given a wastewater dashboard config and GenSpectrum API service, fetch resistance mutation data.
  * This is done by fetching relevant collections, and transforming the data into the shape we want here.
  */
-export async function fetchResistanceData(
-    config: WasapPageConfig,
-    backendService: BackendService,
-): Promise<ResistanceData> {
+export async function fetchResistanceData(config: WasapPageConfig, apiService: ApiService): Promise<ResistanceData> {
     if (!config.resistanceAnalysisModeEnabled) {
         return { mutationAnnotations: [], displayMutationsBySet: {} };
     }
     const collections = await Promise.all(
         config.resistanceMutationCollections.map((setConfig) =>
-            backendService.getCollection({ id: String(setConfig.collectionId) }),
+            getCollection(apiService, String(setConfig.collectionId)),
         ),
     );
     return buildResistanceData(config.resistanceMutationCollections, collections);

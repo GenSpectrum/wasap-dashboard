@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
-import { getBackendServiceForClientside } from '../backendApi/backendService';
 import { getClientLogger } from '../clientLogger';
 import { NoDataDisplay } from '../components/shared/no-data-display';
 import { WasapPage } from '../components/views/wasap/WasapPage';
@@ -9,6 +8,7 @@ import { fetchResistanceData, type ResistanceData } from '../components/views/wa
 import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
 import { getAppConfig } from '../config/appConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
+import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
 import { Loading } from '../util/Loading';
 import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
@@ -40,7 +40,7 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
         queryKey: ['resistanceData', config.internalName, getAppConfig().collectionsBackendUrl],
         queryFn: async () => {
             try {
-                return await fetchResistanceData(config, getBackendServiceForClientside());
+                return await fetchResistanceData(config, getApiServiceForClientside());
             } catch (error) {
                 // Matches Wasap.astro: a resistance-data failure degrades to an
                 // empty set rather than failing the whole page.

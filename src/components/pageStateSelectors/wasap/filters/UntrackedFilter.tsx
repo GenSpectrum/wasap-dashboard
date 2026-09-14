@@ -1,6 +1,6 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { LapisClientProvider } from '../../../../lapis/LapisClientContext';
+import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import { Loading } from '../../../../util/Loading';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
 import type { ExcludeSetName, WasapUntrackedFilter } from '../../../views/wasap/wasapPageConfig';

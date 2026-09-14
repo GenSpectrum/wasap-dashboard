@@ -1,7 +1,7 @@
 import { type FC, useContext, useState } from 'react';
 
 import { type CheckboxItem, CheckboxSelector } from './checkbox-selector';
-import { getSegmentNames } from '../../lapisApi/ReferenceGenome';
+import { getSegmentNames } from '../../externalData/lapisApi/ReferenceGenome';
 import { type SequenceType } from '../../types/dashboardComponents';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
 
