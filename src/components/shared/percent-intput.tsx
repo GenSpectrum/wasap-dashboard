@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type FC } from 'react';
+import { useEffect, useState, type InputEvent, type FC } from 'react';
 
 export type PercentInputProps = {
     percentage: number;
@@ -17,7 +17,7 @@ export const PercentInput: FC<PercentInputProps> = ({ percentage, setPercentage,
         setInternalPercentage(percentage);
     }, [percentage]);
 
-    const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
+    const handleInputChange = (event: InputEvent<HTMLInputElement>) => {
         const input = event.target as HTMLInputElement;
         const value = Number(input.value);
 

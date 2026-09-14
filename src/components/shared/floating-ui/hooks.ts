@@ -1,11 +1,11 @@
 import { autoUpdate, computePosition, type Middleware } from '@floating-ui/dom';
 import type { Placement } from '@floating-ui/utils';
 import { useEffect, useRef } from 'react';
-import type { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
 
 export function useFloatingUi(
-    referenceRef: MutableRefObject<HTMLElement | null>,
-    floatingRef: MutableRefObject<HTMLElement | null>,
+    referenceRef: RefObject<HTMLElement | null>,
+    floatingRef: RefObject<HTMLElement | null>,
     middleware?: (Middleware | null | undefined | false)[],
     placement?: Placement,
 ) {
@@ -41,8 +41,8 @@ export function useFloatingUi(
 }
 
 export function useCloseOnClickOutside(
-    floatingRef: MutableRefObject<HTMLElement | null>,
-    referenceRef: MutableRefObject<HTMLElement | null>,
+    floatingRef: RefObject<HTMLElement | null>,
+    referenceRef: RefObject<HTMLElement | null>,
     setShowContent: (value: ((prevState: boolean) => boolean) | boolean) => void,
 ) {
     useEffect(() => {

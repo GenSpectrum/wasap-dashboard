@@ -196,7 +196,7 @@ describe('Map2dView', () => {
     it('should throw an error when trying to set a value', () => {
         const container = createBaseContainer();
         const view = new Map2dView<string, string, number>(container);
-        expect(() => view.set()).toThrowError();
+        expect(() => view.set()).toThrow();
     });
 
     it('should return a row by key', () => {

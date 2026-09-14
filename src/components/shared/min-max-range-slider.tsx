@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type FC } from 'react';
+import { useState, type InputEvent, type FC } from 'react';
 
 // Previously injected only into this component's Lit shadow root by PreactLitAdapter (see
 // the step-2 Lit-removal commit). There's no shadow DOM to scope it to
@@ -32,7 +32,7 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
 
     const [zIndexTo, setZIndexTo] = useState(0);
 
-    const onMinChange = (event: FormEvent<HTMLInputElement>) => {
+    const onMinChange = (event: InputEvent<HTMLInputElement>) => {
         const input = event.target as HTMLInputElement;
         const minValue = Number(input.value);
 
@@ -44,7 +44,7 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
         }
     };
 
-    const onMaxChange = (event: FormEvent<HTMLInputElement>) => {
+    const onMaxChange = (event: InputEvent<HTMLInputElement>) => {
         const input = event.target as HTMLInputElement;
         const maxValue = Number(input.value);
 

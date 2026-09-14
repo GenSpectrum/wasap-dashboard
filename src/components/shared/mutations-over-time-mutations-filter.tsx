@@ -2,7 +2,7 @@ import {
     useCallback,
     useEffect,
     useState,
-    type FormEvent,
+    type InputEvent,
     type Dispatch,
     type FC,
     type JSX,
@@ -94,7 +94,7 @@ function DebouncedInput({
         return () => clearTimeout(timeout);
     }, [value, debounce, onInput]);
 
-    const onChangeInput = useCallback((event: FormEvent<HTMLInputElement>) => {
+    const onChangeInput = useCallback((event: InputEvent<HTMLInputElement>) => {
         setValue(event.currentTarget.value);
     }, []);
 

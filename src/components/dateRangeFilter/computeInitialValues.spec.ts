@@ -46,13 +46,13 @@ describe('computeInitialValues', () => {
     });
 
     it('should throw when initial value is unknown', () => {
-        expect(() => computeInitialValues('not a known value', dateRangeOptions)).toThrowError(
+        expect(() => computeInitialValues('not a known value', dateRangeOptions)).toThrow(
             /Invalid value "not a known value", It must be one of/,
         );
     });
 
     it('should throw when initial value is set but no options are provided', () => {
-        expect(() => computeInitialValues('not a known value', [])).toThrowError(/There are no selectable options/);
+        expect(() => computeInitialValues('not a known value', [])).toThrow(/There are no selectable options/);
     });
 
     it('should compute initial date if only dateFrom is given', () => {
@@ -106,11 +106,11 @@ describe('computeInitialValues', () => {
     });
 
     it('should throw if initial "from" is not a valid date', () => {
-        expect(() => computeInitialValues({ dateFrom: 'not a date' }, [])).toThrowError('Invalid value.dateFrom');
+        expect(() => computeInitialValues({ dateFrom: 'not a date' }, [])).toThrow('Invalid value.dateFrom');
     });
 
     it('should throw if initial "to" is not a valid date', () => {
-        expect(() => computeInitialValues({ dateTo: 'not a date' }, [])).toThrowError('Invalid value.dateTo');
+        expect(() => computeInitialValues({ dateTo: 'not a date' }, [])).toThrow('Invalid value.dateTo');
     });
 
     function expectDateMatches(actual: Date | undefined, expected: Date | undefined) {
