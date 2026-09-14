@@ -1,9 +1,10 @@
 import { useState, type FormEvent, type FC } from 'react';
 
 // Previously injected only into this component's Lit shadow root by PreactLitAdapter (see
-// the step-2 Lit-removal commit). There's no shadow DOM to scope it to
-// any more, so this now styles `input[type=range]` globally — harmless today since this is the
-// only range input in the app, but worth knowing if that stops being true.
+// the step-2 Lit-removal commit). There's no shadow DOM to scope it to any more, so the
+// selectors in this file target the `min-max-range-slider` class below rather than the bare
+// `input[type=range]` tag, to avoid leaking onto unrelated range inputs elsewhere in the app
+// (e.g. `NumericInput`'s single-thumb slider).
 import './min-max-percent-slider.css';
 
 export interface MinMaxPercentSliderProps {
@@ -79,6 +80,7 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
         <div className='my-4 relative w-full h-full'>
             <input
                 id='fromSlider'
+                className='min-max-range-slider'
                 type='range'
                 value={min}
                 onInput={onMinChange}
@@ -91,6 +93,7 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
             />
             <input
                 id='toSlider'
+                className='min-max-range-slider'
                 type='range'
                 value={max}
                 min={`${rangeMin}`}
