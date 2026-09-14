@@ -30,7 +30,8 @@ npm run build        # tsc --noEmit && vite build -> dist/
 npm run preview      # serve the built bundle
 npm test             # vitest (node project)
 npm run typecheck
-npm run format       # prettier --write .  (run before every commit)
+npm run format       # eslint . --fix && prettier --write .  (run before every commit)
+npm run check-lint   # eslint ., no fixes
 ```
 
 ### Deploying to a sub-path

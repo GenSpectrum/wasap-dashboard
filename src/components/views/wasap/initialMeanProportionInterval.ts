@@ -1,7 +1,6 @@
 import type { WasapAnalysisFilter } from './wasapPageConfig';
 import { type MeanProportionInterval } from '../../mutationsOverTime/mutations-over-time';
 
-
 export function getInitialMeanProportionInterval(analysis: WasapAnalysisFilter): MeanProportionInterval {
     if (analysis.mode === 'resistance') {
         return { min: 0.05, max: 1.0 };

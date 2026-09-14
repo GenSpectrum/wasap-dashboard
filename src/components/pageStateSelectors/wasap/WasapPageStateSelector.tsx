@@ -70,7 +70,7 @@ export function WasapPageStateSelector({
     function getMergedPageState(): WasapFilter {
         // We're using the ! below because we know that for the selected mode we have a defined state.
         // based on the initialization in useAnalysisFilterStates
-         
+
         switch (selectedAnalysisMode) {
             case 'manual':
                 return { base: baseFilterState, analysis: manualFilter! };
@@ -85,7 +85,6 @@ export function WasapPageStateSelector({
             case 'collection':
                 return { base: baseFilterState, analysis: collectionFilter! };
         }
-         
     }
 
     // data for the 'untracked' analysis mode - loaded here already so it's available when the mode is selected

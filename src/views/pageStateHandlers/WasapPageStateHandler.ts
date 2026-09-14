@@ -1,4 +1,3 @@
-
 import { type PageStateHandler } from './PageStateHandler';
 import type { BaselineFilterConfig } from './baselineFilterConfig';
 import { setSearchFromDateRange } from './dateFilterFromToUrl';

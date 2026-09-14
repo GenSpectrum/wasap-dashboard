@@ -75,13 +75,12 @@ function setupLapisMocks(lapisRouteMocker: LapisRouteMocker) {
         nucleotideSequences: [{ name: 'main', sequence }],
         genes: [{ name: 'S', sequence }],
     });
-     
+
     lapisRouteMocker.mockLineageDefinition('pangoLineage', {
         'JN.1': { parents: ['BA.2'], aliases: [] },
         'KP.2': { parents: ['JN.1'], aliases: [] },
         'BA.2': { parents: ['B.1.1.529'], aliases: [] },
     });
-     
 
     // Mocks for the internal gs-app that uses the other LAPIS URL
 
@@ -90,13 +89,11 @@ function setupLapisMocks(lapisRouteMocker: LapisRouteMocker) {
         genes: [{ name: 'S', sequence }],
     });
 
-     
     lapisRouteMocker.mockLineageDefinitionWithUrl(DUMMY_LAPIS_URL_2, 'pangoLineage', {
         'JN.1': { parents: ['BA.2'], aliases: [] },
         'KP.2': { parents: ['JN.1'], aliases: [] },
         'BA.2': { parents: ['B.1.1.529'], aliases: [] },
     });
-     
 
     lapisRouteMocker.mockPostAggregatedWithUrl(
         DUMMY_LAPIS_URL_2,

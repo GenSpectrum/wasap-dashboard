@@ -1,7 +1,6 @@
 import type { SiloInstanceConfig } from '../components/views/wasap/wasapPageConfig';
 import type { SiloSchema } from '../queries';
 
-
 /**
  * The `SiloSchema` the `components/` query catalogue needs, from a
  * `WasapPageConfig.silo` block. Kept here rather than in `components/` because

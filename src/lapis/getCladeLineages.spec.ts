@@ -29,12 +29,10 @@ describe('getCladeLineages', () => {
 
         const result = await getCladeLineages(DUMMY_LAPIS_URL, cladeField, lineageField);
 
-         
         expect(result).toEqual({
             '23B': 'XBB.1.16',
             '22A': 'YAA.2',
         });
-         
     });
 
     test('should throw on failed request', async () => {

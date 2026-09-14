@@ -182,7 +182,7 @@ async function fetchVariantPredefinedModeData(
                         .filter(
                             (m) => jaccardByMutation.has(m) && (jaccardByMutation.get(m) ?? 0) >= analysis.minJaccard,
                         )
-                         
+
                         .map((m) => [m, jaccardByMutation.get(m)!.toPrecision(2)]),
                 ),
             },

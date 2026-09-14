@@ -21,7 +21,9 @@ export const Page = {
         } else {
             for (const [key, value] of Object.entries(variant.filterObject)) {
                 if (Array.isArray(value)) {
-                    if (value.length > 0) {search.set(key, value.join(','));}
+                    if (value.length > 0) {
+                        search.set(key, value.join(','));
+                    }
                 } else {
                     search.set(key, value);
                 }

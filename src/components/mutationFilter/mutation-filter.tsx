@@ -98,7 +98,6 @@ function MutationFilterInner({
         // — Array.prototype.filter returns a new array reference even when nothing was removed,
         // so setSelectedItems always changes `selectedItems`' identity, which would immediately
         // re-trigger this effect if it were listed here.
-         
     }, [enabledMutationTypes]);
 
     const fireChangeEvent = (selectedFilters: MutationFilterItem[]) => {

@@ -8,8 +8,6 @@ import { type MeanProportionInterval } from '../mutationsOverTime/mutations-over
 import { type QueriesOverTimeQuery } from '../queriesOverTime/queries-over-time';
 import { type CustomColumn } from '../shared/features-over-time-grid';
 
-
-
 export type GsQueriesOverTimeProps = {
     collectionTitle?: string;
     filter: SiloReadFilter;

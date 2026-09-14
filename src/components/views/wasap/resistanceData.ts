@@ -1,4 +1,3 @@
-
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from './wasapPageConfig';
 import type { BackendService } from '../../../backendApi/backendService';
 import type { Collection } from '../../../types/Collection';

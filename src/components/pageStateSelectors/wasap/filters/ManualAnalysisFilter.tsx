@@ -19,7 +19,9 @@ export function ManualAnalysisFilter({
             <SequenceTypeSelector
                 value={pageState.sequenceType}
                 onChange={(sequenceType) => {
-                    if (sequenceType === pageState.sequenceType) {return;}
+                    if (sequenceType === pageState.sequenceType) {
+                        return;
+                    }
                     setPageState({ ...pageState, sequenceType, mutations: undefined });
                 }}
             />
