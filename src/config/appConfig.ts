@@ -5,22 +5,14 @@ import { wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig
 /**
  * Runtime configuration for the standalone app.
  *
- * Replaces the dashboards repo's server-side `config.ts` (which read a YAML
- * file from disk per request) and its `DB_ID_SPACE` / `DASHBOARDS_ENVIRONMENT`
- * environment variables, and the `dbIdSpace` / `byEnv(...)` scheme this file
- * used to carry (three near-identical copies of the organism data baked into
- * TypeScript, switched on one enum). Now the organisms themselves are
- * external data: `config.json`'s `organisms` array *is* the per-organism
- * config, not a selector into hardcoded ones.
- *
- * Here the config is a single `config.json` fetched once at startup (see
- * `main.tsx`). Unlike `collectionsBackendUrl`, `organisms` has **no built-in
- * default** — a deployment with no `config.json` (or one that omits
- * `organisms`) genuinely serves zero wastewater dashboards (`WasapRoute`'s
- * empty state), rather than silently falling back to GenSpectrum's own data.
- * `public/config.example.json` (+ the staging / local-dev example configs)
- * are that data now, checked in as *examples* to copy from, not defaults this
- * module reaches for.
+ * A single `config.json` fetched once at startup (see `main.tsx`).
+ * `organisms` *is* the per-organism config — not a selector into hardcoded
+ * data — and unlike `collectionsBackendUrl` it has **no built-in default**: a
+ * deployment with no `config.json` (or one that omits `organisms`) genuinely
+ * serves zero wastewater dashboards (`WasapRoute` says so), rather than
+ * silently falling back to GenSpectrum's own data. `public/config.example.json`
+ * (+ the staging / local-dev example configs) are that data now, checked in
+ * as *examples* to copy from, not defaults this module reaches for.
  *
  * This is the seam that `09-third-party-hosting.md` grows into: a self-hoster
  * ships their own `config.json`.
