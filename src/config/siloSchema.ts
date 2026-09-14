@@ -2,9 +2,11 @@ import type { SiloInstanceConfig } from '../components/views/wasap/wasapPageConf
 import type { SiloSchema } from '../queries';
 
 /**
- * The `SiloSchema` the `components/` query catalogue needs, from a
- * `WasapPageConfig.silo` block. Kept here rather than in `components/` because
- * `WasapPageConfig` lives in `src/` and `components/` must not import from it.
+ * The `SiloSchema` the `queries/` query catalogue needs, derived from a
+ * `WasapPageConfig.silo` block — same pattern as `appConfig.ts`/`wastewaterOrganisms.ts`
+ * deriving app config from `WasapPageConfig`. Kept out of `queries/` itself: `components/`
+ * already imports from `queries/`, so `queries/` importing `WasapPageConfig` back (from
+ * `components/views/wasap/wasapPageConfig`) would be a cycle.
  */
 export function siloSchema(silo: SiloInstanceConfig): SiloSchema {
     return {
