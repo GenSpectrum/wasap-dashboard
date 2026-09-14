@@ -49,6 +49,9 @@ export const GsApp: FC<PropsWithChildren<GsAppProps>> = ({
     mutationLinkTemplate = {},
     children,
 }) => {
+    // TODO (see TODO.md): drop this LAPIS fetch. We only ever need each segment's/gene's
+    // name and length, never the base-pair content, so require the user to put those in
+    // config.json instead of fetching the full reference genome here.
     const result = useQuery<ReferenceGenome>(async () => {
         const lapisUrl = lapisUrlSchema.parse(lapis);
         return fetchReferenceGenome(lapisUrl.endsWith('/') ? lapisUrl.slice(0, -1) : lapisUrl);
