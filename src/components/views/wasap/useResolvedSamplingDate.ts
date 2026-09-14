@@ -37,7 +37,7 @@ export function useResolvedSamplingDate(samplingDateFromPageState: DateRangeOpti
         return { samplingDate, isPending: true };
     }
 
-    if (isError || dateExtent === null || dateExtent === undefined) {
+    if (isError || dateExtent === null) {
         return { samplingDate: allTimes, isPending: false };
     }
 

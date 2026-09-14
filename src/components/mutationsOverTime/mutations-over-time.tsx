@@ -324,6 +324,9 @@ const Toolbar: FC<ToolbarProps> = ({
     mutationFilterValue,
     downloadData,
 }) => {
+    // `getData` (below) is typed to return a Promise so callers can fetch on
+    // demand; this data is already in memory, so the wrapper has nothing to await.
+    // eslint-disable-next-line @typescript-eslint/require-await
     const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
         downloadData === null ? [] : getDownloadData(downloadData);
 

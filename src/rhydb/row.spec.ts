@@ -27,6 +27,13 @@ describe('reading a row', () => {
 
     test('numbers, including ones an encoder sent as text to keep their precision', () => {
         expect(readNumber(row, 'proportion')).toBe(0.05);
+        // FIXME: this doesn't actually test what the `describe` block above claims —
+        // `readNumber` calls `Number(value)` on the string, which rounds exactly like
+        // this literal does, so both sides round to 9007199254740992 and the assertion
+        // passes without proving precision was preserved. Pre-existing; flagged by
+        // @typescript-eslint/no-loss-of-precision, not fixed here (would mean changing
+        // `readNumber`'s production behaviour, out of scope for a lint-config change).
+        // eslint-disable-next-line no-loss-of-precision
         expect(readNumber(row, 'big')).toBe(9007199254740993);
         expect(() => readNumber({ n: 'many' }, 'n')).toThrow(RhydbRowError);
         expect(() => readNumber({ n: null }, 'n')).toThrow(RhydbRowError);

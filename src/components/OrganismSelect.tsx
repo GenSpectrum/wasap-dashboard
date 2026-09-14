@@ -17,7 +17,7 @@ export function OrganismSelect() {
             className='select select-bordered select-sm'
             aria-label='Organism'
             value={organismPath ?? ''}
-            onChange={(event) => navigate(`/swiss-wastewater/${event.target.value}`)}
+            onChange={(event) => void navigate(`/swiss-wastewater/${event.target.value}`)}
         >
             {organisms.map((entry) => (
                 <option key={entry.pathSegment} value={entry.pathSegment}>

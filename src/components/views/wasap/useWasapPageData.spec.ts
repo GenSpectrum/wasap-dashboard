@@ -13,10 +13,11 @@ import {
 } from './wasapPageConfig';
 import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker';
 import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup';
+import type * as BackendServiceModule from '../../../backendApi/backendService';
 import type { Collection } from '../../../types/Collection';
 
 vi.mock('../../../backendApi/backendService.ts', async (importOriginal) => {
-    const mod = await importOriginal<typeof import('../../../backendApi/backendService')>();
+    const mod = await importOriginal<typeof BackendServiceModule>();
     return {
         ...mod,
         getBackendServiceForClientside: () => new mod.BackendService(DUMMY_BACKEND_URL),
@@ -93,7 +94,7 @@ describe('fetchWasapPageData', () => {
         test('returns mutations for the given resistance set', async () => {
             const result = await fetchWasapPageData(
                 baseConfigFields,
-                 
+
                 { Spike: ['S:E484K', 'S:N501Y'] },
                 { mode: WASAP_ANALYSIS_MODE.resistance, sequenceType: SEQUENCE_TYPE.aminoAcid, resistanceSet: 'Spike' },
             );
@@ -174,7 +175,7 @@ describe('fetchWasapPageData', () => {
             expect(result).toEqual({
                 type: 'mutations',
                 displayMutations: ['A123T'],
-                 
+
                 customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
             });
         });
@@ -293,7 +294,7 @@ describe('fetchWasapPageData', () => {
                 type: 'mutations',
                 displayMutations: ['A123T'],
                 lineageForJaccard: 'XEC*',
-                 
+
                 customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
             });
         });

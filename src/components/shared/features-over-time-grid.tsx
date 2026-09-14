@@ -204,7 +204,9 @@ function useGridColumns<F>(
                     if (valueRaw === undefined) {
                         // eslint-disable-next-line no-console -- We want to warn that something might be wrong.
                         console.error(
-                            `Found undefined value for ${row.original.feature} - ${date.dateString}. This shouldn't happen.`,
+                            // `F` is an unconstrained generic (the feature id type varies per grid); String()
+                            // rather than a bare interpolation, since we can't prove every F has a good toString().
+                            `Found undefined value for ${String(row.original.feature)} - ${date.dateString}. This shouldn't happen.`,
                         );
                     }
 

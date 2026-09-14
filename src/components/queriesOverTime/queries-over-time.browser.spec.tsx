@@ -33,7 +33,7 @@ function ndjson(rows: unknown[]): Response {
  */
 function stubSilo() {
     const fetchMock = vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
-        const q = String(init?.body ?? '');
+        const q = typeof init?.body === 'string' ? init.body : '';
         const twoDays = (n: number) =>
             ndjson([
                 { date: '2026-06-01', n },
@@ -111,7 +111,7 @@ describe('QueriesOverTime (SILO)', () => {
         const screen = renderOverTime();
         await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
 
-        const bodies = fetchMock.mock.calls.map(([, init]) => String((init)?.body ?? ''));
+        const bodies = fetchMock.mock.calls.map(([, init]) => (typeof init?.body === 'string' ? init.body : ''));
 
         expect(
             bodies.some(

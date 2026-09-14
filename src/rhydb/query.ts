@@ -98,17 +98,24 @@ export async function query<Row = Record<string, unknown>>(
     for (let attempt = 1; ; attempt++) {
         try {
             const result = await send<Row>(instanceUrl, queryText, signal);
+            // This logger's whole job is the console (query timing/outcome, for devtools).
+            // eslint-disable-next-line no-console
             console.info(`[Query][${label}] ${took(started, queuedMilliseconds)}`, queryText);
             return result;
         } catch (error) {
             const delay = RETRY_DELAYS_MS[attempt - 1];
+            // `noUncheckedIndexedAccess` is deliberately off for now (see tsconfig.json), so
+            // TS doesn't see that indexing past RETRY_DELAYS_MS's end yields undefined — it does.
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (delay === undefined || !isTransient(error) || signal?.aborted === true) {
+                // eslint-disable-next-line no-console -- this logger's whole job is the console
                 console.info(
                     `[Query][${label}] ${outcome(error)} after ${took(started, queuedMilliseconds)}`,
                     queryText,
                 );
                 throw error;
             }
+            // eslint-disable-next-line no-console -- this logger's whole job is the console
             console.info(`[Query][${label}] retrying after ${(error as RhydbError).kind}`);
             await wait(delay, signal);
         }

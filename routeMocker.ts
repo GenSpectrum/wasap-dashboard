@@ -6,7 +6,7 @@ import { expect } from 'vitest';
 
 import type { CollectionRaw } from './src/covspectrum/types.ts';
 import type { ParsedQueryResult, ParseQueryRequest } from './src/lapis/parseQuery.ts';
-import type { Collection, CollectionSummary } from './src/types/Collection.ts';
+import type { Collection } from './src/types/Collection.ts';
 
 // Standalone: the AstroApiRouteMocker (the `/api` proxy), the Subscription
 // mockers, and testOrganismsConfig (which needed the dashboards YAML config

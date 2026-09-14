@@ -40,7 +40,6 @@ import { ResizeContainer } from '../shared/resize-container';
 import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
 import { PageSizeContextProvider } from '../shared/tanstackTable/pagination-context';
-import { useQuery } from '../useQuery';
 
 const queriesOverTimeViewSchema = z.literal(views.grid);
 export type QueriesOverTimeView = z.infer<typeof queriesOverTimeViewSchema>;

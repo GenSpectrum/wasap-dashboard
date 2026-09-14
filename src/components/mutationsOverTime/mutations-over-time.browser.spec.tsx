@@ -37,7 +37,7 @@ function ndjson(rows: unknown[]): Response {
  */
 function stubSilo() {
     const fetchMock = vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
-        const q = String(init?.body ?? '');
+        const q = typeof init?.body === 'string' ? init.body : '';
 
         if (q.includes('main.at(241)')) {
             return Promise.resolve(
@@ -139,7 +139,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
 
         const positionBodies = fetchMock.mock.calls
-            .map(([, init]) => String((init)?.body ?? ''))
+            .map(([, init]) => (typeof init?.body === 'string' ? init.body : ''))
             .filter((body) => body.includes('sym := main.at('));
 
         expect(positionBodies).toEqual([

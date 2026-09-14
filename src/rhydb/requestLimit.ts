@@ -61,6 +61,9 @@ function release(): void {
 
 /** Read through a call so narrowing does not carry across the await. */
 function isAborted(signal: AbortSignal | undefined): boolean {
+    // Deliberately not `signal?.aborted === true`: see the comment above — this
+    // function's whole point is a call boundary, not the shortest expression.
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     return signal !== undefined && signal.aborted;
 }
 

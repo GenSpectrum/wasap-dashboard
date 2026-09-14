@@ -9,7 +9,11 @@ export const getClientLogger = (instance: string): InstanceLogger => {
     const log = (level: (typeof logLevels)[number], message: string, context?: AdditionalLogContext): void => {
         const prefix = `[${instance}]`;
         const args = context?.errorId !== undefined ? [prefix, message, context] : [prefix, message];
-        // eslint-disable-next-line no-console -- this logger's whole job is the console
+        // `console.log` fallback is defensive against an unusual console (e.g. a
+        // polyfill) missing one of `logLevels`; TS can't see that risk since
+        // `console[level]` is statically known to exist for every current level.
+        // This logger's whole job is the console.
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-console
         (console[level] ?? console.log)(...args);
     };
 

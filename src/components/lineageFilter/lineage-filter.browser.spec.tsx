@@ -12,7 +12,7 @@ function stubLapis({ aggregated, lineageDefinition }: { aggregated: unknown; lin
     vi.stubGlobal(
         'fetch',
         vi.fn((input: RequestInfo | URL) => {
-            const url = typeof input === 'string' ? input : input.toString();
+            const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
             const body = url.includes('/sample/lineageDefinition/') ? lineageDefinition : { data: aggregated };
             return Promise.resolve(new Response(JSON.stringify(body), { status: 200 }));
         }),
