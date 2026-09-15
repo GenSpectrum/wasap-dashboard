@@ -1,8 +1,5 @@
 name: Docker
 
-# `origin` is a local bare repo for now (see README). This workflow is dormant
-# until the project gets a GitHub remote; it is kept in sync so it just works
-# when that happens.
 on:
     push:
         branches: [main]
