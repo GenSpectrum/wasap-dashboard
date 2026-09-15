@@ -19,8 +19,7 @@ of each step; this file only tracks what's still outstanding.
   vendored from `wastewater-analytics-experiment`); Tier-1 reads (location/date
   filters, dataset stats, health check) moved off LAPIS; the lineage picker
   moved to a minimal clinical-LAPIS client; both over-time grids
-  (`gs-mutations-over-time`, `gs-queries-over-time`) rewritten against SILO
-  (see `docs/architecture.md` for why they're a fan-out, not one call).
+  (`gs-mutations-over-time`, `gs-queries-over-time`) rewritten against SILO.
 - Assorted hardening after phase 5 landed: organism config externalized to a
   zod-validated `config.json` (no config ⇒ empty app, not a hardcoded
   default), lint/format aligned with the upstream `dashboards`/
@@ -30,7 +29,7 @@ of each step; this file only tracks what's still outstanding.
 
 **Known accepted gap:** RSV mutations-/queries-over-time is broken (SILO
 times out grouping by RSV's non-dictionary-encoded date column) — see "Next
-up" below and `docs/architecture.md` "Known gaps".
+up" below.
 
 ## Next up — step 3, phases 6–8
 
@@ -42,9 +41,8 @@ up" below and `docs/architecture.md` "Known gaps".
 2. **`WasmSiloQueryClient`** + a dataset-loading UI, for the in-browser mode.
    **Blocked externally** on a 64-bit WASM SILO build (the current build is
    32-bit, ~4GB address-space ceiling per handle) — until then this is only
-   prototypable against a hand-prepared dataset. Also needs the
-   cross-origin-isolation headers described in `docs/architecture.md` wired
-   up.
+   prototypable against a hand-prepared dataset. Also needs COOP/COEP
+   cross-origin-isolation headers wired up (the WASM build uses pthreads).
 3. **Offline-mode decisions.** For every mode that still needs clinical LAPIS
    / `query/parse` / the collections backends (`variant`, `collection`,
    `covSpectrumCollection`): decide keep-remote vs. disable vs. bundle, per
@@ -82,8 +80,8 @@ network access for those; binary size budget.
   separate project, out of scope here, but upstream of "drag-and-drop your
   own data" ever being real for ad-hoc users.
 - **SILO `DATE32` grouping performance** — RSV's over-time views are blocked
-  on this (see `docs/architecture.md`). Worth checking status before
-  re-attempting a client-side workaround.
+  on this (grouping by RSV's non-dictionary-encoded date column times out).
+  Worth checking status before re-attempting a client-side workaround.
 
 ## Open product questions
 
@@ -122,5 +120,3 @@ the areas they touch:
 ## Also see
 
 - `TODO.md` — small in-flight code-level cleanups (not roadmap-level).
-- `docs/architecture.md` — why the read path and the over-time queries are
-  shaped the way they are; read this before changing either.

@@ -26,9 +26,7 @@ The wastewater read path (`manual` / `resistance` / `untracked` / `variant`'s
 genome side) now queries **SILO natively** — no LAPIS in that path. Clinical
 LAPIS (lineage picker, computed signatures) and the GenSpectrum/cov-spectrum
 collections backends stay as separate remote services; that's a deliberate,
-documented split, not a gap. See [`docs/architecture.md`](docs/architecture.md)
-for why the read path looks the way it does, and [`ROADMAP.md`](ROADMAP.md) for
-what's left.
+documented split, not a gap. See [`ROADMAP.md`](ROADMAP.md) for what's left.
 
 Known limitation: RSV mutations-/queries-over-time is broken (SILO times out
 grouping by RSV's non-dictionary-encoded date column) — tracked in the
@@ -89,7 +87,7 @@ src/
   views/                    WasapPageStateHandler + the per-mode page-state logic
   layouts/                  page layout wrappers
   components/               the ported dashboard-components fork — filters,
-                             over-time grids, gs-* wrappers (docs/architecture.md)
+                             over-time grids, gs-* wrappers
   dataLayer/
     transport/               the SaneQL AST builder + SILO HTTP client (vendored
                              from wastewater-analytics-experiment): connection,
@@ -110,10 +108,6 @@ src/
 
 ## Further reading
 
-- [`docs/architecture.md`](docs/architecture.md) — the LAPIS→SILO split, why
-  the over-time queries are shaped the way they are, cross-origin isolation
-  for the WASM build, config strategy, testing setup, review/commit
-  discipline.
 - [`ROADMAP.md`](ROADMAP.md) — what's built, what's left, and the open product
   questions that block committing to the rest.
 - `TODO.md` — small in-progress code-level cleanups, not roadmap items.
