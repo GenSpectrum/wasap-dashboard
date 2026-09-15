@@ -95,7 +95,12 @@ export function DownshiftCombobox<Item>({
                 <div
                     className={`input flex w-full min-w-32 gap-0.5 ${inputClassName} ${inputIsInvalid ? 'input-error' : ''}`}
                     onBlur={(event) => {
-                        if (event.relatedTarget != buttonRef.current) {
+                        // Clicking the toggle button moves focus back to the input right
+                        // after (so keyboard nav keeps working) - that's a blur-and-refocus
+                        // within this same box, not a blur out of it, and must not close
+                        // what the click just opened. Only close when focus actually left
+                        // for something outside this box entirely.
+                        if (!event.currentTarget.contains(event.relatedTarget)) {
                             closeMenu();
                         }
                     }}
@@ -245,7 +250,10 @@ export function DownshiftMultiCombobox<Item>({
                 <div
                     className={`input flex h-fit w-full min-w-24 flex-wrap gap-1 p-1.5 ${inputClassName}`}
                     onBlur={(event) => {
-                        if (event.relatedTarget != buttonRef.current) {
+                        // See the single-select combobox above: the toggle button moves
+                        // focus back to the input right after a click, which must not
+                        // read as a blur out of this box.
+                        if (!event.currentTarget.contains(event.relatedTarget)) {
                             closeMenu();
                         }
                     }}
@@ -307,13 +315,18 @@ function ToggleButton({
     onClick,
 }: {
     isOpen: boolean;
-    buttonRef?: React.Ref<HTMLButtonElement>;
-    getToggleButtonProps?: () => Record<string, unknown>;
+    buttonRef?: React.RefObject<HTMLButtonElement | null>;
+    getToggleButtonProps?: (options?: { ref?: React.Ref<HTMLButtonElement> }) => Record<string, unknown>;
     onClick?: () => void;
 }) {
-    const props = getToggleButtonProps ? getToggleButtonProps() : { onClick };
+    // Downshift tracks the toggle button itself via the ref it hands back here
+    // (to tell a click on the button apart from an outside click that should
+    // close the menu) - passing buttonRef as a plain JSX `ref` below, instead
+    // of through here, would silently replace that internal ref and the
+    // button would stop opening the menu on click.
+    const props = getToggleButtonProps ? getToggleButtonProps({ ref: buttonRef }) : { onClick, ref: buttonRef };
     return (
-        <button aria-label='toggle menu' className='px-2' type='button' {...props} ref={buttonRef}>
+        <button aria-label='toggle menu' className='px-2' type='button' {...props}>
             {isOpen ? <>↑</> : <>↓</>}
         </button>
     );
