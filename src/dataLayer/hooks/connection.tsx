@@ -1,11 +1,11 @@
 /**
  * The active SILO instance, in React context.
  *
- * One `Connection` (`components/rhydb/connection.ts`) per provider subtree: it
+ * One `Connection` (`dataLayer/transport/connection.ts`) per provider subtree: it
  * owns the transport, the CORS rules, the concurrency cap, the retry and the
- * logging, and every SILO read in `components/data/**` goes through it. The
- * component tree never sees a URL — it calls the `data/` hooks, which call
- * `useConnection()` / `useSiloSchema()`.
+ * logging, and every SILO read in `dataLayer/hooks/**` goes through it. The
+ * component tree never sees a URL — it calls the `dataLayer/hooks` hooks, which
+ * call `useConnection()` / `useSiloSchema()`.
  *
  * wasap is multi-organism and keeps its per-organism coordinates in `src/`
  * (`WasapPageConfig`), so this provider takes `url` + `schema` as props; `src/`
@@ -57,7 +57,7 @@ export function useConnection(): Connection {
     return useSiloInstance().connection;
 }
 
-/** The column names the current instance's queries name (`components/queries`). */
+/** The column names the current instance's queries name (`dataLayer/queries`). */
 export function useSiloSchema(): SiloSchema {
     return useSiloInstance().schema;
 }

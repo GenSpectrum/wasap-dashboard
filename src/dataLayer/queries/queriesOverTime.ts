@@ -14,10 +14,10 @@
  * shared date axis (`samplingDatesQuery`). No over-time primitive is involved —
  * unlike `mutations-over-time` there is no fan-out, just `queries.length × 2`
  * plain `groupBy(count(), {date})` calls, assembled into the matrix in
- * `components/data/queriesOverTime.ts`.
+ * `dataLayer/hooks/queriesOverTime.ts`.
  *
  * `translateGenomeFilter` is the whole LAPIS→SILO bridge for this feature: the
- * 12 node types `validateGenomeOnly` lets through, each to a `rhydb` builder.
+ * 12 node types `validateGenomeOnly` lets through, each to a `transport` builder.
  */
 
 import { READS } from './catalogue';

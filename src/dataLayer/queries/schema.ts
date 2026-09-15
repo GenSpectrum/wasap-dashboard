@@ -4,7 +4,7 @@
  * SILO exposes no field semantics — a query names raw columns — so the
  * catalogue is handed this per instance. `src/` builds it from the per-organism
  * `WasapPageConfig.silo` block and passes it down through the connection
- * context (`components/data/connection.tsx`).
+ * context (`dataLayer/hooks/connection.tsx`).
  */
 export type SiloSchema = {
     /** Root table. `default` for every current W-ASAP instance. */

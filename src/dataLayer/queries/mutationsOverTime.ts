@@ -6,7 +6,7 @@
  * column alongside a mapped `at()`, both time out — see
  * standalone-wasap/10-silo-over-time-findings.md). So the matrix is assembled
  * from **one symbol distribution per position, per day**, and the two queries
- * here back the two data hooks in `components/data/mutationsOverTime.ts`:
+ * here back the two data hooks in `dataLayer/hooks/mutationsOverTime.ts`:
  *
  *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
  *     mutations get a grid row, and each one's proportion over the whole shown

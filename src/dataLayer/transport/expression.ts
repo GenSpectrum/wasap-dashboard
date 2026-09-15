@@ -134,7 +134,7 @@ export function str(value: string): Expr {
  *
  * SILO rejects a bare string in a comparison against a `DATE32` column; the
  * `::date` cast is how a date reaches such a comparison. Used for a date bound
- * against a `DATE32` grouping column (see `components/queries/filter.ts`); a
+ * against a `DATE32` grouping column (see `dataLayer/queries/filter.ts`); a
  * dictionary date column takes a plain string instead.
  */
 export function dateLiteral(value: string): Expr {
