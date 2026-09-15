@@ -23,19 +23,8 @@ const appConfigSchema = z.object({
      * Base URL of the GenSpectrum collections backend (resistance-mutation
      * collections, predefined variants, `collection` mode). May be absolute or
      * a same-origin path.
-     *
-     * TODO(cors): the backend sends no CORS headers (verified against both
-     * genspectrum.org/api and staging.genspectrum.org/api), so a browser can't
-     * call it directly from a different origin — hence the Vite dev proxy
-     * (`vite.config.ts`) and the dev-only default below. Once that header
-     * ships on the backend (a bug in a codebase we control, not a limitation
-     * here), every environment's example config can name the real URL
-     * directly, dev included, and the proxy + this DEV branch go away.
      */
-    collectionsBackendUrl: z
-        .string()
-        .min(1)
-        .default(import.meta.env.DEV ? '/collections-backend' : 'https://genspectrum.org/api'),
+    collectionsBackendUrl: z.string().min(1).default('https://genspectrum.org/api'),
     /**
      * Every wastewater dashboard this deployment serves, keyed by nothing —
      * order is display order. `config/wastewaterOrganisms.ts` maps URL path
