@@ -12,6 +12,7 @@ import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
+import { MutationBands } from './mutation-bands';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
 import { useConnection, useSiloSchema } from '../../dataLayer/hooks/connection';
 import {
@@ -259,7 +260,30 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         }
     };
 
-    const tabs = originalComponentProps.views.map((view) => getTab(view));
+    const tabs = [
+        ...originalComponentProps.views.map((view) => getTab(view)),
+        // Prototype tab, not wired into `views`/the component's props schema: see
+        // planning notes on this spike before promoting it past a design spike.
+        {
+            title: 'Bands (spike)',
+            content: (
+                <MutationBands
+                    rowLabelHeader='Mutation'
+                    data={pageData}
+                    isLoading={isPageLoading}
+                    loadingRowLabels={pageMutationCodes}
+                    requestedDateRanges={requestedDateRanges}
+                    colorScale={colorScale}
+                    featureRenderer={mutationRenderer}
+                    tooltipPortalTarget={tooltipPortalTarget}
+                    pageSizes={originalComponentProps.pageSizes}
+                    pageIndex={pageIndex}
+                    totalRows={totalFilteredRows}
+                    onPageChange={setPageIndex}
+                />
+            ),
+        },
+    ];
 
     const toolbar = (activeTab: string) => (
         <Toolbar
