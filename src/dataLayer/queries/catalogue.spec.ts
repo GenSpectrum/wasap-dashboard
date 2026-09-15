@@ -13,10 +13,10 @@ const schema: SiloSchema = {
 };
 
 describe('the Tier-1 read catalogue', () => {
-    test('totalReadCountQuery is a bare count, or a filtered one', () => {
-        expect(totalReadCountQuery(schema).render()).toBe('default.groupBy({n := count()})');
+    test('totalReadCountQuery groups by location, not a bare count, to dodge a SILO perf bug', () => {
+        expect(totalReadCountQuery(schema).render()).toBe('default.groupBy({n := count()}, {locationName})');
         expect(totalReadCountQuery(schema, { locationName: 'Basel (BS)' }).render()).toBe(
-            "default.filter(locationName = 'Basel (BS)').groupBy({n := count()})",
+            "default.filter(locationName = 'Basel (BS)').groupBy({n := count()}, {locationName})",
         );
     });
 

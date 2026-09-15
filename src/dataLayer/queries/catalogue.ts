@@ -20,9 +20,18 @@ function readCounts(): Record<string, Expr> {
     return { [READS]: count() };
 }
 
-/** Total reads the filter admits — one row, `{ n }`. */
+/**
+ * Total reads the filter admits — one row per location; sum them for the total.
+ *
+ * A bare `groupBy({n := count()})` with no grouping columns hits a SILO
+ * performance bug and can take tens of seconds even on a filtered query.
+ * Grouping by the location column instead stays fast (it's dictionary-encoded
+ * and low-cardinality — "close to free", per stringFieldValuesQuery below),
+ * and summing the handful of rows client-side (readTotalCount) gives the same
+ * total.
+ */
 export function totalReadCountQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
-    return scoped(schema, filter).groupBy(readCounts());
+    return scoped(schema, filter).groupBy(readCounts(), [schema.locationName]);
 }
 
 /**

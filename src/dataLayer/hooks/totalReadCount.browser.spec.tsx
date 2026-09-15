@@ -39,7 +39,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('useTotalReadCount', () => {
     it('reads n off the single row, and carries the filter into the query', async () => {
-        const fetchMock = vi.fn().mockResolvedValue(ndjson([{ n: 596520334 }]));
+        const fetchMock = vi.fn().mockResolvedValue(ndjson([{ locationName: 'Basel (BS)', n: 596520334 }]));
         vi.stubGlobal('fetch', fetchMock);
 
         const { result } = renderHook(() => useTotalReadCount({ locationName: 'Basel (BS)' }), { wrapper: wrapper() });
@@ -48,6 +48,27 @@ describe('useTotalReadCount', () => {
         expect(result.current.data).toBe(596520334);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe("default.filter(locationName = 'Basel (BS)').groupBy({n := count()})");
+        expect(init.body).toBe("default.filter(locationName = 'Basel (BS)').groupBy({n := count()}, {locationName})");
+    });
+
+    it('sums the per-location rows into one total, unfiltered', async () => {
+        // Grouped by location rather than a bare count, to dodge a SILO perf bug
+        // (catalogue.ts) - so an unfiltered total comes back as one row per
+        // location, summed client-side.
+        const fetchMock = vi.fn().mockResolvedValue(
+            ndjson([
+                { locationName: 'Zürich (ZH)', n: 500000000 },
+                { locationName: 'Basel (BS)', n: 96520334 },
+            ]),
+        );
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { result } = renderHook(() => useTotalReadCount(), { wrapper: wrapper() });
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+        expect(result.current.data).toBe(596520334);
+
+        const [, init] = fetchMock.mock.calls[0];
+        expect(init.body).toBe('default.groupBy({n := count()}, {locationName})');
     });
 });

@@ -8,12 +8,16 @@
 import { READS } from './catalogue';
 import { readCount, readText, type RhydbRow } from '../transport/row';
 
-/** The single `{ n }` row of a total-count query. Zero rows means zero reads. */
+/**
+ * The reads a total-count query's rows add up to.
+ *
+ * totalReadCountQuery groups by location rather than issuing a bare count (a
+ * SILO performance bug), so this sums across however many rows came back —
+ * one per location, every one counted, none dropped for a blank name. Zero
+ * rows means zero reads.
+ */
 export function readTotalCount(rows: readonly RhydbRow[]): number {
-    if (rows.length === 0) {
-        return 0;
-    }
-    return readCount(rows[0], READS);
+    return rows.reduce((total, row) => total + readCount(row, READS), 0);
 }
 
 export type NamedCount = { name: string; count: number };
