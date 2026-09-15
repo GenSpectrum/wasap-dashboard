@@ -66,6 +66,23 @@ location / {
 Other hosts need the equivalent (Tauri's custom-protocol handler is a
 separate case — see `ROADMAP.md`, step 4).
 
+## Running with Docker
+
+```sh
+cp public/config.example.json config.json   # then edit config.json
+docker compose up --build
+```
+
+Serves the app at `http://localhost:8080`. `docker-compose.yml` bind-mounts
+`./config.json` into the built image, so editing it and restarting the
+container is enough to point the same image at different data — no rebuild
+needed.
+
+CI publishes the image to `ghcr.io/genspectrum/wasap-standalone` on every push
+to `main`, so `--build` above can be swapped for `image:
+ghcr.io/genspectrum/wasap-standalone:latest` in `docker-compose.yml` to skip
+building locally.
+
 ## Source layout
 
 ```
