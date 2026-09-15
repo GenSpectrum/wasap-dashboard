@@ -7,7 +7,7 @@
   directly in `config.json` instead, and build the `ReferenceGenome` context value from that
   config rather than from a LAPIS call.
 
-- Move `src/data/lineageOptions.ts` into `src/externalData`. It fetches from clinical LAPIS
-  (`useLapisClient`), not SILO/RhyDB like the rest of `src/data`, so it belongs with the other
-  external-API code (`src/externalData/lapis`, `lapisApi`, `covSpectrum`, `genSpectrum`) rather
-  than the SILO data-hook layer.
+- Move `src/dataLayer/hooks/lineageOptions.ts` into `src/externalData`. It fetches from clinical
+  LAPIS (`useLapisClient`), not SILO/RhyDB like the rest of `src/dataLayer/hooks`, so it belongs
+  with the other external-API code (`src/externalData/lapis`, `lapisApi`, `covSpectrum`,
+  `genSpectrum`) rather than the SILO data-hook layer.
