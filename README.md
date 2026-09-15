@@ -1,4 +1,4 @@
-# wasap-standalone
+# Wastewater Analytics
 
 The GenSpectrum wastewater ("W‑ASAP") dashboards as a standalone **Vite + React
 SPA**, extracted from `GenSpectrum/dashboards` (an Astro app). Renders the
@@ -20,23 +20,11 @@ is a tool other people can point at their own data, in three run modes:
 
 Only mode 1 is built today.
 
-## Status
-
-The wastewater read path (`manual` / `resistance` / `untracked` / `variant`'s
-genome side) now queries **SILO natively** — no LAPIS in that path. Clinical
-LAPIS (lineage picker, computed signatures) and the GenSpectrum/cov-spectrum
-collections backends stay as separate remote services; that's a deliberate,
-documented split, not a gap. See [`ROADMAP.md`](ROADMAP.md) for what's left.
-
-Known limitation: RSV mutations-/queries-over-time is broken (SILO times out
-grouping by RSV's non-dictionary-encoded date column) — tracked in the
-ROADMAP, not a regression.
-
 ## Development
 
 ```sh
 npm install
-npm run dev          # vite dev server, http://localhost:4321
+npm run dev           # vite dev server, http://localhost:4321
 npm run build         # tsc --noEmit && vite build -> dist/
 npm run preview       # serve the built bundle
 npm test              # vitest (node project)
