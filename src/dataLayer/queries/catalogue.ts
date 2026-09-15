@@ -9,9 +9,9 @@
 
 import { scoped, type SiloReadFilter } from './filter';
 import type { SiloSchema } from './schema';
-import { field, type Expr } from '../rhydb/expression';
-import { count } from '../rhydb/functions';
-import { table, type Relation } from '../rhydb/relation';
+import { field, type Expr } from '../transport/expression';
+import { count } from '../transport/functions';
+import { table, type Relation } from '../transport/relation';
 
 /** The aggregate every counting query names. */
 export const READS = 'n';

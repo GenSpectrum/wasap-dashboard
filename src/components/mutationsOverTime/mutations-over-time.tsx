@@ -13,14 +13,14 @@ import z from 'zod';
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
-import { useConnection, useSiloSchema } from '../../data/connection';
+import { useConnection, useSiloSchema } from '../../dataLayer/hooks/connection';
 import {
     genesOf,
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
-} from '../../data/mutationsOverTime';
-import { siloReadFilterSchema } from '../../queries/filter';
+} from '../../dataLayer/hooks/mutationsOverTime';
+import { siloReadFilterSchema } from '../../dataLayer/queries/filter';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { sequenceTypeSchema, temporalGranularitySchema, views } from '../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../util/mutations';

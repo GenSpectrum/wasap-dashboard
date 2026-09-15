@@ -1,5 +1,5 @@
 import type { SiloInstanceConfig } from '../components/views/wasap/wasapPageConfig';
-import type { SiloSchema } from '../queries';
+import type { SiloSchema } from '../dataLayer/queries';
 
 /**
  * The `SiloSchema` the `queries/` query catalogue needs, derived from a

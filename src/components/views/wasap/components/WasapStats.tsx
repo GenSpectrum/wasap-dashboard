@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { useDateExtent, useTotalReadCount } from '../../../../data/reads';
+import { useDateExtent, useTotalReadCount } from '../../../../dataLayer/hooks/reads';
 
 export const WasapStats: FC = () => (
     <div className='flex min-w-[180px] flex-col gap-4 rounded-md border-2 border-gray-100 sm:flex-row'>

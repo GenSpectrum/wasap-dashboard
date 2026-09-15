@@ -1,4 +1,4 @@
-import { useDateExtent } from '../../../data/reads';
+import { useDateExtent } from '../../../dataLayer/hooks/reads';
 import { ALL_TIMES_LABEL } from '../../../types/DateWindow';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { isUnresolvedSamplingDate } from '../../../views/pageStateHandlers/WasapPageStateHandler';

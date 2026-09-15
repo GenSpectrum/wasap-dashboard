@@ -21,9 +21,20 @@ import { useConnection, useSiloSchema } from './connection';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
-} from '../components/mutationsOverTime/MutationOverTimeData';
-import { UserFacingError } from '../components/shared/error-display';
-import { sortSubstitutionsAndDeletions } from '../components/shared/sort/sortSubstitutionsAndDeletions';
+} from '../../components/mutationsOverTime/MutationOverTimeData';
+import { UserFacingError } from '../../components/shared/error-display';
+import { sortSubstitutionsAndDeletions } from '../../components/shared/sort/sortSubstitutionsAndDeletions';
+import { hideGapsInPlace, type ProportionValue } from '../../query/queryMutationsOverTime';
+import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../types/dashboardComponents';
+import { Map2dView, type Map2DContents } from '../../util/map2d';
+import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';
+import {
+    generateAllInRange,
+    getMinMaxTemporal,
+    parseDateStringToTemporal,
+    type Temporal,
+    type TemporalClass,
+} from '../../util/temporalClass';
 import {
     overallMutationsQuery,
     normalizeFilter,
@@ -38,17 +49,6 @@ import {
     type SiloReadFilter,
 } from '../queries';
 import { readNamedCounts } from '../queries/rows';
-import { hideGapsInPlace, type ProportionValue } from '../query/queryMutationsOverTime';
-import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../types/dashboardComponents';
-import { Map2dView, type Map2DContents } from '../util/map2d';
-import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../util/mutations';
-import {
-    generateAllInRange,
-    getMinMaxTemporal,
-    parseDateStringToTemporal,
-    type Temporal,
-    type TemporalClass,
-} from '../util/temporalClass';
 
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
 const MAX_GRID_COLUMNS = 200;

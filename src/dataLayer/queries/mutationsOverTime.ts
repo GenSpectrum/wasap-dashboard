@@ -20,10 +20,10 @@
 
 import { scoped, type SiloReadFilter } from './filter';
 import type { SiloSchema } from './schema';
-import { field } from '../rhydb/expression';
-import { count } from '../rhydb/functions';
-import { type Relation } from '../rhydb/relation';
-import { readCount, readOptionalText, readText, type RhydbRow } from '../rhydb/row';
+import { field } from '../transport/expression';
+import { count } from '../transport/functions';
+import { type Relation } from '../transport/relation';
+import { readCount, readOptionalText, readText, type RhydbRow } from '../transport/row';
 
 export type OverTimeSequenceType = 'nucleotide' | 'amino acid';
 

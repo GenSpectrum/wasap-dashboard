@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 
 import { loadAppConfig } from './config/appConfig';
-import { DataProviders } from './data/queryClient';
+import { DataProviders } from './dataLayer/hooks/queryClient';
 import { routes } from './routes';
 import setupDayjs from './util/setupDayjs';
 import './index.css';

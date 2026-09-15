@@ -3,8 +3,8 @@ import { type ZodError } from 'zod';
 
 import { InfoHeadline1, InfoParagraph } from './info';
 import { Modal } from './modal';
+import { RhydbError } from '../../dataLayer/transport/query';
 import { LapisError, UnknownLapisError } from '../../externalData/lapisApi/lapisApi';
-import { RhydbError } from '../../rhydb/query';
 import { gsEventNames } from '../../util/gsEventNames';
 
 export class ErrorEvent extends Event {

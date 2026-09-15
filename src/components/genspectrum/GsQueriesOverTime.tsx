@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
 import { GsQueriesOverTime as QueriesOverTime } from './gs-queries-over-time';
-import { type SiloReadFilter } from '../../queries';
+import { type SiloReadFilter } from '../../dataLayer/queries';
 import { views, type TemporalGranularity } from '../../types/dashboardComponents';
 import { ComponentWrapper } from '../ComponentWrapper';
 import { type MeanProportionInterval } from '../mutationsOverTime/mutations-over-time';

@@ -10,9 +10,9 @@
 
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { useLapisClient } from '../externalData/lapis/LapisClientContext';
-import type { LapisClient } from '../externalData/lapis/client';
-import type { LineageDefinitionResponse } from '../externalData/lapisApi/LineageDefinition';
+import { useLapisClient } from '../../externalData/lapis/LapisClientContext';
+import type { LapisClient } from '../../externalData/lapis/client';
+import type { LineageDefinitionResponse } from '../../externalData/lapisApi/LineageDefinition';
 
 export type LineageItem = { lineage: string; count: number };
 

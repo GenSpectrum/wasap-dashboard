@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { QueriesOverTime } from './queries-over-time';
-import { ConnectionProvider } from '../../data/connection';
-import type { SiloSchema } from '../../queries/schema';
+import { ConnectionProvider } from '../../dataLayer/hooks/connection';
+import type { SiloSchema } from '../../dataLayer/queries/schema';
 import { views } from '../../types/dashboardComponents';
 
 const schema: SiloSchema = {

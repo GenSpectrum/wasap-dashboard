@@ -14,9 +14,9 @@ import { getFilteredQueryOverTimeData, type QueryFilter } from './getFilteredQue
 import { QueriesOverTimeFilter } from './queries-over-time-filter';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
-import { useConnection } from '../../data/connection';
-import { useQueriesOverTime } from '../../data/queriesOverTime';
-import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../queries';
+import { useConnection } from '../../dataLayer/hooks/connection';
+import { useQueriesOverTime } from '../../dataLayer/hooks/queriesOverTime';
+import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../dataLayer/queries';
 import { type ProportionValue, getProportion } from '../../query/queryMutationsOverTime';
 import { temporalGranularitySchema, views } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';

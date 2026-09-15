@@ -12,6 +12,7 @@ import type {
     WasapUntrackedFilter,
     WasapVariantFilter,
 } from './wasapPageConfig';
+import { validateGenomeOnly } from '../../../dataLayer/queries';
 import { getCollection } from '../../../externalData/covSpectrum/getCollection';
 import type { CollectionVariant } from '../../../externalData/covSpectrum/types';
 import { detailedMutationsToQuery } from '../../../externalData/covSpectrum/variantConversionUtil';
@@ -20,7 +21,6 @@ import { getCollection as getGenSpectrumCollection } from '../../../externalData
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
 import { parseQuery } from '../../../externalData/lapis/parseQuery';
-import { validateGenomeOnly } from '../../../queries';
 import { getLineageFields } from '../../../types/Collection';
 import type { FilterObject, Variant } from '../../../types/Collection';
 import { type LapisFilter } from '../../../types/dashboardComponents';

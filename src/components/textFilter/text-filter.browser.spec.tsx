@@ -4,8 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { TextFilter } from './text-filter';
-import { ConnectionProvider } from '../../data/connection';
-import type { SiloSchema } from '../../queries/schema';
+import { ConnectionProvider } from '../../dataLayer/hooks/connection';
+import type { SiloSchema } from '../../dataLayer/queries/schema';
 import { gsEventNames } from '../../util/gsEventNames';
 
 const schema: SiloSchema = {

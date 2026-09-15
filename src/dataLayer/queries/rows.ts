@@ -6,7 +6,7 @@
  */
 
 import { READS } from './catalogue';
-import { readCount, readText, type RhydbRow } from '../rhydb/row';
+import { readCount, readText, type RhydbRow } from '../transport/row';
 
 /** The single `{ n }` row of a total-count query. Zero rows means zero reads. */
 export function readTotalCount(rows: readonly RhydbRow[]): number {
