@@ -1,5 +1,5 @@
 {
-    "collectionsBackendUrl": "/collections-backend-prod",
+    "collectionsBackendUrl": "https://genspectrum.org/api",
     "organisms": [
         {
             "internalName": "covid",

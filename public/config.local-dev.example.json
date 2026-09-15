@@ -1,5 +1,5 @@
 {
-    "collectionsBackendUrl": "/collections-backend",
+    "collectionsBackendUrl": "https://staging.genspectrum.org/api",
     "organisms": [
         {
             "internalName": "covid",
