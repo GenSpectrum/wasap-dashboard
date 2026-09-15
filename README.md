@@ -108,30 +108,6 @@ src/
   clientLogger.ts, types/, util/, styles/
 ```
 
-## Repo setup
-
-`origin` is a **local bare repo** at `~/repos/wasap-standalone.git`, matching
-the convention for every repo on this machine (`~/repos/*.git`). It is
-local-only for now; if the project moves to a GitHub org, the GitHub URL is
-added as a second remote on the bare repo.
-
-Clone from the bare repo into `~/working-copies/wasap-standalone-<feature>`
-and work on a named branch. Format before every commit (`npm run format`).
-See [`docs/architecture.md`](docs/architecture.md) "Review discipline" for how
-changes here are expected to be split into commits/PRs.
-
-## Related repos
-
-- `wastewater-analytics-experiment` (`~/repos/wastewater-analytics-experiment.git`)
-  — sibling project on the same stack (Vite + React 19 + react-query +
-  tailwind/daisyUI) already talking to WASM SILO / RhyDB natively. Source of
-  the SaneQL query builder, the fan-out/streaming infra for over-time queries,
-  and the URL-state helpers this repo ports from.
-- `GenSpectrum/dashboards` — the Astro app this was extracted from. `dashboards.git`
-  is the upstream mirror on this machine; `dashboard-components` is the
-  component library this repo hard-forked (no upstream tracking) rather than
-  depends on.
-
 ## Further reading
 
 - [`docs/architecture.md`](docs/architecture.md) — the LAPIS→SILO split, why
