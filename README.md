@@ -8,7 +8,7 @@ each step lands as a reviewable series of PRs.
 
 ## Status
 
-**Step 1a — scaffold.** Empty app: hash router, app shell, Tailwind v4 + daisyUI,
+**Step 1a — scaffold.** Empty app: router, app shell, Tailwind v4 + daisyUI,
 lint/format, CI. No wastewater code yet — that arrives in 1b (verbatim copy of the
 dashboards code) and 1c (wiring, organism selector, test-infra port).
 
@@ -38,6 +38,17 @@ npm run check-lint   # eslint ., no fixes
 
 `vite build` reads `BASE_PATH` (e.g. `/wasap-standalone/`) for static hosts that
 serve from a sub-path. Defaults to `/`.
+
+### SPA fallback (real paths, not hash routing)
+
+Routing is `react-router`'s `createBrowserRouter` — real paths like
+`/swiss-wastewater/covid`, no `#`. nginx must serve `index.html` (HTTP 200) for
+any path under the base that isn't a real file, so deep links and page refreshes
+resolve client-side:
+
+```nginx
+try_files $uri $uri/ /index.html;
+```
 
 ## Repo setup
 
