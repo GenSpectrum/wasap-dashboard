@@ -4,7 +4,7 @@ import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
-import { useDataVersion, useDateExtent, useStringFieldOptions, useTotalReadCount } from './reads';
+import { useStringFieldOptions } from './stringFieldOptions';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
@@ -59,55 +59,5 @@ describe('useStringFieldOptions', () => {
 
         const [, init] = fetchMock.mock.calls[0];
         expect(init.body).toBe('default.groupBy({n := count()}, {locationName})');
-    });
-});
-
-describe('useTotalReadCount', () => {
-    it('reads n off the single row, and carries the filter into the query', async () => {
-        const fetchMock = vi.fn().mockResolvedValue(ndjson([{ n: 596520334 }]));
-        vi.stubGlobal('fetch', fetchMock);
-
-        const { result } = renderHook(() => useTotalReadCount({ locationName: 'Basel (BS)' }), { wrapper: wrapper() });
-
-        await waitFor(() => expect(result.current.isSuccess).toBe(true));
-        expect(result.current.data).toBe(596520334);
-
-        const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe("default.filter(locationName = 'Basel (BS)').groupBy({n := count()})");
-    });
-});
-
-describe('useDataVersion', () => {
-    it('is the data-version response header of a one-row probe query', async () => {
-        const fetchMock = vi.fn().mockResolvedValue(ndjson([{ readId: 'r1' }]));
-        vi.stubGlobal('fetch', fetchMock);
-
-        const { result } = renderHook(() => useDataVersion(), { wrapper: wrapper() });
-
-        await waitFor(() => expect(result.current.isSuccess).toBe(true));
-        expect(result.current.data).toBe('1750000000');
-
-        const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.limit(1)');
-    });
-});
-
-describe('useDateExtent', () => {
-    it('is the first and last row of the result, grouped on the grouping-date column', async () => {
-        const fetchMock = vi.fn().mockResolvedValue(
-            ndjson([
-                { date: '2023-05-01', n: 1 },
-                { date: '2025-12-27', n: 3 },
-            ]),
-        );
-        vi.stubGlobal('fetch', fetchMock);
-
-        const { result } = renderHook(() => useDateExtent(), { wrapper: wrapper() });
-
-        await waitFor(() => expect(result.current.isSuccess).toBe(true));
-        expect(result.current.data).toEqual({ min: '2023-05-01', max: '2025-12-27' });
-
-        const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {date}).orderBy({date.asc()})');
     });
 });

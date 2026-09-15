@@ -1,7 +1,7 @@
 import { type FC, type ReactNode } from 'react';
 
 import { useConnection } from '../dataLayer/hooks/connection';
-import { useTotalReadCount } from '../dataLayer/hooks/reads';
+import { useTotalReadCount } from '../dataLayer/hooks/totalReadCount';
 
 /**
  * Renders its children only once the SILO instance has answered a trivial

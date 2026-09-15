@@ -2,7 +2,7 @@ import { type FC } from 'react';
 import z from 'zod';
 
 import { TextFilterChangedEvent } from './TextFilterChangedEvent';
-import { useStringFieldOptions } from '../../dataLayer/hooks/reads';
+import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
 import { DownshiftCombobox } from '../shared/downshift-combobox';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { LoadingDisplay } from '../shared/loading-display';

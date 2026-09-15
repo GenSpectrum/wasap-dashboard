@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useDateExtent } from '../../dataLayer/hooks/reads';
+import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { Loading } from '../../util/Loading';
 import { type DateRangeOption } from '../dateRangeFilter/dateRangeOption';
