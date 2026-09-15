@@ -8,12 +8,11 @@ import { DataProviders } from './util/queryClient';
 import setupDayjs from './util/setupDayjs';
 import './index.css';
 
-// Real paths, not hash routing: our hosts (nginx/Caddy/Netlify/Cloudflare, all
-// self-hosted or first-party) can all serve `index.html` for unmatched paths with
-// one line of config or a `_redirects` file — see public/_redirects and the
-// README's deploy section. `basename` matches Vite's `base`/`BASE_PATH` so
-// sub-path deploys still resolve. View/filter state goes through react-router's
-// search params, not raw history.
+// Real paths, not hash routing: we host on our own nginx, which serves
+// `index.html` for unmatched paths with one `try_files` line — see the README's
+// deploy section. `basename` matches Vite's `base`/`BASE_PATH` so sub-path
+// deploys still resolve. View/filter state goes through react-router's search
+// params, not raw history.
 const router = createBrowserRouter(routes, {
     basename: import.meta.env.BASE_URL.replace(/\/$/, ''),
 });
