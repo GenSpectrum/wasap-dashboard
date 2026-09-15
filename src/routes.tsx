@@ -5,9 +5,9 @@ import { DEFAULT_ORGANISM_PATH } from './config/wastewaterOrganisms';
 import { WasapRoute } from './routes/WasapRoute';
 
 /**
- * The route tree. Hash routing (see `main.tsx`) means these paths live after
- * the `#`. `/swiss-wastewater/:organismPath` matches the per-organism
- * `config.path` so the URLs the wasap code builds stay valid.
+ * The route tree. Real paths (see `main.tsx`) — no `#`.
+ * `/swiss-wastewater/:organismPath` matches the per-organism `config.path` so
+ * the URLs the wasap code builds stay valid.
  */
 export const routes: RouteObject[] = [
     {
