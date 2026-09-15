@@ -6,7 +6,7 @@ import { getProportion, type ProportionValue } from '../../query/queryMutationsO
 import { type Temporal } from '../../util/temporalClass';
 import { type ColorScale, getColorWithinScale } from '../shared/color-scale-selector';
 import { type FeatureRenderer } from '../shared/features-over-time-grid';
-import { getTooltipPosition } from '../shared/features-over-time-grid-shared';
+import { getTooltipPosition, styleGridHeader } from '../shared/features-over-time-grid-shared';
 import PortalTooltip from '../shared/portal-tooltip';
 import { Pagination, type PageSizes } from '../shared/tanstackTable/pagination';
 import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';
@@ -119,17 +119,23 @@ export function MutationBands<F>({
     return (
         <div className='w-full'>
             <div className='overflow-auto'>
-                <table className='w-full'>
+                {/* The date columns hold one colSpan'd band each rather than the grid's
+                    one cell per column, so auto layout can't size them from their own
+                    content - it would hand all the spare width to the label column
+                    instead. Fixed layout, with an explicit width on the label column
+                    only, keeps the date columns even and the label column the width
+                    the grid's own content-driven sizing settles on. */}
+                <table className='w-full' style={{ tableLayout: 'fixed' }}>
                     <thead>
                         <tr>
-                            <th>{rowLabelHeader}</th>
-                            {columns.map((column) => (
+                            <th className='w-32'>{rowLabelHeader}</th>
+                            {/* Same header treatment as the grid: only the first and last
+                                date are labelled, the rest hide behind a container query
+                                unless there's room, so the two views read the same way. */}
+                            {columns.map((column, index) => (
                                 <th key={column.dateString} className='p-0 align-bottom font-normal'>
-                                    <div
-                                        className='mx-auto text-[10px] whitespace-nowrap'
-                                        style={{ writingMode: 'vertical-rl', rotate: '180deg' }}
-                                    >
-                                        {column.dateString}
+                                    <div className='@container min-w-[0.05rem]'>
+                                        <p {...styleGridHeader(index, columns.length)}>{column.dateString}</p>
                                     </div>
                                 </th>
                             ))}
