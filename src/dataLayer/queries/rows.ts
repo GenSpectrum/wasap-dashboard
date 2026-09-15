@@ -12,9 +12,9 @@ import { readCount, readText, type RhydbRow } from '../transport/row';
  * The reads a total-count query's rows add up to.
  *
  * totalReadCountQuery groups by location rather than issuing a bare count (a
- * SILO performance bug), so this sums across however many rows came back —
- * one per location, every one counted, none dropped for a blank name. Zero
- * rows means zero reads.
+ * temporary workaround for a SILO performance bug — see its docstring), so
+ * this sums across however many rows came back — one per location, every one
+ * counted, none dropped for a blank name. Zero rows means zero reads.
  */
 export function readTotalCount(rows: readonly RhydbRow[]): number {
     return rows.reduce((total, row) => total + readCount(row, READS), 0);

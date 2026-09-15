@@ -29,6 +29,10 @@ function readCounts(): Record<string, Expr> {
  * and low-cardinality — "close to free", per stringFieldValuesQuery below),
  * and summing the handful of rows client-side (readTotalCount) gives the same
  * total.
+ *
+ * Temporary, until https://github.com/GenSpectrum/LAPIS-SILO/issues/1568 is
+ * fixed and released and deployed here — revert to a bare `groupBy(readCounts())`
+ * then.
  */
 export function totalReadCountQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
     return scoped(schema, filter).groupBy(readCounts(), [schema.locationName]);
