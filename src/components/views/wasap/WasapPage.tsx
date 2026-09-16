@@ -14,7 +14,6 @@ import { getClientLogger } from '../../../clientLogger';
 import { siloSchema } from '../../../config/siloSchema';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import { type SiloReadFilter } from '../../../dataLayer/queries';
-import { Page } from '../../../types/pages';
 import { Loading } from '../../../util/Loading';
 import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
@@ -249,7 +248,12 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                     collectionUrl={
                                         analysis.mode === 'covSpectrumCollection'
                                             ? `https://cov-spectrum.org/collections/${data.collection.id}`
-                                            : Page.viewCollection(config.internalName, String(data.collection.id))
+                                            : config.collectionAnalysisModeEnabled
+                                              ? config.genSpectrumCollectionLinkOut.replace(
+                                                    '{{id}}',
+                                                    encodeURIComponent(String(data.collection.id)),
+                                                )
+                                              : undefined
                                     }
                                     invalidVariants={data.invalidVariants}
                                 />

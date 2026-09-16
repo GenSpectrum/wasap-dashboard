@@ -303,6 +303,13 @@ export const collectionAnalysisModeConfigSchema = z.union([
     z.object({
         collectionAnalysisModeEnabled: z.literal(true),
         filterDefaults: z.object({ collection: wasapCollectionFilterSchema }),
+        /**
+         * URL template for linking out to this collection on GenSpectrum, with
+         * the placeholder `{{id}}`, e.g. `https://genspectrum.org/collections/covid/{{id}}`.
+         * GenSpectrum's own organism slug isn't necessarily this config's
+         * `internalName`, so it's baked into the template rather than derived.
+         */
+        genSpectrumCollectionLinkOut: z.string(),
     }),
     z.object({ collectionAnalysisModeEnabled: z.undefined().optional() }),
 ]);

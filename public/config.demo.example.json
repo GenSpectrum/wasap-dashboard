@@ -16,6 +16,7 @@
             "untrackedAnalysisModeEnabled": true,
             "covSpectrumCollectionAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
+            "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/covid/{{id}}",
             "defaultAnalysisMode": "resistance",
             "resistanceMutationCollections": [
                 {
@@ -113,6 +114,7 @@
             "variantAnalysisModeEnabled": true,
             "resistanceAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
+            "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-a/{{id}}",
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
             "samplingDateField": "samplingDate",
             "locationNameField": "locationName",
@@ -191,6 +193,7 @@
             "variantAnalysisModeEnabled": true,
             "resistanceAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
+            "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-b/{{id}}",
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
             "samplingDateField": "samplingDate",
             "locationNameField": "locationName",

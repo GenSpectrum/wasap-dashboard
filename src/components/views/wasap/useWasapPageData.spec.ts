@@ -587,6 +587,7 @@ describe('fetchWasapPageData', () => {
             filterDefaults: {
                 collection: { mode: WASAP_ANALYSIS_MODE.collection, collectionId: 1 },
             },
+            genSpectrumCollectionLinkOut: 'https://genspectrum.org/collections/covid/{{id}}',
         };
 
         test('fetches collection from backend and builds queries for query-type variants', async () => {
