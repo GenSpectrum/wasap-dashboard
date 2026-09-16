@@ -1,7 +1,5 @@
 import { type FC } from 'react';
 
-import { fragmentLinkScrollMargin } from '../layouts/base/header/headerConstants';
-
 export type ComponentHeadlineProps = {
     title: string;
 } & (
@@ -23,7 +21,7 @@ export const ComponentHeadline: FC<ComponentHeadlineProps> = ({ title, linkSuffi
     const fragmentId = title.toLowerCase().replace(/ /g, '-') + (linkSuffix ? `-${linkSuffix}` : '');
 
     return (
-        <h2 className={`inline font-bold capitalize ${fragmentLinkScrollMargin}`} id={fragmentId}>
+        <h2 className='inline font-bold capitalize' id={fragmentId}>
             <a href={`#${fragmentId}`} className='group flex items-center gap-1'>
                 {title}
                 <span className='iconify mdi--link-variant font-normal opacity-0 group-hover:opacity-100' />
