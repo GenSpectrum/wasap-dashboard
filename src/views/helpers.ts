@@ -1,6 +1,6 @@
 import type { VariantFilter } from './View';
-import type { MutationFilter } from '../components/genspectrum/GsMutationFilter';
 import { advancedQueryUrlParamForVariant } from '../components/genspectrum/advancedQueryUrlParamConstants';
+import type { MutationsFilter } from '../types/dashboardComponents';
 
 export const setSearchFromString = (
     search: URLSearchParams,
@@ -44,7 +44,7 @@ export type LapisMutationQuery = {
     aminoAcidInsertions?: string[];
 };
 
-export function getMutationFilter(mutationFilter: Partial<LapisMutationQuery>): MutationFilter {
+export function getMutationFilter(mutationFilter: Partial<LapisMutationQuery>): MutationsFilter {
     return {
         nucleotideMutations: mutationFilter.nucleotideMutations ?? [],
         aminoAcidMutations: mutationFilter.aminoAcidMutations ?? [],
