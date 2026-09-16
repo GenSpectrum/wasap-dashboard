@@ -18,10 +18,10 @@ import { usePageState } from '../../../pageState/usePageState';
 import { WasapPageStateHandler } from '../../../pageState/wasap/WasapPageStateHandler';
 import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { Loading } from '../../../util/Loading';
+import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
 import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
 import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime';
-import { GsApp } from '../../genspectrum/gs-app';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
 
 const logger = getClientLogger('WasapPage');

@@ -4,11 +4,12 @@ import { describe, expect, it } from 'vitest';
 
 import {
     MutationAnnotationsContextProvider,
+    type MutationAnnotation,
+    type MutationAnnotations,
     type ResolvedMutationAnnotation,
     useMutationAnnotationsProvider,
 } from './MutationAnnotationsContext';
 import { SubstitutionClass } from '../util/mutations';
-import { type MutationAnnotation, type MutationAnnotations } from './genspectrum/mutation-annotations-context';
 
 function resolved(annotation: MutationAnnotation): ResolvedMutationAnnotation {
     return { annotation, name: annotation.name, description: annotation.description };
