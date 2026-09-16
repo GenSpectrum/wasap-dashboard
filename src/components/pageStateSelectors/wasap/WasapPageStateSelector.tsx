@@ -16,10 +16,6 @@ import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
 import { LabeledField } from './utils/LabeledField';
 import { RadioSelect } from './utils/RadioSelect';
-import { Inset } from '../../../styles/Inset';
-import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
-import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';
-import { GsTextFilter } from '../../genspectrum/GsTextFilter';
 import {
     enabledAnalysisModes,
     type WasapAnalysisFilter,
@@ -28,6 +24,10 @@ import {
     type WasapFilter,
     type WasapPageConfig,
 } from '../../../config/wasapPageConfig';
+import { Inset } from '../../../styles/Inset';
+import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
+import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';
+import { GsTextFilter } from '../../genspectrum/GsTextFilter';
 
 /**
  * The root filter control for the W-ASAP dashboard.

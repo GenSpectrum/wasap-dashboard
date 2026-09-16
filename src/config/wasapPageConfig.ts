@@ -1,7 +1,7 @@
 import z from 'zod';
 
-import { sequenceTypeSchema, type TemporalGranularity } from '../types/dashboardComponents';
 import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
+import { sequenceTypeSchema, type TemporalGranularity } from '../types/dashboardComponents';
 
 export const SEQUENCE_TYPE = {
     nucleotide: 'nucleotide',

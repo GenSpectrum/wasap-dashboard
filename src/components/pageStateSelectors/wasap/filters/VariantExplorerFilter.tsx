@@ -1,10 +1,6 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 import { useId } from 'react';
 
-import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
-import { Inset } from '../../../../styles/Inset';
-import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
-import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
@@ -12,6 +8,10 @@ import {
     type VariantTimeFrame,
     type WasapVariantFilter,
 } from '../../../../config/wasapPageConfig';
+import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
+import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
+import { Inset } from '../../../../styles/Inset';
+import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
 import { SelectorHeadline } from '../../SelectorHeadline';
 import { DefineClinicalSignatureInfo } from '../InfoBlocks';
 import { CollectionCombobox } from '../utils/CollectionCombobox';

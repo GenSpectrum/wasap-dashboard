@@ -9,9 +9,14 @@ import { getInitialMeanProportionInterval } from './initialMeanProportionInterva
 import type { ResistanceData } from './resistanceData';
 import { useResolvedSamplingDate } from './useResolvedSamplingDate';
 import { useWasapPageData, type WasapPageData } from './useWasapPageData';
-import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter, WasapPageConfig } from '../../../config/wasapPageConfig';
 import { getClientLogger } from '../../../clientLogger';
 import { siloSchema } from '../../../config/siloSchema';
+import type {
+    WasapAnalysisFilter,
+    WasapBaseFilter,
+    WasapFilter,
+    WasapPageConfig,
+} from '../../../config/wasapPageConfig';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { Loading } from '../../../util/Loading';
