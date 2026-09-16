@@ -2,11 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
-import {
-    enabledAnalysisModes,
-    wasapPageConfigSchema,
-    type WasapPageConfig,
-} from '../config/wasapPageConfig';
+import { enabledAnalysisModes, wasapPageConfigSchema, type WasapPageConfig } from './wasapPageConfig';
 
 // These pin behaviour of the GenSpectrum-hosted deployment's own data, which
 // now lives in `public/config.example.json` rather than in TypeScript.
