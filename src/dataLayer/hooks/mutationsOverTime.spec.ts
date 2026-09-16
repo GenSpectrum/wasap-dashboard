@@ -1,6 +1,14 @@
 import { describe, expect, test } from 'vitest';
 
-import { buildDateAxis, buildMatrix, genesOf, positionTargets, toMutationEntries } from './mutationsOverTime';
+import {
+    applyDisplayMutations,
+    buildDateAxis,
+    buildMatrix,
+    codeToEmptyEntry,
+    genesOf,
+    positionTargets,
+    toMutationEntries,
+} from './mutationsOverTime';
 import { getProportion } from '../../query/queryMutationsOverTime';
 import { type OverallMutationRow, type PositionOverTimeRow } from '../queries';
 
@@ -46,6 +54,52 @@ describe('toMutationEntries', () => {
                 'amino acid',
             )[0].mutation.code,
         ).toBe('S:T19I');
+    });
+});
+
+describe('codeToEmptyEntry', () => {
+    test('parses a substitution code into a zero-count/zero-proportion entry', () => {
+        expect(codeToEmptyEntry('S:T19I')).toEqual({
+            type: 'substitution',
+            mutation: expect.objectContaining({ code: 'S:T19I' }),
+            count: 0,
+            proportion: 0,
+        });
+    });
+
+    test('parses a deletion code into a zero-count/zero-proportion entry', () => {
+        expect(codeToEmptyEntry('G510-')).toEqual({
+            type: 'deletion',
+            mutation: expect.objectContaining({ code: 'G510-' }),
+            count: 0,
+            proportion: 0,
+        });
+    });
+
+    test('an unparseable code is null', () => {
+        expect(codeToEmptyEntry('not a mutation code')).toBeNull();
+    });
+});
+
+describe('applyDisplayMutations', () => {
+    const fetched = toMutationEntries(
+        [{ mutationFrom: 'C', mutationTo: 'T', sequenceName: 'main', position: 241, count: 90, coverage: 100 }],
+        'nucleotide',
+    );
+
+    test('without displayMutations, fetched entries pass through unchanged', () => {
+        expect(applyDisplayMutations(fetched, undefined)).toBe(fetched);
+    });
+
+    test('keeps a fetched entry, synthesizes a zero entry for a requested mutation the query missed', () => {
+        const result = applyDisplayMutations(fetched, ['C241T', 'G510-']);
+        expect(result.map((e) => e.mutation.code)).toEqual(['C241T', 'G510-']);
+        expect(result[0]).toBe(fetched[0]);
+        expect(result[1]).toMatchObject({ count: 0, proportion: 0 });
+    });
+
+    test('drops a requested code that does not even parse as a mutation', () => {
+        expect(applyDisplayMutations([], ['not a mutation code'])).toEqual([]);
     });
 });
 

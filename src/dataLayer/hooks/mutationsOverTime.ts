@@ -65,7 +65,10 @@ export type OverTimeMetadata = {
     requestedDateRanges: TemporalClass[];
     /** Total reads per bucket, index-aligned with `requestedDateRanges`. */
     totalCountsByBucket: number[];
-    /** Mutations above the proportion floor, sorted, filtered to `displayMutations` if given. */
+    /**
+     * Mutations above the proportion floor, sorted. If `displayMutations` was given, this is
+     * exactly that set instead - see `applyDisplayMutations`.
+     */
     overallMutations: SubstitutionOrDeletionEntry<Substitution, Deletion>[];
 };
 
@@ -124,9 +127,10 @@ export function useOverTimeMetadata(
                 )
                 .then((result) => readOverallMutations(result.rows));
 
-            const overallMutations = toMutationEntries(mutationRows, sequenceType)
-                .filter((entry) => displayMutations === undefined || displayMutations.includes(entry.mutation.code))
-                .sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation));
+            const overallMutations = applyDisplayMutations(
+                toMutationEntries(mutationRows, sequenceType),
+                displayMutations,
+            ).sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation));
 
             return { requestedDateRanges, totalCountsByBucket, overallMutations };
         },
@@ -304,6 +308,40 @@ export function toMutationEntries(
 /** The nucleotide sequence has one name per organism and its codes are unprefixed; genes keep theirs. */
 function segmentFor(sequenceName: string | null, sequenceType: OverTimeSequenceType): string | undefined {
     return sequenceType === 'nucleotide' ? undefined : (sequenceName ?? undefined);
+}
+
+/**
+ * Without `displayMutations`, `entries` passes through unchanged. With it, every requested
+ * mutation gets a row: the fetched entry where there is one, otherwise a zero-count/
+ * zero-proportion entry synthesized from the code itself (a mutation the floor excluded, or
+ * that was never observed, still needs a row rather than silently disappearing - matches
+ * dashboard-components' `queryOverallMutationData`/`codeToEmptyEntry`, which this was a
+ * `filter()` short of).
+ */
+export function applyDisplayMutations(
+    entries: SubstitutionOrDeletionEntry<Substitution, Deletion>[],
+    displayMutations: string[] | undefined,
+): SubstitutionOrDeletionEntry<Substitution, Deletion>[] {
+    if (displayMutations === undefined) {
+        return entries;
+    }
+    const byCode = new Map(entries.map((entry) => [entry.mutation.code, entry]));
+    return displayMutations
+        .map((code) => byCode.get(code) ?? codeToEmptyEntry(code))
+        .filter((entry): entry is SubstitutionOrDeletionEntry<Substitution, Deletion> => entry !== null);
+}
+
+/** A zero-count/zero-proportion row for a requested mutation code that the query didn't return. */
+export function codeToEmptyEntry(code: string): SubstitutionOrDeletionEntry<Substitution, Deletion> | null {
+    const deletion = DeletionClass.parse(code);
+    if (deletion !== null) {
+        return { type: 'deletion', mutation: deletion, count: 0, proportion: 0 };
+    }
+    const substitution = SubstitutionClass.parse(code);
+    if (substitution !== null) {
+        return { type: 'substitution', mutation: substitution, count: 0, proportion: 0 };
+    }
+    return null;
 }
 
 /**
