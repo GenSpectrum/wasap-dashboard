@@ -1,5 +1,5 @@
 export * from './gs-app';
-export * from './gs-date-range-filter';
+export * from '../dateRangeFilter/date-range-filter';
 export * from './gs-lineage-filter';
 export * from './gs-mutation-filter';
 export * from './GsMutationsOverTime';

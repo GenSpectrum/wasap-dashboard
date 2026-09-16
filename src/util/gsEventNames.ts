@@ -1,7 +1,6 @@
 export const gsEventNames = {
     error: 'gs-error',
     componentFinishedLoading: 'gs-component-finished-loading',
-    dateRangeOptionChanged: 'gs-date-range-option-changed',
     mutationFilterChanged: 'gs-mutation-filter-changed',
     lineageFilterChanged: 'gs-lineage-filter-changed',
     lineageFilterMultiChanged: 'gs-lineage-filter-multi-changed',
