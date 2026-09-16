@@ -48,7 +48,7 @@ no organisms (fail loud, not a hardcoded default).
 
 ### Deploying to a sub-path
 
-`vite build` reads `BASE_PATH` (e.g. `/wasap-standalone/`) for static hosts
+`vite build` reads `BASE_PATH` (e.g. `/wasap-dashboard/`) for static hosts
 that serve from a sub-path. Defaults to `/`.
 
 ### SPA fallback
@@ -78,9 +78,9 @@ Serves the app at `http://localhost:8080`. `docker-compose.yml` bind-mounts
 container is enough to point the same image at different data — no rebuild
 needed.
 
-CI publishes the image to `ghcr.io/genspectrum/wasap-standalone` on every push
+CI publishes the image to `ghcr.io/genspectrum/wasap-dashboard` on every push
 to `main`, so `--build` above can be swapped for `image:
-ghcr.io/genspectrum/wasap-standalone:latest` in `docker-compose.yml` to skip
+ghcr.io/genspectrum/wasap-dashboard:latest` in `docker-compose.yml` to skip
 building locally.
 
 ## Source layout
