@@ -17,7 +17,7 @@ const logger = getClientLogger('WasapRoute');
 const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], displayMutationsBySet: {} };
 
 /**
- * The `/swiss-wastewater/:organismPath` route. Replaces `Wasap.astro`: resolves
+ * The `/:organismPath` route. Replaces `Wasap.astro`: resolves
  * the per-organism config from the URL, fetches resistance-mutation data on the
  * client (Astro did this in page frontmatter), and renders `<WasapPage>`.
  */

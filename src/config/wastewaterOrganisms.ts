@@ -5,10 +5,10 @@ import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig'
  * The organism-selection layer for the standalone app.
  *
  * Astro routed each organism as its own `.astro` page. Here a single
- * `/swiss-wastewater/:organismPath` route serves all three, and this module
- * maps the URL segment (`covid` / `rsv-a` / `rsv-b`) to the per-organism
- * `WasapPageConfig`. The route path deliberately matches `config.path` so the
- * links the wasap code builds from it stay valid.
+ * `/:organismPath` route serves all three, and this module maps the URL
+ * segment (`covid` / `rsv-a` / `rsv-b`) to the per-organism `WasapPageConfig`.
+ * The route path deliberately matches `config.path` so the links the wasap
+ * code builds from it stay valid.
  *
  * The organism list itself is `getAppConfig().organisms` — a deployment's
  * `config.json` — not a hardcoded set, so this module no longer assumes there
@@ -22,9 +22,6 @@ export type WastewaterOrganismEntry = {
     /** Last segment of `config.path`, used as the `:organismPath` route param. */
     pathSegment: string;
 };
-
-/** The organism the bare `/swiss-wastewater` path redirects to (`routes.tsx`). */
-export const DEFAULT_ORGANISM_PATH = 'covid';
 
 export function listWastewaterOrganisms(): WastewaterOrganismEntry[] {
     return getAppConfig().organisms.map((config) => ({

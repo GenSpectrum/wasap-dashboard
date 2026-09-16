@@ -4,7 +4,7 @@
         {
             "internalName": "covid",
             "name": "SARS-CoV-2",
-            "path": "/swiss-wastewater/covid",
+            "path": "/covid",
             "description": "Analyze SARS-CoV-2 data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}",
@@ -103,7 +103,7 @@
         {
             "internalName": "rsvA",
             "name": "RSV-A",
-            "path": "/swiss-wastewater/rsv-a",
+            "path": "/rsv-a",
             "description": "Analyze RSV-A data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}",
@@ -181,7 +181,7 @@
         {
             "internalName": "rsvB",
             "name": "RSV-B",
-            "path": "/swiss-wastewater/rsv-b",
+            "path": "/rsv-b",
             "description": "Analyze RSV-B data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}",
