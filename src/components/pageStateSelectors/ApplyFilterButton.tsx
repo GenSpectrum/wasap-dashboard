@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 
 import type { PageStateHandler } from '../../pageState/PageStateHandler';
-import type { WithClassName } from '../../types/WithClassName';
 
 // Most browsers support at least 2000 characters, but we use a conservative limit
 // to ensure compatibility across browsers and web servers
@@ -12,11 +11,12 @@ export function ApplyFilterButton<PageState extends object>({
     newPageState,
     setPageState,
     className = '',
-}: WithClassName<{
+}: {
     pageStateHandler: PageStateHandler<PageState>;
     newPageState: PageState;
     setPageState: Dispatch<SetStateAction<PageState>>;
-}>) {
+    className?: string;
+}) {
     const url = pageStateHandler.toUrl(newPageState);
     const fullUrl = `${window.location.origin}${url}`;
     const urlTooLong = fullUrl.length > MAX_URL_LENGTH;
