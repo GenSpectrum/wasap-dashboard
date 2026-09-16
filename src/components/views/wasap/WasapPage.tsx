@@ -17,12 +17,14 @@ import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { usePageState } from '../../../pageState/usePageState';
 import { WasapPageStateHandler } from '../../../pageState/wasap/WasapPageStateHandler';
 import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { views } from '../../../types/dashboardComponents';
 import { Loading } from '../../../util/Loading';
+import { ComponentWrapper } from '../../ComponentWrapper';
 import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
-import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
-import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime';
+import { MutationsOverTime } from '../../mutationsOverTime/mutations-over-time';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
+import { QueriesOverTime } from '../../queriesOverTime/queries-over-time';
 
 const logger = getClientLogger('WasapPage');
 
@@ -120,6 +122,8 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
         ...(samplingDate.dateTo && { samplingDateTo: samplingDate.dateTo }),
     };
 
+    const sequenceType = 'sequenceType' in analysis ? analysis.sequenceType : 'nucleotide';
+
     return (
         <GsApp
             lapis={config.lapisBaseUrl}
@@ -170,16 +174,26 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                 {data.displayMutations?.length === 0 ? (
                                     <NoDataHelperText analysisFilter={analysis} />
                                 ) : (
-                                    <GsMutationsOverTime
-                                        filter={filter}
-                                        granularity={base.granularity}
-                                        sequenceType={'sequenceType' in analysis ? analysis.sequenceType : 'nucleotide'}
-                                        displayMutations={data.displayMutations}
-                                        pageSizes={[20, 50, 100, 250]}
-                                        initialMeanProportionInterval={initialMeanProportionInterval}
-                                        hideGaps={base.excludeEmpty ? true : undefined}
-                                        customColumns={data.customColumns}
-                                    />
+                                    <ComponentWrapper
+                                        title={
+                                            sequenceType === 'nucleotide'
+                                                ? 'Nucleotide mutations over time'
+                                                : 'Amino acid mutations over time'
+                                        }
+                                    >
+                                        <MutationsOverTime
+                                            width='100%'
+                                            filter={filter}
+                                            sequenceType={sequenceType}
+                                            views={[views.grid]}
+                                            granularity={base.granularity}
+                                            displayMutations={data.displayMutations}
+                                            hideGaps={base.excludeEmpty ? true : undefined}
+                                            pageSizes={[20, 50, 100, 250]}
+                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            customColumns={data.customColumns}
+                                        />
+                                    </ComponentWrapper>
                                 )}
                                 {analysis.mode === 'variant' &&
                                     analysis.signatureType === 'computed' &&
@@ -228,15 +242,20 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                         ) : (
                             <>
                                 <div className='rounded-md border-2 border-gray-100 p-4'>
-                                    <GsQueriesOverTime
-                                        collectionTitle={data.collection.title}
-                                        filter={filter}
-                                        queries={data.collection.queries}
-                                        granularity={base.granularity}
-                                        pageSizes={[20, 50, 100, 250]}
-                                        initialMeanProportionInterval={initialMeanProportionInterval}
-                                        hideGaps={base.excludeEmpty ? true : undefined}
-                                    />
+                                    <ComponentWrapper
+                                        title={`Collection over time${data.collection.title ? `: ${data.collection.title}` : ''}`}
+                                    >
+                                        <QueriesOverTime
+                                            width='100%'
+                                            filter={filter}
+                                            queries={data.collection.queries}
+                                            views={[views.grid]}
+                                            granularity={base.granularity}
+                                            hideGaps={base.excludeEmpty ? true : undefined}
+                                            pageSizes={[20, 50, 100, 250]}
+                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                        />
+                                    </ComponentWrapper>
                                 </div>
                                 <CollectionInfo
                                     collectionId={data.collection.id}

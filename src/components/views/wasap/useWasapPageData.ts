@@ -359,7 +359,7 @@ function extractBackendVariantData(variants: Variant[]): VariantExtractionResult
 /**
  * Takes a list of variant queries (from a collection) and validates them all against a LAPIS.
  * For valid variant queries, it builds a `QueriesOverTimeQuery` (the parsed,
- * genome-only expression the SILO grid asks) to use with `GsQueriesOverTime`.
+ * genome-only expression the SILO grid asks) to use with `QueriesOverTime`.
  * For invalid queries, an `InvalidVariantInfo` is returned.
  *
  * `/query/parse` is the one LAPIS call the SILO build keeps — SILO has no parse
