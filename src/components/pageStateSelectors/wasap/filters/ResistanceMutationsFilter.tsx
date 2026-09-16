@@ -1,4 +1,4 @@
-import type { WasapResistanceFilter } from '../../../../config/wasapPageConfig';
+import type { WasapResistanceFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
 import { LabeledField } from '../utils/LabeledField';
 
 export function ResistanceMutationsFilter({

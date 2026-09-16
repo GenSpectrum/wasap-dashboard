@@ -1,4 +1,4 @@
-import type { WasapManualFilter } from '../../../../config/wasapPageConfig';
+import type { WasapManualFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
 import { mutationType, type MutationType } from '../../../../types/dashboardComponents';
 import { MutationFilter } from '../../../mutationFilter/mutation-filter';
 import { SequenceTypeSelector } from '../utils/SequenceTypeSelector';

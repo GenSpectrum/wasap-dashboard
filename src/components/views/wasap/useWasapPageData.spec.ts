@@ -5,16 +5,16 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fetchWasapPageData, getLapisFilterForTimeFrame } from './useWasapPageData';
 import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker';
 import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup';
+import type { WasapPageConfig } from '../../../config/wasapPageConfig';
+import type { Collection } from '../../../externalData/genSpectrum/Collection';
+import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
 import {
     EXCLUDE_SET_NAME,
     SEQUENCE_TYPE,
     SIGNATURE_TYPE,
     VARIANT_TIME_FRAME,
     WASAP_ANALYSIS_MODE,
-    type WasapPageConfig,
-} from '../../../config/wasapPageConfig';
-import type { Collection } from '../../../externalData/genSpectrum/Collection';
-import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
+} from '../../../pageState/wasap/wasapAnalysisFilter';
 
 vi.mock('../../../externalData/genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();

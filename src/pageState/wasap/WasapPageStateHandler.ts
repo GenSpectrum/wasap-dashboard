@@ -1,10 +1,4 @@
-import { type PageStateHandler } from './PageStateHandler';
-import type { BaselineFilterConfig } from './baselineFilterConfig';
-import { setSearchFromDateRange } from './dateFilterFromToUrl';
-import { parseTextFiltersFromUrl } from './textFilterFromToUrl';
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import {
-    enabledAnalysisModes,
     type ExcludeSetName,
     type SignatureType,
     type VariantTimeFrame,
@@ -12,17 +6,20 @@ import {
     type WasapAnalysisMode,
     type WasapBaseFilter,
     type WasapFilter,
-    type WasapPageConfig,
-} from '../../config/wasapPageConfig';
+} from './wasapAnalysisFilter';
+import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
+import { enabledAnalysisModes, type WasapPageConfig } from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
 import { formatUrl } from '../../util/formatUrl';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
-import { setSearchFromString } from '../helpers';
+import { type PageStateHandler } from '../PageStateHandler';
+import { type TextFieldConfig, parseTextFiltersFromUrl } from '../textFieldConfig';
+import { setSearchFromDateRange, setSearchFromString } from '../urlSearchParams';
 
 export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     private readonly config: WasapPageConfig;
-    private readonly filterConfig: BaselineFilterConfig[];
+    private readonly filterConfig: TextFieldConfig[];
 
     constructor(config: WasapPageConfig) {
         this.config = config;
@@ -269,80 +266,26 @@ export function isUnresolvedSamplingDate(samplingDate: DateRangeOption): boolean
     );
 }
 
-function generateWasapFilterConfig(pageConfig: WasapPageConfig): BaselineFilterConfig[] {
+function generateWasapFilterConfig(pageConfig: WasapPageConfig): TextFieldConfig[] {
     return [
-        {
-            type: 'text',
-            lapisField: pageConfig.locationNameField,
-        },
+        { lapisField: pageConfig.locationNameField },
         // below are not really LAPIS fields, but we still want to use the URL parsing mechanism
-        {
-            type: 'text',
-            lapisField: 'granularity',
-        },
-        {
-            type: 'text',
-            lapisField: 'excludeEmpty',
-        },
-        {
-            type: 'text',
-            lapisField: 'analysisMode',
-        },
-        {
-            type: 'text',
-            lapisField: 'sequenceType',
-        },
-        {
-            type: 'text',
-            lapisField: 'mutations',
-        },
-        {
-            type: 'text',
-            lapisField: 'variant',
-        },
-        {
-            type: 'text',
-            lapisField: 'minProportion',
-        },
-        {
-            type: 'text',
-            lapisField: 'minCount',
-        },
-        {
-            type: 'text',
-            lapisField: 'minJaccard',
-        },
-        {
-            type: 'text',
-            lapisField: 'timeFrame',
-        },
-        {
-            type: 'text',
-            lapisField: 'resistanceSet',
-        },
-        {
-            type: 'text',
-            lapisField: 'excludeSet',
-        },
-        {
-            type: 'text',
-            lapisField: 'excludeVariants',
-        },
-        {
-            type: 'text',
-            lapisField: 'collectionId',
-        },
-        {
-            type: 'text',
-            lapisField: 'signatureType',
-        },
-        {
-            type: 'text',
-            lapisField: 'newMutationsOnly',
-        },
-        {
-            type: 'text',
-            lapisField: 'includeSublineagesForJaccard',
-        },
+        { lapisField: 'granularity' },
+        { lapisField: 'excludeEmpty' },
+        { lapisField: 'analysisMode' },
+        { lapisField: 'sequenceType' },
+        { lapisField: 'mutations' },
+        { lapisField: 'variant' },
+        { lapisField: 'minProportion' },
+        { lapisField: 'minCount' },
+        { lapisField: 'minJaccard' },
+        { lapisField: 'timeFrame' },
+        { lapisField: 'resistanceSet' },
+        { lapisField: 'excludeSet' },
+        { lapisField: 'excludeVariants' },
+        { lapisField: 'collectionId' },
+        { lapisField: 'signatureType' },
+        { lapisField: 'newMutationsOnly' },
+        { lapisField: 'includeSublineagesForJaccard' },
     ];
 }

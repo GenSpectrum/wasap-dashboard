@@ -11,22 +11,18 @@ import { useResolvedSamplingDate } from './useResolvedSamplingDate';
 import { useWasapPageData, type WasapPageData } from './useWasapPageData';
 import { getClientLogger } from '../../../clientLogger';
 import { siloSchema } from '../../../config/siloSchema';
-import type {
-    WasapAnalysisFilter,
-    WasapBaseFilter,
-    WasapFilter,
-    WasapPageConfig,
-} from '../../../config/wasapPageConfig';
+import type { WasapPageConfig } from '../../../config/wasapPageConfig';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import { type SiloReadFilter } from '../../../dataLayer/queries';
+import { usePageState } from '../../../pageState/usePageState';
+import { WasapPageStateHandler } from '../../../pageState/wasap/WasapPageStateHandler';
+import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { Loading } from '../../../util/Loading';
-import { WasapPageStateHandler } from '../../../views/pageStateHandlers/WasapPageStateHandler';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
 import { GsMutationsOverTime } from '../../genspectrum/GsMutationsOverTime';
 import { GsQueriesOverTime } from '../../genspectrum/GsQueriesOverTime';
 import { GsApp } from '../../genspectrum/gs-app';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
-import { usePageState } from '../usePageState';
 
 const logger = getClientLogger('WasapPage');
 

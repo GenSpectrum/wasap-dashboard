@@ -1,22 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import type { BaselineFilterConfig } from './baselineFilterConfig';
-import { parseTextFiltersFromUrl } from './textFilterFromToUrl';
+import { parseTextFiltersFromUrl, type TextFieldConfig } from './textFieldConfig';
 
 const configs = [
     {
-        type: 'text',
         lapisField: 'someTextField',
         placeholderText: 'Some text field',
         label: 'Some text field',
     },
     {
-        type: 'text',
         lapisField: 'someOtherTextField',
         placeholderText: 'Some other text field',
         label: 'Some other text field',
     },
-] satisfies BaselineFilterConfig[];
+] satisfies TextFieldConfig[];
 
 describe('parseTextFiltersFromUrl', () => {
     it('should parse url to text filter', () => {

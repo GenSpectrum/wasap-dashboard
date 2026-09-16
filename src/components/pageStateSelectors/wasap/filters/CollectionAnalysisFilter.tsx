@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import type { WasapCollectionFilter } from '../../../../config/wasapPageConfig';
 import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
 import { getCollections } from '../../../../externalData/genSpectrum/getCollections';
+import type { WasapCollectionFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
 import { LabeledField } from '../utils/LabeledField';
 
 type CollectionAnalysisFilterProps = {

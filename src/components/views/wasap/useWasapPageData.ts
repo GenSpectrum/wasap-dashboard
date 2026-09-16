@@ -1,17 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
-import type {
-    VariantTimeFrame,
-    WasapAnalysisFilter,
-    WasapCollectionFilter,
-    WasapCovSpectrumCollectionFilter,
-    WasapManualFilter,
-    WasapPageConfig,
-    WasapResistanceFilter,
-    WasapUntrackedFilter,
-    WasapVariantFilter,
-} from '../../../config/wasapPageConfig';
+import type { WasapPageConfig } from '../../../config/wasapPageConfig';
 import { validateGenomeOnly } from '../../../dataLayer/queries';
 import { getCollection } from '../../../externalData/covSpectrum/getCollection';
 import type { CollectionVariant } from '../../../externalData/covSpectrum/types';
@@ -22,6 +12,16 @@ import { getCollection as getGenSpectrumCollection } from '../../../externalData
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
 import { parseQuery } from '../../../externalData/lapis/parseQuery';
+import type {
+    VariantTimeFrame,
+    WasapAnalysisFilter,
+    WasapCollectionFilter,
+    WasapCovSpectrumCollectionFilter,
+    WasapManualFilter,
+    WasapResistanceFilter,
+    WasapUntrackedFilter,
+    WasapVariantFilter,
+} from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type LapisFilter } from '../../../types/dashboardComponents';
 import { type QueriesOverTimeQuery } from '../../queriesOverTime/queries-over-time';
 import { type CustomColumn } from '../../shared/features-over-time-grid';

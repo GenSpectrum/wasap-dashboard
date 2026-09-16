@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 
+import type { PageStateHandler } from '../../pageState/PageStateHandler';
 import type { WithClassName } from '../../types/WithClassName';
-import type { PageStateHandler } from '../../views/pageStateHandlers/PageStateHandler';
 
 // Most browsers support at least 2000 characters, but we use a conservative limit
 // to ensure compatibility across browsers and web servers
