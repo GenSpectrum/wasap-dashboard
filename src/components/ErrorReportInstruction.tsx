@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Modal, useModalRef } from '../styles/containers/Modal';
+import { Modal } from './shared/modal';
 import type { InstanceLogger } from '../types/logMessage';
 
 type ErrorToastArguments = {
@@ -42,33 +42,21 @@ export function useErrorToast(logger: InstanceLogger) {
 export class UserFacingError extends Error {}
 
 export function ErrorReportToastModal({ errorId, error }: { errorId: string; error: Error }) {
-    const modalRef = useModalRef();
-
-    const openModal = () => {
-        if (modalRef.current) {
-            modalRef.current.showModal();
-        }
-    };
-
     return (
         <>
             {error instanceof UserFacingError && <p className='mb-2'>The error was: {error.message}</p>}
             <p>
                 The problem persists?{' '}
-                <button className='link' onClick={openModal}>
+                <Modal
+                    buttonClassName='link'
+                    modalContent={
+                        <ErrorReportInstruction errorId={errorId} currentUrl={window.location.href} error={error} />
+                    }
+                    size='large'
+                >
                     Help us fix the issue.
-                </button>
+                </Modal>
             </p>
-            <Modal modalRef={modalRef} size='large'>
-                <div className='p-8'>
-                    <ErrorReportInstruction errorId={errorId} currentUrl={window.location.href} error={error} />
-                    <div className='modal-action'>
-                        <form method='dialog'>
-                            <button className='btn'>Close</button>
-                        </form>
-                    </div>
-                </div>
-            </Modal>
         </>
     );
 }
