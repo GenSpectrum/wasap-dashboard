@@ -3,7 +3,7 @@ import { useId } from 'react';
 
 import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import { Inset } from '../../../../styles/Inset';
-import { type CollectionSummary } from '../../../../types/Collection';
+import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
 import {
     VARIANT_TIME_FRAME,

@@ -1,7 +1,7 @@
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from '../../../config/wasapPageConfig';
 import type { ApiService } from '../../../externalData/genSpectrum/apiService';
 import { getCollection } from '../../../externalData/genSpectrum/getCollection';
-import type { Collection } from '../../../types/Collection';
+import type { Collection } from '../../../externalData/genSpectrum/Collection';
 import { type MutationAnnotations } from '../../genspectrum/mutation-annotations-context';
 
 /**

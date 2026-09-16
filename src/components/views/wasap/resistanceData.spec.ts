@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildResistanceData } from './resistanceData';
-import type { Collection } from '../../../types/Collection';
+import type { Collection } from '../../../externalData/genSpectrum/Collection';
 
 describe('buildResistanceData', () => {
     it('returns empty results for empty inputs', () => {

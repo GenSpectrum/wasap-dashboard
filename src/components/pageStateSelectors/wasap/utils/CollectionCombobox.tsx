@@ -1,7 +1,7 @@
 import { useCombobox } from 'downshift';
 import { useMemo, useRef, useState } from 'react';
 
-import { type CollectionSummary } from '../../../../types/Collection';
+import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
 
 export function CollectionCombobox({
     collections,

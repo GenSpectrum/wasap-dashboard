@@ -14,7 +14,7 @@ import {
 import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker';
 import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup';
 import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
-import type { Collection } from '../../../types/Collection';
+import type { Collection } from '../../../externalData/genSpectrum/Collection';
 
 vi.mock('../../../externalData/genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();

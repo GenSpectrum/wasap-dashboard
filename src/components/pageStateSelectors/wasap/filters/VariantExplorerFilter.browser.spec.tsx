@@ -7,7 +7,7 @@ import { render } from 'vitest-browser-react';
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
 import { it } from '../../../../../test-extend';
-import type { CollectionSummary } from '../../../../types/Collection';
+import type { CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
 import { GsApp } from '../../../genspectrum/gs-app';
 import type { WasapVariantFilter } from '../../../../config/wasapPageConfig';
 
