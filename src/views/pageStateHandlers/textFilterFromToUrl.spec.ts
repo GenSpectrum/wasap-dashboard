@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { BaselineFilterConfig } from './baselineFilterConfig';
-import { parseTextFiltersFromUrl, setSearchFromTextFilters } from './textFilterFromToUrl';
-import type { Dataset } from '../View';
+import { parseTextFiltersFromUrl } from './textFilterFromToUrl';
 
 const configs = [
     {
@@ -29,48 +28,5 @@ describe('parseTextFiltersFromUrl', () => {
         const result = parseTextFiltersFromUrl(search, configs);
 
         expect(result).toStrictEqual({ someTextField: 'someTextFieldValue' });
-    });
-});
-
-describe('setSearchFromTextFilters', () => {
-    it('should set search from text filter', () => {
-        const search = new URLSearchParams();
-        const pageState = {
-            datasetFilter: {
-                locationFilters: {},
-                textFilters: {
-                    someTextField: 'someTextFieldValue',
-                },
-                dateFilters: {},
-                numberFilters: {},
-            },
-        } satisfies Dataset;
-
-        setSearchFromTextFilters(search, pageState, configs);
-
-        expect(search.get('someTextField')).toStrictEqual('someTextFieldValue');
-        expect(search.get('someOtherTextField')).toStrictEqual(null);
-    });
-
-    it('should get input after a round trip over the url params', () => {
-        const search = new URLSearchParams();
-        const pageState = {
-            datasetFilter: {
-                locationFilters: {},
-                textFilters: {
-                    someTextField: 'someTextFieldValue',
-                },
-                dateFilters: {},
-                numberFilters: {},
-            },
-        } satisfies Dataset;
-
-        setSearchFromTextFilters(search, pageState, configs);
-
-        const result = parseTextFiltersFromUrl(search, configs);
-
-        expect(result).toStrictEqual({
-            someTextField: 'someTextFieldValue',
-        });
     });
 });
