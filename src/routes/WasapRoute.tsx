@@ -33,11 +33,11 @@ export function WasapRoute() {
 }
 
 function WasapDashboard({ config }: { config: WasapPageConfig }) {
-    // `config.internalName` stands in for `config` — it's 1:1 with it (one
+    // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it (one
     // static config per organism).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     const { data, isPending } = useQuery({
-        queryKey: ['resistanceData', config.internalName, getAppConfig().collectionsBackendUrl],
+        queryKey: ['resistanceData', config.genSpectrumOrganismName, getAppConfig().collectionsBackendUrl],
         queryFn: async () => {
             try {
                 return await fetchResistanceData(config, getApiServiceForClientside());
@@ -45,7 +45,7 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
                 // Matches Wasap.astro: a resistance-data failure degrades to an
                 // empty set rather than failing the whole page.
                 logger.error(
-                    `Failed to fetch resistance data for WASAP page (organism: ${config.internalName}): ${getErrorLogMessage(error)}`,
+                    `Failed to fetch resistance data for WASAP page (organism: ${config.genSpectrumOrganismName}): ${getErrorLogMessage(error)}`,
                 );
                 return EMPTY_RESISTANCE_DATA;
             }

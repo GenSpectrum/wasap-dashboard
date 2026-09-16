@@ -14,9 +14,9 @@ const prodOrganisms = (
     JSON.parse(readFileSync('public/config.example.json', 'utf-8')) as { organisms: unknown[] }
 ).organisms.map((organism) => wasapPageConfigSchema.parse(organism));
 
-describe.each(prodOrganisms.map((config) => [config.internalName, config] as const))(
+describe.each(prodOrganisms.map((config) => [config.genSpectrumOrganismName, config] as const))(
     'config.example.json %s',
-    (_internalName, config: WasapPageConfig) => {
+    (_genSpectrumOrganismName, config: WasapPageConfig) => {
         test('default resistance set name is valid', () => {
             if (config.resistanceAnalysisModeEnabled) {
                 const resistanceSetNames = config.resistanceMutationCollections.map((s) => s.name);
@@ -38,7 +38,7 @@ describe.each(prodOrganisms.map((config) => [config.internalName, config] as con
 );
 
 test('COVID wastewater opens on Spike resistance mutations by default', () => {
-    const covidConfig = prodOrganisms.find((config) => config.internalName === 'covid');
+    const covidConfig = prodOrganisms.find((config) => config.genSpectrumOrganismName === 'covid');
     if (covidConfig === undefined) {
         throw new Error('No covid config found in config.example.json.');
     }

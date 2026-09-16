@@ -13,7 +13,7 @@ import {
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 
 const config: WasapPageConfig = {
-    internalName: 'covid',
+    genSpectrumOrganismName: 'covid',
     name: 'SARS-CoV-2',
     path: `/wastewater/covid`,
     description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',

@@ -120,7 +120,7 @@ export function WasapPageStateSelector({
         queryKey: [
             'predefinedVariants',
             config.variantAnalysisModeEnabled && config.predefinedVariantsSource,
-            config.internalName,
+            config.genSpectrumOrganismName,
         ],
         queryFn: async () => {
             if (!config.variantAnalysisModeEnabled || config.predefinedVariantsSource === undefined) {
@@ -131,7 +131,7 @@ export function WasapPageStateSelector({
             const { collectionsUserId, collectionsTag } = config.predefinedVariantsSource;
             return getCollections(getApiServiceForClientside(), {
                 userId: collectionsUserId,
-                organism: config.internalName,
+                organism: config.genSpectrumOrganismName,
                 tags: collectionsTag,
             });
         },
@@ -269,7 +269,7 @@ export function WasapPageStateSelector({
                                 <CollectionAnalysisFilter
                                     pageState={collectionFilter}
                                     setPageState={setCollectionFilter}
-                                    organism={config.internalName}
+                                    organism={config.genSpectrumOrganismName}
                                 />
                             );
                     }

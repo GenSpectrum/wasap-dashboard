@@ -26,7 +26,7 @@ export type WastewaterOrganismEntry = {
 export function listWastewaterOrganisms(): WastewaterOrganismEntry[] {
     return getAppConfig().organisms.map((config) => ({
         config,
-        pathSegment: config.path.split('/').pop() ?? config.internalName,
+        pathSegment: config.path.split('/').pop() ?? config.genSpectrumOrganismName,
     }));
 }
 

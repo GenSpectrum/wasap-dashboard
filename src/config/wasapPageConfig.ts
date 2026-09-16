@@ -1,6 +1,5 @@
 import z from 'zod';
 
-import { organismSchema } from '../types/Organism';
 import { sequenceTypeSchema, type TemporalGranularity } from '../types/dashboardComponents';
 import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
 
@@ -186,9 +185,13 @@ export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
  */
 export const wasapPageConfigBaseSchema = z.object({
     /**
-     * The internal identifier of the organism, i.e. 'covid'. Used as a key in maps and API parameters.
+     * GenSpectrum's own identifier for the organism, i.e. 'covid'. Used as a
+     * cache-key component and as the `organism` parameter on GenSpectrum
+     * collections-API requests (`getCollections`). Config-supplied, not
+     * validated against a fixed list — this deployment's config.json is the
+     * source of truth for which organisms exist.
      */
-    internalName: organismSchema,
+    genSpectrumOrganismName: z.string().min(1),
 
     /**
      * The name of the organism, i.e. 'Sars-CoV-2'
@@ -306,8 +309,9 @@ export const collectionAnalysisModeConfigSchema = z.union([
         /**
          * URL template for linking out to this collection on GenSpectrum, with
          * the placeholder `{{id}}`, e.g. `https://genspectrum.org/collections/covid/{{id}}`.
-         * GenSpectrum's own organism slug isn't necessarily this config's
-         * `internalName`, so it's baked into the template rather than derived.
+         * GenSpectrum's collections-page URL slug isn't necessarily formatted
+         * the same as `genSpectrumOrganismName` (the API's organism
+         * identifier), so it's baked into the template rather than derived.
          */
         genSpectrumCollectionLinkOut: z.string(),
     }),

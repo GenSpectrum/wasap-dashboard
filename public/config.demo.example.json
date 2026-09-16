@@ -2,7 +2,7 @@
     "collectionsBackendUrl": "https://genspectrum.org/api",
     "organisms": [
         {
-            "internalName": "covid",
+            "genSpectrumOrganismName": "covid",
             "name": "SARS-CoV-2",
             "path": "/covid",
             "description": "Analyze SARS-CoV-2 data that was collected by the WISE project.",
@@ -102,7 +102,7 @@
             }
         },
         {
-            "internalName": "rsvA",
+            "genSpectrumOrganismName": "rsvA",
             "name": "RSV-A",
             "path": "/rsv-a",
             "description": "Analyze RSV-A data that was collected by the WISE project.",
@@ -181,7 +181,7 @@
             }
         },
         {
-            "internalName": "rsvB",
+            "genSpectrumOrganismName": "rsvB",
             "name": "RSV-B",
             "path": "/rsv-b",
             "description": "Analyze RSV-B data that was collected by the WISE project.",

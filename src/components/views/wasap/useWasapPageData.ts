@@ -38,12 +38,12 @@ export function useWasapPageData(
     resistanceMutationsBySet: Record<string, string[]>,
     analysis: WasapAnalysisFilter,
 ) {
-    // `config.internalName` stands in for `config` — it's 1:1 with it (one
+    // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it (one
     // static config per organism), and this hook doesn't remount on organism
     // switch, so it has to be in the key too.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
-        queryKey: ['wasap', analysis, resistanceMutationsBySet, config.internalName],
+        queryKey: ['wasap', analysis, resistanceMutationsBySet, config.genSpectrumOrganismName],
         queryFn: () => fetchWasapPageData(config, resistanceMutationsBySet, analysis),
     });
 }
