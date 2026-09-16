@@ -3,7 +3,7 @@ import { type UseQueryResult } from '@tanstack/react-query';
 import type { ExcludeSetName, WasapUntrackedFilter } from '../../../../config/wasapPageConfig';
 import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import { Loading } from '../../../../util/Loading';
-import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
+import { LineageFilter } from '../../../lineageFilter/lineage-filter';
 import { KnownVariantsExclusionInfo } from '../InfoBlocks';
 import { LabeledField } from '../utils/LabeledField';
 import { SequenceTypeSelector } from '../utils/SequenceTypeSelector';
@@ -73,7 +73,7 @@ export function UntrackedFilter({
                     <div className='h-2' />
                     <LabeledField label='Custom variant list'>
                         <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                            <GsLineageFilter
+                            <LineageFilter
                                 field={clinicalSequenceLapisLineageField}
                                 placeholderText='Variant'
                                 value={pageState.excludeVariants}

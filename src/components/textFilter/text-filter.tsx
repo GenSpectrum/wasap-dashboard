@@ -1,7 +1,5 @@
-import { type FC } from 'react';
 import z from 'zod';
 
-import { TextFilterChangedEvent } from './TextFilterChangedEvent';
 import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
 import { DownshiftCombobox } from '../shared/downshift-combobox';
 import { ErrorBoundary } from '../shared/error-boundary';
@@ -19,24 +17,44 @@ const textFilterPropsSchema = textFilterInnerPropsSchema.extend({
     width: z.string(),
 });
 
-export type TextFilterInnerProps = z.infer<typeof textFilterInnerPropsSchema>;
-export type TextFilterProps = z.infer<typeof textFilterPropsSchema>;
-type TextSelectorProps = z.infer<typeof textSelectorPropsSchema>;
+export type TextFilterInnerProps<Field extends string = string> = Omit<
+    z.infer<typeof textFilterInnerPropsSchema>,
+    'field'
+> & {
+    field: Field;
+    onInputChange?: (input: { [key in Field]: string | undefined }) => void;
+};
 
-export const TextFilter: FC<TextFilterProps> = (props) => {
-    const { width, ...innerProps } = props;
+export type TextFilterProps<Field extends string = string> = Omit<TextFilterInnerProps<Field>, 'field'> & {
+    field: Field;
+    width?: string;
+};
+
+// width default reproduces the old gs-text-filter Lit component's @property field initializer.
+export function TextFilter<Field extends string = string>({
+    width = '100%',
+    onInputChange,
+    ...innerProps
+}: TextFilterProps<Field>) {
     const size = { width, height: '3rem' };
+    const validatedProps = { width, ...innerProps };
 
     return (
-        <ErrorBoundary size={size} layout='horizontal' componentProps={props} schema={textFilterPropsSchema}>
+        <ErrorBoundary size={size} layout='horizontal' componentProps={validatedProps} schema={textFilterPropsSchema}>
             <ResizeContainer size={size}>
-                <TextFilterInner {...innerProps} />
+                <TextFilterInner {...innerProps} onInputChange={onInputChange} />
             </ResizeContainer>
         </ErrorBoundary>
     );
-};
+}
 
-const TextFilterInner: FC<TextFilterInnerProps> = ({ value, field, placeholderText, hideCounts }) => {
+function TextFilterInner<Field extends string>({
+    value,
+    field,
+    placeholderText,
+    hideCounts,
+    onInputChange,
+}: TextFilterInnerProps<Field>) {
     const { data, error, isLoading } = useStringFieldOptions(field);
 
     if (isLoading) {
@@ -53,23 +71,25 @@ const TextFilterInner: FC<TextFilterInnerProps> = ({ value, field, placeholderTe
             value={value}
             placeholderText={placeholderText}
             hideCounts={hideCounts}
+            onInputChange={onInputChange}
             data={(data ?? []).map((option) => ({ value: option.name, count: option.count }))}
         />
     );
-};
+}
 
 type SelectItem = {
     count: number;
     value: string;
 };
 
-const TextSelector = ({
+const TextSelector = <Field extends string>({
     field,
     value,
     placeholderText,
     data,
     hideCounts = false,
-}: TextSelectorProps & {
+    onInputChange,
+}: TextFilterInnerProps<Field> & {
     data: SelectItem[];
 }) => {
     const initialSelectedItem = data.find((candidate) => candidate.value == value);
@@ -79,7 +99,9 @@ const TextSelector = ({
             allItems={data}
             value={initialSelectedItem ?? null}
             filterItemsByInputValue={filterByInputValue}
-            createEvent={(item) => new TextFilterChangedEvent({ [field]: item?.value ?? undefined })}
+            onChange={(item) =>
+                onInputChange?.({ [field]: item?.value ?? undefined } as { [key in Field]: string | undefined })
+            }
             itemToString={(item) => item?.value ?? ''}
             placeholderText={placeholderText}
             formatItemInList={(item: SelectItem) => {

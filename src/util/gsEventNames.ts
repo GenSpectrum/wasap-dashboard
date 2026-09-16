@@ -2,7 +2,4 @@ export const gsEventNames = {
     error: 'gs-error',
     componentFinishedLoading: 'gs-component-finished-loading',
     mutationFilterChanged: 'gs-mutation-filter-changed',
-    lineageFilterChanged: 'gs-lineage-filter-changed',
-    lineageFilterMultiChanged: 'gs-lineage-filter-multi-changed',
-    textFilterChanged: 'gs-text-filter-changed',
 } as const;

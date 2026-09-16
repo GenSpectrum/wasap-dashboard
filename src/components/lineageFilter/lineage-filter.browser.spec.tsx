@@ -1,11 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useRef, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { LineageFilter } from './lineage-filter';
 import { LapisClientProvider } from '../../externalData/lapis/LapisClientContext';
-import { gsEventNames } from '../../util/gsEventNames';
 
 /** Stubs the two clinical-LAPIS calls the lineage picker makes. */
 function stubLapis({ aggregated, lineageDefinition }: { aggregated: unknown; lineageDefinition: unknown }) {
@@ -16,22 +15,6 @@ function stubLapis({ aggregated, lineageDefinition }: { aggregated: unknown; lin
             const body = url.includes('/sample/lineageDefinition/') ? lineageDefinition : { data: aggregated };
             return Promise.resolve(new Response(JSON.stringify(body), { status: 200 }));
         }),
-    );
-}
-
-function EventCatcher({ onDetail, children }: { onDetail: (detail: unknown) => void; children: ReactElement }) {
-    const ref = useRef<HTMLDivElement>(null);
-    return (
-        <div
-            ref={(el) => {
-                ref.current = el;
-                el?.addEventListener(gsEventNames.lineageFilterChanged, (event) =>
-                    onDetail((event as CustomEvent).detail),
-                );
-            }}
-        >
-            {children}
-        </div>
     );
 }
 
@@ -56,11 +39,15 @@ describe('LineageFilter', () => {
             lineageDefinition: { A: {}, 'A.1': { parents: ['A'] } },
         });
 
-        const onDetail = vi.fn();
+        const onLineageChange = vi.fn();
         const screen = renderFilter(
-            <EventCatcher onDetail={onDetail}>
-                <LineageFilter field='nextcladePangoLineage' width='100%' value='' placeholderText='Variant' />
-            </EventCatcher>,
+            <LineageFilter
+                field='nextcladePangoLineage'
+                width='100%'
+                value=''
+                placeholderText='Variant'
+                onLineageChange={onLineageChange}
+            />,
         );
 
         await screen.getByPlaceholder('Variant').click();
@@ -68,6 +55,6 @@ describe('LineageFilter', () => {
         await expect.element(screen.getByText('A*')).toBeInTheDocument();
         await screen.getByText('A.1', { exact: true }).click();
 
-        expect(onDetail).toHaveBeenLastCalledWith({ nextcladePangoLineage: 'A.1' });
+        expect(onLineageChange).toHaveBeenLastCalledWith({ nextcladePangoLineage: 'A.1' });
     });
 });

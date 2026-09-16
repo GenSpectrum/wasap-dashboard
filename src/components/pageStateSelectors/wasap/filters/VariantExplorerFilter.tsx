@@ -11,7 +11,7 @@ import {
 import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
 import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import { Inset } from '../../../../styles/Inset';
-import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
+import { LineageFilter } from '../../../lineageFilter/lineage-filter';
 import { SelectorHeadline } from '../../SelectorHeadline';
 import { DefineClinicalSignatureInfo } from '../InfoBlocks';
 import { CollectionCombobox } from '../utils/CollectionCombobox';
@@ -76,7 +76,7 @@ export function VariantExplorerFilter({
                     </SelectorHeadline>
                     <LabeledField label='Variant'>
                         <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                            <GsLineageFilter
+                            <LineageFilter
                                 field={clinicalSequenceLapisLineageField}
                                 placeholderText='Variant'
                                 value={pageState.variant}

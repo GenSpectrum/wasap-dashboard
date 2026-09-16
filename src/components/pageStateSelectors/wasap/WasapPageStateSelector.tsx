@@ -27,7 +27,7 @@ import {
 import { Inset } from '../../../styles/Inset';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';
-import { GsTextFilter } from '../../genspectrum/GsTextFilter';
+import { TextFilter } from '../../textFilter/text-filter';
 
 /**
  * The root filter control for the W-ASAP dashboard.
@@ -142,7 +142,7 @@ export function WasapPageStateSelector({
             <SelectorHeadline>Filter dataset</SelectorHeadline>
             <Inset className='p-2'>
                 <LabeledField label='Sampling location'>
-                    <GsTextFilter
+                    <TextFilter
                         placeholderText='Sampling location'
                         field={config.locationNameField}
                         onInputChange={({ locationName }) => {
