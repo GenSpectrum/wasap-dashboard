@@ -10,8 +10,8 @@ import {
 } from '../../../../config/wasapPageConfig';
 import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
 import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
-import { Inset } from '../../../../styles/Inset';
 import { LineageFilter } from '../../../lineageFilter/lineage-filter';
+import { Inset } from '../../../shared/Inset';
 import { SelectorHeadline } from '../../SelectorHeadline';
 import { DefineClinicalSignatureInfo } from '../InfoBlocks';
 import { CollectionCombobox } from '../utils/CollectionCombobox';

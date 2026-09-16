@@ -24,9 +24,9 @@ import {
     type WasapFilter,
     type WasapPageConfig,
 } from '../../../config/wasapPageConfig';
-import { Inset } from '../../../styles/Inset';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';
+import { Inset } from '../../shared/Inset';
 import { TextFilter } from '../../textFilter/text-filter';
 
 /**
