@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
-import { wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig';
+import { wasapPageConfigSchema } from './wasapPageConfig';
 
 /**
  * The checked-in example configs (`public/config*.example.json`) are the only

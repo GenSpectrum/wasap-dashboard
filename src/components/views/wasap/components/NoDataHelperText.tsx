@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import type { WasapAnalysisFilter } from '../wasapPageConfig';
+import type { WasapAnalysisFilter } from '../../../../config/wasapPageConfig';
 
 /**
  * A note to the user to display when no mutations are selected due to the settings that they set in the filters.

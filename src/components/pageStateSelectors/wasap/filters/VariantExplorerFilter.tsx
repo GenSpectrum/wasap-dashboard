@@ -11,7 +11,7 @@ import {
     type SignatureType,
     type VariantTimeFrame,
     type WasapVariantFilter,
-} from '../../../views/wasap/wasapPageConfig';
+} from '../../../../config/wasapPageConfig';
 import { SelectorHeadline } from '../../SelectorHeadline';
 import { DefineClinicalSignatureInfo } from '../InfoBlocks';
 import { CollectionCombobox } from '../utils/CollectionCombobox';

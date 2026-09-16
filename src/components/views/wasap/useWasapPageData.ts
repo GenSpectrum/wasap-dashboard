@@ -11,7 +11,7 @@ import type {
     WasapResistanceFilter,
     WasapUntrackedFilter,
     WasapVariantFilter,
-} from './wasapPageConfig';
+} from '../../../config/wasapPageConfig';
 import { validateGenomeOnly } from '../../../dataLayer/queries';
 import { getCollection } from '../../../externalData/covSpectrum/getCollection';
 import type { CollectionVariant } from '../../../externalData/covSpectrum/types';

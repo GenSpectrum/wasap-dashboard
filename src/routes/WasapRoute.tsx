@@ -5,7 +5,7 @@ import { getClientLogger } from '../clientLogger';
 import { NoDataDisplay } from '../components/shared/no-data-display';
 import { WasapPage } from '../components/views/wasap/WasapPage';
 import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
-import type { WasapPageConfig } from '../components/views/wasap/wasapPageConfig';
+import type { WasapPageConfig } from '../config/wasapPageConfig';
 import { getAppConfig } from '../config/appConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';

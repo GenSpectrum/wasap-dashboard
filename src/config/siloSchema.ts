@@ -1,4 +1,4 @@
-import type { SiloInstanceConfig } from '../components/views/wasap/wasapPageConfig';
+import type { SiloInstanceConfig } from './wasapPageConfig';
 import type { SiloSchema } from '../dataLayer/queries';
 
 /**
@@ -6,7 +6,7 @@ import type { SiloSchema } from '../dataLayer/queries';
  * `WasapPageConfig.silo` block — same pattern as `appConfig.ts`/`wastewaterOrganisms.ts`
  * deriving app config from `WasapPageConfig`. Kept out of `queries/` itself: `components/`
  * already imports from `queries/`, so `queries/` importing `WasapPageConfig` back (from
- * `components/views/wasap/wasapPageConfig`) would be a cycle.
+ * `config/wasapPageConfig`) would be a cycle.
  */
 export function siloSchema(silo: SiloInstanceConfig): SiloSchema {
     return {

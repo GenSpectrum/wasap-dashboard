@@ -13,7 +13,7 @@ import {
     type WasapBaseFilter,
     type WasapFilter,
     type WasapPageConfig,
-} from '../../components/views/wasap/wasapPageConfig';
+} from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
 import { formatUrl } from '../../util/formatUrl';

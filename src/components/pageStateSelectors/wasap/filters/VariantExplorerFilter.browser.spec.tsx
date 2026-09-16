@@ -9,7 +9,7 @@ import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMock
 import { it } from '../../../../../test-extend';
 import type { CollectionSummary } from '../../../../types/Collection';
 import { GsApp } from '../../../genspectrum/gs-app';
-import type { WasapVariantFilter } from '../../../views/wasap/wasapPageConfig';
+import type { WasapVariantFilter } from '../../../../config/wasapPageConfig';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
 

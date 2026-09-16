@@ -27,7 +27,7 @@ import {
     type WasapBaseFilter,
     type WasapFilter,
     type WasapPageConfig,
-} from '../../views/wasap/wasapPageConfig';
+} from '../../../config/wasapPageConfig';
 
 /**
  * The root filter control for the W-ASAP dashboard.

@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react';
 
 import { ResistanceMutationsFilter } from './ResistanceMutationsFilter';
 import { it } from '../../../../../test-extend';
-import type { WasapResistanceFilter } from '../../../views/wasap/wasapPageConfig';
+import type { WasapResistanceFilter } from '../../../../config/wasapPageConfig';
 
 describe('ResistanceMutationsFilter', () => {
     const defaultPageState: WasapResistanceFilter = {

@@ -6,7 +6,7 @@ import {
     enabledAnalysisModes,
     wasapPageConfigSchema,
     type WasapPageConfig,
-} from '../components/views/wasap/wasapPageConfig';
+} from '../config/wasapPageConfig';
 
 // These pin behaviour of the GenSpectrum-hosted deployment's own data, which
 // now lives in `public/config.example.json` rather than in TypeScript.

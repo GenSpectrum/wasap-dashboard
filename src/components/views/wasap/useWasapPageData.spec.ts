@@ -10,7 +10,7 @@ import {
     VARIANT_TIME_FRAME,
     WASAP_ANALYSIS_MODE,
     type WasapPageConfig,
-} from './wasapPageConfig';
+} from '../../../config/wasapPageConfig';
 import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../../../routeMocker';
 import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vitest.setup';
 import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';

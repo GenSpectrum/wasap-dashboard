@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { wasapPageConfigSchema } from '../components/views/wasap/wasapPageConfig';
+import { wasapPageConfigSchema } from './wasapPageConfig';
 
 /**
  * Runtime configuration for the standalone app.

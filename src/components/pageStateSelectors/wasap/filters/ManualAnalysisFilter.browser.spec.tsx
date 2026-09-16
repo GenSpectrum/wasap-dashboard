@@ -5,7 +5,7 @@ import { ManualAnalysisFilter } from './ManualAnalysisFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
 import { it } from '../../../../../test-extend';
 import { GsApp } from '../../../genspectrum/gs-app';
-import type { WasapManualFilter } from '../../../views/wasap/wasapPageConfig';
+import type { WasapManualFilter } from '../../../../config/wasapPageConfig';
 
 describe('ManualAnalysisFilter', () => {
     const defaultPageState: WasapManualFilter = {

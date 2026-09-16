@@ -1,8 +1,8 @@
 import z from 'zod';
 
-import { organismSchema } from '../../../types/Organism';
-import { sequenceTypeSchema, type TemporalGranularity } from '../../../types/dashboardComponents';
-import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
+import { organismSchema } from '../types/Organism';
+import { sequenceTypeSchema, type TemporalGranularity } from '../types/dashboardComponents';
+import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
 
 export const SEQUENCE_TYPE = {
     nucleotide: 'nucleotide',

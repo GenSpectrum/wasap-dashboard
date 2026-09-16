@@ -3,7 +3,7 @@ import { type UseQueryResult } from '@tanstack/react-query';
 import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import { Loading } from '../../../../util/Loading';
 import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
-import type { ExcludeSetName, WasapUntrackedFilter } from '../../../views/wasap/wasapPageConfig';
+import type { ExcludeSetName, WasapUntrackedFilter } from '../../../../config/wasapPageConfig';
 import { KnownVariantsExclusionInfo } from '../InfoBlocks';
 import { LabeledField } from '../utils/LabeledField';
 import { SequenceTypeSelector } from '../utils/SequenceTypeSelector';

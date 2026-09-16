@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
 import { getCollections } from '../../../../externalData/genSpectrum/getCollections';
-import type { WasapCollectionFilter } from '../../../views/wasap/wasapPageConfig';
+import type { WasapCollectionFilter } from '../../../../config/wasapPageConfig';
 import { LabeledField } from '../utils/LabeledField';
 
 type CollectionAnalysisFilterProps = {

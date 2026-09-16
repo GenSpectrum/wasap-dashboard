@@ -9,7 +9,7 @@ import {
     type WasapResistanceFilter,
     type WasapUntrackedFilter,
     type WasapVariantFilter,
-} from '../../components/views/wasap/wasapPageConfig';
+} from '../../config/wasapPageConfig';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 
 const config: WasapPageConfig = {
