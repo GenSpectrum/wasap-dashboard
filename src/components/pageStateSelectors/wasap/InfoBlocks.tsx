@@ -6,10 +6,7 @@ import { BlockMath, InlineMath } from 'react-katex';
  */
 function InfoBlock({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div className='relative p-8'>
-            <form method='dialog'>
-                <button className='btn btn-sm btn-circle btn-ghost absolute top-2 right-2'>✕</button>
-            </form>
+        <div>
             <h1 className='mb-2 text-xl font-semibold'>{title}</h1>
             {children}
         </div>
