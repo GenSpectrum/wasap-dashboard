@@ -53,13 +53,18 @@
     --color-brand-900: #2e005a;
 }
 
-/* Unlayered so it beats daisyUI's own (layered) light-theme default for
-   --color-primary, which drives btn-primary / accent-primary / border-primary /
+/* Unlayered so it beats daisyUI's own (layered) light-theme defaults:
+   --color-primary drives btn-primary / accent-primary / border-primary /
    text-primary everywhere (Apply filters button, checkboxes, radio selects,
-   links) without having to touch each of those call sites individually. */
+   links); the --radius-* vars drive corner rounding on every daisyUI control
+   (select, input, btn, checkbox, radio, ...) — zeroed for sharp corners
+   everywhere, without having to touch each call site individually. */
 :root {
     --color-primary: var(--color-brand-700);
     --color-primary-content: var(--color-brand-50);
+    --radius-selector: 0;
+    --radius-field: 0;
+    --radius-box: 0;
 }
 
 html,

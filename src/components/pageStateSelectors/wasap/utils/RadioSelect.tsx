@@ -37,7 +37,7 @@ export function RadioSelect<T extends string>({
                                 />
                                 <label
                                     htmlFor={`${id}-${opt.value}`}
-                                    className={`flex-1 cursor-pointer rounded-md border p-2 text-center ${
+                                    className={`flex-1 cursor-pointer border p-2 text-center ${
                                         isChecked ? 'border-primary' : 'border-gray-300'
                                     }`}
                                 >

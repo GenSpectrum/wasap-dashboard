@@ -57,15 +57,15 @@ function AnalysisModeButtons({ state }: { state: AnalysisModeBarState }) {
                     onClick={() => setMode(candidateMode)}
                     className={
                         candidateMode === mode
-                            ? 'bg-brand-700 rounded-md px-3 py-1 text-sm font-semibold text-white'
-                            : 'text-brand-900 rounded-md px-3 py-1 text-sm font-semibold hover:bg-stone-300'
+                            ? 'bg-brand-700 px-3 py-1 text-sm font-semibold text-white'
+                            : 'text-brand-900 px-3 py-1 text-sm font-semibold hover:bg-stone-300'
                     }
                 >
                     {modeLabel(candidateMode)}
                 </button>
             ))}
             <Modal
-                buttonClassName='text-brand-900 hover:bg-stone-300 rounded-md px-3 py-1 text-sm font-semibold'
+                buttonClassName='text-brand-900 hover:bg-stone-300 px-3 py-1 text-sm font-semibold'
                 buttonAriaLabel='Help: exploration modes explained'
                 modalContent={<ExplorationModeInfo />}
                 size='large'

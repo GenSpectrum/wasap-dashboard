@@ -166,17 +166,17 @@ export const DateRangeFilterInner = ({
                 }}
                 value={state?.label ?? null}
                 className='w-full'
-                selectClassName={'w-full rounded-l-md rounded-r-none'}
+                selectClassName={'w-full'}
             />
             <DatePicker
-                className={'w-full rounded-none'}
+                className={'w-full'}
                 value={state?.dateFrom}
                 onChange={onChangeDateFrom}
                 maxDate={state?.dateTo}
                 placeholderText={'Date from'}
             />
             <DatePicker
-                className={'w-full rounded-l-none rounded-r-md'}
+                className={'w-full'}
                 value={state?.dateTo}
                 onChange={onChangeDateTo}
                 minDate={state?.dateFrom}
