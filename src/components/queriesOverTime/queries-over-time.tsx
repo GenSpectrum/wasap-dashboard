@@ -30,8 +30,6 @@ import { HideGapsButton } from '../shared/hide-gaps-button';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
-import type { ProportionInterval } from '../shared/proportion-selector';
-import { ProportionSelectorDropdown } from '../shared/proportion-selector-dropdown';
 import { ResizeContainer } from '../shared/resize-container';
 import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
@@ -72,7 +70,8 @@ const queriesOverTimeSchema = z.object({
         }),
     views: z.array(queriesOverTimeViewSchema),
     granularity: temporalGranularitySchema,
-    initialMeanProportionInterval: meanProportionIntervalSchema,
+    /** Owned by the caller (a control outside this component) and passed in live. */
+    proportionInterval: meanProportionIntervalSchema,
     hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
@@ -128,7 +127,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         textFilter: '',
     });
 
-    const [proportionInterval, setProportionInterval] = useState(originalComponentProps.initialMeanProportionInterval);
+    const { proportionInterval } = originalComponentProps;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
     const [hideGaps, setHideGaps] = useState<boolean>(originalComponentProps.hideGaps ?? false);
 
@@ -212,8 +211,6 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
     const toolbar = (activeTab: string) => (
         <Toolbar
             activeTab={activeTab}
-            proportionInterval={proportionInterval}
-            setProportionInterval={setProportionInterval}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
             colorScale={colorScale}
@@ -234,8 +231,6 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
 type ToolbarProps = {
     activeTab: string;
-    proportionInterval: ProportionInterval;
-    setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     colorScale: ColorScale;
@@ -246,8 +241,6 @@ type ToolbarProps = {
 
 const Toolbar: FC<ToolbarProps> = ({
     activeTab,
-    proportionInterval,
-    setProportionInterval,
     hideGaps,
     setHideGaps,
     colorScale,
@@ -258,12 +251,6 @@ const Toolbar: FC<ToolbarProps> = ({
     return (
         <>
             <QueriesOverTimeFilter setFilterValue={setFilterValue} value={queryFilterValue} />
-            <ProportionSelectorDropdown
-                proportionInterval={proportionInterval}
-                setMinProportion={(min) => setProportionInterval((prev) => ({ ...prev, min }))}
-                setMaxProportion={(max) => setProportionInterval((prev) => ({ ...prev, max }))}
-                labelPrefix='Mean proportion'
-            />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             {activeTab === 'Grid' && (
                 <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />

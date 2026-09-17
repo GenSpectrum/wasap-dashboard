@@ -12,6 +12,7 @@ import { ManualAnalysisFilter } from './filters/ManualAnalysisFilter';
 import { ResistanceMutationsFilter } from './filters/ResistanceMutationsFilter';
 import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
+import { LabeledField } from './utils/LabeledField';
 import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import {
@@ -19,6 +20,7 @@ import {
     type WasapBaseFilter,
     type WasapFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { type ProportionInterval, ProportionSelector } from '../../shared/proportion-selector';
 
 /**
  * The root filter control for the W-ASAP dashboard.
@@ -27,7 +29,9 @@ import {
  * Location / date-range / granularity controls live above the plot now
  * (`BaseFilterControls`, rendered by `WasapPage`) — `baseFilterState` is owned
  * there and passed down so `getMergedPageState` can still fold it into the
- * merged filter on Apply.
+ * merged filter on Apply. Mean proportion is similarly owned by `WasapPage`
+ * (it's a live control, not part of the URL-persisted analysis draft), but
+ * rendered here so it's visible regardless of which mode is selected.
  */
 export function WasapPageStateSelector({
     config,
@@ -36,6 +40,8 @@ export function WasapPageStateSelector({
     baseFilterState,
     initialAnalysisFilterState,
     setPageState,
+    meanProportionInterval,
+    setMeanProportionInterval,
 }: {
     config: WasapPageConfig;
     resistanceSetNames: string[];
@@ -43,6 +49,8 @@ export function WasapPageStateSelector({
     baseFilterState: WasapBaseFilter;
     initialAnalysisFilterState: WasapAnalysisFilter;
     setPageState: Dispatch<SetStateAction<WasapFilter>>;
+    meanProportionInterval: ProportionInterval;
+    setMeanProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
 }) {
     // State for each individual analysis mode setting component
     const {
@@ -219,6 +227,13 @@ export function WasapPageStateSelector({
                         );
                 }
             })()}
+            <LabeledField label='Mean proportion'>
+                <ProportionSelector
+                    proportionInterval={meanProportionInterval}
+                    setMinProportion={(min) => setMeanProportionInterval((prev) => ({ ...prev, min }))}
+                    setMaxProportion={(max) => setMeanProportionInterval((prev) => ({ ...prev, max }))}
+                />
+            </LabeledField>
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}
                 newPageState={getMergedPageState()}

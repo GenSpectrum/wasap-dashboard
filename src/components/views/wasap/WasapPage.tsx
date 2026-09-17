@@ -122,11 +122,16 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
     // BaseFilterControls, rendered above the plot instead of in the sidebar.
     const [baseFilterState, setBaseFilterState] = useState(base);
 
+    // Owned here (rather than inside MutationsOverTime/QueriesOverTime) so the
+    // mean-proportion control can live in BaseFilterControls, above the plot,
+    // instead of the plot's own toolbar. Passed down as a live, controlled
+    // value — remounts (and gets a fresh mode-appropriate default) along with
+    // the rest of WasapPageConnected on URL-driven change, same as baseFilterState.
+    const [meanProportionInterval, setMeanProportionInterval] = useState(getInitialMeanProportionInterval(analysis));
+
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(base.samplingDate);
     const isPending = isDataPending || isSamplingDatePending;
-
-    const initialMeanProportionInterval = getInitialMeanProportionInterval(analysis);
 
     const filter: SiloReadFilter = {
         ...(base.locationName && { locationName: base.locationName }),
@@ -151,6 +156,8 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                         initialAnalysisFilterState={analysis}
                         setPageState={setPageState}
                         resistanceSetNames={Object.keys(displayMutationsBySet)}
+                        meanProportionInterval={meanProportionInterval}
+                        setMeanProportionInterval={setMeanProportionInterval}
                     />
                 </div>
                 <div className='flex flex-col'>
@@ -194,7 +201,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                             displayMutations={data.displayMutations}
                                             hideGaps={base.excludeEmpty ? true : undefined}
                                             pageSizes={[20, 50, 100, 250]}
-                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            proportionInterval={meanProportionInterval}
                                             customColumns={data.customColumns}
                                         />
                                     )}
@@ -253,7 +260,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                             granularity={base.granularity}
                                             hideGaps={base.excludeEmpty ? true : undefined}
                                             pageSizes={[20, 50, 100, 250]}
-                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            proportionInterval={meanProportionInterval}
                                         />
                                     </div>
                                     <CollectionInfo
