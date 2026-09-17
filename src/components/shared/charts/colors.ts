@@ -1,7 +1,7 @@
 // colorblind friendly colors taken from https://personal.sron.nl/~pault/
 
 export const ColorsRGB = {
-    indigo: [51, 34, 136],
+    indigo: [68, 0, 132],
     green: [17, 119, 51],
     cyan: [136, 204, 238],
     teal: [68, 170, 153],

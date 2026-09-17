@@ -14,7 +14,7 @@ import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
 import { MutationBands } from './mutation-bands';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
-import { useConnection, useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useSiloSchema } from '../../dataLayer/hooks/connection';
 import {
     genesOf,
     useMutationsOverTimePage,
@@ -38,16 +38,11 @@ import {
     type FeatureRenderer,
     FeaturesOverTimeGridServerPaginated,
 } from '../shared/features-over-time-grid';
-import { Fullscreen } from '../shared/fullscreen';
-import { FullscreenTargetContext } from '../shared/fullscreen-target';
 import { HideGapsButton } from '../shared/hide-gaps-button';
-import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { type DisplayedMutationType, MutationTypeSelector } from '../shared/mutation-type-selector';
 import { MutationsOverTimeMutationsFilter } from '../shared/mutations-over-time-mutations-filter';
 import { NoDataDisplay } from '../shared/no-data-display';
-import type { ProportionInterval } from '../shared/proportion-selector';
-import { ProportionSelectorDropdown } from '../shared/proportion-selector-dropdown';
 import { ResizeContainer } from '../shared/resize-container';
 import { type DisplayedSegment, SegmentSelector, useDisplayedSegments } from '../shared/segment-selector';
 import Tabs from '../shared/tabs';
@@ -69,7 +64,8 @@ const mutationOverTimeSchema = z.object({
     views: z.array(mutationsOverTimeViewSchema),
     granularity: temporalGranularitySchema,
     displayMutations: displayMutationsSchema.optional(),
-    initialMeanProportionInterval: meanProportionIntervalSchema,
+    /** Owned by the caller (a control outside this component) and passed in live. */
+    proportionInterval: meanProportionIntervalSchema,
     hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
@@ -81,15 +77,12 @@ export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 export const MutationsOverTime: FC<MutationsOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
-    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ErrorBoundary size={size} schema={mutationOverTimeSchema} componentProps={componentProps}>
-            <FullscreenTargetContext.Provider value={containerRef}>
-                <ResizeContainer size={size} ref={containerRef}>
-                    <MutationsOverTimeInner {...componentProps} />
-                </ResizeContainer>
-            </FullscreenTargetContext.Provider>
+            <ResizeContainer size={size}>
+                <MutationsOverTimeInner {...componentProps} />
+            </ResizeContainer>
         </ErrorBoundary>
     );
 };
@@ -163,7 +156,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     });
     const annotationProvider = useMutationAnnotationsProvider();
 
-    const [proportionInterval, setProportionInterval] = useState(originalComponentProps.initialMeanProportionInterval);
+    const { proportionInterval } = originalComponentProps;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
 
     const [displayedSegments, setDisplayedSegments] = useDisplayedSegments(originalComponentProps.sequenceType);
@@ -233,6 +226,20 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         [originalComponentProps.sequenceType],
     );
 
+    // `getData` (below) is typed to return a Promise so callers can fetch on
+    // demand; this data is already in memory, so the wrapper has nothing to await.
+    // eslint-disable-next-line @typescript-eslint/require-await
+    const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
+        pageData === null ? [] : getDownloadData(pageData);
+
+    const downloadButton = (
+        <CsvDownloadButton
+            className='btn btn-outline btn-sm'
+            getData={getDownloadDataAsync}
+            filename='mutations_over_time.csv'
+        />
+    );
+
     const getTab = (view: MutationsOverTimeView) => {
         switch (view) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- for extensibility
@@ -254,6 +261,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                             customColumns={originalComponentProps.customColumns}
                             featureRenderer={mutationRenderer}
                             tooltipPortalTarget={tooltipPortalTarget}
+                            footerAction={downloadButton}
                         />
                     ),
                 };
@@ -280,6 +288,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                     pageIndex={pageIndex}
                     totalRows={totalFilteredRows}
                     onPageChange={setPageIndex}
+                    footerAction={downloadButton}
                 />
             ),
         },
@@ -292,8 +301,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
             setDisplayedSegments={setDisplayedSegments}
             displayedMutationTypes={displayedMutationTypes}
             setDisplayedMutationTypes={setDisplayedMutationTypes}
-            proportionInterval={proportionInterval}
-            setProportionInterval={setProportionInterval}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
             colorScale={colorScale}
@@ -301,7 +308,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
             originalComponentProps={originalComponentProps}
             setFilterValue={setMutationFilterValue}
             mutationFilterValue={mutationFilterValue}
-            downloadData={pageData}
         />
     );
 
@@ -318,8 +324,6 @@ type ToolbarProps = {
     setDisplayedSegments: (segments: DisplayedSegment[]) => void;
     displayedMutationTypes: DisplayedMutationType[];
     setDisplayedMutationTypes: (types: DisplayedMutationType[]) => void;
-    proportionInterval: ProportionInterval;
-    setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     colorScale: ColorScale;
@@ -327,8 +331,6 @@ type ToolbarProps = {
     originalComponentProps: MutationsOverTimeProps;
     mutationFilterValue: MutationFilter;
     setFilterValue: Dispatch<SetStateAction<MutationFilter>>;
-    /** The matrix as currently shown (this page, hide-gaps applied); `null` while loading. */
-    downloadData: MutationOverTimeDataMap | null;
 };
 
 const Toolbar: FC<ToolbarProps> = ({
@@ -337,8 +339,6 @@ const Toolbar: FC<ToolbarProps> = ({
     setDisplayedSegments,
     displayedMutationTypes,
     setDisplayedMutationTypes,
-    proportionInterval,
-    setProportionInterval,
     hideGaps,
     setHideGaps,
     colorScale,
@@ -346,14 +346,7 @@ const Toolbar: FC<ToolbarProps> = ({
     originalComponentProps,
     setFilterValue,
     mutationFilterValue,
-    downloadData,
 }) => {
-    // `getData` (below) is typed to return a Promise so callers can fetch on
-    // demand; this data is already in memory, so the wrapper has nothing to await.
-    // eslint-disable-next-line @typescript-eslint/require-await
-    const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
-        downloadData === null ? [] : getDownloadData(downloadData);
-
     return (
         <>
             <MutationsOverTimeMutationsFilter setFilterValue={setFilterValue} value={mutationFilterValue} />
@@ -366,55 +359,11 @@ const Toolbar: FC<ToolbarProps> = ({
                 setDisplayedMutationTypes={setDisplayedMutationTypes}
                 displayedMutationTypes={displayedMutationTypes}
             />
-            <ProportionSelectorDropdown
-                proportionInterval={proportionInterval}
-                setMinProportion={(min) => setProportionInterval((prev) => ({ ...prev, min }))}
-                setMaxProportion={(max) => setProportionInterval((prev) => ({ ...prev, max }))}
-                labelPrefix='Mean proportion'
-            />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             {activeTab === 'Grid' && (
                 <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
             )}
-            <CsvDownloadButton
-                className='btn btn-xs'
-                getData={getDownloadDataAsync}
-                filename='mutations_over_time.csv'
-            />
-            <MutationsOverTimeInfo originalComponentProps={originalComponentProps} />
-            <Fullscreen />
         </>
-    );
-};
-
-type MutationsOverTimeInfoProps = {
-    originalComponentProps: MutationsOverTimeProps;
-};
-
-const MutationsOverTimeInfo: FC<MutationsOverTimeInfoProps> = ({ originalComponentProps }) => {
-    const connection = useConnection();
-    return (
-        <Info>
-            <InfoHeadline1>Mutations over time</InfoHeadline1>
-            <InfoParagraph>
-                This presents the proportions of {originalComponentProps.sequenceType} mutations per{' '}
-                {originalComponentProps.granularity}. In the toolbar, you can configure which mutations are displayed by
-                selecting the mutation type (substitution or deletion), choosing specific segments/genes (if the
-                organism has multiple segments/genes), and applying a filter based on the proportion of the mutation's
-                occurrence over the entire time range.
-            </InfoParagraph>
-            <InfoParagraph>
-                The grid cells have a tooltip that will show more detailed information. It shows the count of samples
-                that have the mutation and the count of samples with coverage (i.e. a non-ambiguous read) in this
-                timeframe. Ambiguous reads are excluded when calculating the proportion. It also shows the total count
-                of samples in this timeframe.
-            </InfoParagraph>
-            <InfoComponentCode
-                componentName='mutations-over-time'
-                params={originalComponentProps}
-                lapisUrl={connection.url}
-            />
-        </Info>
     );
 };
 

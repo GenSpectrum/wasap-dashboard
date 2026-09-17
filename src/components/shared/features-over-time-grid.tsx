@@ -36,6 +36,8 @@ export interface FeaturesOverTimeGridProps<F> {
     customColumns?: CustomColumn[];
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
+    /** Rendered in the pagination footer row, right-aligned (e.g. a download button). */
+    footerAction?: ReactElement;
 }
 
 type RowType<F> = {
@@ -54,6 +56,7 @@ function FeaturesOverTimeGrid<F>({
     customColumns = EMPTY_COLUMNS,
     featureRenderer,
     tooltipPortalTarget,
+    footerAction,
 }: FeaturesOverTimeGridProps<F>) {
     const tableData = useGridTableData(data, customColumns, featureRenderer);
     const columns = useGridColumns(
@@ -76,7 +79,7 @@ function FeaturesOverTimeGrid<F>({
         },
     });
 
-    return <FeaturesOverTimeGridDisplay table={table} pageSizes={pageSizes} />;
+    return <FeaturesOverTimeGridDisplay table={table} pageSizes={pageSizes} footerAction={footerAction} />;
 }
 
 export interface FeaturesOverTimeGridServerPaginatedProps<F> {
@@ -97,6 +100,8 @@ export interface FeaturesOverTimeGridServerPaginatedProps<F> {
     customColumns?: CustomColumn[];
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
+    /** Rendered in the pagination footer row, right-aligned (e.g. a download button). */
+    footerAction?: ReactElement;
 }
 
 export function FeaturesOverTimeGridServerPaginated<F>({
@@ -113,6 +118,7 @@ export function FeaturesOverTimeGridServerPaginated<F>({
     customColumns = EMPTY_COLUMNS,
     featureRenderer,
     tooltipPortalTarget,
+    footerAction,
 }: FeaturesOverTimeGridServerPaginatedProps<F>) {
     const tableData = useGridTableData(data, customColumns, featureRenderer);
     const columns = useGridColumns(
@@ -153,6 +159,7 @@ export function FeaturesOverTimeGridServerPaginated<F>({
             pageSizes={pageSizes}
             loadingState={{ isLoading, loadingRowLabels }}
             totalRows={totalRows}
+            footerAction={footerAction}
         />
     );
 }

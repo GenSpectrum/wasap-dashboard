@@ -81,7 +81,7 @@ function renderOverTime() {
                     views={[views.grid]}
                     granularity='day'
                     queries={queries}
-                    initialMeanProportionInterval={{ min: 0, max: 1 }}
+                    proportionInterval={{ min: 0, max: 1 }}
                     pageSizes={[10, 20]}
                 />
             </ConnectionProvider>

@@ -57,8 +57,18 @@ export const CsvDownloadButton: FC<CsvDownloadButtonProps> = ({
     };
 
     return (
-        <button className={className} onClick={() => void download()} disabled={isDownloading}>
-            {isDownloading ? 'Downloading...' : label}
+        <button
+            className={className}
+            onClick={() => void download()}
+            disabled={isDownloading}
+            aria-label={isDownloading ? 'Downloading...' : label}
+            title={label}
+        >
+            {isDownloading ? (
+                <span className='loading loading-spinner loading-xs' />
+            ) : (
+                <div className='iconify mdi--download' />
+            )}
         </button>
     );
 };

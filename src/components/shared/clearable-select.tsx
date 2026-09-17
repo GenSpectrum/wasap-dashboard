@@ -47,7 +47,7 @@ export function ClearableSelect({
     };
 
     return (
-        <div className={`relative inline min-w-24 ${className}`}>
+        <div className={`relative block min-w-24 ${className}`}>
             <select
                 className={`select w-full pr-14 ${selectClassName}`}
                 value={selectedOption ?? undefinedValue}
