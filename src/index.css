@@ -16,7 +16,7 @@
    The `gs-*` components render into shadow DOM and bring their own styling; this
    is here so our wrappers and chrome match them. */
 @theme {
-    --color-indigo: rgba(51, 34, 136, 0.9);
+    --color-indigo: rgba(68, 0, 132, 0.9);
     --color-green: rgba(17, 119, 51, 1);
     --color-cyan: rgba(53, 166, 222, 1);
     --color-teal: rgba(68, 170, 153, 1);
@@ -27,7 +27,7 @@
     --color-purple: rgba(170, 68, 153, 1);
     --color-lime: rgba(136, 204, 34, 1);
 
-    --color-indigoMuted: rgba(51, 34, 136, 0.3);
+    --color-indigoMuted: rgba(68, 0, 132, 0.3);
     --color-greenMuted: rgba(17, 119, 51, 0.3);
     --color-cyanMuted: rgba(53, 166, 222, 0.3);
     --color-tealMuted: rgba(68, 170, 153, 0.3);
@@ -37,6 +37,29 @@
     --color-wineMuted: rgba(136, 34, 85, 0.3);
     --color-purpleMuted: rgba(170, 68, 153, 0.3);
     --color-limeMuted: rgba(136, 204, 34, 0.3);
+
+    /* Brand accent, derived from #440084 (same hue as the plot's indigo):
+       700 is the exact brand hex, the rest are that same hue mixed toward
+       white (50-600) or black (800-900). */
+    --color-brand-50: #f6f2f9;
+    --color-brand-100: #e9e0f0;
+    --color-brand-200: #cbb8dd;
+    --color-brand-300: #ab8cc8;
+    --color-brand-400: #7c4da9;
+    --color-brand-500: #602696;
+    --color-brand-600: #4f0f8b;
+    --color-brand-700: #440084;
+    --color-brand-800: #3a0070;
+    --color-brand-900: #2e005a;
+}
+
+/* Unlayered so it beats daisyUI's own (layered) light-theme default for
+   --color-primary, which drives btn-primary / accent-primary / border-primary /
+   text-primary everywhere (Apply filters button, checkboxes, radio selects,
+   links) without having to touch each of those call sites individually. */
+:root {
+    --color-primary: var(--color-brand-700);
+    --color-primary-content: var(--color-brand-50);
 }
 
 html,

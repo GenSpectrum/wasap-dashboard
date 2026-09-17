@@ -144,7 +144,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
             mutationLinkTemplate={config.linkTemplate}
         >
             <div className='flex-1 grid-cols-[300px_1fr] lg:grid'>
-                <div className='h-full rounded-l-lg bg-blue-50 p-4'>
+                <div className='h-full rounded-l-lg bg-stone-200 p-6'>
                     <WasapPageStateSelector
                         config={config}
                         pageStateHandler={pageStateHandler}
@@ -180,7 +180,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                     ) : isPending ? (
                         <Loading />
                     ) : (
-                        <div className='h-full space-y-4 rounded-tl-none rounded-tr-none rounded-br-lg rounded-bl-none bg-gray-50 p-6'>
+                        <div className='h-full space-y-4 rounded-tl-none rounded-tr-none rounded-br-lg rounded-bl-none bg-stone-50 p-6'>
                             {data.type === 'mutations' ? (
                                 <>
                                     {data.displayMutations?.length === 0 ? (

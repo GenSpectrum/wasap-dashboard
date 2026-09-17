@@ -26,7 +26,7 @@ export function BaseFilterControls({
     setBaseFilterState: Dispatch<SetStateAction<WasapBaseFilter>>;
 }) {
     return (
-        <div className='grid grid-cols-[1fr_2fr_1fr_1fr] items-start gap-6 p-4'>
+        <div className='grid grid-cols-[1fr_2fr_1fr_1fr] items-start gap-6 p-6'>
             <div className='min-w-0'>
                 <LabeledField label='Sampling location'>
                     <TextFilter

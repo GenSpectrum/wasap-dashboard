@@ -22,10 +22,10 @@ export function AppShell() {
 
     return (
         <AnalysisModeBarContext.Provider value={{ state: modeBarState, setState: setModeBarState }}>
-            <div className='flex min-h-full flex-col bg-gray-100'>
-                <header className='bg-blue-700'>
+            <div className='flex min-h-full flex-col bg-stone-100'>
+                <header className='border-b-brand-500 border-b-2 bg-stone-200'>
                     <div className='mx-auto flex w-full max-w-[110rem] flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3'>
-                        <span className='text-lg leading-tight font-bold text-white'>
+                        <span className='text-brand-900 text-lg leading-tight font-bold'>
                             W-ASAP — Wastewater Dashboards
                         </span>
                         {modeBarState && <AnalysisModeButtons state={modeBarState} />}
@@ -57,15 +57,15 @@ function AnalysisModeButtons({ state }: { state: AnalysisModeBarState }) {
                     onClick={() => setMode(candidateMode)}
                     className={
                         candidateMode === mode
-                            ? 'rounded-md bg-white px-3 py-1 text-sm font-semibold text-blue-700'
-                            : 'rounded-md px-3 py-1 text-sm font-semibold text-blue-100 hover:bg-blue-600'
+                            ? 'bg-brand-700 rounded-md px-3 py-1 text-sm font-semibold text-white'
+                            : 'text-brand-900 rounded-md px-3 py-1 text-sm font-semibold hover:bg-stone-300'
                     }
                 >
                     {modeLabel(candidateMode)}
                 </button>
             ))}
             <Modal
-                buttonClassName='rounded-md px-3 py-1 text-sm font-semibold text-blue-100 hover:bg-blue-600'
+                buttonClassName='text-brand-900 hover:bg-stone-300 rounded-md px-3 py-1 text-sm font-semibold'
                 buttonAriaLabel='Help: exploration modes explained'
                 modalContent={<ExplorationModeInfo />}
                 size='large'
