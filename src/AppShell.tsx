@@ -1,8 +1,16 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { OrganismSelect } from './components/OrganismSelect';
+import {
+    AnalysisModeBarContext,
+    modeLabel,
+    type AnalysisModeBarState,
+} from './components/pageStateSelectors/wasap/AnalysisModeBarContext';
+import { ExplorationModeInfo } from './components/pageStateSelectors/wasap/InfoBlocks';
+import { Modal } from './components/shared/modal';
 
 /**
  * The frame every route sits in: a minimal header with the organism selector,
@@ -10,22 +18,60 @@ import { OrganismSelect } from './components/OrganismSelect';
  * `Breadcrumbs`).
  */
 export function AppShell() {
+    const [modeBarState, setModeBarState] = useState<AnalysisModeBarState | undefined>(undefined);
+
     return (
-        <div className='bg-base-100 flex min-h-full flex-col'>
-            <header className='border-base-300 border-b'>
-                <div className='mx-auto flex w-full max-w-[110rem] flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3'>
-                    <span className='text-lg leading-tight font-semibold'>W-ASAP — Wastewater Dashboards</span>
-                    <div className='ml-auto'>
-                        <OrganismSelect />
+        <AnalysisModeBarContext.Provider value={{ state: modeBarState, setState: setModeBarState }}>
+            <div className='flex min-h-full flex-col bg-gray-100'>
+                <header className='bg-blue-700'>
+                    <div className='mx-auto flex w-full max-w-[110rem] flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3'>
+                        <span className='text-lg leading-tight font-bold text-white'>
+                            W-ASAP — Wastewater Dashboards
+                        </span>
+                        {modeBarState && <AnalysisModeButtons state={modeBarState} />}
+                        <div className='ml-auto'>
+                            <OrganismSelect />
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            <main className='mx-auto w-full max-w-[110rem] flex-1 px-6 py-6'>
-                <Outlet />
-            </main>
+                <main className='mx-auto flex w-full max-w-[110rem] flex-1 flex-col'>
+                    <Outlet />
+                </main>
 
-            <ToastContainer position='bottom-right' />
+                <ToastContainer position='bottom-right' />
+            </div>
+        </AnalysisModeBarContext.Provider>
+    );
+}
+
+function AnalysisModeButtons({ state }: { state: AnalysisModeBarState }) {
+    const { mode, setMode, availableModes } = state;
+
+    return (
+        <div className='flex flex-wrap items-center gap-1'>
+            {availableModes.map((candidateMode) => (
+                <button
+                    key={candidateMode}
+                    type='button'
+                    onClick={() => setMode(candidateMode)}
+                    className={
+                        candidateMode === mode
+                            ? 'rounded-md bg-white px-3 py-1 text-sm font-semibold text-blue-700'
+                            : 'rounded-md px-3 py-1 text-sm font-semibold text-blue-100 hover:bg-blue-600'
+                    }
+                >
+                    {modeLabel(candidateMode)}
+                </button>
+            ))}
+            <Modal
+                buttonClassName='rounded-md px-3 py-1 text-sm font-semibold text-blue-100 hover:bg-blue-600'
+                buttonAriaLabel='Help: exploration modes explained'
+                modalContent={<ExplorationModeInfo />}
+                size='large'
+            >
+                Help
+            </Modal>
         </div>
     );
 }

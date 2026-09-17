@@ -5,50 +5,45 @@ import { getApiServiceForClientside } from '../../../externalData/genSpectrum/ap
 import { getCollections } from '../../../externalData/genSpectrum/getCollections';
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { ApplyFilterButton } from '../ApplyFilterButton';
-import { DynamicDateFilter } from '../DynamicDateFilter';
-import { SelectorHeadline } from '../SelectorHeadline';
-import { ExplorationModeInfo } from './InfoBlocks';
+import { useRegisterAnalysisModeBar } from './AnalysisModeBarContext';
 import { CollectionAnalysisFilter } from './filters/CollectionAnalysisFilter';
 import { CovSpectrumCollectionAnalysisFilter } from './filters/CovSpectrumCollectionAnalysisFilter';
 import { ManualAnalysisFilter } from './filters/ManualAnalysisFilter';
 import { ResistanceMutationsFilter } from './filters/ResistanceMutationsFilter';
 import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
-import { LabeledField } from './utils/LabeledField';
-import { RadioSelect } from './utils/RadioSelect';
 import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import {
     type WasapAnalysisFilter,
-    type WasapAnalysisMode,
     type WasapBaseFilter,
     type WasapFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
-import { Inset } from '../../shared/Inset';
-import { TextFilter } from '../../textFilter/text-filter';
 
 /**
  * The root filter control for the W-ASAP dashboard.
  * Uses sub filter components for the different modes, in the 'filters' directory.
+ *
+ * Location / date-range / granularity controls live above the plot now
+ * (`BaseFilterControls`, rendered by `WasapPage`) — `baseFilterState` is owned
+ * there and passed down so `getMergedPageState` can still fold it into the
+ * merged filter on Apply.
  */
 export function WasapPageStateSelector({
     config,
     resistanceSetNames,
     pageStateHandler,
-    initialBaseFilterState,
+    baseFilterState,
     initialAnalysisFilterState,
     setPageState,
 }: {
     config: WasapPageConfig;
     resistanceSetNames: string[];
     pageStateHandler: PageStateHandler<WasapFilter>;
-    initialBaseFilterState: WasapBaseFilter;
+    baseFilterState: WasapBaseFilter;
     initialAnalysisFilterState: WasapAnalysisFilter;
     setPageState: Dispatch<SetStateAction<WasapFilter>>;
 }) {
-    const [baseFilterState, setBaseFilterState] = useState(initialBaseFilterState);
-
     // State for each individual analysis mode setting component
     const {
         manualFilter,
@@ -66,6 +61,15 @@ export function WasapPageStateSelector({
     } = useAnalysisFilterStates(initialAnalysisFilterState, config);
 
     const [selectedAnalysisMode, setSelectedAnalysisMode] = useState(initialAnalysisFilterState.mode);
+
+    // Mode selection is rendered as buttons in the header (AppShell) instead of
+    // the dropdown that used to live here, so it's always visible. This state
+    // stays the source of truth; the header just gets to read and set it.
+    useRegisterAnalysisModeBar({
+        mode: selectedAnalysisMode,
+        setMode: setSelectedAnalysisMode,
+        availableModes: enabledAnalysisModes(config),
+    });
 
     function getMergedPageState(): WasapFilter {
         // We're using the ! below because we know that for the selected mode we have a defined state.
@@ -138,142 +142,83 @@ export function WasapPageStateSelector({
 
     return (
         <div className='flex flex-col gap-4'>
-            <SelectorHeadline>Filter dataset</SelectorHeadline>
-            <Inset className='p-2'>
-                <LabeledField label='Sampling location'>
-                    <TextFilter
-                        placeholderText='Sampling location'
-                        field={config.locationNameField}
-                        onInputChange={({ locationName }) => {
-                            setBaseFilterState({ ...baseFilterState, locationName });
-                        }}
-                        value={baseFilterState.locationName}
-                    />
-                </LabeledField>
-
-                <DynamicDateFilter
-                    label='Sampling date'
-                    generateOptions={recentDaysDateRangeOptions}
-                    value={baseFilterState.samplingDate}
-                    onChange={(newDateRange?) => setBaseFilterState({ ...baseFilterState, samplingDate: newDateRange })}
-                />
-                <div className='h-2' />
-                <RadioSelect
-                    label='Granularity'
-                    value={baseFilterState.granularity}
-                    options={[
-                        { value: 'day', label: 'Day' },
-                        { value: 'week', label: 'Week' },
-                    ]}
-                    onChange={(val) => setBaseFilterState({ ...baseFilterState, granularity: val })}
-                />
-                <div className='text-sm'>
-                    <input
-                        className='accent-primary'
-                        type='checkbox'
-                        id='excludeEmpty'
-                        checked={baseFilterState.excludeEmpty}
-                        onChange={(e) => setBaseFilterState({ ...baseFilterState, excludeEmpty: e.target.checked })}
-                    />
-                    <label htmlFor='excludeEmpty' className='pl-2'>
-                        Exclude empty date ranges
-                    </label>
-                </div>
-            </Inset>
-            <SelectorHeadline info={<ExplorationModeInfo />}>Mutation selection</SelectorHeadline>
-
-            <select
-                className='select select-bordered'
-                value={selectedAnalysisMode}
-                onChange={(e) => {
-                    setSelectedAnalysisMode(e.target.value as WasapAnalysisMode);
-                }}
-            >
-                {enabledAnalysisModes(config).map((mode) => (
-                    <option key={mode} value={mode}>
-                        {modeLabel(mode)}
-                    </option>
-                ))}
-            </select>
-            <Inset className='p-2'>
-                {(() => {
-                    switch (selectedAnalysisMode) {
-                        case 'manual':
-                            if (!config.manualAnalysisModeEnabled || manualFilter === undefined) {
-                                throw Error("'manual' mode selected, but it isn't enabled.");
-                            }
-                            return <ManualAnalysisFilter pageState={manualFilter} setPageState={setManualFilter} />;
-                        case 'variant':
-                            if (!config.variantAnalysisModeEnabled || variantFilter === undefined) {
-                                throw Error("'variant' mode selected, but it isn't enabled.");
-                            }
-                            return (
-                                <VariantExplorerFilter
-                                    pageState={variantFilter}
-                                    setPageState={setVariantFilter}
-                                    clinicalSequenceLapisBaseUrl={config.clinicalLapis.lapisBaseUrl}
-                                    clinicalSequenceLapisLineageField={config.clinicalLapis.lineageField}
-                                    predefinedVariantsQueryResult={
-                                        config.predefinedVariantsSource !== undefined
-                                            ? predefinedVariantsQueryResult
-                                            : undefined
-                                    }
-                                    predefinedVariantsLabel={config.predefinedVariantsSource?.variantSourceLabel}
-                                />
-                            );
-                        case 'resistance':
-                            if (!config.resistanceAnalysisModeEnabled || resistanceFilter === undefined) {
-                                throw Error("'resistance' mode selected, but it isn't enabled.");
-                            }
-                            return (
-                                <ResistanceMutationsFilter
-                                    pageState={resistanceFilter}
-                                    setPageState={setResistanceFilter}
-                                    resistanceSetNames={resistanceSetNames}
-                                />
-                            );
-                        case 'untracked':
-                            if (!config.untrackedAnalysisModeEnabled || untrackedFilter === undefined) {
-                                throw Error("'untracked' mode selected, but it isn't enabled.");
-                            }
-                            return (
-                                <UntrackedFilter
-                                    pageState={untrackedFilter}
-                                    setPageState={setUntrackedFilter}
-                                    clinicalSequenceLapisBaseUrl={config.clinicalLapis.lapisBaseUrl}
-                                    clinicalSequenceLapisLineageField={config.clinicalLapis.lineageField}
-                                    cladeLineageQueryResult={cladeLineageQueryResult}
-                                />
-                            );
-                        case 'covSpectrumCollection':
-                            if (
-                                !config.covSpectrumCollectionAnalysisModeEnabled ||
-                                covSpectrumCollectionFilter === undefined
-                            ) {
-                                throw Error("'covSpectrumCollection' mode selected, but it isn't enabled.");
-                            }
-                            return (
-                                <CovSpectrumCollectionAnalysisFilter
-                                    pageState={covSpectrumCollectionFilter}
-                                    setPageState={setCovSpectrumCollectionFilter}
-                                    collectionsApiBaseUrl={config.collectionsApiBaseUrl}
-                                    collectionTitleFilter={config.collectionTitleFilter}
-                                />
-                            );
-                        case 'collection':
-                            if (!config.collectionAnalysisModeEnabled || collectionFilter === undefined) {
-                                throw Error("'collection' mode selected, but it isn't enabled.");
-                            }
-                            return (
-                                <CollectionAnalysisFilter
-                                    pageState={collectionFilter}
-                                    setPageState={setCollectionFilter}
-                                    organism={config.genSpectrumOrganismName}
-                                />
-                            );
-                    }
-                })()}
-            </Inset>
+            {(() => {
+                switch (selectedAnalysisMode) {
+                    case 'manual':
+                        if (!config.manualAnalysisModeEnabled || manualFilter === undefined) {
+                            throw Error("'manual' mode selected, but it isn't enabled.");
+                        }
+                        return <ManualAnalysisFilter pageState={manualFilter} setPageState={setManualFilter} />;
+                    case 'variant':
+                        if (!config.variantAnalysisModeEnabled || variantFilter === undefined) {
+                            throw Error("'variant' mode selected, but it isn't enabled.");
+                        }
+                        return (
+                            <VariantExplorerFilter
+                                pageState={variantFilter}
+                                setPageState={setVariantFilter}
+                                clinicalSequenceLapisBaseUrl={config.clinicalLapis.lapisBaseUrl}
+                                clinicalSequenceLapisLineageField={config.clinicalLapis.lineageField}
+                                predefinedVariantsQueryResult={
+                                    config.predefinedVariantsSource !== undefined
+                                        ? predefinedVariantsQueryResult
+                                        : undefined
+                                }
+                                predefinedVariantsLabel={config.predefinedVariantsSource?.variantSourceLabel}
+                            />
+                        );
+                    case 'resistance':
+                        if (!config.resistanceAnalysisModeEnabled || resistanceFilter === undefined) {
+                            throw Error("'resistance' mode selected, but it isn't enabled.");
+                        }
+                        return (
+                            <ResistanceMutationsFilter
+                                pageState={resistanceFilter}
+                                setPageState={setResistanceFilter}
+                                resistanceSetNames={resistanceSetNames}
+                            />
+                        );
+                    case 'untracked':
+                        if (!config.untrackedAnalysisModeEnabled || untrackedFilter === undefined) {
+                            throw Error("'untracked' mode selected, but it isn't enabled.");
+                        }
+                        return (
+                            <UntrackedFilter
+                                pageState={untrackedFilter}
+                                setPageState={setUntrackedFilter}
+                                clinicalSequenceLapisBaseUrl={config.clinicalLapis.lapisBaseUrl}
+                                clinicalSequenceLapisLineageField={config.clinicalLapis.lineageField}
+                                cladeLineageQueryResult={cladeLineageQueryResult}
+                            />
+                        );
+                    case 'covSpectrumCollection':
+                        if (
+                            !config.covSpectrumCollectionAnalysisModeEnabled ||
+                            covSpectrumCollectionFilter === undefined
+                        ) {
+                            throw Error("'covSpectrumCollection' mode selected, but it isn't enabled.");
+                        }
+                        return (
+                            <CovSpectrumCollectionAnalysisFilter
+                                pageState={covSpectrumCollectionFilter}
+                                setPageState={setCovSpectrumCollectionFilter}
+                                collectionsApiBaseUrl={config.collectionsApiBaseUrl}
+                                collectionTitleFilter={config.collectionTitleFilter}
+                            />
+                        );
+                    case 'collection':
+                        if (!config.collectionAnalysisModeEnabled || collectionFilter === undefined) {
+                            throw Error("'collection' mode selected, but it isn't enabled.");
+                        }
+                        return (
+                            <CollectionAnalysisFilter
+                                pageState={collectionFilter}
+                                setPageState={setCollectionFilter}
+                                organism={config.genSpectrumOrganismName}
+                            />
+                        );
+                }
+            })()}
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}
                 newPageState={getMergedPageState()}
@@ -281,23 +226,6 @@ export function WasapPageStateSelector({
             />
         </div>
     );
-}
-
-function modeLabel(mode: WasapAnalysisMode): string {
-    switch (mode) {
-        case 'manual':
-            return 'Manual';
-        case 'resistance':
-            return 'Resistance Mutations';
-        case 'variant':
-            return 'Variant Explorer';
-        case 'untracked':
-            return 'Untracked Mutations';
-        case 'covSpectrumCollection':
-            return 'CovSpectrum Collection';
-        case 'collection':
-            return 'Collection';
-    }
 }
 
 /**
