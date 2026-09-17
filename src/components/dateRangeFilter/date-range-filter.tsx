@@ -156,39 +156,32 @@ export const DateRangeFilterInner = ({
     };
 
     return (
-        <div className={'@container'}>
-            <div className='flex min-w-[7.5rem] flex-col @md:flex-row'>
-                <div className='grow'>
-                    <ClearableSelect
-                        items={options.map((item) => item.label)}
-                        placeholderText={placeholder}
-                        onChange={(value) => {
-                            const dateRangeOption = options.find((item) => item.label === value);
-                            onSelectChange(dateRangeOption ?? null);
-                        }}
-                        value={state?.label ?? null}
-                        selectClassName={'rounded-t-md rounded-b-none @md:rounded-l-md @md:rounded-r-none'}
-                    />
-                </div>
-                <div className={'@4xs:flex-row flex grow flex-col'}>
-                    <DatePicker
-                        className={'@4xs:rounded-bl-md min-w-[7.5rem] grow rounded-none @md:rounded-l-none'}
-                        value={state?.dateFrom}
-                        onChange={onChangeDateFrom}
-                        maxDate={state?.dateTo}
-                        placeholderText={'Date from'}
-                    />
-                    <DatePicker
-                        className={
-                            '@4xs:rounded-tr-none @4xs:rounded-l-none min-w-[7.5rem] grow rounded-t-none rounded-b-md @md:rounded-r-md'
-                        }
-                        value={state?.dateTo}
-                        onChange={onChangeDateTo}
-                        minDate={state?.dateFrom}
-                        placeholderText={'Date to'}
-                    />
-                </div>
-            </div>
+        <div className='grid grid-cols-[minmax(0,40fr)_minmax(0,30fr)_minmax(0,30fr)]'>
+            <ClearableSelect
+                items={options.map((item) => item.label)}
+                placeholderText={placeholder}
+                onChange={(value) => {
+                    const dateRangeOption = options.find((item) => item.label === value);
+                    onSelectChange(dateRangeOption ?? null);
+                }}
+                value={state?.label ?? null}
+                className='w-full'
+                selectClassName={'w-full rounded-l-md rounded-r-none'}
+            />
+            <DatePicker
+                className={'w-full rounded-none'}
+                value={state?.dateFrom}
+                onChange={onChangeDateFrom}
+                maxDate={state?.dateTo}
+                placeholderText={'Date from'}
+            />
+            <DatePicker
+                className={'w-full rounded-l-none rounded-r-md'}
+                value={state?.dateTo}
+                onChange={onChangeDateTo}
+                minDate={state?.dateFrom}
+                placeholderText={'Date to'}
+            />
         </div>
     );
 };
