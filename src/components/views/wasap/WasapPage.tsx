@@ -19,7 +19,6 @@ import { WasapPageStateHandler } from '../../../pageState/wasap/WasapPageStateHa
 import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { views } from '../../../types/dashboardComponents';
 import { Loading } from '../../../util/Loading';
-import { ComponentWrapper } from '../../ComponentWrapper';
 import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
 import { MutationsOverTime } from '../../mutationsOverTime/mutations-over-time';
@@ -186,26 +185,18 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                     {data.displayMutations?.length === 0 ? (
                                         <NoDataHelperText analysisFilter={analysis} />
                                     ) : (
-                                        <ComponentWrapper
-                                            title={
-                                                sequenceType === 'nucleotide'
-                                                    ? 'Nucleotide mutations over time'
-                                                    : 'Amino acid mutations over time'
-                                            }
-                                        >
-                                            <MutationsOverTime
-                                                width='100%'
-                                                filter={filter}
-                                                sequenceType={sequenceType}
-                                                views={[views.grid]}
-                                                granularity={base.granularity}
-                                                displayMutations={data.displayMutations}
-                                                hideGaps={base.excludeEmpty ? true : undefined}
-                                                pageSizes={[20, 50, 100, 250]}
-                                                initialMeanProportionInterval={initialMeanProportionInterval}
-                                                customColumns={data.customColumns}
-                                            />
-                                        </ComponentWrapper>
+                                        <MutationsOverTime
+                                            width='100%'
+                                            filter={filter}
+                                            sequenceType={sequenceType}
+                                            views={[views.grid]}
+                                            granularity={base.granularity}
+                                            displayMutations={data.displayMutations}
+                                            hideGaps={base.excludeEmpty ? true : undefined}
+                                            pageSizes={[20, 50, 100, 250]}
+                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            customColumns={data.customColumns}
+                                        />
                                     )}
                                     {analysis.mode === 'variant' &&
                                         analysis.signatureType === 'computed' &&
@@ -254,20 +245,16 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                             ) : (
                                 <>
                                     <div className='rounded-md border-2 border-gray-100 p-4'>
-                                        <ComponentWrapper
-                                            title={`Collection over time${data.collection.title ? `: ${data.collection.title}` : ''}`}
-                                        >
-                                            <QueriesOverTime
-                                                width='100%'
-                                                filter={filter}
-                                                queries={data.collection.queries}
-                                                views={[views.grid]}
-                                                granularity={base.granularity}
-                                                hideGaps={base.excludeEmpty ? true : undefined}
-                                                pageSizes={[20, 50, 100, 250]}
-                                                initialMeanProportionInterval={initialMeanProportionInterval}
-                                            />
-                                        </ComponentWrapper>
+                                        <QueriesOverTime
+                                            width='100%'
+                                            filter={filter}
+                                            queries={data.collection.queries}
+                                            views={[views.grid]}
+                                            granularity={base.granularity}
+                                            hideGaps={base.excludeEmpty ? true : undefined}
+                                            pageSizes={[20, 50, 100, 250]}
+                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                        />
                                     </div>
                                     <CollectionInfo
                                         collectionId={data.collection.id}

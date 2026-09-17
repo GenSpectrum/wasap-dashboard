@@ -14,7 +14,6 @@ import { getFilteredQueryOverTimeData, type QueryFilter } from './getFilteredQue
 import { QueriesOverTimeFilter } from './queries-over-time-filter';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
-import { useConnection } from '../../dataLayer/hooks/connection';
 import { useQueriesOverTime } from '../../dataLayer/hooks/queriesOverTime';
 import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../dataLayer/queries';
 import { type ProportionValue, getProportion } from '../../query/queryMutationsOverTime';
@@ -27,10 +26,7 @@ import { ColorScaleSelectorDropdown } from '../shared/color-scale-selector-dropd
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
 import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
-import { Fullscreen } from '../shared/fullscreen';
-import { FullscreenTargetContext } from '../shared/fullscreen-target';
 import { HideGapsButton } from '../shared/hide-gaps-button';
-import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
@@ -88,15 +84,12 @@ export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
-    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ErrorBoundary size={size} schema={queriesOverTimeSchema} componentProps={componentProps}>
-            <FullscreenTargetContext.Provider value={containerRef}>
-                <ResizeContainer size={size} ref={containerRef}>
-                    <QueriesOverTimeInner {...componentProps} />
-                </ResizeContainer>
-            </FullscreenTargetContext.Provider>
+            <ResizeContainer size={size}>
+                <QueriesOverTimeInner {...componentProps} />
+            </ResizeContainer>
         </ErrorBoundary>
     );
 };
@@ -184,6 +177,14 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         [tooltipPortalTarget, queryLookupMap],
     );
 
+    const downloadButton = (
+        <CsvDownloadButton
+            className='btn btn-outline btn-sm'
+            getData={() => getDownloadData(filteredData)}
+            filename='queries_over_time.csv'
+        />
+    );
+
     const getTab = (view: QueriesOverTimeView) => {
         switch (view) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- for extensibility
@@ -199,6 +200,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
                             customColumns={originalComponentProps.customColumns}
                             featureRenderer={queryRenderer}
                             tooltipPortalTarget={tooltipPortalTarget}
+                            footerAction={downloadButton}
                         />
                     ),
                 };
@@ -214,10 +216,8 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
             setProportionInterval={setProportionInterval}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
-            filteredData={filteredData}
             colorScale={colorScale}
             setColorScale={setColorScale}
-            originalComponentProps={originalComponentProps}
             setFilterValue={setQueryFilterValue}
             queryFilterValue={queryFilterValue}
         />
@@ -238,10 +238,8 @@ type ToolbarProps = {
     setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
-    filteredData: ReturnType<typeof getFilteredQueryOverTimeData>;
     colorScale: ColorScale;
     setColorScale: Dispatch<SetStateAction<ColorScale>>;
-    originalComponentProps: QueriesOverTimeProps;
     queryFilterValue: QueryFilter;
     setFilterValue: Dispatch<SetStateAction<QueryFilter>>;
 };
@@ -252,10 +250,8 @@ const Toolbar: FC<ToolbarProps> = ({
     setProportionInterval,
     hideGaps,
     setHideGaps,
-    filteredData,
     colorScale,
     setColorScale,
-    originalComponentProps,
     setFilterValue,
     queryFilterValue,
 }) => {
@@ -272,43 +268,7 @@ const Toolbar: FC<ToolbarProps> = ({
             {activeTab === 'Grid' && (
                 <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
             )}
-            <CsvDownloadButton
-                className='btn btn-xs'
-                getData={() => getDownloadData(filteredData)}
-                filename='queries_over_time.csv'
-            />
-            <QueriesOverTimeInfo originalComponentProps={originalComponentProps} />
-            <Fullscreen />
         </>
-    );
-};
-
-type QueriesOverTimeInfoProps = {
-    originalComponentProps: QueriesOverTimeProps;
-};
-
-const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentProps }) => {
-    const connection = useConnection();
-    return (
-        <Info>
-            <InfoHeadline1>Queries over time</InfoHeadline1>
-            <InfoParagraph>
-                This component displays the proportions of custom queries per {originalComponentProps.granularity}. Each
-                query consists of a count query (what to count) and a coverage query (what to use as the denominator).
-                In the toolbar, you can filter queries by text and configure which queries are displayed by applying a
-                filter based on the mean proportion of the query's occurrence over the entire time range.
-            </InfoParagraph>
-            <InfoParagraph>
-                The grid cells have a tooltip that will show more detailed information. It shows the count of samples
-                that match the count query and the count of samples that match the coverage query in this timeframe. It
-                also shows the total count of samples in this timeframe.
-            </InfoParagraph>
-            <InfoComponentCode
-                componentName='queries-over-time'
-                params={originalComponentProps}
-                lapisUrl={connection.url}
-            />
-        </Info>
     );
 };
 

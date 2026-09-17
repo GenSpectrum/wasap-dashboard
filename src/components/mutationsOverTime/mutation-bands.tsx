@@ -1,14 +1,14 @@
 import { getCoreRowModel } from '@tanstack/table-core';
-import { Fragment, useId, useMemo, type Dispatch, type SetStateAction } from 'react';
+import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type SetStateAction } from 'react';
 
 import { type TemporalDataMap } from './MutationOverTimeData';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
 import { type ColorScale, getColorWithinScale } from '../shared/color-scale-selector';
 import { type FeatureRenderer } from '../shared/features-over-time-grid';
-import { getTooltipPosition, styleGridHeader } from '../shared/features-over-time-grid-shared';
+import { getTooltipPosition, PaginationFooter, styleGridHeader } from '../shared/features-over-time-grid-shared';
 import PortalTooltip from '../shared/portal-tooltip';
-import { Pagination, type PageSizes } from '../shared/tanstackTable/pagination';
+import { type PageSizes } from '../shared/tanstackTable/pagination';
 import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';
 import { useReactTable } from '../shared/tanstackTable/tanstackTable';
 
@@ -65,6 +65,8 @@ export interface MutationBandsProps<F> {
     /** Total number of rows across all pages. */
     totalRows: number;
     onPageChange: Dispatch<SetStateAction<number>>;
+    /** Rendered in the pagination footer row, right-aligned (e.g. a download button). */
+    footerAction?: ReactElement;
 }
 
 export function MutationBands<F>({
@@ -80,6 +82,7 @@ export function MutationBands<F>({
     pageIndex,
     totalRows,
     onPageChange,
+    footerAction,
 }: MutationBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
@@ -188,9 +191,12 @@ export function MutationBands<F>({
                     </tbody>
                 </table>
             </div>
-            <div className='mt-2'>
-                <Pagination table={paginationTable} pageSizes={pageSizes} totalRows={totalRows} />
-            </div>
+            <PaginationFooter
+                table={paginationTable}
+                pageSizes={pageSizes}
+                totalRows={totalRows}
+                footerAction={footerAction}
+            />
         </div>
     );
 }

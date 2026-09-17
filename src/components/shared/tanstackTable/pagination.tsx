@@ -21,7 +21,7 @@ export function Pagination({
 }) {
     return (
         <div className='@container'>
-            <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 @xl:justify-end'>
+            <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2'>
                 <PageSizeSelector table={table} pageSizes={pageSizes} />
                 <PageIndicator table={table} totalRows={totalRows} />
                 <div className='hidden @xl:block'>

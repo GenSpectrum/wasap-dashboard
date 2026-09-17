@@ -9,6 +9,33 @@ import { flexRender } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 
+/**
+ * The pagination footer row, with an optional action (e.g. a download button)
+ * pinned to the right. `footerAction` is absolutely positioned rather than a
+ * grid/flex sibling, so it doesn't shrink Pagination's own box - Pagination's
+ * internal controls (rows-per-page, page indicator, go-to-page, prev/next)
+ * wrap onto multiple lines if the width they get to work with is constrained,
+ * same as any flex-wrap content squeezed into a narrower column.
+ */
+export function PaginationFooter<T>({
+    table,
+    pageSizes,
+    totalRows,
+    footerAction,
+}: {
+    table: Table<T>;
+    pageSizes: PageSizes;
+    totalRows: number;
+    footerAction?: ReactElement;
+}) {
+    return (
+        <div className='relative mt-2'>
+            <Pagination table={table} pageSizes={pageSizes} totalRows={totalRows} />
+            {footerAction && <div className='absolute top-1/2 right-0 -translate-y-1/2'>{footerAction}</div>}
+        </div>
+    );
+}
+
 const NON_BREAKING_SPACE = ' ';
 
 /**
@@ -58,6 +85,8 @@ type FeaturesOverTimeGridDisplayProps<T> = {
               loadingRowLabels: string[];
           }
         | { isLoading: false; loadingRowLabels?: never };
+    /** Rendered in the pagination footer row, right-aligned (e.g. a download button). */
+    footerAction?: ReactElement;
 };
 
 /**
@@ -71,6 +100,7 @@ export function FeaturesOverTimeGridDisplay<T>({
     pageSizes,
     loadingState,
     totalRows,
+    footerAction,
 }: FeaturesOverTimeGridDisplayProps<T>) {
     const displayedTotalRows = totalRows ?? table.getCoreRowModel().rows.length;
 
@@ -128,9 +158,12 @@ export function FeaturesOverTimeGridDisplay<T>({
                     )}
                 </tbody>
             </table>
-            <div className={'mt-2'}>
-                <Pagination table={table} pageSizes={pageSizes} totalRows={displayedTotalRows} />
-            </div>
+            <PaginationFooter
+                table={table}
+                pageSizes={pageSizes}
+                totalRows={displayedTotalRows}
+                footerAction={footerAction}
+            />
         </div>
     );
 }
