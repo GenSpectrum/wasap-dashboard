@@ -49,8 +49,9 @@ export function WasapModeTabs() {
                     </NavLink>
                 ))}
             </nav>
+            {/* Nudged down: the tabs have their underline below the text, which centers the row lower than the text. */}
             <Modal
-                buttonClassName='p-1 text-gray-700 hover:bg-stone-300'
+                buttonClassName='translate-y-[3.5px] p-1 text-gray-700 hover:bg-stone-300'
                 buttonAriaLabel='Show information about the analysis modes'
                 modalContent={<ExplorationModeInfo />}
                 size='large'
