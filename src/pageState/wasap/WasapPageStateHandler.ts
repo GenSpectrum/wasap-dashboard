@@ -1,15 +1,11 @@
 import { parseBaseFilter, setBaseFilterSearchParams } from './baseFilter';
 import { getDefaultMeanProportion } from './defaultMeanProportion';
 import { ManualPageStateHandler } from './handlers/ManualPageStateHandler';
+import { ResistancePageStateHandler } from './handlers/ResistancePageStateHandler';
+import { UntrackedPageStateHandler } from './handlers/UntrackedPageStateHandler';
 import { VariantExplorerPageStateHandler } from './handlers/VariantExplorerPageStateHandler';
-import {
-    type ExcludeSetName,
-    type WasapAnalysisFilter,
-    type WasapAnalysisMode,
-    type WasapFilter,
-} from './wasapAnalysisFilter';
+import { type WasapAnalysisFilter, type WasapAnalysisMode, type WasapFilter } from './wasapAnalysisFilter';
 import { enabledAnalysisModes, isModeEnabled, type WasapPageConfig } from '../../config/wasapPageConfig';
-import { type SequenceType } from '../../types/dashboardComponents';
 import { formatUrl } from '../../util/formatUrl';
 import { type PageStateHandler } from '../PageStateHandler';
 import { type TextFieldConfig, parseTextFiltersFromUrl } from '../textFieldConfig';
@@ -32,7 +28,6 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     parsePageStateFromUrl(searchParams: URLSearchParams): WasapFilter {
         // URL-parsed settings
         const texts = parseTextFiltersFromUrl(searchParams, this.filterConfig);
-        const providedSequenceType = texts.sequenceType as SequenceType | undefined;
         const providedMode = texts.analysisMode as WasapAnalysisMode | undefined;
 
         // config provided defaults
@@ -53,28 +48,8 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
             case 'variant':
                 throw Error('The variant mode is handled by its own handler.');
             case 'resistance':
-                if (!this.config.resistanceAnalysisModeEnabled) {
-                    throw Error("The 'resistance' analysis mode is not enabled.");
-                }
-                analysis = {
-                    mode,
-                    sequenceType: 'amino acid',
-                    resistanceSet: texts.resistanceSet ?? this.config.filterDefaults.resistance.resistanceSet,
-                };
-                break;
             case 'untracked':
-                if (!this.config.untrackedAnalysisModeEnabled) {
-                    throw Error("The 'untracked' analysis mode is not enabled.");
-                }
-                analysis = {
-                    mode,
-                    sequenceType: providedSequenceType ?? this.config.filterDefaults.untracked.sequenceType,
-                    excludeSet:
-                        (texts.excludeSet as ExcludeSetName | undefined) ??
-                        this.config.filterDefaults.untracked.excludeSet,
-                    excludeVariants: texts.excludeVariants?.split('|'),
-                };
-                break;
+                throw Error(`The ${mode} mode is handled by its own handler.`);
             case 'covSpectrumCollection':
                 if (!this.config.covSpectrumCollectionAnalysisModeEnabled) {
                     throw Error("The 'covSpectrumCollection' analysis mode is not enabled.");
@@ -121,16 +96,6 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         // analysis mode dependent settings
         setSearchFromString(search, 'analysisMode', analysis.mode);
         switch (analysis.mode) {
-            case 'resistance':
-                setSearchFromString(search, 'resistanceSet', analysis.resistanceSet);
-                break;
-            case 'untracked':
-                setSearchFromString(search, 'sequenceType', analysis.sequenceType);
-                setSearchFromString(search, 'excludeSet', analysis.excludeSet);
-                if (analysis.excludeSet === 'custom') {
-                    setSearchFromString(search, 'excludeVariants', analysis.excludeVariants?.join('|'));
-                }
-                break;
             case 'covSpectrumCollection':
                 setSearchFromString(
                     search,
@@ -167,6 +132,16 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
                     throw Error("The 'variant' analysis mode is not enabled.");
                 }
                 return new VariantExplorerPageStateHandler(this.config);
+            case 'resistance':
+                if (!isModeEnabled(this.config, 'resistance')) {
+                    throw Error("The 'resistance' analysis mode is not enabled.");
+                }
+                return new ResistancePageStateHandler(this.config);
+            case 'untracked':
+                if (!isModeEnabled(this.config, 'untracked')) {
+                    throw Error("The 'untracked' analysis mode is not enabled.");
+                }
+                return new UntrackedPageStateHandler(this.config);
             default:
                 return undefined;
         }

@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { WasapPageStateHandler } from './WasapPageStateHandler';
-import {
-    type WasapCovSpectrumCollectionFilter,
-    type WasapResistanceFilter,
-    type WasapUntrackedFilter,
-} from './wasapAnalysisFilter';
+import { type WasapCovSpectrumCollectionFilter, type WasapResistanceFilter } from './wasapAnalysisFilter';
 import { testConfig, testConfigWithCollection } from './wasapTestConfig';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 
@@ -54,94 +50,6 @@ describe('WasapPageStateHandler', () => {
 
             expect(url).not.toContain('meanProportionLower');
             expect(url).toContain('meanProportionUpper=0.5');
-        });
-    });
-
-    describe('resistance mode', () => {
-        it('parses and encodes resistance filter', () => {
-            const url =
-                '/wastewater/covid?' +
-                'locationName=Z%C3%BCrich+%28ZH%29&' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'granularity=day&' +
-                'analysisMode=resistance&' +
-                'resistanceSet=3CLpro&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.analysis.mode).toBe('resistance');
-            const analysis = filter.analysis as WasapResistanceFilter;
-            expect(analysis.resistanceSet).toBe('3CLpro');
-
-            const newUrl = handler.toUrl(filter);
-            expect(newUrl).toBe(url);
-        });
-
-        it('resistance mode always uses amino acid sequence type', () => {
-            const url = '/wastewater/covid?analysisMode=resistance&resistanceSet=3CLpro&sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.analysis.mode).toBe('resistance');
-            const analysis = filter.analysis as WasapResistanceFilter;
-            expect(analysis.sequenceType).toBe('amino acid');
-        });
-    });
-
-    describe('untracked mode', () => {
-        it('parses and encodes untracked filter with predefined excludeSet', () => {
-            const url =
-                '/wastewater/covid?' +
-                'locationName=Z%C3%BCrich+%28ZH%29&' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'granularity=day&' +
-                'analysisMode=untracked&' +
-                'sequenceType=nucleotide&' +
-                'excludeSet=predefined&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.analysis.mode).toBe('untracked');
-            const analysis = filter.analysis as WasapUntrackedFilter;
-            expect(analysis.excludeSet).toBe('predefined');
-            expect(analysis.excludeVariants).toBeUndefined();
-
-            const newUrl = handler.toUrl(filter);
-            expect(newUrl).toBe(url);
-        });
-
-        it('parses and encodes untracked filter with custom excludeSet and variants', () => {
-            const url =
-                '/wastewater/covid?' +
-                'locationName=Z%C3%BCrich+%28ZH%29&' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'granularity=day&' +
-                'analysisMode=untracked&' +
-                'sequenceType=nucleotide&' +
-                'excludeSet=custom&' +
-                'excludeVariants=XBB.1.5*%7CBA.2*%7CJN.1&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.analysis.mode).toBe('untracked');
-            const analysis = filter.analysis as WasapUntrackedFilter;
-            expect(analysis.excludeSet).toBe('custom');
-            expect(analysis.excludeVariants).toEqual(['XBB.1.5*', 'BA.2*', 'JN.1']);
-
-            const newUrl = handler.toUrl(filter);
-            expect(newUrl).toBe(url);
-        });
-
-        it('untracked mode round-trip with pipe-separated variants', () => {
-            const url =
-                '/wastewater/covid?' +
-                'analysisMode=untracked&' +
-                'sequenceType=nucleotide&' +
-                'excludeSet=custom&' +
-                'excludeVariants=XBB*%7CBA.2*%7CJN.1%7CXFG*&';
-            const filter1 = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-            const url2 = handler.toUrl(filter1);
-            const filter2 = handler.parsePageStateFromUrl(new URL(`http://example.com${url2}`).searchParams);
-
-            const analysis1 = filter1.analysis as WasapUntrackedFilter;
-            const analysis2 = filter2.analysis as WasapUntrackedFilter;
-            expect(analysis2.excludeVariants).toEqual(analysis1.excludeVariants);
         });
     });
 
