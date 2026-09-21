@@ -37,6 +37,8 @@ const COVERAGE_BAND_MIN_HALF = 1.5;
 const ROW_HEIGHT = COVERAGE_BAND_MAX_HALF * 2 + 6;
 /** The band is drawn in a stretched space, so x is an arbitrary round number. */
 const SPAN = 1000;
+/** Width, in screen pixels, of the white gap that separates two buckets. */
+const BUCKET_GAP = 1;
 
 function coverageHalfThickness(coverage: number, maxCoverage: number): number {
     if (coverage <= 0 || maxCoverage <= 0) {
@@ -273,6 +275,18 @@ function BandRow<F>({
                     strokeWidth={1}
                     vectorEffect='non-scaling-stroke'
                 />
+                {columns.slice(1).map((column, index) => (
+                    <line
+                        key={column.dateString}
+                        x1={(index + 1) * width}
+                        x2={(index + 1) * width}
+                        y1={0}
+                        y2={ROW_HEIGHT}
+                        stroke='white'
+                        strokeWidth={BUCKET_GAP}
+                        vectorEffect='non-scaling-stroke'
+                    />
+                ))}
             </svg>
 
             <div className='absolute inset-0 flex'>
