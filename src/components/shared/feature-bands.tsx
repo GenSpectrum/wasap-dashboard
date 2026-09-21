@@ -2,8 +2,10 @@ import { getCoreRowModel } from '@tanstack/table-core';
 import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
 import z from 'zod';
 
-import { type ColorScale, getColorWithinScale } from './color-scale-selector';
+import { type BandViewSettings } from './band-view-settings';
+import { getColorWithinScale } from './color-scale-selector';
 import PortalTooltip from './portal-tooltip';
+import { formatProportion } from './table/formatProportion';
 import { Pagination, type PageSizes } from './tanstackTable/pagination';
 import { usePageSizeContext } from './tanstackTable/pagination-context';
 import { useReactTable } from './tanstackTable/tanstackTable';
@@ -57,6 +59,10 @@ const COVERAGE_BAND_MIN_HALF = 1.5;
 const ROW_HEIGHT = COVERAGE_BAND_MAX_HALF * 2 + 6;
 /** The band is drawn in a stretched space, so x is an arbitrary round number. */
 const SPAN = 1000;
+/** Black text stays readable on the dark parts of a band, and the light parts, with a white outline. */
+const PERCENTAGE_OUTLINE = ['-1px 0', '1px 0', '0 -1px', '0 1px', '-1px -1px', '1px -1px', '-1px 1px', '1px 1px']
+    .map((offset) => `${offset} 0 white`)
+    .join(', ');
 /** Width, in screen pixels, of the white gap that separates two buckets. */
 const BUCKET_GAP = 1;
 
@@ -78,7 +84,7 @@ export interface FeatureBandsProps<F> {
     isLoading: boolean;
     loadingRowLabels: string[];
     requestedDateRanges: Temporal[];
-    colorScale: ColorScale;
+    viewSettings: BandViewSettings;
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
     pageSizes: PageSizes;
@@ -101,7 +107,7 @@ export function FeatureBands<F>({
     isLoading,
     loadingRowLabels,
     requestedDateRanges,
-    colorScale,
+    viewSettings,
     featureRenderer,
     tooltipPortalTarget,
     pageSizes,
@@ -213,7 +219,7 @@ export function FeatureBands<F>({
                                               feature={feature}
                                               values={rows[rowIndex] ?? []}
                                               columns={columns}
-                                              colorScale={colorScale}
+                                              viewSettings={viewSettings}
                                               maxCoverage={maxCoverage}
                                               gradientId={`${gradientPrefix}-${rowIndex}`}
                                               rowIndex={rowIndex}
@@ -272,7 +278,7 @@ function BandRow<F>({
     feature,
     values,
     columns,
-    colorScale,
+    viewSettings,
     maxCoverage,
     gradientId,
     rowIndex,
@@ -283,7 +289,7 @@ function BandRow<F>({
     feature: F;
     values: (ProportionValue | undefined)[];
     columns: Temporal[];
-    colorScale: ColorScale;
+    viewSettings: BandViewSettings;
     maxCoverage: number;
     gradientId: string;
     rowIndex: number;
@@ -320,7 +326,7 @@ function BandRow<F>({
                     <linearGradient id={gradientId} gradientUnits='userSpaceOnUse' x1={0} x2={SPAN}>
                         {columns.map((column, index) => {
                             const value = values[index] ?? null;
-                            const color = getColorWithinScale(getProportion(value), colorScale);
+                            const color = getColorWithinScale(getProportion(value), viewSettings.colorScale);
                             return (
                                 <Fragment key={column.dateString}>
                                     <stop offset={index / columns.length} stopColor={color} />
@@ -354,6 +360,7 @@ function BandRow<F>({
             <div className='absolute inset-0 flex'>
                 {columns.map((column, index) => {
                     const value = values[index] ?? null;
+                    const proportion = getProportion(value);
                     const tooltip = featureRenderer.renderTooltip(feature, column, value);
                     return (
                         // PortalTooltip's own wrapper div isn't a flex item itself, so
@@ -365,7 +372,19 @@ function BandRow<F>({
                                 position={getTooltipPosition(rowIndex, numberOfRows, index, columns.length)}
                                 portalTarget={tooltipPortalTarget}
                             >
-                                <div className='cursor-default' style={{ height: `${ROW_HEIGHT}px` }} />
+                                <div
+                                    className='@container flex cursor-default items-center justify-center'
+                                    style={{ height: `${ROW_HEIGHT}px` }}
+                                >
+                                    {viewSettings.showPercentages && proportion !== undefined && (
+                                        <span
+                                            className='invisible text-xs font-medium text-black @[2rem]:visible'
+                                            style={{ textShadow: PERCENTAGE_OUTLINE }}
+                                        >
+                                            {formatProportion(proportion, 0)}
+                                        </span>
+                                    )}
+                                </div>
                             </PortalTooltip>
                         </div>
                     );

@@ -1,6 +1,7 @@
 import { describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
+import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
 import { FeatureBands, type FeatureBandsProps } from './feature-bands';
 import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
@@ -35,7 +36,7 @@ function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
                 isLoading={false}
                 loadingRowLabels={[]}
                 requestedDateRanges={dates}
-                colorScale={{ min: 0, max: 1, color: 'indigo' }}
+                viewSettings={DEFAULT_BAND_VIEW_SETTINGS}
                 featureRenderer={{
                     asString: (value) => value,
                     renderRowLabel: (value) => <span>{value}</span>,
@@ -70,6 +71,22 @@ describe('FeatureBands', () => {
         await expect.element(container.querySelector('table')!).toBeInTheDocument();
         expect(container.querySelectorAll('thead th')).toHaveLength(2); // row label + all dates
         expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(2);
+    });
+
+    it('does not print the percentages by default', async () => {
+        const { getByText } = renderBands();
+
+        await expect.element(getByText('10%')).not.toBeInTheDocument();
+    });
+
+    it('prints the percentage of every bucket over the band when asked to', async () => {
+        // In the data, every bucket has a coverage of 100, so the count is the percentage.
+        const { getByText } = renderBands({ viewSettings: { ...DEFAULT_BAND_VIEW_SETTINGS, showPercentages: true } });
+
+        await expect.element(getByText('10%')).toBeInTheDocument();
+        await expect.element(getByText('20%')).toBeInTheDocument();
+        await expect.element(getByText('30%')).toBeInTheDocument();
+        await expect.element(getByText('40%')).toBeInTheDocument();
     });
 
     it('renders custom columns between the row label and the bands, with the value of each row', async () => {

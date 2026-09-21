@@ -11,7 +11,7 @@ import { temporalGranularitySchema } from '../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
-import { type ColorScale } from '../shared/color-scale-selector';
+import { DEFAULT_BAND_VIEW_SETTINGS } from '../shared/band-view-settings';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../shared/feature-bands';
@@ -114,7 +114,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
     const [pageIndex, setPageIndex] = useState(0);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
-    const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
+    const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
     const hideGaps = originalComponentProps.hideGaps ?? false;
 
     const filteredData = useMemo(() => {
@@ -163,7 +163,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
 
     const paginationEnd = (
         <div className='flex items-center gap-1'>
-            <ViewSettingsDropdown colorScale={colorScale} setColorScale={setColorScale} />
+            <ViewSettingsDropdown settings={viewSettings} onChange={setViewSettings} />
             <CsvDownloadButton
                 className='btn btn-xs'
                 label='Download CSV'
@@ -192,7 +192,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
                 isLoading={false}
                 loadingRowLabels={[]}
                 requestedDateRanges={filteredData.getSecondAxisKeys()}
-                colorScale={colorScale}
+                viewSettings={viewSettings}
                 featureRenderer={queryRenderer}
                 tooltipPortalTarget={tooltipPortalTarget}
                 pageSizes={originalComponentProps.pageSizes}
