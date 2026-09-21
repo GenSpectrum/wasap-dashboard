@@ -41,7 +41,6 @@ import { FullscreenTargetContext } from '../shared/fullscreen-target';
 import { HideGapsButton } from '../shared/hide-gaps-button';
 import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
-import { type DisplayedMutationType, MutationTypeSelector } from '../shared/mutation-type-selector';
 import { NoDataDisplay } from '../shared/no-data-display';
 import { ResizeContainer } from '../shared/resize-container';
 import Tabs from '../shared/tabs';
@@ -156,11 +155,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
 
-    const [displayedMutationTypes, setDisplayedMutationTypes] = useState<DisplayedMutationType[]>([
-        { label: 'Substitutions', checked: true, type: 'substitution' },
-        { label: 'Deletions', checked: true, type: 'deletion' },
-    ]);
-
     const [hideGaps, setHideGaps] = useState<boolean>(originalComponentProps.hideGaps ?? false);
     useEffect(() => setHideGaps(originalComponentProps.hideGaps ?? false), [originalComponentProps.hideGaps]);
 
@@ -168,10 +162,9 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         () =>
             getFilteredMutationCodes({
                 overallMutationData: overallMutations,
-                displayedMutationTypes,
                 proportionInterval,
             }),
-        [overallMutations, displayedMutationTypes, proportionInterval],
+        [overallMutations, proportionInterval],
     );
 
     useEffect(() => {
@@ -283,13 +276,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     ];
 
     const toolbar = (
-        <Toolbar
-            displayedMutationTypes={displayedMutationTypes}
-            setDisplayedMutationTypes={setDisplayedMutationTypes}
-            hideGaps={hideGaps}
-            setHideGaps={setHideGaps}
-            originalComponentProps={originalComponentProps}
-        />
+        <Toolbar hideGaps={hideGaps} setHideGaps={setHideGaps} originalComponentProps={originalComponentProps} />
     );
 
     return (
@@ -300,26 +287,14 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
 };
 
 type ToolbarProps = {
-    displayedMutationTypes: DisplayedMutationType[];
-    setDisplayedMutationTypes: (types: DisplayedMutationType[]) => void;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     originalComponentProps: MutationsOverTimeProps;
 };
 
-const Toolbar: FC<ToolbarProps> = ({
-    displayedMutationTypes,
-    setDisplayedMutationTypes,
-    hideGaps,
-    setHideGaps,
-    originalComponentProps,
-}) => {
+const Toolbar: FC<ToolbarProps> = ({ hideGaps, setHideGaps, originalComponentProps }) => {
     return (
         <>
-            <MutationTypeSelector
-                setDisplayedMutationTypes={setDisplayedMutationTypes}
-                displayedMutationTypes={displayedMutationTypes}
-            />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             <MutationsOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
@@ -338,9 +313,9 @@ const MutationsOverTimeInfo: FC<MutationsOverTimeInfoProps> = ({ originalCompone
             <InfoHeadline1>Mutations over time</InfoHeadline1>
             <InfoParagraph>
                 This presents the proportions of {originalComponentProps.sequenceType} mutations per{' '}
-                {originalComponentProps.granularity}. In the toolbar, you can configure which mutations are displayed by
-                selecting the mutation type (substitution or deletion) and applying a filter based on the proportion of
-                the mutation's occurrence over the entire time range.
+                {originalComponentProps.granularity}. Which mutations are displayed can be restricted through a filter
+                on the mean proportion of the mutation's occurrence over the entire time range, which is set from
+                outside this component.
             </InfoParagraph>
             <InfoParagraph>
                 The grid cells have a tooltip that will show more detailed information. It shows the count of samples
