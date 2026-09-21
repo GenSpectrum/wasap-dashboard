@@ -11,8 +11,6 @@ import { type WasapDatasetFilter } from '../../../pageState/wasap/wasapAnalysisF
 import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
 import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
-import { DatasetFilterPanel } from '../../pageStateSelectors/wasap/DatasetFilterPanel';
-import { WasapModeTabs } from '../../pageStateSelectors/wasap/WasapModeTabs';
 
 /** What the layout hands down to the page of an analysis mode. */
 export type WasapLayoutContext = {
@@ -20,6 +18,8 @@ export type WasapLayoutContext = {
     resistanceData: ResistanceData;
     /** The dataset filter of the URL, which is the same for all modes. */
     dataset: WasapDatasetFilter;
+    /** Applies a new dataset filter (right away, by writing it to the URL). */
+    onDatasetChange: (dataset: WasapDatasetFilter) => void;
     /** The sampling date of the dataset filter, with a preset (like "Most recent 90 days") turned into dates. */
     samplingDate: DateRangeOption;
     isSamplingDatePending: boolean;
@@ -31,8 +31,8 @@ export function useWasapLayoutContext() {
 
 /**
  * What is the same for all the analysis modes of an organism, and stays mounted
- * when going from one mode to another: the connection to SILO, the mode tabs and
- * the panel for the dataset filter. The page of the mode is rendered inside.
+ * when going from one mode to another: the connection to SILO and the dataset
+ * filter of the URL. The page of the mode is rendered inside.
  */
 export function WasapLayout({ config, resistanceData }: { config: WasapPageConfig; resistanceData: ResistanceData }) {
     const schema = useMemo(() => siloSchema(config.silo), [config.silo]);
@@ -58,7 +58,14 @@ function WasapLayoutConnected({ config, resistanceData }: { config: WasapPageCon
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(dataset.samplingDate);
 
-    const context: WasapLayoutContext = { config, resistanceData, dataset, samplingDate, isSamplingDatePending };
+    const context: WasapLayoutContext = {
+        config,
+        resistanceData,
+        dataset,
+        onDatasetChange: (newDataset) => setSearchParams(withDatasetFilter(searchParams, newDataset, config)),
+        samplingDate,
+        isSamplingDatePending,
+    };
 
     return (
         <GsApp
@@ -66,14 +73,6 @@ function WasapLayoutConnected({ config, resistanceData }: { config: WasapPageCon
             mutationAnnotations={resistanceData.mutationAnnotations}
             mutationLinkTemplate={config.linkTemplate}
         >
-            <div className='mb-4'>
-                <WasapModeTabs config={config} dataset={dataset} />
-            </div>
-            <DatasetFilterPanel
-                config={config}
-                value={dataset}
-                onChange={(newDataset) => setSearchParams(withDatasetFilter(searchParams, newDataset, config))}
-            />
             <Outlet context={context} />
         </GsApp>
     );
