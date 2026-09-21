@@ -1,6 +1,5 @@
 import { type ChangeEvent, useEffect, useState } from 'react';
 
-import { type WithClassName } from './WithClassName/WithClassName';
 import { DeleteIcon } from './icons/DeleteIcon';
 
 export const undefinedValue = '__undefined__';
@@ -12,6 +11,7 @@ export type ClearableSelectProps = {
     placeholderText?: string;
     value?: string | null;
     selectClassName?: string;
+    className?: string;
 };
 
 export function ClearableSelect({
@@ -22,7 +22,7 @@ export function ClearableSelect({
     className,
     value,
     selectClassName,
-}: WithClassName<ClearableSelectProps>) {
+}: ClearableSelectProps) {
     const [selectedOption, setSelectedOption] = useState<string | null>(initiallySelectedItem ?? null);
 
     useEffect(() => {

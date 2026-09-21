@@ -1,15 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
 import { computeInitialValues } from './computeInitialValues';
 import { DatePicker } from './date-picker';
 import { toYYYYMMDD } from './dateConversion';
-import {
-    type DateRangeOption,
-    DateRangeOptionChangedEvent,
-    dateRangeOptionSchema,
-    dateRangeValueSchema,
-} from './dateRangeOption';
+import { type DateRangeOption, dateRangeOptionSchema, dateRangeValueSchema } from './dateRangeOption';
 import { ClearableSelect } from '../shared/clearable-select';
 import { ErrorBoundary } from '../shared/error-boundary';
 
@@ -25,8 +20,14 @@ const dateRangeFilterPropsSchema = dateRangeFilterInnerPropsSchema.extend({
     width: z.string(),
 });
 
-export type DateRangeFilterProps = z.infer<typeof dateRangeFilterPropsSchema>;
-export type DateRangeFilterInnerProps = z.infer<typeof dateRangeFilterInnerPropsSchema>;
+export type DateRangeFilterInnerProps = z.infer<typeof dateRangeFilterInnerPropsSchema> & {
+    onDateRangeChange?: (value: DateRangeOption | null) => void;
+};
+
+export type DateRangeFilterProps = Omit<z.infer<typeof dateRangeFilterPropsSchema>, 'width'> & {
+    width?: string;
+    onDateRangeChange?: (value: DateRangeOption | null) => void;
+};
 
 type DateRangeFilterState = {
     label: string;
@@ -34,23 +35,32 @@ type DateRangeFilterState = {
     dateTo?: Date;
 } | null;
 
-export const DateRangeFilter = (props: DateRangeFilterProps) => {
-    const { width, ...innerProps } = props;
+// width default reproduces the old gs-date-range-filter Lit component's @property field initializer.
+export const DateRangeFilter = ({ width = '100%', onDateRangeChange, ...innerProps }: DateRangeFilterProps) => {
     const size = { width, height: '3rem' };
+    const validatedProps = { width, ...innerProps };
 
     return (
-        <ErrorBoundary size={size} layout='horizontal' componentProps={props} schema={dateRangeFilterPropsSchema}>
+        <ErrorBoundary
+            size={size}
+            layout='horizontal'
+            componentProps={validatedProps}
+            schema={dateRangeFilterPropsSchema}
+        >
             <div style={{ width }}>
-                <DateRangeFilterInner {...innerProps} />
+                <DateRangeFilterInner {...innerProps} onDateRangeChange={onDateRangeChange} />
             </div>
         </ErrorBoundary>
     );
 };
 
-export const DateRangeFilterInner = ({ dateRangeOptions, value, placeholder }: DateRangeFilterInnerProps) => {
+export const DateRangeFilterInner = ({
+    dateRangeOptions,
+    value,
+    placeholder,
+    onDateRangeChange,
+}: DateRangeFilterInnerProps) => {
     const initialValues = useMemo(() => computeInitialValues(value, dateRangeOptions), [value, dateRangeOptions]);
-
-    const divRef = useRef<HTMLDivElement>(null);
 
     const getInitialState = useCallback(() => {
         if (!initialValues) {
@@ -77,7 +87,7 @@ export const DateRangeFilterInner = ({ dateRangeOptions, value, placeholder }: D
 
     function updateState(newState: DateRangeFilterState) {
         setState(newState);
-        fireOptionChangedEvent(newState);
+        notifyChange(newState);
     }
 
     useEffect(() => {
@@ -125,25 +135,28 @@ export const DateRangeFilterInner = ({ dateRangeOptions, value, placeholder }: D
         setOptions([...dateRangeOptions, customComboboxValue]);
     };
 
-    const fireOptionChangedEvent = (state: DateRangeFilterState) => {
-        const eventDetail = (() => {
-            if (state === null) {
-                return null;
-            }
-            if (state.label === CUSTOM_OPTION) {
-                return {
-                    dateFrom: state.dateFrom !== undefined ? toYYYYMMDD(state.dateFrom) : undefined,
-                    dateTo: state.dateTo !== undefined ? toYYYYMMDD(state.dateTo) : undefined,
-                };
-            }
-            return state.label;
-        })();
-
-        divRef.current?.dispatchEvent(new DateRangeOptionChangedEvent(eventDetail));
+    const notifyChange = (state: DateRangeFilterState) => {
+        if (state === null) {
+            onDateRangeChange?.(null);
+            return;
+        }
+        if (state.label === CUSTOM_OPTION) {
+            onDateRangeChange?.({
+                label: CUSTOM_OPTION,
+                dateFrom: state.dateFrom !== undefined ? toYYYYMMDD(state.dateFrom) : undefined,
+                dateTo: state.dateTo !== undefined ? toYYYYMMDD(state.dateTo) : undefined,
+            });
+            return;
+        }
+        const matchingOption = dateRangeOptions.find((option) => option.label === state.label);
+        if (matchingOption === undefined) {
+            throw new Error(`Invalid date range option: ${state.label}`);
+        }
+        onDateRangeChange?.(matchingOption);
     };
 
     return (
-        <div className={'@container'} ref={divRef}>
+        <div className={'@container'}>
             <div className='flex min-w-[7.5rem] flex-col @md:flex-row'>
                 <div className='grow'>
                     <ClearableSelect

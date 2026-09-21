@@ -1,15 +1,16 @@
 import { createContext, useContext, useMemo, type FC, type PropsWithChildren } from 'react';
+import z from 'zod';
 
 import type { SequenceType } from '../types/dashboardComponents';
 import type { Deletion, Substitution } from '../util/mutations';
-import { mutationLinkTemplateSchema } from './genspectrum/mutation-link-template-context';
 import { ErrorDisplay } from './shared/error-display';
 import { ResizeContainer } from './shared/resize-container';
 
-type MutationLinkTemplate = {
-    nucleotideMutation?: string;
-    aminoAcidMutation?: string;
-};
+export const mutationLinkTemplateSchema = z.object({
+    nucleotideMutation: z.string().optional(),
+    aminoAcidMutation: z.string().optional(),
+});
+export type MutationLinkTemplate = z.infer<typeof mutationLinkTemplateSchema>;
 
 const MutationLinkTemplateContext = createContext<MutationLinkTemplate>({
     nucleotideMutation: undefined,

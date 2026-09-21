@@ -5,11 +5,11 @@ import {
     VARIANT_TIME_FRAME,
     type WasapCovSpectrumCollectionFilter,
     type WasapManualFilter,
-    type WasapPageConfig,
     type WasapResistanceFilter,
     type WasapUntrackedFilter,
     type WasapVariantFilter,
-} from '../../config/wasapPageConfig';
+} from './wasapAnalysisFilter';
+import { type WasapPageConfig } from '../../config/wasapPageConfig';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 
 const config: WasapPageConfig = {

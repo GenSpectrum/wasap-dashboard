@@ -1,17 +1,17 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 import { useId } from 'react';
 
-import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
-import { Inset } from '../../../../styles/Inset';
 import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
-import { GsLineageFilter } from '../../../genspectrum/GsLineageFilter';
+import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
     type SignatureType,
     type VariantTimeFrame,
     type WasapVariantFilter,
-} from '../../../../config/wasapPageConfig';
+} from '../../../../pageState/wasap/wasapAnalysisFilter';
+import { LineageFilter } from '../../../lineageFilter/lineage-filter';
+import { Inset } from '../../../shared/Inset';
 import { SelectorHeadline } from '../../SelectorHeadline';
 import { DefineClinicalSignatureInfo } from '../InfoBlocks';
 import { CollectionCombobox } from '../utils/CollectionCombobox';
@@ -76,7 +76,7 @@ export function VariantExplorerFilter({
                     </SelectorHeadline>
                     <LabeledField label='Variant'>
                         <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                            <GsLineageFilter
+                            <LineageFilter
                                 field={clinicalSequenceLapisLineageField}
                                 placeholderText='Variant'
                                 value={pageState.variant}

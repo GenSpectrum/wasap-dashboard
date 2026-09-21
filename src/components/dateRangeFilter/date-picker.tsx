@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 // Lit-removal commit). Global now that there's no shadow DOM to scope it to.
 import 'flatpickr/dist/flatpickr.css';
 
-import { type WithClassName } from '../shared/WithClassName/WithClassName';
-
 export function DatePicker({
     onChange,
     value,
@@ -13,13 +11,14 @@ export function DatePicker({
     maxDate,
     placeholderText,
     className,
-}: WithClassName<{
+}: {
     onChange?: (date: Date | undefined) => void;
     value?: Date;
     minDate?: Date;
     maxDate?: Date;
     placeholderText?: string;
-}>) {
+    className?: string;
+}) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [datePicker, setDatePicker] = useState<flatpickr.Instance | null>(null);

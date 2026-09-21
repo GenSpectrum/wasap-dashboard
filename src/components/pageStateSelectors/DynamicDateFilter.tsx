@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { Loading } from '../../util/Loading';
+import { DateRangeFilter } from '../dateRangeFilter/date-range-filter';
 import { type DateRangeOption } from '../dateRangeFilter/dateRangeOption';
-import { GsDateRangeFilter } from '../genspectrum/GsDateRangeFilter';
 
 /**
  * Computes the available date-range options dynamically from the newest
@@ -44,6 +44,10 @@ export function DynamicDateFilter({
         return matchingOption ?? value;
     }, [value, generatedOptions]);
 
+    // DateRangeFilter's `value` takes a preset's bare label, or the raw dates for a custom
+    // range (never both) - collapse the resolved DateRangeOption into that shape.
+    const isCustom = normalizedValue?.label === CustomDateRangeLabel;
+
     return (
         <label className='form-control'>
             <div className='label'>
@@ -58,9 +62,9 @@ export function DynamicDateFilter({
                     Failed to load date range: {error instanceof Error ? error.message : String(error)}
                 </div>
             ) : (
-                <GsDateRangeFilter
+                <DateRangeFilter
                     onDateRangeChange={(dateRange: DateRangeOption | null) => onChange(dateRange ?? undefined)}
-                    value={normalizedValue}
+                    value={(isCustom ? normalizedValue : normalizedValue?.label) ?? null}
                     dateRangeOptions={generatedOptions}
                 />
             )}

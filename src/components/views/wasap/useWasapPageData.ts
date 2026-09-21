@@ -1,27 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
+import type { WasapPageConfig } from '../../../config/wasapPageConfig';
+import { validateGenomeOnly } from '../../../dataLayer/queries';
+import { getCollection } from '../../../externalData/covSpectrum/getCollection';
+import type { CollectionVariant } from '../../../externalData/covSpectrum/types';
+import { detailedMutationsToQuery } from '../../../externalData/covSpectrum/variantConversionUtil';
+import { getLineageFields, type FilterObject, type Variant } from '../../../externalData/genSpectrum/Collection';
+import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
+import { getCollection as getGenSpectrumCollection } from '../../../externalData/genSpectrum/getCollection';
+import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
+import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
+import { parseQuery } from '../../../externalData/lapis/parseQuery';
 import type {
     VariantTimeFrame,
     WasapAnalysisFilter,
     WasapCollectionFilter,
     WasapCovSpectrumCollectionFilter,
     WasapManualFilter,
-    WasapPageConfig,
     WasapResistanceFilter,
     WasapUntrackedFilter,
     WasapVariantFilter,
-} from '../../../config/wasapPageConfig';
-import { validateGenomeOnly } from '../../../dataLayer/queries';
-import { getCollection } from '../../../externalData/covSpectrum/getCollection';
-import type { CollectionVariant } from '../../../externalData/covSpectrum/types';
-import { detailedMutationsToQuery } from '../../../externalData/covSpectrum/variantConversionUtil';
-import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
-import { getLineageFields, type FilterObject, type Variant } from '../../../externalData/genSpectrum/Collection';
-import { getCollection as getGenSpectrumCollection } from '../../../externalData/genSpectrum/getCollection';
-import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
-import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
-import { parseQuery } from '../../../externalData/lapis/parseQuery';
+} from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type LapisFilter } from '../../../types/dashboardComponents';
 import { type QueriesOverTimeQuery } from '../../queriesOverTime/queries-over-time';
 import { type CustomColumn } from '../../shared/features-over-time-grid';
@@ -359,7 +359,7 @@ function extractBackendVariantData(variants: Variant[]): VariantExtractionResult
 /**
  * Takes a list of variant queries (from a collection) and validates them all against a LAPIS.
  * For valid variant queries, it builds a `QueriesOverTimeQuery` (the parsed,
- * genome-only expression the SILO grid asks) to use with `GsQueriesOverTime`.
+ * genome-only expression the SILO grid asks) to use with `QueriesOverTime`.
  * For invalid queries, an `InvalidVariantInfo` is returned.
  *
  * `/query/parse` is the one LAPIS call the SILO build keeps — SILO has no parse

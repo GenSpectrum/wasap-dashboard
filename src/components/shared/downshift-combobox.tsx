@@ -7,7 +7,7 @@ export function DownshiftCombobox<Item>({
     allItems,
     value,
     filterItemsByInputValue,
-    createEvent,
+    onChange,
     itemToString,
     placeholderText,
     formatItemInList,
@@ -16,7 +16,7 @@ export function DownshiftCombobox<Item>({
     allItems: Item[];
     value: Item | null;
     filterItemsByInputValue: (item: Item, value: string) => boolean;
-    createEvent: (item: Item | null) => CustomEvent;
+    onChange: (item: Item | null) => void;
     itemToString: (item: Item | undefined | null) => string;
     placeholderText?: string;
     formatItemInList: (item: Item) => ReactNode;
@@ -34,12 +34,11 @@ export function DownshiftCombobox<Item>({
         () => allItems.filter((item) => filterItemsByInputValue(item, itemsFilter)),
         [allItems, filterItemsByInputValue, itemsFilter],
     );
-    const divRef = useRef<HTMLDivElement>(null);
     const [inputIsInvalid, setInputIsInvalid] = useState(false);
 
     const selectItem = (item: Item | null) => {
         setSelectedItem(item);
-        divRef.current?.dispatchEvent(createEvent(item));
+        onChange(item);
     };
 
     const {
@@ -90,7 +89,7 @@ export function DownshiftCombobox<Item>({
     const buttonRef = useRef(null);
 
     return (
-        <div ref={divRef} className={'relative w-full'}>
+        <div className={'relative w-full'}>
             <div className='flex w-full flex-col gap-1'>
                 <div
                     className={`input flex w-full min-w-32 gap-0.5 ${inputClassName} ${inputIsInvalid ? 'input-error' : ''}`}
@@ -134,7 +133,7 @@ export function DownshiftMultiCombobox<Item>({
     allItems,
     value,
     filterItemsByInputValue,
-    createEvent,
+    onChange,
     itemToString,
     placeholderText,
     formatItemInList,
@@ -144,7 +143,7 @@ export function DownshiftMultiCombobox<Item>({
     allItems: Item[];
     value: Item[];
     filterItemsByInputValue: (item: Item, value: string) => boolean;
-    createEvent: (items: Item[]) => CustomEvent;
+    onChange: (items: Item[]) => void;
     itemToString: (item: Item | undefined | null) => string;
     placeholderText?: string;
     formatItemInList: (item: Item) => ReactNode;
@@ -168,11 +167,9 @@ export function DownshiftMultiCombobox<Item>({
         });
     }, [allItems, selectedItems, filterItemsByInputValue, itemsFilter, itemToString]);
 
-    const divRef = useRef<HTMLDivElement>(null);
-
-    const dispatchEvent = (items: Item[]) => {
+    const notifyChange = (items: Item[]) => {
         setSelectedItems(items);
-        divRef.current?.dispatchEvent(createEvent(items));
+        onChange(items);
     };
 
     const { getDropdownProps, removeSelectedItem } = useMultipleSelection({
@@ -180,7 +177,7 @@ export function DownshiftMultiCombobox<Item>({
         onStateChange({ selectedItems: newSelectedItems, type }) {
             switch (type) {
                 case useMultipleSelection.stateChangeTypes.FunctionRemoveSelectedItem:
-                    dispatchEvent(newSelectedItems ?? []);
+                    notifyChange(newSelectedItems ?? []);
                     break;
                 default:
                     break;
@@ -208,7 +205,7 @@ export function DownshiftMultiCombobox<Item>({
                 case useCombobox.stateChangeTypes.InputKeyDownEnter:
                 case useCombobox.stateChangeTypes.ItemClick:
                     if (newSelectedItem) {
-                        dispatchEvent([...selectedItems, newSelectedItem]);
+                        notifyChange([...selectedItems, newSelectedItem]);
                         setItemsFilter('');
                     }
                     break;
@@ -237,7 +234,7 @@ export function DownshiftMultiCombobox<Item>({
     });
 
     const clearAll = () => {
-        dispatchEvent([]);
+        notifyChange([]);
         setItemsFilter('');
         selectItem(null);
     };
@@ -245,7 +242,7 @@ export function DownshiftMultiCombobox<Item>({
     const buttonRef = useRef(null);
 
     return (
-        <div ref={divRef} className={'relative w-full'}>
+        <div className={'relative w-full'}>
             <div className='flex w-full flex-col gap-1'>
                 <div
                     className={`input flex h-fit w-full min-w-24 flex-wrap gap-1 p-1.5 ${inputClassName}`}

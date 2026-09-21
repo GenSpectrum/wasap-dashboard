@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { getInitialMeanProportionInterval } from './initialMeanProportionInterval';
-import type { WasapAnalysisFilter } from '../../../config/wasapPageConfig';
+import type { WasapAnalysisFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 
 describe('getInitialMeanProportionInterval', () => {
     test('resistance mutations initially show mean proportion from 5 to 100 percent', () => {

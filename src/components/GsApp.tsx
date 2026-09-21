@@ -1,15 +1,13 @@
 import { type FC, type PropsWithChildren } from 'react';
 import z from 'zod';
 
-import { type ReferenceGenome } from '../../externalData/lapisApi/ReferenceGenome';
-import { fetchReferenceGenome } from '../../externalData/lapisApi/lapisApi';
-import { useQuery } from '../../externalData/useQuery';
-import { LapisUrlContextProvider } from '../LapisUrlContext';
-import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
-import { MutationLinkTemplateContextProvider } from '../MutationLinkTemplateContext';
-import { INITIAL_REFERENCE_GENOMES, ReferenceGenomeContext } from '../ReferenceGenomeContext';
-import { type MutationAnnotations } from './mutation-annotations-context';
-import { type MutationLinkTemplate } from './mutation-link-template-context';
+import { LapisUrlContextProvider } from './LapisUrlContext';
+import { type MutationAnnotations, MutationAnnotationsContextProvider } from './MutationAnnotationsContext';
+import { type MutationLinkTemplate, MutationLinkTemplateContextProvider } from './MutationLinkTemplateContext';
+import { INITIAL_REFERENCE_GENOMES, ReferenceGenomeContext } from './ReferenceGenomeContext';
+import { type ReferenceGenome } from '../externalData/lapisApi/ReferenceGenome';
+import { fetchReferenceGenome } from '../externalData/lapisApi/lapisApi';
+import { useQuery } from '../externalData/useQuery';
 
 const lapisUrlSchema = z.string().url();
 

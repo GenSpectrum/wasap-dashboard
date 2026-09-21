@@ -1,7 +1,6 @@
-import { type FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import z from 'zod';
 
-import { LineageFilterChangedEvent, LineageMultiFilterChangedEvent } from './LineageFilterChangedEvent';
 import { useLineageOptions, type LineageItem } from '../../dataLayer/hooks/lineageOptions';
 import { DownshiftCombobox, DownshiftMultiCombobox } from '../shared/downshift-combobox';
 import { ErrorBoundary } from '../shared/error-boundary';
@@ -40,30 +39,57 @@ const lineageFilterPropsSchema = lineageFilterInnerPropsSchema
         }),
     );
 
-export type LineageFilterInnerProps = z.infer<typeof lineageFilterInnerPropsSchema>;
-export type LineageFilterProps = z.infer<typeof lineageFilterPropsSchema>;
-type LineageSelectorProps = z.infer<typeof lineageSelectorPropsSchema>;
+export type LineageFilterInnerProps<Lineage extends string = string> = Omit<
+    z.infer<typeof lineageFilterInnerPropsSchema>,
+    'field'
+> & {
+    field: Lineage;
+    onLineageChange?: (lineage: { [key in Lineage]: string | undefined }) => void;
+    onLineageMultiChange?: (lineage: { [key in Lineage]: string[] | undefined }) => void;
+};
 
-export const LineageFilter: FC<LineageFilterProps> = (props) => {
-    const { width, ...innerProps } = props;
+export type LineageFilterProps<Lineage extends string = string> = Omit<
+    LineageFilterInnerProps<Lineage>,
+    'value' | 'width'
+> & {
+    value?: string | string[];
+    width?: string;
+};
+
+// width default reproduces the old gs-lineage-filter Lit component's @property field initializer.
+export function LineageFilter<Lineage extends string = string>({
+    width = '100%',
+    value,
+    multiSelect,
+    ...rest
+}: LineageFilterProps<Lineage>) {
+    const resolvedValue = value ?? (multiSelect ? [] : '');
     const size = { width, minHeight: '3rem' };
+    const validatedProps = { width, value: resolvedValue, multiSelect, ...rest };
 
     return (
-        <ErrorBoundary size={size} layout='horizontal' componentProps={props} schema={lineageFilterPropsSchema}>
+        <ErrorBoundary
+            size={size}
+            layout='horizontal'
+            componentProps={validatedProps}
+            schema={lineageFilterPropsSchema}
+        >
             <ResizeContainer size={size}>
-                <LineageFilterInner {...innerProps} />
+                <LineageFilterInner value={resolvedValue} multiSelect={multiSelect} {...rest} />
             </ResizeContainer>
         </ErrorBoundary>
     );
-};
+}
 
-const LineageFilterInner: FC<LineageFilterInnerProps> = ({
+function LineageFilterInner<Lineage extends string>({
     field,
     placeholderText,
     value,
     hideCounts,
     multiSelect = false,
-}) => {
+    onLineageChange,
+    onLineageMultiChange,
+}: LineageFilterInnerProps<Lineage>) {
     const { data, error, isLoading } = useLineageOptions(field);
 
     if (isLoading) {
@@ -82,18 +108,22 @@ const LineageFilterInner: FC<LineageFilterInnerProps> = ({
             data={data ?? []}
             hideCounts={hideCounts}
             multiSelect={multiSelect}
+            onLineageChange={onLineageChange}
+            onLineageMultiChange={onLineageMultiChange}
         />
     );
-};
+}
 
-const LineageSelector = ({
+const LineageSelector = <Lineage extends string>({
     field,
     value,
     placeholderText,
     data,
     hideCounts = false,
     multiSelect = false,
-}: LineageSelectorProps & {
+    onLineageChange,
+    onLineageMultiChange,
+}: LineageFilterInnerProps<Lineage> & {
     data: LineageItem[];
 }) => {
     const formatItemInList = (item: LineageItem) => (
@@ -121,9 +151,9 @@ const LineageSelector = ({
                 allItems={data}
                 value={selectedItems}
                 filterItemsByInputValue={filterByInputValue}
-                createEvent={(items) => {
+                onChange={(items) => {
                     const lineages = items.length > 0 ? items.map((item) => item.lineage) : undefined;
-                    return new LineageMultiFilterChangedEvent({ [field]: lineages });
+                    onLineageMultiChange?.({ [field]: lineages } as { [key in Lineage]: string[] | undefined });
                 }}
                 itemToString={(item) => item?.lineage ?? ''}
                 placeholderText={placeholderText ?? 'Select lineages'}
@@ -137,7 +167,9 @@ const LineageSelector = ({
             allItems={data}
             value={selectedItem}
             filterItemsByInputValue={filterByInputValue}
-            createEvent={(item) => new LineageFilterChangedEvent({ [field]: item?.lineage ?? undefined })}
+            onChange={(item) =>
+                onLineageChange?.({ [field]: item?.lineage ?? undefined } as { [key in Lineage]: string | undefined })
+            }
             itemToString={(item) => item?.lineage ?? ''}
             placeholderText={placeholderText}
             formatItemInList={formatItemInList}

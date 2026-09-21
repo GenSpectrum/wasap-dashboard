@@ -1,8 +1,8 @@
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from '../../../config/wasapPageConfig';
+import type { Collection } from '../../../externalData/genSpectrum/Collection';
 import type { ApiService } from '../../../externalData/genSpectrum/apiService';
 import { getCollection } from '../../../externalData/genSpectrum/getCollection';
-import type { Collection } from '../../../externalData/genSpectrum/Collection';
-import { type MutationAnnotations } from '../../genspectrum/mutation-annotations-context';
+import { type MutationAnnotations } from '../../MutationAnnotationsContext';
 
 /**
  * Data about resistance mutations, used by the wastewater dashboards.

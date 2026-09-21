@@ -16,18 +16,17 @@ import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
 import { LabeledField } from './utils/LabeledField';
 import { RadioSelect } from './utils/RadioSelect';
-import { Inset } from '../../../styles/Inset';
-import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
-import { type PageStateHandler } from '../../../views/pageStateHandlers/PageStateHandler';
-import { GsTextFilter } from '../../genspectrum/GsTextFilter';
+import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
+import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import {
-    enabledAnalysisModes,
     type WasapAnalysisFilter,
     type WasapAnalysisMode,
     type WasapBaseFilter,
     type WasapFilter,
-    type WasapPageConfig,
-} from '../../../config/wasapPageConfig';
+} from '../../../pageState/wasap/wasapAnalysisFilter';
+import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
+import { Inset } from '../../shared/Inset';
+import { TextFilter } from '../../textFilter/text-filter';
 
 /**
  * The root filter control for the W-ASAP dashboard.
@@ -142,7 +141,7 @@ export function WasapPageStateSelector({
             <SelectorHeadline>Filter dataset</SelectorHeadline>
             <Inset className='p-2'>
                 <LabeledField label='Sampling location'>
-                    <GsTextFilter
+                    <TextFilter
                         placeholderText='Sampling location'
                         field={config.locationNameField}
                         onInputChange={({ locationName }) => {

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import type { ApiService } from './apiService';
 import { collectionSummarySchema } from './Collection';
+import type { ApiService } from './apiService';
 
 export function getCollections(
     apiService: ApiService,

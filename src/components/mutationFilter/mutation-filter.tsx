@@ -1,5 +1,5 @@
 import { useCombobox, useMultipleSelection } from 'downshift';
-import { type FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { type FC, useContext, useEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
 import { getExampleMutation } from './ExampleMutation';
@@ -13,9 +13,9 @@ import {
     mutationTypeSchema,
     type MutationType,
 } from '../../types/dashboardComponents';
-import { gsEventNames } from '../../util/gsEventNames';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../util/mutations';
 import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
+import { ReferenceGenomesAwaiter } from '../shared/ReferenceGenomesAwaiter';
 import { singleGraphColorRGBByName } from '../shared/charts/colors';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { UserFacingError } from '../shared/error-display';
@@ -29,8 +29,13 @@ const mutationFilterPropsSchema = mutationFilterInnerPropsSchema.extend({
     width: z.string(),
 });
 
-export type MutationFilterInnerProps = z.infer<typeof mutationFilterInnerPropsSchema>;
-export type MutationFilterProps = z.infer<typeof mutationFilterPropsSchema>;
+export type MutationFilterInnerProps = z.infer<typeof mutationFilterInnerPropsSchema> & {
+    onMutationChange?: (mutationFilter: MutationsFilter | undefined) => void;
+};
+export type MutationFilterProps = Omit<z.infer<typeof mutationFilterPropsSchema>, 'width'> & {
+    width?: string;
+    onMutationChange?: (mutationFilter: MutationsFilter | undefined) => void;
+};
 
 type SelectedNucleotideMutation = {
     type: typeof mutationType.nucleotideMutations;
@@ -55,28 +60,53 @@ type SelectedAminoAcidInsertion = {
 export type MutationFilterItem =
     SelectedNucleotideMutation | SelectedAminoAcidMutation | SelectedNucleotideInsertion | SelectedAminoAcidInsertion;
 
-export const MutationFilter: FC<MutationFilterProps> = (props) => {
-    const { width, initialValue, enabledMutationTypes } = props;
+// width default reproduces the old gs-mutation-filter Lit component's @property field initializer.
+export const MutationFilter: FC<MutationFilterProps> = ({
+    width = '100%',
+    initialValue,
+    enabledMutationTypes,
+    onMutationChange,
+}) => {
+    const validatedProps = { width, initialValue, enabledMutationTypes };
     return (
-        <ErrorBoundary
-            size={{ height: '40px', width }}
-            layout='horizontal'
-            schema={mutationFilterPropsSchema}
-            componentProps={props}
-        >
-            <div style={{ width }}>
-                <MutationFilterInner initialValue={initialValue} enabledMutationTypes={enabledMutationTypes} />
+        // This was a <label> wrapping the whole thing, unlabeled by a `for`/`id` pair. Behind a
+        // shadow-DOM custom element that was inert — a <label> only implicitly associates with a
+        // control that's its light-DOM descendant, and the shadow boundary excluded the combobox
+        // inside from that. Without shadow DOM, the wrap silently became a real (and wrong) implicit
+        // label on the combobox, which is why it — not the "Mutations" text — picked up "Mutations" as
+        // its accessible name, and other pages' controls started colliding with it in
+        // accessible-name-based test/a11y-tooling queries. A plain <div> (same daisyUI classes, purely
+        // visual) restores "not actually a label" instead of "accidentally the wrong one".
+        <div className='form-control'>
+            <div className='label'>
+                <span className='label-text'>Mutations</span>
             </div>
-        </ErrorBoundary>
+            <ReferenceGenomesAwaiter>
+                <ErrorBoundary
+                    size={{ height: '40px', width }}
+                    layout='horizontal'
+                    schema={mutationFilterPropsSchema}
+                    componentProps={validatedProps}
+                >
+                    <div style={{ width }}>
+                        <MutationFilterInner
+                            initialValue={initialValue}
+                            enabledMutationTypes={enabledMutationTypes}
+                            onMutationChange={onMutationChange}
+                        />
+                    </div>
+                </ErrorBoundary>
+            </ReferenceGenomesAwaiter>
+        </div>
     );
 };
 
 function MutationFilterInner({
     initialValue,
     enabledMutationTypes = Object.values(mutationType),
+    onMutationChange,
 }: MutationFilterInnerProps) {
     const referenceGenome = useContext(ReferenceGenomeContext);
-    const filterRef = useRef<HTMLDivElement>(null);
     const [inputValue, setInputValue] = useState('');
 
     const initialState = useMemo(() => {
@@ -100,20 +130,8 @@ function MutationFilterInner({
         // re-trigger this effect if it were listed here.
     }, [enabledMutationTypes]);
 
-    const fireChangeEvent = (selectedFilters: MutationFilterItem[]) => {
-        const detail = mapToMutationFilterStrings(selectedFilters);
-
-        filterRef.current?.dispatchEvent(
-            new CustomEvent<MutationsFilter>(gsEventNames.mutationFilterChanged, {
-                detail,
-                bubbles: true,
-                composed: true,
-            }),
-        );
-    };
-
     const handleSelectedItemsChanged = (newSelectedItems: MutationFilterItem[]) => {
-        fireChangeEvent(newSelectedItems);
+        onMutationChange?.(mapToMutationFilterStrings(newSelectedItems));
         setSelectedItems(newSelectedItems);
     };
 
@@ -212,7 +230,7 @@ function MutationFilterInner({
     }
 
     return (
-        <div className='w-full' ref={filterRef}>
+        <div className='w-full'>
             <div className={`input flex h-fit w-full flex-wrap gap-x-1 p-1 ${showErrorIndicator ? 'input-error' : ''}`}>
                 {selectedItems.map((selectedItemForRender, index) => {
                     return (

@@ -1,9 +1,15 @@
 import { type FC, type ReactNode, type Ref, type RefObject, useRef } from 'react';
 
+const modalSize = {
+    large: 'max-w-(--breakpoint-lg)',
+};
+
 export type ModalButtonProps = {
     buttonClassName?: string;
+    buttonAriaLabel?: string;
     modalContent: ReactNode;
     children?: ReactNode;
+    size?: keyof typeof modalSize;
 };
 
 export const Modal: FC<ModalButtonProps> = (props) => {
@@ -19,15 +25,24 @@ type ButtonWithModalDialogProps = ModalButtonProps & {
 export const ButtonWithModalDialog: FC<ButtonWithModalDialogProps> = ({
     children,
     buttonClassName,
+    buttonAriaLabel,
     modalContent,
     modalRef,
+    size,
 }) => {
     return (
         <>
-            <button type='button' className={buttonClassName} onClick={() => modalRef.current?.showModal()}>
+            <button
+                type='button'
+                className={buttonClassName}
+                aria-label={buttonAriaLabel}
+                onClick={() => modalRef.current?.showModal()}
+            >
                 {children}
             </button>
-            <ModalDialog modalRef={modalRef}>{modalContent}</ModalDialog>
+            <ModalDialog modalRef={modalRef} size={size}>
+                {modalContent}
+            </ModalDialog>
         </>
     );
 };
@@ -39,12 +54,13 @@ export function useModalRef() {
 export type ModalProps = {
     modalRef: Ref<HTMLDialogElement>;
     children?: ReactNode;
+    size?: keyof typeof modalSize;
 };
 
-export const ModalDialog: FC<ModalProps> = ({ children, modalRef }) => {
+export const ModalDialog: FC<ModalProps> = ({ children, modalRef, size }) => {
     return (
         <dialog ref={modalRef} className={'modal modal-bottom sm:modal-middle'}>
-            <div className='modal-box sm:max-w-5xl'>
+            <div className={`modal-box ${size !== undefined ? modalSize[size] : 'sm:max-w-5xl'}`}>
                 <form method='dialog'>
                     <button className='btn btn-sm btn-circle btn-ghost absolute top-2 right-2'>✕</button>
                 </form>
