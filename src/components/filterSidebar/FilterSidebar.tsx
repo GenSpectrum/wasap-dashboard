@@ -1,7 +1,6 @@
 import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { ApplyFilterButton } from './ApplyFilterButton';
-import { SelectorHeadline } from './SelectorHeadline';
 import { useDraftFilter } from './useDraftFilter';
 import { type PageStateHandler } from '../../pageState/PageStateHandler';
 import {
@@ -53,7 +52,6 @@ function FilterSidebarWithDraft<Analysis extends WasapAnalysisFilter>({
 
     return (
         <div className='flex flex-col gap-4'>
-            <SelectorHeadline>Mutation selection</SelectorHeadline>
             <div>
                 {children(draft.analysis, draft.setAnalysis)}
                 <div className='h-2' />
