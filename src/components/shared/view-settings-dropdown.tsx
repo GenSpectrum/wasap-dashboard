@@ -9,8 +9,7 @@ export interface ViewSettingsDropdownProps {
 }
 
 /**
- * An icon button that opens the settings for how the over-time data is displayed
- * (as opposed to which data is displayed, which is what the toolbar filters are for).
+ * An icon button that opens the settings for how the over-time data is displayed.
  */
 export const ViewSettingsDropdown: FC<ViewSettingsDropdownProps> = ({ colorScale, setColorScale }) => {
     return (
