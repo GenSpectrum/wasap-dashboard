@@ -141,7 +141,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
             mutationLinkTemplate={config.linkTemplate}
         >
             <div className='mb-4'>
-                <WasapModeTabs config={config} base={base} />
+                <WasapModeTabs config={config} dataset={base} />
             </div>
             <div className='grid-cols-[300px_1fr] gap-x-4 lg:grid'>
                 <div className='h-fit p-2 shadow-lg'>

@@ -18,7 +18,7 @@ const base: WasapBaseFilter = {
 function renderTabs(entry = '/wastewater/covid/manual', config = testConfig) {
     return render(
         <MemoryRouter initialEntries={[entry]}>
-            <WasapModeTabs config={config} base={base} />
+            <WasapModeTabs config={config} dataset={base} />
         </MemoryRouter>,
     );
 }

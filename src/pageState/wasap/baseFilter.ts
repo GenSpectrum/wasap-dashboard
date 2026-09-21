@@ -1,4 +1,4 @@
-import { type WasapBaseFilter, type WasapMeanProportion } from './wasapAnalysisFilter';
+import { type WasapBaseFilter, type WasapDatasetFilter, type WasapMeanProportion } from './wasapAnalysisFilter';
 import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
@@ -18,6 +18,20 @@ export function parseBaseFilter(
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
     defaultMeanProportion: WasapMeanProportion,
 ): WasapBaseFilter {
+    return {
+        ...parseDatasetFilter(search, config),
+        meanProportion: {
+            lower: parseProportion(getStringFromSearch(search, 'meanProportionLower')) ?? defaultMeanProportion.lower,
+            upper: parseProportion(getStringFromSearch(search, 'meanProportionUpper')) ?? defaultMeanProportion.upper,
+        },
+    };
+}
+
+/** The part of the base filter that selects the dataset, and is the same for all modes. */
+export function parseDatasetFilter(
+    search: URLSearchParams,
+    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
+): WasapDatasetFilter {
     const samplingDate = parseSamplingDateFromUrl(search, config.samplingDateField);
 
     // An unrestricted date range at 'day' granularity can span more days than
@@ -31,10 +45,6 @@ export function parseBaseFilter(
         samplingDate: samplingDate ?? defaultSamplingDate,
         granularity: (getStringFromSearch(search, 'granularity') as TemporalGranularity | undefined) ?? 'day',
         excludeEmpty: getStringFromSearch(search, 'excludeEmpty') !== 'false',
-        meanProportion: {
-            lower: parseProportion(getStringFromSearch(search, 'meanProportionLower')) ?? defaultMeanProportion.lower,
-            upper: parseProportion(getStringFromSearch(search, 'meanProportionUpper')) ?? defaultMeanProportion.upper,
-        },
     };
 }
 
@@ -48,17 +58,7 @@ export function setBaseFilterSearchParams(
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
     defaultMeanProportion: WasapMeanProportion,
 ) {
-    setSearchFromString(search, config.locationNameField, base.locationName);
-    // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
-    // the URL re-resolves them against the dataset's current date range instead of
-    // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
-    // still serialize as literal dates — setSearchFromDateRange already branches
-    // on the label.
-    setSearchFromDateRange(search, config.samplingDateField, base.samplingDate);
-    setSearchFromString(search, 'granularity', base.granularity);
-    if (!base.excludeEmpty) {
-        setSearchFromString(search, 'excludeEmpty', 'false');
-    }
+    setDatasetFilterSearchParams(search, base, config);
     // Omitted when it's the mode's default, so the default can still differ between modes.
     if (base.meanProportion.lower !== defaultMeanProportion.lower) {
         setSearchFromString(search, 'meanProportionLower', String(base.meanProportion.lower));
@@ -68,19 +68,56 @@ export function setBaseFilterSearchParams(
     }
 }
 
+function setDatasetFilterSearchParams(
+    search: URLSearchParams,
+    dataset: WasapDatasetFilter,
+    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+) {
+    setSearchFromString(search, config.locationNameField, dataset.locationName);
+    // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
+    // the URL re-resolves them against the dataset's current date range instead of
+    // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
+    // still serialize as literal dates — setSearchFromDateRange already branches
+    // on the label.
+    setSearchFromDateRange(search, config.samplingDateField, dataset.samplingDate);
+    setSearchFromString(search, 'granularity', dataset.granularity);
+    if (!dataset.excludeEmpty) {
+        setSearchFromString(search, 'excludeEmpty', 'false');
+    }
+}
+
 /**
  * The search params to take along when going to the page of another mode: the
- * base filter, except for the mean proportion, which has a different default
+ * dataset filter, but not the mean proportion, which has a different default
  * in each mode.
  */
-export function carryOverBaseFilterSearchParams(
-    base: WasapBaseFilter,
+export function datasetFilterSearchParams(
+    dataset: WasapDatasetFilter,
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
 ): URLSearchParams {
     const search = new URLSearchParams();
-    // Everything that equals the default is left out, which is what we want for the mean proportion.
-    setBaseFilterSearchParams(search, base, config, base.meanProportion);
+    setDatasetFilterSearchParams(search, dataset, config);
     return search;
+}
+
+/**
+ * `search` with the dataset filter replaced by the given one, and everything else
+ * (the settings of the mode, the mean proportion) left as it is.
+ */
+export function withDatasetFilter(
+    search: URLSearchParams,
+    dataset: WasapDatasetFilter,
+    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+): URLSearchParams {
+    const datasetParams = [config.locationNameField, config.samplingDateField, 'granularity', 'excludeEmpty'];
+
+    const result = datasetFilterSearchParams(dataset, config);
+    for (const [name, value] of search) {
+        if (!datasetParams.includes(name)) {
+            result.append(name, value);
+        }
+    }
+    return result;
 }
 
 /**

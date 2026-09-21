@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-    carryOverBaseFilterSearchParams,
+    datasetFilterSearchParams,
     isUnresolvedSamplingDate,
     parseBaseFilter,
     setBaseFilterSearchParams,
+    withDatasetFilter,
 } from './baseFilter';
 import { type WasapBaseFilter } from './wasapAnalysisFilter';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
@@ -140,26 +141,53 @@ describe('baseFilter', () => {
         });
     });
 
-    describe('carryOverBaseFilterSearchParams', () => {
-        it('keeps the base filter but not the mean proportion', () => {
+    describe('datasetFilterSearchParams', () => {
+        it('has the dataset filter but not the mean proportion', () => {
             const base = parse(
                 'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false&meanProportionLower=0.2&meanProportionUpper=0.7',
             );
 
-            expect(carryOverBaseFilterSearchParams(base, config).toString()).toBe(
+            expect(datasetFilterSearchParams(base, config).toString()).toBe(
                 'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false',
             );
         });
 
         it('gives the mode it is carried to its own default mean proportion', () => {
-            const base = parse('meanProportionLower=0.2');
-
-            const carried = carryOverBaseFilterSearchParams(base, config);
+            const carried = datasetFilterSearchParams(parse('meanProportionLower=0.2'), config);
 
             expect(parseBaseFilter(carried, config, { lower: 0, upper: 1 }).meanProportion).toEqual({
                 lower: 0,
                 upper: 1,
             });
+        });
+    });
+
+    describe('withDatasetFilter', () => {
+        it('replaces the dataset filter and leaves the rest', () => {
+            const search = new URLSearchParams(
+                'locationName=Berlin&granularity=week&resistanceSet=Spike&meanProportionLower=0.2',
+            );
+            const dataset = { ...parse('locationName=Basel&excludeEmpty=false') };
+
+            const result = withDatasetFilter(search, dataset, config);
+
+            expect(Object.fromEntries(result)).toEqual({
+                locationName: 'Basel',
+                samplingDate: 'Most recent 90 days',
+                granularity: 'day',
+                excludeEmpty: 'false',
+                resistanceSet: 'Spike',
+                meanProportionLower: '0.2',
+            });
+        });
+
+        it('drops a setting that the new dataset filter does not have any more', () => {
+            const search = new URLSearchParams('excludeEmpty=false&mutations=A1T');
+
+            const result = withDatasetFilter(search, parse(''), config);
+
+            expect(result.has('excludeEmpty')).toBe(false);
+            expect(result.get('mutations')).toBe('A1T');
         });
     });
 });
