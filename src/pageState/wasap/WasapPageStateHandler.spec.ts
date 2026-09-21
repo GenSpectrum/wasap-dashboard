@@ -10,7 +10,6 @@ import {
     type WasapVariantFilter,
 } from './wasapAnalysisFilter';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
-import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 
 const config: WasapPageConfig = {
     genSpectrumOrganismName: 'covid',
@@ -136,142 +135,23 @@ describe('WasapPageStateHandler', () => {
         });
     });
 
-    describe('base filter', () => {
-        it('parses base filter with all fields', () => {
-            const url =
-                '/wastewater/covid?' +
-                'locationName=Berlin&' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'granularity=week&' +
-                'excludeEmpty=false&' +
-                'analysisMode=manual&' +
-                'sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
+    describe('mean proportion', () => {
+        const parse = (query: string) =>
+            handler.parsePageStateFromUrl(new URL(`http://example.com/wastewater/covid?${query}`).searchParams);
 
-            expect(filter.base.locationName).toBe('Berlin');
-            expect(filter.base.samplingDate).toEqual({
-                label: 'Custom',
-                dateFrom: '2024-01-01',
-                dateTo: '2024-12-31',
-            });
-            expect(filter.base.granularity).toBe('week');
-            expect(filter.base.excludeEmpty).toBe(false);
+        it('defaults to the default of the analysis mode when missing from URL', () => {
+            expect(parse('analysisMode=manual').base.meanProportion).toEqual({ lower: 0.05, upper: 0.95 });
+            expect(parse('analysisMode=manual&mutations=A1T').base.meanProportion).toEqual({ lower: 0, upper: 1 });
+            expect(parse('analysisMode=resistance').base.meanProportion).toEqual({ lower: 0.05, upper: 1 });
         });
 
-        it('defaults base filter fields when missing from URL', () => {
-            const url = '/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.base.locationName).toBe('Zürich (ZH)');
-            expect(filter.base.samplingDate).toEqual({ label: DEFAULT_RECENT_DAYS_LABEL });
-            expect(filter.base.granularity).toBe('day');
-            expect(filter.base.excludeEmpty).toBe(true);
-        });
-
-        it('encodes excludeEmpty=false in URL but omits when true', () => {
-            const filterTrue = handler.parsePageStateFromUrl(
-                new URL('http://example.com/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&')
-                    .searchParams,
-            );
-            const filterFalse = handler.parsePageStateFromUrl(
-                new URL(
-                    'http://example.com/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&excludeEmpty=false&',
-                ).searchParams,
+        it('omits a value from the URL when it is the default of the mode', () => {
+            const url = handler.toUrl(
+                parse('analysisMode=resistance&meanProportionLower=0.05&meanProportionUpper=0.5'),
             );
 
-            const urlTrue = handler.toUrl(filterTrue);
-            const urlFalse = handler.toUrl(filterFalse);
-
-            expect(urlTrue).not.toContain('excludeEmpty');
-            expect(urlFalse).toContain('excludeEmpty=false');
-        });
-
-        describe('mean proportion', () => {
-            const parse = (query: string) =>
-                handler.parsePageStateFromUrl(
-                    new URL(`http://example.com/wastewater/covid?sequenceType=nucleotide&${query}`).searchParams,
-                );
-
-            it('defaults to the default of the analysis mode when missing from URL', () => {
-                expect(parse('analysisMode=manual').base.meanProportion).toEqual({ lower: 0.05, upper: 0.95 });
-                expect(parse('analysisMode=manual&mutations=A1T').base.meanProportion).toEqual({
-                    lower: 0,
-                    upper: 1,
-                });
-            });
-
-            it('parses lower and upper from the URL', () => {
-                expect(
-                    parse('analysisMode=manual&meanProportionLower=0.2&meanProportionUpper=0.7').base.meanProportion,
-                ).toEqual({ lower: 0.2, upper: 0.7 });
-            });
-
-            it('falls back to the default for invalid values', () => {
-                expect(
-                    parse('analysisMode=manual&meanProportionLower=abc&meanProportionUpper=1.5').base.meanProportion,
-                ).toEqual({ lower: 0.05, upper: 0.95 });
-            });
-
-            it('only encodes values that differ from the default in the URL', () => {
-                const defaults = handler.toUrl(parse('analysisMode=manual'));
-                expect(defaults).not.toContain('meanProportion');
-
-                const lowerChanged = handler.toUrl(parse('analysisMode=manual&meanProportionLower=0.2'));
-                expect(lowerChanged).toContain('meanProportionLower=0.2');
-                expect(lowerChanged).not.toContain('meanProportionUpper');
-            });
-        });
-
-        it('parses excludeEmpty string "false" as boolean false', () => {
-            const url = '/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&excludeEmpty=false&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(typeof filter.base.excludeEmpty).toBe('boolean');
-            expect(filter.base.excludeEmpty).toBe(false);
-        });
-    });
-
-    describe('samplingDate defaults and presets', () => {
-        it('defaults samplingDate to the recent-days preset when missing from URL', () => {
-            const url = '/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.base.samplingDate).toEqual({ label: DEFAULT_RECENT_DAYS_LABEL });
-        });
-
-        it('does not override an explicit preset from the URL with the default', () => {
-            const url =
-                '/wastewater/covid?samplingDate=Most+recent+14+days&analysisMode=manual&sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.base.samplingDate).toEqual({ label: 'Most recent 14 days' });
-        });
-
-        it('parses a preset label from the URL without concrete dates (unresolved)', () => {
-            const url = '/wastewater/covid?samplingDate=All+times&analysisMode=manual&sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.base.samplingDate).toEqual({ label: 'All times' });
-        });
-
-        it('round-trips the default preset label through the URL instead of pinning literal dates', () => {
-            const url = '/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            const newUrl = handler.toUrl(filter);
-            expect(newUrl).toContain('samplingDate=Most+recent+90+days&');
-        });
-
-        it('still serializes an explicit custom date range as literal dates', () => {
-            const url =
-                '/wastewater/covid?' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'analysisMode=manual&' +
-                'sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            const newUrl = handler.toUrl(filter);
-            expect(newUrl).toContain('samplingDate=2024-01-01--2024-12-31&');
+            expect(url).not.toContain('meanProportionLower');
+            expect(url).toContain('meanProportionUpper=0.5');
         });
     });
 

@@ -1,3 +1,4 @@
+import { parseBaseFilter, setBaseFilterSearchParams } from './baseFilter';
 import { getDefaultMeanProportion } from './defaultMeanProportion';
 import {
     type ExcludeSetName,
@@ -5,19 +6,14 @@ import {
     type VariantTimeFrame,
     type WasapAnalysisFilter,
     type WasapAnalysisMode,
-    type WasapBaseFilter,
     type WasapFilter,
-    type WasapMeanProportion,
 } from './wasapAnalysisFilter';
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import { enabledAnalysisModes, type WasapPageConfig } from '../../config/wasapPageConfig';
-import { CustomDateRangeLabel } from '../../types/DateWindow';
-import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
+import { type SequenceType } from '../../types/dashboardComponents';
 import { formatUrl } from '../../util/formatUrl';
-import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 import { type PageStateHandler } from '../PageStateHandler';
 import { type TextFieldConfig, parseTextFiltersFromUrl } from '../textFieldConfig';
-import { setSearchFromDateRange, setSearchFromString } from '../urlSearchParams';
+import { setSearchFromString } from '../urlSearchParams';
 
 export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     private readonly config: WasapPageConfig;
@@ -25,13 +21,12 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
 
     constructor(config: WasapPageConfig) {
         this.config = config;
-        this.filterConfig = generateWasapFilterConfig(config);
+        this.filterConfig = generateWasapFilterConfig();
     }
 
     parsePageStateFromUrl(searchParams: URLSearchParams): WasapFilter {
         // URL-parsed settings
         const texts = parseTextFiltersFromUrl(searchParams, this.filterConfig);
-        const samplingDate = parseSamplingDateFromUrl(searchParams, this.config.samplingDateField);
         const providedSequenceType = texts.sequenceType as SequenceType | undefined;
         const providedMode = texts.analysisMode as WasapAnalysisMode | undefined;
 
@@ -125,19 +120,7 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
                 break;
         }
 
-        // An unrestricted date range at 'day' granularity can span more days than
-        // mutations-over-time supports (it refuses past 200 columns, "Too many
-        // dates"), so a bare URL defaults to a recent window instead. Users can
-        // still pick "All times" explicitly from the date filter's dropdown.
-        const defaultSamplingDate: DateRangeOption = { label: DEFAULT_RECENT_DAYS_LABEL };
-
-        const base: WasapBaseFilter = {
-            locationName: texts.locationName ?? this.config.defaultLocationName,
-            samplingDate: samplingDate ?? defaultSamplingDate,
-            granularity: (texts.granularity as TemporalGranularity | undefined) ?? 'day',
-            excludeEmpty: texts.excludeEmpty !== 'false',
-            meanProportion: parseMeanProportion(texts.meanProportionLower, texts.meanProportionUpper, analysis),
-        };
+        const base = parseBaseFilter(searchParams, this.config, getDefaultMeanProportion(analysis));
 
         return { base, analysis };
     }
@@ -150,26 +133,7 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         const search = new URLSearchParams();
         const { base, analysis } = pageState;
 
-        // general dataset settings
-        setSearchFromString(search, this.config.locationNameField, base.locationName);
-        // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
-        // the URL re-resolves them against the dataset's current date range instead of
-        // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
-        // still serialize as literal dates — setSearchFromDateRange already branches
-        // on the label.
-        setSearchFromDateRange(search, this.config.samplingDateField, base.samplingDate);
-        setSearchFromString(search, 'granularity', base.granularity);
-        if (!base.excludeEmpty) {
-            setSearchFromString(search, 'excludeEmpty', 'false');
-        }
-        // Omitted when it's the mode's default, so the default can still differ between modes.
-        const defaultMeanProportion = getDefaultMeanProportion(analysis);
-        if (base.meanProportion.lower !== defaultMeanProportion.lower) {
-            setSearchFromString(search, 'meanProportionLower', String(base.meanProportion.lower));
-        }
-        if (base.meanProportion.upper !== defaultMeanProportion.upper) {
-            setSearchFromString(search, 'meanProportionUpper', String(base.meanProportion.upper));
-        }
+        setBaseFilterSearchParams(search, base, this.config, getDefaultMeanProportion(analysis));
 
         // analysis mode dependent settings
         setSearchFromString(search, 'analysisMode', analysis.mode);
@@ -237,78 +201,9 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     }
 }
 
-/**
- * Parses the `samplingDate` URL param, which is either literal `dateFrom--dateTo`
- * dates or a preset's label (e.g. "Most recent 14 days") written by `toUrl`. A
- * label-only value has no concrete dates yet: WASAP's presets are relative to
- * the dataset's actual latest sample date (which can lag behind today), not to
- * today, so they can only be resolved once that date range has been read from
- * SILO. See `useResolvedSamplingDate`, which does that resolution — this
- * function only parses, deliberately not against a fixed options list (the old
- * `{ type: 'date', dateRangeOptions: () => [] }` mechanism never had one to
- * match against, which is why a preset label from the URL never resolved).
- */
-function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRangeOption | undefined {
-    const value = search.get(name);
-    if (value === null) {
-        return undefined;
-    }
-    if (value.includes('--')) {
-        const [from, to] = value.split('--').map((part) => part.trim());
-        return {
-            label: CustomDateRangeLabel,
-            dateFrom: from === '' ? undefined : from,
-            dateTo: to === '' ? undefined : to,
-        };
-    }
-    return { label: value };
-}
-
-/**
- * A `samplingDate` that's a preset label without concrete dates yet — needs to
- * be resolved against the dataset's actual date range before it can be used to
- * build a SILO query.
- */
-export function isUnresolvedSamplingDate(samplingDate: DateRangeOption): boolean {
-    return (
-        samplingDate.label !== CustomDateRangeLabel &&
-        samplingDate.dateFrom === undefined &&
-        samplingDate.dateTo === undefined
-    );
-}
-
-/**
- * Parses the mean proportion bounds from the URL, falling back to the analysis
- * mode's default for a missing or invalid (not a number in [0, 1]) bound.
- */
-function parseMeanProportion(
-    lower: string | undefined,
-    upper: string | undefined,
-    analysis: WasapAnalysisFilter,
-): WasapMeanProportion {
-    const defaults = getDefaultMeanProportion(analysis);
-    return {
-        lower: parseProportion(lower) ?? defaults.lower,
-        upper: parseProportion(upper) ?? defaults.upper,
-    };
-}
-
-function parseProportion(value: string | undefined): number | undefined {
-    if (value === undefined || value.trim() === '') {
-        return undefined;
-    }
-    const parsed = Number(value);
-    return Number.isFinite(parsed) && parsed >= 0 && parsed <= 1 ? parsed : undefined;
-}
-
-function generateWasapFilterConfig(pageConfig: WasapPageConfig): TextFieldConfig[] {
+function generateWasapFilterConfig(): TextFieldConfig[] {
+    // not really LAPIS fields, but we still want to use the URL parsing mechanism
     return [
-        { lapisField: pageConfig.locationNameField },
-        // below are not really LAPIS fields, but we still want to use the URL parsing mechanism
-        { lapisField: 'granularity' },
-        { lapisField: 'excludeEmpty' },
-        { lapisField: 'meanProportionLower' },
-        { lapisField: 'meanProportionUpper' },
         { lapisField: 'analysisMode' },
         { lapisField: 'sequenceType' },
         { lapisField: 'mutations' },
