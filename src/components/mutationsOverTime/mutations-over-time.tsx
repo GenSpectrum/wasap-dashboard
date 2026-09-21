@@ -262,6 +262,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                     totalRows={totalFilteredRows}
                     onPageChange={setPageIndex}
                     paginationEnd={paginationEnd}
+                    customColumns={originalComponentProps.customColumns}
                 />
             ),
         },
