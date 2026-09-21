@@ -43,12 +43,9 @@ type AnnotationLookup = {
     position: Map<string, ResolvedMutationAnnotation[]>;
 };
 
-type MutationAnnotationsContextValue = Record<SequenceType, AnnotationLookup> & {
-    rawAnnotations: MutationAnnotations;
-};
+type MutationAnnotationsContextValue = Record<SequenceType, AnnotationLookup>;
 
 const MutationAnnotationsContext = createContext<MutationAnnotationsContextValue>({
-    rawAnnotations: [],
     nucleotide: {
         mutation: new Map(),
         position: new Map(),
@@ -134,7 +131,6 @@ export function buildAnnotationIndex(value: MutationAnnotations): MutationAnnota
     });
 
     return {
-        rawAnnotations: value,
         nucleotide: { mutation: nucleotideMutationMap, position: nucleotidePositionMap },
         'amino acid': { mutation: aminoAcidMutationMap, position: aminoAcidPositionMap },
     };
@@ -155,10 +151,6 @@ function resolve(
 function addToMap(map: Map<string, ResolvedMutationAnnotation[]>, code: string, resolved: ResolvedMutationAnnotation) {
     const existing = map.get(code.toUpperCase()) ?? [];
     map.set(code.toUpperCase(), [...existing, resolved]);
-}
-
-export function useRawMutationAnnotations() {
-    return useContext(MutationAnnotationsContext).rawAnnotations;
 }
 
 /**
