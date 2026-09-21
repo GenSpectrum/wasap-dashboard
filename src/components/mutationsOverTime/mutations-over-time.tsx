@@ -30,7 +30,6 @@ import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedL
 import { useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 import { AnnotatedMutation } from '../shared/annotated-mutation';
 import { type ColorScale } from '../shared/color-scale-selector';
-import { ColorScaleSelectorDropdown } from '../shared/color-scale-selector-dropdown';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
 import {
@@ -51,6 +50,7 @@ import { type DisplayedSegment, SegmentSelector, useDisplayedSegments } from '..
 import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../shared/tanstackTable/pagination-context';
+import { ViewSettingsDropdown } from '../shared/view-settings-dropdown';
 
 const mutationsOverTimeViewSchema = z.literal(views.grid);
 export type MutationsOverTimeView = z.infer<typeof mutationsOverTimeViewSchema>;
@@ -238,13 +238,16 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
         pageData === null ? [] : getDownloadData(pageData);
 
-    const downloadButton = (
-        <CsvDownloadButton
-            className='btn btn-xs'
-            label='Download CSV'
-            getData={getDownloadDataAsync}
-            filename='mutations_over_time.csv'
-        />
+    const paginationEnd = (
+        <div className='flex items-center gap-1'>
+            <ViewSettingsDropdown colorScale={colorScale} setColorScale={setColorScale} />
+            <CsvDownloadButton
+                className='btn btn-xs'
+                label='Download CSV'
+                getData={getDownloadDataAsync}
+                filename='mutations_over_time.csv'
+            />
+        </div>
     );
 
     const getTab = (view: MutationsOverTimeView) => {
@@ -268,7 +271,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                             customColumns={originalComponentProps.customColumns}
                             featureRenderer={mutationRenderer}
                             tooltipPortalTarget={tooltipPortalTarget}
-                            paginationEnd={downloadButton}
+                            paginationEnd={paginationEnd}
                         />
                     ),
                 };
@@ -295,23 +298,20 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                     pageIndex={pageIndex}
                     totalRows={totalFilteredRows}
                     onPageChange={setPageIndex}
-                    paginationEnd={downloadButton}
+                    paginationEnd={paginationEnd}
                 />
             ),
         },
     ];
 
-    const toolbar = (activeTab: string) => (
+    const toolbar = (
         <Toolbar
-            activeTab={activeTab}
             displayedSegments={displayedSegments}
             setDisplayedSegments={setDisplayedSegments}
             displayedMutationTypes={displayedMutationTypes}
             setDisplayedMutationTypes={setDisplayedMutationTypes}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
-            colorScale={colorScale}
-            setColorScale={setColorScale}
             originalComponentProps={originalComponentProps}
             setFilterValue={setMutationFilterValue}
             mutationFilterValue={mutationFilterValue}
@@ -326,30 +326,24 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
 };
 
 type ToolbarProps = {
-    activeTab: string;
     displayedSegments: DisplayedSegment[];
     setDisplayedSegments: (segments: DisplayedSegment[]) => void;
     displayedMutationTypes: DisplayedMutationType[];
     setDisplayedMutationTypes: (types: DisplayedMutationType[]) => void;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
-    colorScale: ColorScale;
-    setColorScale: Dispatch<SetStateAction<ColorScale>>;
     originalComponentProps: MutationsOverTimeProps;
     mutationFilterValue: MutationFilter;
     setFilterValue: Dispatch<SetStateAction<MutationFilter>>;
 };
 
 const Toolbar: FC<ToolbarProps> = ({
-    activeTab,
     displayedSegments,
     setDisplayedSegments,
     displayedMutationTypes,
     setDisplayedMutationTypes,
     hideGaps,
     setHideGaps,
-    colorScale,
-    setColorScale,
     originalComponentProps,
     setFilterValue,
     mutationFilterValue,
@@ -367,9 +361,6 @@ const Toolbar: FC<ToolbarProps> = ({
                 displayedMutationTypes={displayedMutationTypes}
             />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
-            {activeTab === 'Grid' && (
-                <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
-            )}
             <MutationsOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>

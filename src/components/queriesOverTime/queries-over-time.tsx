@@ -23,7 +23,6 @@ import { type Map2DContents } from '../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
 import { type ColorScale } from '../shared/color-scale-selector';
-import { ColorScaleSelectorDropdown } from '../shared/color-scale-selector-dropdown';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
 import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
@@ -38,6 +37,7 @@ import { ResizeContainer } from '../shared/resize-container';
 import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
 import { PageSizeContextProvider } from '../shared/tanstackTable/pagination-context';
+import { ViewSettingsDropdown } from '../shared/view-settings-dropdown';
 
 const queriesOverTimeViewSchema = z.literal(views.grid);
 export type QueriesOverTimeView = z.infer<typeof queriesOverTimeViewSchema>;
@@ -183,13 +183,16 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         [tooltipPortalTarget, queryLookupMap],
     );
 
-    const downloadButton = (
-        <CsvDownloadButton
-            className='btn btn-xs'
-            label='Download CSV'
-            getData={() => getDownloadData(filteredData)}
-            filename='queries_over_time.csv'
-        />
+    const paginationEnd = (
+        <div className='flex items-center gap-1'>
+            <ViewSettingsDropdown colorScale={colorScale} setColorScale={setColorScale} />
+            <CsvDownloadButton
+                className='btn btn-xs'
+                label='Download CSV'
+                getData={() => getDownloadData(filteredData)}
+                filename='queries_over_time.csv'
+            />
+        </div>
     );
 
     const getTab = (view: QueriesOverTimeView) => {
@@ -207,7 +210,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
                             customColumns={originalComponentProps.customColumns}
                             featureRenderer={queryRenderer}
                             tooltipPortalTarget={tooltipPortalTarget}
-                            paginationEnd={downloadButton}
+                            paginationEnd={paginationEnd}
                         />
                     ),
                 };
@@ -216,13 +219,10 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
     const tabs = originalComponentProps.views.map((view) => getTab(view));
 
-    const toolbar = (activeTab: string) => (
+    const toolbar = (
         <Toolbar
-            activeTab={activeTab}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
-            colorScale={colorScale}
-            setColorScale={setColorScale}
             originalComponentProps={originalComponentProps}
             setFilterValue={setQueryFilterValue}
             queryFilterValue={queryFilterValue}
@@ -239,22 +239,16 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 };
 
 type ToolbarProps = {
-    activeTab: string;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
-    colorScale: ColorScale;
-    setColorScale: Dispatch<SetStateAction<ColorScale>>;
     originalComponentProps: QueriesOverTimeProps;
     queryFilterValue: QueryFilter;
     setFilterValue: Dispatch<SetStateAction<QueryFilter>>;
 };
 
 const Toolbar: FC<ToolbarProps> = ({
-    activeTab,
     hideGaps,
     setHideGaps,
-    colorScale,
-    setColorScale,
     originalComponentProps,
     setFilterValue,
     queryFilterValue,
@@ -263,9 +257,6 @@ const Toolbar: FC<ToolbarProps> = ({
         <>
             <QueriesOverTimeFilter setFilterValue={setFilterValue} value={queryFilterValue} />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
-            {activeTab === 'Grid' && (
-                <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
-            )}
             <QueriesOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>
