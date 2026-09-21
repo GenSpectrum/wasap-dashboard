@@ -77,17 +77,6 @@ export type SubstitutionOrDeletionEntry<
 
 export type MutationEntry = SubstitutionEntry | DeletionEntry | InsertionEntry;
 
-export const views = {
-    table: 'table',
-    venn: 'venn',
-    grid: 'grid',
-    insertions: 'insertions',
-    bar: 'bar',
-    line: 'line',
-    bubble: 'bubble',
-    map: 'map',
-} as const;
-
 export const mutationType = {
     nucleotideMutations: 'nucleotideMutations',
     nucleotideInsertions: 'nucleotideInsertions',

@@ -1,16 +1,40 @@
 import { getCoreRowModel } from '@tanstack/table-core';
-import { Fragment, useId, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
+import z from 'zod';
 
 import { type ColorScale, getColorWithinScale } from './color-scale-selector';
-import { type CustomColumn, type FeatureRenderer } from './features-over-time-grid';
-import { getTooltipPosition } from './features-over-time-grid-shared';
 import PortalTooltip from './portal-tooltip';
 import { Pagination, type PageSizes } from './tanstackTable/pagination';
 import { usePageSizeContext } from './tanstackTable/pagination-context';
 import { useReactTable } from './tanstackTable/tanstackTable';
+import { type TooltipPosition } from './tooltip';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
 import { type TemporalDataMap } from '../mutationsOverTime/MutationOverTimeData';
+
+export const customColumnSchema = z.object({
+    header: z.string(),
+    values: z.record(z.string(), z.union([z.string(), z.number()])),
+});
+/** An extra column of the bands: a header and a value for each row label (see `FeatureRenderer.asString`). */
+export type CustomColumn = z.infer<typeof customColumnSchema>;
+
+export interface FeatureRenderer<D> {
+    asString(value: D): string;
+    renderRowLabel(value: D): ReactElement;
+    renderTooltip(value: D, temporal: Temporal, proportionValue: ProportionValue): ReactElement;
+}
+
+/**
+ * Picks which side of a cell the tooltip should open on, so it stays within the visible bands
+ * instead of overflowing off the top/bottom or left/right edge (meaning the tooltip tends to
+ * open towards the 'center' of the component).
+ */
+function getTooltipPosition(rowIndex: number, rows: number, columnIndex: number, columns: number): TooltipPosition {
+    const tooltipX = rowIndex < rows / 2 || rowIndex < 6 ? 'bottom' : 'top';
+    const tooltipY = columnIndex < columns / 2 ? 'start' : 'end';
+    return `${tooltipX}-${tooltipY}`;
+}
 
 /**
  * The feature x time-bucket matrix (mutations, or queries) drawn as one band per feature.
