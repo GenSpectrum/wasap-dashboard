@@ -36,8 +36,6 @@ import {
     type FeatureRenderer,
     FeaturesOverTimeGridServerPaginated,
 } from '../shared/features-over-time-grid';
-import { Fullscreen } from '../shared/fullscreen';
-import { FullscreenTargetContext } from '../shared/fullscreen-target';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import { ResizeContainer } from '../shared/resize-container';
@@ -74,15 +72,12 @@ export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 export const MutationsOverTime: FC<MutationsOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
-    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ErrorBoundary size={size} schema={mutationOverTimeSchema} componentProps={componentProps}>
-            <FullscreenTargetContext.Provider value={containerRef}>
-                <ResizeContainer size={size} ref={containerRef}>
-                    <MutationsOverTimeInner {...componentProps} />
-                </ResizeContainer>
-            </FullscreenTargetContext.Provider>
+            <ResizeContainer size={size}>
+                <MutationsOverTimeInner {...componentProps} />
+            </ResizeContainer>
         </ErrorBoundary>
     );
 };
@@ -272,20 +267,10 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         },
     ];
 
-    const toolbar = <Toolbar />;
-
     return (
         <div ref={tooltipPortalTargetRef}>
-            <Tabs ref={tabsRef} tabs={tabs} toolbar={toolbar} />
+            <Tabs ref={tabsRef} tabs={tabs} />
         </div>
-    );
-};
-
-const Toolbar: FC = () => {
-    return (
-        <>
-            <Fullscreen />
-        </>
     );
 };
 

@@ -15,8 +15,6 @@ import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
 import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
-import { Fullscreen } from '../shared/fullscreen';
-import { FullscreenTargetContext } from '../shared/fullscreen-target';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
@@ -74,15 +72,12 @@ export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
     const { width, height } = componentProps;
     const size = { height, width };
-    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ErrorBoundary size={size} schema={queriesOverTimeSchema} componentProps={componentProps}>
-            <FullscreenTargetContext.Provider value={containerRef}>
-                <ResizeContainer size={size} ref={containerRef}>
-                    <QueriesOverTimeInner {...componentProps} />
-                </ResizeContainer>
-            </FullscreenTargetContext.Provider>
+            <ResizeContainer size={size}>
+                <QueriesOverTimeInner {...componentProps} />
+            </ResizeContainer>
         </ErrorBoundary>
     );
 };
@@ -199,22 +194,12 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
     const tabs = originalComponentProps.views.map((view) => getTab(view));
 
-    const toolbar = <Toolbar />;
-
     return (
         <div ref={tooltipPortalTargetRef}>
             <PageSizeContextProvider pageSizes={originalComponentProps.pageSizes}>
-                <Tabs ref={tabsRef} tabs={tabs} toolbar={toolbar} />
+                <Tabs ref={tabsRef} tabs={tabs} />
             </PageSizeContextProvider>
         </div>
-    );
-};
-
-const Toolbar: FC = () => {
-    return (
-        <>
-            <Fullscreen />
-        </>
     );
 };
 
