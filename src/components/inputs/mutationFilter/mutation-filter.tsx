@@ -258,14 +258,14 @@ function MutationFilterInner({
                 </div>
             </div>
             <ul
-                className={`w-inherit absolute z-10 mt-1 max-h-80 overflow-scroll bg-white p-0 shadow-md ${
+                className={`w-inherit absolute z-10 mt-1 max-h-80 overflow-scroll border border-gray-200 bg-white p-0 ${
                     !isOpen && 'hidden'
                 }`}
                 {...getMenuProps()}
             >
                 {items.map((item, index) => (
                     <li
-                        className={`${highlightedIndex === index && 'bg-brand-200'} ${selectedItem === item && 'font-bold'} flex cursor-pointer flex-col px-3 py-2 shadow-sm`}
+                        className={`${highlightedIndex === index && 'bg-brand-200'} ${selectedItem === item && 'font-bold'} flex cursor-pointer flex-col border-b border-gray-100 px-3 py-2`}
                         key={`${item.value.code}${index}`}
                         {...getItemProps({ item, index })}
                         style={{

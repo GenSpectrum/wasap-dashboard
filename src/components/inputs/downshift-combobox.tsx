@@ -373,13 +373,13 @@ function DropdownMenu<Item>({
 
     return (
         <ul
-            className={`absolute z-10 mt-1 max-h-80 w-full min-w-32 overflow-scroll bg-white shadow-md ${isOpen ? '' : 'hidden'}`}
+            className={`absolute z-10 mt-1 max-h-80 w-full min-w-32 overflow-scroll border border-gray-200 bg-white ${isOpen ? '' : 'hidden'}`}
             {...getMenuProps()}
         >
             {items.length > 0 ? (
                 items.map((item, index) => (
                     <li
-                        className={`${highlightedIndex === index ? 'bg-brand-200' : ''} ${isItemSelected(item) ? 'font-bold' : ''} cursor-pointer px-3 py-2 shadow-xs`}
+                        className={`${highlightedIndex === index ? 'bg-brand-200' : ''} ${isItemSelected(item) ? 'font-bold' : ''} cursor-pointer border-b border-gray-100 px-3 py-2`}
                         key={itemToString(item)}
                         {...getItemProps({ item, index })}
                     >
@@ -387,7 +387,7 @@ function DropdownMenu<Item>({
                     </li>
                 ))
             ) : (
-                <li className='px-3 py-2 shadow-xs'>{emptyMessage}</li>
+                <li className='border-b border-gray-100 px-3 py-2'>{emptyMessage}</li>
             )}
         </ul>
     );

@@ -13,7 +13,7 @@ interface DropdownProps {
     children?: ReactNode;
 }
 
-export const dropdownClass = 'z-10 absolute w-max top-0 left-0 bg-white p-4 border border-gray-200 shadow-lg';
+export const dropdownClass = 'z-10 absolute w-max top-0 left-0 bg-white p-4 border border-gray-200';
 
 export const Dropdown: FC<DropdownProps> = ({ children, buttonTitle, icon, placement }) => {
     const [showContent, setShowContent] = useState(false);

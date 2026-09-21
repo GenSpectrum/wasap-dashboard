@@ -105,7 +105,7 @@ export function CollectionCombobox({
                 </button>
             </div>
             <ul
-                className={`bg-base-100 border-base-300 absolute z-10 mt-1 max-h-80 w-full overflow-y-auto border shadow-md ${isOpen ? '' : 'hidden'}`}
+                className={`bg-base-100 border-base-300 absolute z-10 mt-1 max-h-80 w-full overflow-y-auto border ${isOpen ? '' : 'hidden'}`}
                 {...getMenuProps()}
             >
                 {filteredCollections.length > 0 ? (

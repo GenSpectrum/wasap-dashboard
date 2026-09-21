@@ -25,12 +25,11 @@
 }
 
 .min-max-range-slider::-webkit-slider-thumb:active {
-    box-shadow:
-        inset 0 0 3px var(--color-brand-700),
-        0 0 9px var(--color-brand-700);
-    -webkit-box-shadow:
-        inset 0 0 3px var(--color-brand-700),
-        0 0 9px var(--color-brand-700);
+    box-shadow: 0 0 0 2px var(--color-brand-700);
+}
+
+.min-max-range-slider::-moz-range-thumb:active {
+    box-shadow: 0 0 0 2px var(--color-brand-700);
 }
 
 .min-max-range-slider {

@@ -67,6 +67,11 @@
     --radius-selector: 0;
     --radius-field: 0;
     --radius-box: 0;
+
+    /* No shadows: --depth is what daisyUI's buttons, inputs, selects, toggles,
+       checkboxes and tabs draw theirs with. */
+    --depth: 0;
+    --noise: 0;
 }
 
 /* The toast library and the date picker popup ship their own rounding, and rules like
@@ -75,6 +80,14 @@
 .flatpickr-calendar,
 .flatpickr-calendar * {
     border-radius: 0 !important;
+}
+
+/* What they and daisyUI's modal draw as a shadow was their edge, so they get a border instead. */
+.modal-box,
+.Toastify__toast,
+.flatpickr-calendar {
+    box-shadow: none !important;
+    border: 1px solid var(--color-stone-300);
 }
 
 html,
