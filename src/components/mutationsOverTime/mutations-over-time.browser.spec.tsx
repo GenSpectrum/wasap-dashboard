@@ -106,7 +106,7 @@ function renderOverTime() {
                         views={[views.grid]}
                         granularity='day'
                         displayMutations={['C241T', 'C3037T']}
-                        initialMeanProportionInterval={{ min: 0, max: 1 }}
+                        meanProportionInterval={{ min: 0, max: 1 }}
                         pageSizes={[10, 20]}
                     />
                 </MutationAnnotationsContextProvider>

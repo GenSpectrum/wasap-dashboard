@@ -137,6 +137,15 @@ export const wasapAnalysisModeSchema = z.enum([
 export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
 
 /**
+ * Only mutations (or queries) whose mean proportion over the selected time range
+ * lies within [lower, upper] are displayed. Both are proportions between 0 and 1.
+ */
+export type WasapMeanProportion = {
+    lower: number;
+    upper: number;
+};
+
+/**
  * Mode-independent settings, like the filter for location and date range —
  * the *current* filter selection (derived from URL state, see
  * `WasapPageStateHandler`), not a `WasapPageConfig` default.
@@ -146,6 +155,7 @@ export type WasapBaseFilter = {
     samplingDate?: DateRangeOption;
     granularity: TemporalGranularity;
     excludeEmpty: boolean;
+    meanProportion: WasapMeanProportion;
 };
 
 export type WasapFilter = {

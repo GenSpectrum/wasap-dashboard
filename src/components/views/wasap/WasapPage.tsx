@@ -5,7 +5,6 @@ import { ClinicalSequenceCountStat } from './components/ClinicalSequenceCountSta
 import { CollectionInfo } from './components/CollectionInfo';
 import { NoDataHelperText } from './components/NoDataHelperText';
 import { WasapStats } from './components/WasapStats';
-import { getInitialMeanProportionInterval } from './initialMeanProportionInterval';
 import type { ResistanceData } from './resistanceData';
 import { useResolvedSamplingDate } from './useResolvedSamplingDate';
 import { useWasapPageData, type WasapPageData } from './useWasapPageData';
@@ -114,7 +113,10 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(base.samplingDate);
     const isPending = isDataPending || isSamplingDatePending;
 
-    const initialMeanProportionInterval = getInitialMeanProportionInterval(analysis);
+    const meanProportionInterval = useMemo(
+        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
+        [base.meanProportion.lower, base.meanProportion.upper],
+    );
 
     const filter: SiloReadFilter = {
         ...(base.locationName && { locationName: base.locationName }),
@@ -190,7 +192,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                             displayMutations={data.displayMutations}
                                             hideGaps={base.excludeEmpty ? true : undefined}
                                             pageSizes={[20, 50, 100, 250]}
-                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            meanProportionInterval={meanProportionInterval}
                                             customColumns={data.customColumns}
                                         />
                                     </ComponentWrapper>
@@ -253,7 +255,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                             granularity={base.granularity}
                                             hideGaps={base.excludeEmpty ? true : undefined}
                                             pageSizes={[20, 50, 100, 250]}
-                                            initialMeanProportionInterval={initialMeanProportionInterval}
+                                            meanProportionInterval={meanProportionInterval}
                                         />
                                     </ComponentWrapper>
                                 </div>

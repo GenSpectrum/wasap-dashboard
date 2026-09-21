@@ -34,8 +34,6 @@ import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
-import type { ProportionInterval } from '../shared/proportion-selector';
-import { ProportionSelectorDropdown } from '../shared/proportion-selector-dropdown';
 import { ResizeContainer } from '../shared/resize-container';
 import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
@@ -76,7 +74,8 @@ const queriesOverTimeSchema = z.object({
         }),
     views: z.array(queriesOverTimeViewSchema),
     granularity: temporalGranularitySchema,
-    initialMeanProportionInterval: meanProportionIntervalSchema,
+    /** Only queries whose mean proportion over the time range lies within this interval are shown. */
+    meanProportionInterval: meanProportionIntervalSchema,
     hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
@@ -135,7 +134,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         textFilter: '',
     });
 
-    const [proportionInterval, setProportionInterval] = useState(originalComponentProps.initialMeanProportionInterval);
+    const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
     const [hideGaps, setHideGaps] = useState<boolean>(originalComponentProps.hideGaps ?? false);
 
@@ -210,8 +209,6 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
     const toolbar = (activeTab: string) => (
         <Toolbar
             activeTab={activeTab}
-            proportionInterval={proportionInterval}
-            setProportionInterval={setProportionInterval}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
             filteredData={filteredData}
@@ -234,8 +231,6 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
 type ToolbarProps = {
     activeTab: string;
-    proportionInterval: ProportionInterval;
-    setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     filteredData: ReturnType<typeof getFilteredQueryOverTimeData>;
@@ -248,8 +243,6 @@ type ToolbarProps = {
 
 const Toolbar: FC<ToolbarProps> = ({
     activeTab,
-    proportionInterval,
-    setProportionInterval,
     hideGaps,
     setHideGaps,
     filteredData,
@@ -262,12 +255,6 @@ const Toolbar: FC<ToolbarProps> = ({
     return (
         <>
             <QueriesOverTimeFilter setFilterValue={setFilterValue} value={queryFilterValue} />
-            <ProportionSelectorDropdown
-                proportionInterval={proportionInterval}
-                setMinProportion={(min) => setProportionInterval((prev) => ({ ...prev, min }))}
-                setMaxProportion={(max) => setProportionInterval((prev) => ({ ...prev, max }))}
-                labelPrefix='Mean proportion'
-            />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             {activeTab === 'Grid' && (
                 <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
@@ -295,8 +282,9 @@ const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentPr
             <InfoParagraph>
                 This component displays the proportions of custom queries per {originalComponentProps.granularity}. Each
                 query consists of a count query (what to count) and a coverage query (what to use as the denominator).
-                In the toolbar, you can filter queries by text and configure which queries are displayed by applying a
-                filter based on the mean proportion of the query's occurrence over the entire time range.
+                In the toolbar, you can filter queries by text. Which queries are displayed can also be restricted
+                through a filter on the mean proportion of the query's occurrence over the entire time range, which is
+                set from outside this component.
             </InfoParagraph>
             <InfoParagraph>
                 The grid cells have a tooltip that will show more detailed information. It shows the count of samples
