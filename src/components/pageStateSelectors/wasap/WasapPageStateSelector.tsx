@@ -5,7 +5,6 @@ import { getApiServiceForClientside } from '../../../externalData/genSpectrum/ap
 import { getCollections } from '../../../externalData/genSpectrum/getCollections';
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { ApplyFilterButton } from '../ApplyFilterButton';
-import { DynamicDateFilter } from '../DynamicDateFilter';
 import { SelectorHeadline } from '../SelectorHeadline';
 import { ExplorationModeInfo } from './InfoBlocks';
 import { CollectionAnalysisFilter } from './filters/CollectionAnalysisFilter';
@@ -14,9 +13,7 @@ import { ManualAnalysisFilter } from './filters/ManualAnalysisFilter';
 import { ResistanceMutationsFilter } from './filters/ResistanceMutationsFilter';
 import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
-import { LabeledField } from './utils/LabeledField';
 import { MeanProportionField } from './utils/MeanProportionField';
-import { RadioSelect } from './utils/RadioSelect';
 import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import { getDefaultMeanProportion } from '../../../pageState/wasap/defaultMeanProportion';
@@ -28,9 +25,7 @@ import {
     type WasapMeanProportion,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { modeLabel } from '../../../pageState/wasap/wasapModes';
-import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { Inset } from '../../shared/Inset';
-import { TextFilter } from '../../textFilter/text-filter';
 
 /**
  * The root filter control for the W-ASAP dashboard.
@@ -40,7 +35,7 @@ export function WasapPageStateSelector({
     config,
     resistanceSetNames,
     pageStateHandler,
-    initialBaseFilterState,
+    baseFilter,
     initialAnalysisFilterState,
     setPageState,
     onModeChange,
@@ -48,17 +43,13 @@ export function WasapPageStateSelector({
     config: WasapPageConfig;
     resistanceSetNames: string[];
     pageStateHandler: PageStateHandler<WasapFilter>;
-    initialBaseFilterState: WasapBaseFilter;
+    /** The applied base filter, which the panel leaves as it is (it has its own panel). */
+    baseFilter: WasapBaseFilter;
     initialAnalysisFilterState: WasapAnalysisFilter;
     setPageState: Dispatch<SetStateAction<WasapFilter>>;
-    /**
-     * Called as soon as another mode is picked, which is a different page. Gets the base filter as it
-     * is in the panel now, applied or not, so that it stays the same between the modes.
-     */
-    onModeChange: (mode: WasapAnalysisMode, baseFilter: WasapBaseFilter) => void;
+    /** Called as soon as another mode is picked, which is a different page. */
+    onModeChange: (mode: WasapAnalysisMode) => void;
 }) {
-    const [baseFilterState, setBaseFilterState] = useState(initialBaseFilterState);
-
     // State for each individual analysis mode setting component
     const {
         manualFilter,
@@ -101,15 +92,15 @@ export function WasapPageStateSelector({
     // (which can change with the mode, or with the manually entered mutations), so we only keep an
     // explicit value once they have changed it.
     const [meanProportionOverride, setMeanProportionOverride] = useState<WasapMeanProportion | undefined>(
-        isDefaultMeanProportion(initialBaseFilterState.meanProportion, initialAnalysisFilterState)
+        isDefaultMeanProportion(baseFilter.meanProportion, initialAnalysisFilterState)
             ? undefined
-            : initialBaseFilterState.meanProportion,
+            : baseFilter.meanProportion,
     );
 
     function getMergedPageState(): WasapFilter {
         const analysis = getAnalysisFilter();
         const meanProportion = meanProportionOverride ?? getDefaultMeanProportion(analysis);
-        return { base: { ...baseFilterState, meanProportion }, analysis };
+        return { base: { ...baseFilter, meanProportion }, analysis };
     }
 
     // data for the 'untracked' analysis mode - loaded here already so it's available when the mode is selected
@@ -163,55 +154,13 @@ export function WasapPageStateSelector({
 
     return (
         <div className='flex flex-col gap-4'>
-            <SelectorHeadline>Filter dataset</SelectorHeadline>
-            <Inset className='p-2'>
-                <LabeledField label='Sampling location'>
-                    <TextFilter
-                        placeholderText='Sampling location'
-                        field={config.locationNameField}
-                        onInputChange={({ locationName }) => {
-                            setBaseFilterState({ ...baseFilterState, locationName });
-                        }}
-                        value={baseFilterState.locationName}
-                    />
-                </LabeledField>
-
-                <DynamicDateFilter
-                    label='Sampling date'
-                    generateOptions={recentDaysDateRangeOptions}
-                    value={baseFilterState.samplingDate}
-                    onChange={(newDateRange?) => setBaseFilterState({ ...baseFilterState, samplingDate: newDateRange })}
-                />
-                <div className='h-2' />
-                <RadioSelect
-                    label='Granularity'
-                    value={baseFilterState.granularity}
-                    options={[
-                        { value: 'day', label: 'Day' },
-                        { value: 'week', label: 'Week' },
-                    ]}
-                    onChange={(val) => setBaseFilterState({ ...baseFilterState, granularity: val })}
-                />
-                <div className='text-sm'>
-                    <input
-                        className='accent-primary'
-                        type='checkbox'
-                        id='excludeEmpty'
-                        checked={baseFilterState.excludeEmpty}
-                        onChange={(e) => setBaseFilterState({ ...baseFilterState, excludeEmpty: e.target.checked })}
-                    />
-                    <label htmlFor='excludeEmpty' className='pl-2'>
-                        Exclude empty date ranges
-                    </label>
-                </div>
-            </Inset>
             <SelectorHeadline info={<ExplorationModeInfo />}>Mutation selection</SelectorHeadline>
 
             <select
                 className='select select-bordered'
                 value={selectedAnalysisMode}
                 onChange={(e) => {
-                    onModeChange(e.target.value as WasapAnalysisMode, baseFilterState);
+                    onModeChange(e.target.value as WasapAnalysisMode);
                 }}
             >
                 {enabledAnalysisModes(config).map((mode) => (

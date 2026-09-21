@@ -159,6 +159,12 @@ export type WasapBaseFilter = {
 };
 
 /**
+ * The part of the base filter that selects the dataset, and that stays the same
+ * when going from one analysis mode to another (the mean proportion doesn't).
+ */
+export type WasapDatasetFilter = Omit<WasapBaseFilter, 'meanProportion'>;
+
+/**
  * The page state of one analysis mode page, where `analysis` is narrowed to the
  * filter of that mode.
  */
