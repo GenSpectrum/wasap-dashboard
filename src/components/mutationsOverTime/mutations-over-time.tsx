@@ -46,8 +46,6 @@ import { LoadingDisplay } from '../shared/loading-display';
 import { type DisplayedMutationType, MutationTypeSelector } from '../shared/mutation-type-selector';
 import { MutationsOverTimeMutationsFilter } from '../shared/mutations-over-time-mutations-filter';
 import { NoDataDisplay } from '../shared/no-data-display';
-import type { ProportionInterval } from '../shared/proportion-selector';
-import { ProportionSelectorDropdown } from '../shared/proportion-selector-dropdown';
 import { ResizeContainer } from '../shared/resize-container';
 import { type DisplayedSegment, SegmentSelector, useDisplayedSegments } from '../shared/segment-selector';
 import Tabs from '../shared/tabs';
@@ -69,7 +67,8 @@ const mutationOverTimeSchema = z.object({
     views: z.array(mutationsOverTimeViewSchema),
     granularity: temporalGranularitySchema,
     displayMutations: displayMutationsSchema.optional(),
-    initialMeanProportionInterval: meanProportionIntervalSchema,
+    /** Only mutations whose mean proportion over the time range lies within this interval are shown. */
+    meanProportionInterval: meanProportionIntervalSchema,
     hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
@@ -163,7 +162,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     });
     const annotationProvider = useMutationAnnotationsProvider();
 
-    const [proportionInterval, setProportionInterval] = useState(originalComponentProps.initialMeanProportionInterval);
+    const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
 
     const [displayedSegments, setDisplayedSegments] = useDisplayedSegments(originalComponentProps.sequenceType);
@@ -292,8 +291,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
             setDisplayedSegments={setDisplayedSegments}
             displayedMutationTypes={displayedMutationTypes}
             setDisplayedMutationTypes={setDisplayedMutationTypes}
-            proportionInterval={proportionInterval}
-            setProportionInterval={setProportionInterval}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
             colorScale={colorScale}
@@ -318,8 +315,6 @@ type ToolbarProps = {
     setDisplayedSegments: (segments: DisplayedSegment[]) => void;
     displayedMutationTypes: DisplayedMutationType[];
     setDisplayedMutationTypes: (types: DisplayedMutationType[]) => void;
-    proportionInterval: ProportionInterval;
-    setProportionInterval: Dispatch<SetStateAction<ProportionInterval>>;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     colorScale: ColorScale;
@@ -337,8 +332,6 @@ const Toolbar: FC<ToolbarProps> = ({
     setDisplayedSegments,
     displayedMutationTypes,
     setDisplayedMutationTypes,
-    proportionInterval,
-    setProportionInterval,
     hideGaps,
     setHideGaps,
     colorScale,
@@ -365,12 +358,6 @@ const Toolbar: FC<ToolbarProps> = ({
             <MutationTypeSelector
                 setDisplayedMutationTypes={setDisplayedMutationTypes}
                 displayedMutationTypes={displayedMutationTypes}
-            />
-            <ProportionSelectorDropdown
-                proportionInterval={proportionInterval}
-                setMinProportion={(min) => setProportionInterval((prev) => ({ ...prev, min }))}
-                setMaxProportion={(max) => setProportionInterval((prev) => ({ ...prev, max }))}
-                labelPrefix='Mean proportion'
             />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             {activeTab === 'Grid' && (

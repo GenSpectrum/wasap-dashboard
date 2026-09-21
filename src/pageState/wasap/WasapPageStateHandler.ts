@@ -1,3 +1,4 @@
+import { getDefaultMeanProportion } from './defaultMeanProportion';
 import {
     type ExcludeSetName,
     type SignatureType,
@@ -6,6 +7,7 @@ import {
     type WasapAnalysisMode,
     type WasapBaseFilter,
     type WasapFilter,
+    type WasapMeanProportion,
 } from './wasapAnalysisFilter';
 import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
 import { enabledAnalysisModes, type WasapPageConfig } from '../../config/wasapPageConfig';
@@ -134,6 +136,7 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
             samplingDate: samplingDate ?? defaultSamplingDate,
             granularity: (texts.granularity as TemporalGranularity | undefined) ?? 'day',
             excludeEmpty: texts.excludeEmpty !== 'false',
+            meanProportion: parseMeanProportion(texts.meanProportionLower, texts.meanProportionUpper, analysis),
         };
 
         return { base, analysis };
@@ -158,6 +161,14 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         setSearchFromString(search, 'granularity', base.granularity);
         if (!base.excludeEmpty) {
             setSearchFromString(search, 'excludeEmpty', 'false');
+        }
+        // Omitted when it's the mode's default, so the default can still differ between modes.
+        const defaultMeanProportion = getDefaultMeanProportion(analysis);
+        if (base.meanProportion.lower !== defaultMeanProportion.lower) {
+            setSearchFromString(search, 'meanProportionLower', String(base.meanProportion.lower));
+        }
+        if (base.meanProportion.upper !== defaultMeanProportion.upper) {
+            setSearchFromString(search, 'meanProportionUpper', String(base.meanProportion.upper));
         }
 
         // analysis mode dependent settings
@@ -266,12 +277,38 @@ export function isUnresolvedSamplingDate(samplingDate: DateRangeOption): boolean
     );
 }
 
+/**
+ * Parses the mean proportion bounds from the URL, falling back to the analysis
+ * mode's default for a missing or invalid (not a number in [0, 1]) bound.
+ */
+function parseMeanProportion(
+    lower: string | undefined,
+    upper: string | undefined,
+    analysis: WasapAnalysisFilter,
+): WasapMeanProportion {
+    const defaults = getDefaultMeanProportion(analysis);
+    return {
+        lower: parseProportion(lower) ?? defaults.lower,
+        upper: parseProportion(upper) ?? defaults.upper,
+    };
+}
+
+function parseProportion(value: string | undefined): number | undefined {
+    if (value === undefined || value.trim() === '') {
+        return undefined;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 && parsed <= 1 ? parsed : undefined;
+}
+
 function generateWasapFilterConfig(pageConfig: WasapPageConfig): TextFieldConfig[] {
     return [
         { lapisField: pageConfig.locationNameField },
         // below are not really LAPIS fields, but we still want to use the URL parsing mechanism
         { lapisField: 'granularity' },
         { lapisField: 'excludeEmpty' },
+        { lapisField: 'meanProportionLower' },
+        { lapisField: 'meanProportionUpper' },
         { lapisField: 'analysisMode' },
         { lapisField: 'sequenceType' },
         { lapisField: 'mutations' },

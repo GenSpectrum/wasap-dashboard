@@ -186,6 +186,42 @@ describe('WasapPageStateHandler', () => {
             expect(urlFalse).toContain('excludeEmpty=false');
         });
 
+        describe('mean proportion', () => {
+            const parse = (query: string) =>
+                handler.parsePageStateFromUrl(
+                    new URL(`http://example.com/wastewater/covid?sequenceType=nucleotide&${query}`).searchParams,
+                );
+
+            it('defaults to the default of the analysis mode when missing from URL', () => {
+                expect(parse('analysisMode=manual').base.meanProportion).toEqual({ lower: 0.05, upper: 0.95 });
+                expect(parse('analysisMode=manual&mutations=A1T').base.meanProportion).toEqual({
+                    lower: 0,
+                    upper: 1,
+                });
+            });
+
+            it('parses lower and upper from the URL', () => {
+                expect(
+                    parse('analysisMode=manual&meanProportionLower=0.2&meanProportionUpper=0.7').base.meanProportion,
+                ).toEqual({ lower: 0.2, upper: 0.7 });
+            });
+
+            it('falls back to the default for invalid values', () => {
+                expect(
+                    parse('analysisMode=manual&meanProportionLower=abc&meanProportionUpper=1.5').base.meanProportion,
+                ).toEqual({ lower: 0.05, upper: 0.95 });
+            });
+
+            it('only encodes values that differ from the default in the URL', () => {
+                const defaults = handler.toUrl(parse('analysisMode=manual'));
+                expect(defaults).not.toContain('meanProportion');
+
+                const lowerChanged = handler.toUrl(parse('analysisMode=manual&meanProportionLower=0.2'));
+                expect(lowerChanged).toContain('meanProportionLower=0.2');
+                expect(lowerChanged).not.toContain('meanProportionUpper');
+            });
+        });
+
         it('parses excludeEmpty string "false" as boolean false', () => {
             const url = '/wastewater/covid?analysisMode=manual&sequenceType=nucleotide&excludeEmpty=false&';
             const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
