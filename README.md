@@ -51,6 +51,16 @@ no organisms (fail loud, not a hardcoded default).
 `vite build` reads `BASE_PATH` (e.g. `/wasap-dashboard/`) for static hosts
 that serve from a sub-path. Defaults to `/`.
 
+### URLs
+
+Every organism has a page per analysis mode: `/<organism>/<mode>`, for example
+`/covid/manual`, `/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`,
+`/covid/collection` and `/covid/covSpectrumCollection`. The modes are the ones that are enabled
+in the organism's config. The bare `/<organism>` goes to the `defaultAnalysisMode` of the
+config, or else the first enabled mode. Location, sampling date and granularity are search
+params that stay the same when going from one mode to another; the settings of a mode are search
+params of its own page.
+
 ### SPA fallback
 
 Routing is real paths (`react-router-dom` v7, `createBrowserRouter`), not hash

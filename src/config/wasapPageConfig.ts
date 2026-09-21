@@ -72,7 +72,8 @@ export const wasapPageConfigBaseSchema = z.object({
     name: z.string(),
 
     /**
-     * The path to the page itself.
+     * The path to the page of the organism, like `/covid`. The pages of the
+     * analysis modes are below it (`/covid/manual`).
      * Used to generate URLs and in the breadcrumbs.
      */
     path: z.string(),
@@ -103,6 +104,7 @@ export const wasapPageConfigBaseSchema = z.object({
     browseDataUrl: z.string(),
     browseDataDescription: z.string(),
 
+    /** The mode that the bare organism URL (like `/covid`) goes to. The first enabled mode if not set. */
     defaultAnalysisMode: wasapAnalysisModeSchema.optional(),
 });
 export type WasapPageConfigBase = z.infer<typeof wasapPageConfigBaseSchema>;
