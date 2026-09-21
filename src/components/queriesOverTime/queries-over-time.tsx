@@ -4,7 +4,6 @@ import z from 'zod';
 import { getFilteredQueryOverTimeData } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
-import { useConnection } from '../../dataLayer/hooks/connection';
 import { useQueriesOverTime } from '../../dataLayer/hooks/queriesOverTime';
 import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../dataLayer/queries';
 import { type ProportionValue, getProportion } from '../../query/queryMutationsOverTime';
@@ -18,7 +17,6 @@ import { ErrorBoundary } from '../shared/error-boundary';
 import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
 import { Fullscreen } from '../shared/fullscreen';
 import { FullscreenTargetContext } from '../shared/fullscreen-target';
-import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
@@ -201,7 +199,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
     const tabs = originalComponentProps.views.map((view) => getTab(view));
 
-    const toolbar = <Toolbar originalComponentProps={originalComponentProps} />;
+    const toolbar = <Toolbar />;
 
     return (
         <div ref={tooltipPortalTargetRef}>
@@ -212,45 +210,11 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
     );
 };
 
-type ToolbarProps = {
-    originalComponentProps: QueriesOverTimeProps;
-};
-
-const Toolbar: FC<ToolbarProps> = ({ originalComponentProps }) => {
+const Toolbar: FC = () => {
     return (
         <>
-            <QueriesOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>
-    );
-};
-
-type QueriesOverTimeInfoProps = {
-    originalComponentProps: QueriesOverTimeProps;
-};
-
-const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentProps }) => {
-    const connection = useConnection();
-    return (
-        <Info>
-            <InfoHeadline1>Queries over time</InfoHeadline1>
-            <InfoParagraph>
-                This component displays the proportions of custom queries per {originalComponentProps.granularity}. Each
-                query consists of a count query (what to count) and a coverage query (what to use as the denominator).
-                Which queries are displayed can be restricted through a filter on the mean proportion of the query's
-                occurrence over the entire time range, which is set from outside this component.
-            </InfoParagraph>
-            <InfoParagraph>
-                The grid cells have a tooltip that will show more detailed information. It shows the count of samples
-                that match the count query and the count of samples that match the coverage query in this timeframe. It
-                also shows the total count of samples in this timeframe.
-            </InfoParagraph>
-            <InfoComponentCode
-                componentName='queries-over-time'
-                params={originalComponentProps}
-                lapisUrl={connection.url}
-            />
-        </Info>
     );
 };
 
