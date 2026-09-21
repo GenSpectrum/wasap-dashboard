@@ -22,15 +22,7 @@ export function MeanProportionField({
     const indicateError = value.lower > value.upper;
 
     return (
-        <LabeledField
-            label='Mean proportion'
-            info={
-                <p>
-                    Only mutations whose mean proportion over the selected time range is within this interval are
-                    displayed. Use it to hide mutations that are hardly ever, or always, found.
-                </p>
-            }
-        >
+        <LabeledField label='Mean proportion'>
             <div className='w-full'>
                 <div className='flex items-center gap-2'>
                     <ProportionInput
