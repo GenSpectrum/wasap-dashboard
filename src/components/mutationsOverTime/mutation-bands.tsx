@@ -5,7 +5,7 @@ import { type TemporalDataMap } from './MutationOverTimeData';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
 import { type ColorScale, getColorWithinScale } from '../shared/color-scale-selector';
-import { type FeatureRenderer } from '../shared/features-over-time-grid';
+import { type CustomColumn, type FeatureRenderer } from '../shared/features-over-time-grid';
 import { getTooltipPosition, styleGridHeader } from '../shared/features-over-time-grid-shared';
 import PortalTooltip from '../shared/portal-tooltip';
 import { Pagination, type PageSizes } from '../shared/tanstackTable/pagination';
@@ -69,7 +69,11 @@ export interface MutationBandsProps<F> {
     onPageChange: Dispatch<SetStateAction<number>>;
     /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
     paginationEnd?: ReactNode;
+    /** Extra columns between the row label and the bands, with one value per row label. */
+    customColumns?: CustomColumn[];
 }
+
+const NO_CUSTOM_COLUMNS: CustomColumn[] = [];
 
 export function MutationBands<F>({
     rowLabelHeader,
@@ -85,6 +89,7 @@ export function MutationBands<F>({
     totalRows,
     onPageChange,
     paginationEnd,
+    customColumns = NO_CUSTOM_COLUMNS,
 }: MutationBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
@@ -134,6 +139,11 @@ export function MutationBands<F>({
                     <thead>
                         <tr>
                             <th className='w-32'>{rowLabelHeader}</th>
+                            {customColumns.map((customColumn) => (
+                                <th key={customColumn.header} className='w-24'>
+                                    {customColumn.header}
+                                </th>
+                            ))}
                             {/* Same header treatment as the grid: only the first and last
                                 date are labelled, the rest hide behind a container query
                                 unless there's room, so the two views read the same way. */}
@@ -154,7 +164,7 @@ export function MutationBands<F>({
                                       {rowIndex === 0 && (
                                           <td
                                               rowSpan={loadingRowLabels.length}
-                                              colSpan={columns.length}
+                                              colSpan={customColumns.length + columns.length}
                                               className='text-center'
                                           >
                                               <span className='loading loading-spinner loading-sm' />
@@ -167,6 +177,11 @@ export function MutationBands<F>({
                                       <th className='font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
+                                      {customColumns.map((customColumn) => (
+                                          <td key={customColumn.header} className='text-center'>
+                                              {customColumn.values[featureRenderer.asString(feature)]}
+                                          </td>
+                                      ))}
                                       <td className='p-0' colSpan={columns.length}>
                                           <BandRow
                                               feature={feature}
@@ -185,7 +200,7 @@ export function MutationBands<F>({
                               ))}
                         {!isLoading && features.length === 0 && (
                             <tr>
-                                <td colSpan={columns.length + 1}>
+                                <td colSpan={customColumns.length + columns.length + 1}>
                                     <div className='text-center'>No data available for your filters.</div>
                                 </td>
                             </tr>
