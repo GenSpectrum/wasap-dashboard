@@ -351,7 +351,7 @@ const SelectedFilter = ({ handleRemoveValue, mutationFilter }: SelectedFilterPro
     return (
         <span
             key={mutationFilter.value.toString()}
-            className='center inline-flex rounded-md px-2 py-1 text-black'
+            className='center inline-flex px-2 py-1 text-black'
             style={{
                 backgroundColor: backgroundColorMap(mutationFilter),
             }}

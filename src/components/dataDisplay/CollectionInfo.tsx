@@ -22,7 +22,7 @@ export const CollectionInfo: FC<CollectionInfoProps> = ({
     invalidVariants,
 }) => {
     return (
-        <div className='flex min-w-[180px] flex-col gap-4 rounded-md border-2 border-gray-100 sm:flex-row'>
+        <div className='flex min-w-[180px] flex-col gap-4 border-2 border-gray-100 sm:flex-row'>
             {/* Collection Link Stat */}
             <div className='stat content-start'>
                 <div className='stat-title'>{sourceLabel}</div>
@@ -43,7 +43,7 @@ export const CollectionInfo: FC<CollectionInfoProps> = ({
                 <div className='stat'>
                     <div className='stat-title'>Invalid Variants</div>
                     <div className='stat-value text-base'>
-                        <span className='rounded bg-yellow-200 px-1 py-0.5'>{invalidVariants.length}</span>
+                        <span className='bg-yellow-200 px-1 py-0.5'>{invalidVariants.length}</span>
                     </div>
                     <div className='stat-desc text-wrap'>
                         <ul className='mt-1 list-inside list-disc space-y-1'>

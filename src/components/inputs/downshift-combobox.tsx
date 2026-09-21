@@ -258,7 +258,7 @@ export function DownshiftMultiCombobox<Item>({
                     {selectedItems.map((selectedItem, index) => (
                         <span
                             key={`${itemToString(selectedItem)}-${index}`}
-                            className='bg-brand-100 inline-flex items-center gap-1 rounded px-2 py-0.5 text-black'
+                            className='bg-brand-100 inline-flex items-center gap-1 px-2 py-0.5 text-black'
                         >
                             {formatSelectedItem ? formatSelectedItem(selectedItem) : itemToString(selectedItem)}
                             <button

@@ -12,7 +12,7 @@ export const QueriesOverTimeRowLabelTooltip: FC<QueriesOverTimeRowLabelTooltipPr
             {query.query !== '' && (
                 <div className='text-sm'>
                     <span className='text-gray-600'>Query:</span>
-                    <div className='rounded border border-gray-200 bg-gray-50 p-2'>
+                    <div className='border border-gray-200 bg-gray-50 p-2'>
                         <pre className='text-xs whitespace-pre-wrap'>
                             <code>{query.query}</code>
                         </pre>

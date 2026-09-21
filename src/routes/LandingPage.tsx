@@ -17,7 +17,7 @@ export function LandingPage() {
                     <li key={entry.pathSegment}>
                         <Link
                             to={`/${entry.pathSegment}`}
-                            className='border-base-300 hover:border-primary hover:bg-base-200 block h-full rounded-lg border p-4 transition-colors'
+                            className='border-base-300 hover:border-primary hover:bg-base-200 block h-full border p-4 transition-colors'
                         >
                             <div className='font-semibold'>{entry.config.name}</div>
                             <div className='text-base-content/70 mt-1 text-sm'>{entry.config.description}</div>

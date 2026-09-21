@@ -61,6 +61,20 @@
 :root {
     --color-primary: var(--color-brand-700);
     --color-primary-content: var(--color-brand-50);
+
+    /* Sharp corners: these drive the rounding of every daisyUI control (select,
+       input, btn, checkbox, modal, ...) without touching each call site. */
+    --radius-selector: 0;
+    --radius-field: 0;
+    --radius-box: 0;
+}
+
+/* The toast library and the date picker popup ship their own rounding, and rules like
+   .flatpickr-day.startRange, so a plain override would lose to them. */
+.Toastify__toast,
+.flatpickr-calendar,
+.flatpickr-calendar * {
+    border-radius: 0 !important;
 }
 
 html,

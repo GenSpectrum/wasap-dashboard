@@ -8,7 +8,7 @@ import type { WasapAnalysisFilter } from '../../pageState/wasap/wasapAnalysisFil
  */
 export const NoDataHelperText: FC<{ analysisFilter: WasapAnalysisFilter }> = ({ analysisFilter }) => {
     return (
-        <div className='rounded-md border-2 border-gray-100 p-4'>
+        <div className='border-2 border-gray-100 p-4'>
             <h1 className='text-lg font-semibold'>No mutations selected</h1>
             {analysisFilter.mode === 'variant' && (
                 <p className='text-sm'>

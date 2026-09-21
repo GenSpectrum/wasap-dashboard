@@ -62,7 +62,7 @@ export const ModalDialog: FC<ModalProps> = ({ children, modalRef, size }) => {
         <dialog ref={modalRef} className={'modal modal-bottom sm:modal-middle'}>
             <div className={`modal-box ${size !== undefined ? modalSize[size] : 'sm:max-w-5xl'}`}>
                 <form method='dialog'>
-                    <button className='btn btn-sm btn-circle btn-ghost absolute top-2 right-2'>✕</button>
+                    <button className='btn btn-sm btn-square btn-ghost absolute top-2 right-2'>✕</button>
                 </form>
                 <div className={'flex flex-col'}>{children}</div>
                 <div className='modal-action'>

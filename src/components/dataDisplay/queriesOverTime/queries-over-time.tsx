@@ -185,7 +185,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
     }, [filteredData, pageIndex, pageSize]);
 
     return (
-        <div ref={wrapperRef} className='rounded-md border-2 border-gray-100 p-2'>
+        <div ref={wrapperRef} className='border-2 border-gray-100 p-2'>
             <FeatureBands
                 rowLabelHeader='Query'
                 data={pageData}

@@ -84,7 +84,7 @@ export function ErrorReportInstruction({
                 </a>
                 . Describe what you did to trigger the error and include the following information so that we can track
                 down the issue.
-                <div className='mt-4 flex rounded-lg bg-gray-100 p-4'>
+                <div className='mt-4 flex bg-gray-100 p-4'>
                     <ul ref={errorInfoRef} className='ml-6 grow list-inside list-disc overflow-scroll'>
                         <li>Error ID: {errorId}</li>
                         <li>Time: {new Date().toISOString()}</li>

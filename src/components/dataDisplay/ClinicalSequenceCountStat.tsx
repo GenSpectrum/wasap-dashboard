@@ -56,7 +56,7 @@ export const ClinicalSequenceCountStat: FC<ClinicalSequenceCountStatProps> = ({
     }
 
     return (
-        <div className='flex min-w-[180px] flex-col gap-4 rounded-md border-2 border-gray-100 sm:flex-row'>
+        <div className='flex min-w-[180px] flex-col gap-4 border-2 border-gray-100 sm:flex-row'>
             <div className='stat'>
                 <div className='stat-title'>{title}</div>
                 <div className='stat-value text-base'>
@@ -65,7 +65,7 @@ export const ClinicalSequenceCountStat: FC<ClinicalSequenceCountStatProps> = ({
                     ) : isError ? (
                         'Error'
                     ) : isHighlighted ? (
-                        <span className='rounded bg-yellow-200 px-1 py-0.5'>{data.toLocaleString('en-us')}</span>
+                        <span className='bg-yellow-200 px-1 py-0.5'>{data.toLocaleString('en-us')}</span>
                     ) : (
                         data.toLocaleString('en-us')
                     )}
