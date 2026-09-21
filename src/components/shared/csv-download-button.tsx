@@ -7,6 +7,7 @@ type ToStringable = {
 export type DataValue = string | number | boolean | null | undefined | ToStringable;
 
 export interface CsvDownloadButtonProps {
+    /** Not shown, the button is an icon: used as its tooltip and accessible name. */
     label?: string;
     filename?: string;
     getData: () => Record<string, DataValue>[] | Promise<Record<string, DataValue>[]>;
@@ -57,8 +58,18 @@ export const CsvDownloadButton: FC<CsvDownloadButtonProps> = ({
     };
 
     return (
-        <button className={className} onClick={() => void download()} disabled={isDownloading}>
-            {isDownloading ? 'Downloading...' : label}
+        <button
+            className={className}
+            onClick={() => void download()}
+            disabled={isDownloading}
+            aria-label={label}
+            title={label}
+        >
+            {isDownloading ? (
+                <span className='loading loading-spinner loading-xs' />
+            ) : (
+                <span className='iconify mdi--download' />
+            )}
         </button>
     );
 };
