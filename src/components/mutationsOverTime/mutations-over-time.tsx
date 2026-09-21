@@ -38,7 +38,6 @@ import {
 } from '../shared/features-over-time-grid';
 import { Fullscreen } from '../shared/fullscreen';
 import { FullscreenTargetContext } from '../shared/fullscreen-target';
-import { HideGapsButton } from '../shared/hide-gaps-button';
 import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
@@ -155,8 +154,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
 
-    const [hideGaps, setHideGaps] = useState<boolean>(originalComponentProps.hideGaps ?? false);
-    useEffect(() => setHideGaps(originalComponentProps.hideGaps ?? false), [originalComponentProps.hideGaps]);
+    const hideGaps = originalComponentProps.hideGaps ?? false;
 
     const filteredMutationCodes = useMemo(
         () =>
@@ -275,9 +273,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         },
     ];
 
-    const toolbar = (
-        <Toolbar hideGaps={hideGaps} setHideGaps={setHideGaps} originalComponentProps={originalComponentProps} />
-    );
+    const toolbar = <Toolbar originalComponentProps={originalComponentProps} />;
 
     return (
         <div ref={tooltipPortalTargetRef}>
@@ -287,15 +283,12 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
 };
 
 type ToolbarProps = {
-    hideGaps: boolean;
-    setHideGaps: Dispatch<SetStateAction<boolean>>;
     originalComponentProps: MutationsOverTimeProps;
 };
 
-const Toolbar: FC<ToolbarProps> = ({ hideGaps, setHideGaps, originalComponentProps }) => {
+const Toolbar: FC<ToolbarProps> = ({ originalComponentProps }) => {
     return (
         <>
-            <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             <MutationsOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>
