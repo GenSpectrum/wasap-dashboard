@@ -27,6 +27,7 @@ import {
     type WasapFilter,
     type WasapMeanProportion,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { modeLabel } from '../../../pageState/wasap/wasapModes';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { Inset } from '../../shared/Inset';
 import { TextFilter } from '../../textFilter/text-filter';
@@ -309,23 +310,6 @@ export function WasapPageStateSelector({
 function isDefaultMeanProportion(meanProportion: WasapMeanProportion, analysis: WasapAnalysisFilter): boolean {
     const defaults = getDefaultMeanProportion(analysis);
     return meanProportion.lower === defaults.lower && meanProportion.upper === defaults.upper;
-}
-
-function modeLabel(mode: WasapAnalysisMode): string {
-    switch (mode) {
-        case 'manual':
-            return 'Manual';
-        case 'resistance':
-            return 'Resistance Mutations';
-        case 'variant':
-            return 'Variant Explorer';
-        case 'untracked':
-            return 'Untracked Mutations';
-        case 'covSpectrumCollection':
-            return 'CovSpectrum Collection';
-        case 'collection':
-            return 'Collection';
-    }
 }
 
 /**
