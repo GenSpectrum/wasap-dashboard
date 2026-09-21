@@ -1,5 +1,5 @@
 import { createColumnHelper, getCoreRowModel, getPaginationRowModel } from '@tanstack/table-core';
-import { useMemo, type Dispatch, type ReactElement, type SetStateAction } from 'react';
+import { useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
 import z from 'zod';
 
 import { type ColorScale } from './color-scale-selector';
@@ -36,6 +36,8 @@ export interface FeaturesOverTimeGridProps<F> {
     customColumns?: CustomColumn[];
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
+    /** Shown at the very right of the pagination row below the grid, e.g. a download button. */
+    paginationEnd?: ReactNode;
 }
 
 type RowType<F> = {
@@ -54,6 +56,7 @@ function FeaturesOverTimeGrid<F>({
     customColumns = EMPTY_COLUMNS,
     featureRenderer,
     tooltipPortalTarget,
+    paginationEnd,
 }: FeaturesOverTimeGridProps<F>) {
     const tableData = useGridTableData(data, customColumns, featureRenderer);
     const columns = useGridColumns(
@@ -76,7 +79,7 @@ function FeaturesOverTimeGrid<F>({
         },
     });
 
-    return <FeaturesOverTimeGridDisplay table={table} pageSizes={pageSizes} />;
+    return <FeaturesOverTimeGridDisplay table={table} pageSizes={pageSizes} paginationEnd={paginationEnd} />;
 }
 
 export interface FeaturesOverTimeGridServerPaginatedProps<F> {
@@ -97,6 +100,8 @@ export interface FeaturesOverTimeGridServerPaginatedProps<F> {
     customColumns?: CustomColumn[];
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
+    /** Shown at the very right of the pagination row below the grid, e.g. a download button. */
+    paginationEnd?: ReactNode;
 }
 
 export function FeaturesOverTimeGridServerPaginated<F>({
@@ -113,6 +118,7 @@ export function FeaturesOverTimeGridServerPaginated<F>({
     customColumns = EMPTY_COLUMNS,
     featureRenderer,
     tooltipPortalTarget,
+    paginationEnd,
 }: FeaturesOverTimeGridServerPaginatedProps<F>) {
     const tableData = useGridTableData(data, customColumns, featureRenderer);
     const columns = useGridColumns(
@@ -153,6 +159,7 @@ export function FeaturesOverTimeGridServerPaginated<F>({
             pageSizes={pageSizes}
             loadingState={{ isLoading, loadingRowLabels }}
             totalRows={totalRows}
+            paginationEnd={paginationEnd}
         />
     );
 }

@@ -183,6 +183,15 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         [tooltipPortalTarget, queryLookupMap],
     );
 
+    const downloadButton = (
+        <CsvDownloadButton
+            className='btn btn-xs'
+            label='Download CSV'
+            getData={() => getDownloadData(filteredData)}
+            filename='queries_over_time.csv'
+        />
+    );
+
     const getTab = (view: QueriesOverTimeView) => {
         switch (view) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- for extensibility
@@ -198,6 +207,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
                             customColumns={originalComponentProps.customColumns}
                             featureRenderer={queryRenderer}
                             tooltipPortalTarget={tooltipPortalTarget}
+                            paginationEnd={downloadButton}
                         />
                     ),
                 };
@@ -211,7 +221,6 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
             activeTab={activeTab}
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
-            filteredData={filteredData}
             colorScale={colorScale}
             setColorScale={setColorScale}
             originalComponentProps={originalComponentProps}
@@ -233,7 +242,6 @@ type ToolbarProps = {
     activeTab: string;
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
-    filteredData: ReturnType<typeof getFilteredQueryOverTimeData>;
     colorScale: ColorScale;
     setColorScale: Dispatch<SetStateAction<ColorScale>>;
     originalComponentProps: QueriesOverTimeProps;
@@ -245,7 +253,6 @@ const Toolbar: FC<ToolbarProps> = ({
     activeTab,
     hideGaps,
     setHideGaps,
-    filteredData,
     colorScale,
     setColorScale,
     originalComponentProps,
@@ -259,11 +266,6 @@ const Toolbar: FC<ToolbarProps> = ({
             {activeTab === 'Grid' && (
                 <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
             )}
-            <CsvDownloadButton
-                className='btn btn-xs'
-                getData={() => getDownloadData(filteredData)}
-                filename='queries_over_time.csv'
-            />
             <QueriesOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>

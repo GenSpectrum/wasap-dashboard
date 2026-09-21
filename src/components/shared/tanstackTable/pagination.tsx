@@ -1,4 +1,5 @@
 import type { Table } from '@tanstack/table-core';
+import type { ReactNode } from 'react';
 import z from 'zod';
 
 import { usePageSizeContext } from './pagination-context';
@@ -14,20 +15,28 @@ export function Pagination({
     table,
     pageSizes,
     totalRows,
+    endContent,
 }: PaginationProps & {
     pageSizes: PageSizes;
     /** Override the total row count (for server-driven pagination). */
     totalRows: number;
+    /** Shown at the very right of the pagination row, e.g. a download button. */
+    endContent?: ReactNode;
 }) {
+    // The controls stay centered whether or not there is end content: on wide containers
+    // the outer columns are equally sized, on narrow ones the end content wraps below.
     return (
         <div className='@container'>
-            <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 @xl:justify-end'>
-                <PageSizeSelector table={table} pageSizes={pageSizes} />
-                <PageIndicator table={table} totalRows={totalRows} />
-                <div className='hidden @xl:block'>
-                    <GotoPageSelector table={table} totalRows={totalRows} />
+            <div className='flex flex-col items-center gap-y-2 @xl:grid @xl:grid-cols-[1fr_auto_1fr]'>
+                <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 @xl:col-start-2'>
+                    <PageSizeSelector table={table} pageSizes={pageSizes} />
+                    <PageIndicator table={table} totalRows={totalRows} />
+                    <div className='hidden @xl:block'>
+                        <GotoPageSelector table={table} totalRows={totalRows} />
+                    </div>
+                    <SelectPageButtons table={table} />
                 </div>
-                <SelectPageButtons table={table} />
+                {endContent !== undefined && <div className='@xl:col-start-3 @xl:justify-self-end'>{endContent}</div>}
             </div>
         </div>
     );
