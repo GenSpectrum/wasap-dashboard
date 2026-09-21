@@ -158,7 +158,13 @@ export type WasapBaseFilter = {
     meanProportion: WasapMeanProportion;
 };
 
-export type WasapFilter = {
+/**
+ * The page state of one analysis mode page, where `analysis` is narrowed to the
+ * filter of that mode.
+ */
+export type WasapModeFilter<Analysis extends WasapAnalysisFilter = WasapAnalysisFilter> = {
     base: WasapBaseFilter;
-    analysis: WasapAnalysisFilter;
+    analysis: Analysis;
 };
+
+export type WasapFilter = WasapModeFilter;

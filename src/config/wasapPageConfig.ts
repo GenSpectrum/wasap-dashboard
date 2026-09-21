@@ -235,3 +235,28 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     }
     return result;
 }
+
+const MODE_ENABLED_FLAGS = {
+    manual: 'manualAnalysisModeEnabled',
+    variant: 'variantAnalysisModeEnabled',
+    resistance: 'resistanceAnalysisModeEnabled',
+    untracked: 'untrackedAnalysisModeEnabled',
+    covSpectrumCollection: 'covSpectrumCollectionAnalysisModeEnabled',
+    collection: 'collectionAnalysisModeEnabled',
+} as const satisfies Record<WasapAnalysisMode, string>;
+
+/**
+ * The config of a page where the given mode is enabled, so that the settings
+ * of that mode (like `filterDefaults.manual`) are known to be there.
+ */
+export type WasapPageConfigFor<Mode extends WasapAnalysisMode> = Extract<
+    WasapPageConfig,
+    { [Flag in (typeof MODE_ENABLED_FLAGS)[Mode]]: true }
+>;
+
+export function isModeEnabled<Mode extends WasapAnalysisMode>(
+    config: WasapPageConfig,
+    mode: Mode,
+): config is WasapPageConfigFor<Mode> {
+    return config[MODE_ENABLED_FLAGS[mode]] === true;
+}

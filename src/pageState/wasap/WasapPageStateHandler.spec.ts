@@ -4,111 +4,15 @@ import { WasapPageStateHandler } from './WasapPageStateHandler';
 import {
     VARIANT_TIME_FRAME,
     type WasapCovSpectrumCollectionFilter,
-    type WasapManualFilter,
     type WasapResistanceFilter,
     type WasapUntrackedFilter,
     type WasapVariantFilter,
 } from './wasapAnalysisFilter';
+import { testConfig, testConfigWithCollection } from './wasapTestConfig';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 
-const config: WasapPageConfig = {
-    genSpectrumOrganismName: 'covid',
-    name: 'SARS-CoV-2',
-    path: `/wastewater/covid`,
-    description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',
-    linkTemplate: {
-        nucleotideMutation:
-            'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}',
-        aminoAcidMutation:
-            'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}',
-    },
-    silo: {
-        url: '',
-        table: 'default',
-        dateColumn: 'date',
-        dateColumnIsDictionaryEncoded: true,
-        samplingDateColumn: 'samplingDate',
-        locationNameColumn: 'locationName',
-    },
-    manualAnalysisModeEnabled: true,
-    variantAnalysisModeEnabled: true,
-    resistanceAnalysisModeEnabled: true,
-    untrackedAnalysisModeEnabled: true,
-    resistanceMutationCollections: [
-        {
-            name: '3CLpro',
-            annotationSymbol: 'c',
-            description: '',
-            collectionId: 1,
-        },
-        {
-            name: 'RdRp',
-            annotationSymbol: 'r',
-            description: '',
-            collectionId: 2,
-        },
-        {
-            name: 'Spike',
-            annotationSymbol: 's',
-            description: '',
-            collectionId: 3,
-        },
-    ],
-    lapisBaseUrl: 'https://lapis.wasap.genspectrum.org',
-    samplingDateField: 'samplingDate',
-    locationNameField: 'locationName',
-    clinicalLapis: {
-        lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
-        cladeField: 'nextstrainClade',
-        lineageField: 'nextcladePangoLineage',
-        dateField: 'date',
-    },
-    browseDataUrl: 'https://db.wasap.genspectrum.org/covid/search',
-    browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
-    defaultLocationName: 'Zürich (ZH)',
-    clinicalSequenceCountWarningThreshold: 50,
-    filterDefaults: {
-        manual: {
-            mode: 'manual',
-            sequenceType: 'nucleotide',
-            mutations: undefined,
-        },
-        variant: {
-            mode: 'variant',
-            signatureType: 'computed',
-            sequenceType: 'nucleotide',
-            variant: 'XFG*',
-            minProportion: 0.8,
-            minCount: 15,
-            minJaccard: 0.75,
-            timeFrame: VARIANT_TIME_FRAME.all,
-        },
-        resistance: {
-            mode: 'resistance',
-            sequenceType: 'amino acid',
-            resistanceSet: '3CLpro',
-        },
-        untracked: {
-            mode: 'untracked',
-            sequenceType: 'nucleotide',
-            excludeSet: 'predefined',
-        },
-    },
-};
-
-const configWithCollection: WasapPageConfig = {
-    ...config,
-    covSpectrumCollectionAnalysisModeEnabled: true,
-    collectionsApiBaseUrl: 'https://collections.example.org',
-    collectionTitleFilter: 'test',
-    filterDefaults: {
-        ...config.filterDefaults,
-        covSpectrumCollection: {
-            mode: 'covSpectrumCollection',
-            collectionId: undefined,
-        },
-    },
-};
+const config: WasapPageConfig = testConfig;
+const configWithCollection: WasapPageConfig = testConfigWithCollection;
 
 describe('WasapPageStateHandler', () => {
     const handler = new WasapPageStateHandler(config);
@@ -152,51 +56,6 @@ describe('WasapPageStateHandler', () => {
 
             expect(url).not.toContain('meanProportionLower');
             expect(url).toContain('meanProportionUpper=0.5');
-        });
-    });
-
-    describe('manual mode', () => {
-        it('parses and encodes manual filter', () => {
-            const url =
-                '/wastewater/covid?' +
-                'locationName=Z%C3%BCrich+%28ZH%29&' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'granularity=day&' +
-                'analysisMode=manual&' +
-                'sequenceType=nucleotide&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-            expect(filter.base.locationName).toBe('Zürich (ZH)');
-            expect(filter.base.granularity).toBe('day');
-            expect(filter.analysis.mode).toBe('manual');
-            if (filter.analysis.mode === 'manual') {
-                expect(filter.analysis.sequenceType).toBe('nucleotide');
-            }
-
-            const newUrl = handler.toUrl(filter);
-            expect(newUrl).toBe(url);
-        });
-
-        it('parses manual mode with multiple mutations', () => {
-            const url =
-                '/wastewater/covid?' +
-                'analysisMode=manual&' +
-                'sequenceType=nucleotide&' +
-                'mutations=A23T%7CS:E44H%7CORFla:T123A&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.analysis.mode).toBe('manual');
-            const analysis = filter.analysis as WasapManualFilter;
-            expect(analysis.mutations).toEqual(['A23T', 'S:E44H', 'ORFla:T123A']);
-        });
-
-        it('manual mode with no mutations specified', () => {
-            const url = '/wastewater/covid?analysisMode=manual&sequenceType=amino+acid&';
-            const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
-
-            expect(filter.analysis.mode).toBe('manual');
-            const analysis = filter.analysis as WasapManualFilter;
-            expect(analysis.sequenceType).toBe('amino acid');
-            expect(analysis.mutations).toBeUndefined();
         });
     });
 

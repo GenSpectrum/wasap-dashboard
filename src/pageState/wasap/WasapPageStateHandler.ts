@@ -1,5 +1,6 @@
 import { parseBaseFilter, setBaseFilterSearchParams } from './baseFilter';
 import { getDefaultMeanProportion } from './defaultMeanProportion';
+import { ManualPageStateHandler } from './handlers/ManualPageStateHandler';
 import {
     type ExcludeSetName,
     type SignatureType,
@@ -8,13 +9,18 @@ import {
     type WasapAnalysisMode,
     type WasapFilter,
 } from './wasapAnalysisFilter';
-import { enabledAnalysisModes, type WasapPageConfig } from '../../config/wasapPageConfig';
+import { enabledAnalysisModes, isModeEnabled, type WasapPageConfig } from '../../config/wasapPageConfig';
 import { type SequenceType } from '../../types/dashboardComponents';
 import { formatUrl } from '../../util/formatUrl';
 import { type PageStateHandler } from '../PageStateHandler';
 import { type TextFieldConfig, parseTextFiltersFromUrl } from '../textFieldConfig';
 import { setSearchFromString } from '../urlSearchParams';
 
+/**
+ * The page state handler of the page as it is now, with all the modes on one
+ * page (and the mode in the URL's search params). The modes are moving to
+ * `handlers/`, one handler each, and are handed off to those here already.
+ */
 export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     private readonly config: WasapPageConfig;
     private readonly filterConfig: TextFieldConfig[];
@@ -35,19 +41,16 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
 
         const mode = providedMode ?? defaultMode;
 
+        const modeHandler = this.getModeHandler(mode);
+        if (modeHandler !== undefined) {
+            return modeHandler.parsePageStateFromUrl(searchParams);
+        }
+
         let analysis: WasapAnalysisFilter;
 
         switch (mode) {
             case 'manual':
-                if (!this.config.manualAnalysisModeEnabled) {
-                    throw Error("The 'manual' analysis mode is not enabled.");
-                }
-                analysis = {
-                    mode,
-                    sequenceType: providedSequenceType ?? this.config.filterDefaults.manual.sequenceType,
-                    mutations: texts.mutations?.split('|'),
-                };
-                break;
+                throw Error('The manual mode is handled by its own handler.');
             case 'variant': {
                 if (!this.config.variantAnalysisModeEnabled) {
                     throw Error("The 'variant' analysis mode is not enabled.");
@@ -130,6 +133,14 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
     }
 
     toSearchParams(pageState: WasapFilter): URLSearchParams {
+        const modeHandler = this.getModeHandler(pageState.analysis.mode);
+        if (modeHandler !== undefined) {
+            return new URLSearchParams([
+                ['analysisMode', pageState.analysis.mode],
+                ...modeHandler.toSearchParams(pageState),
+            ]);
+        }
+
         const search = new URLSearchParams();
         const { base, analysis } = pageState;
 
@@ -138,10 +149,6 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         // analysis mode dependent settings
         setSearchFromString(search, 'analysisMode', analysis.mode);
         switch (analysis.mode) {
-            case 'manual':
-                setSearchFromString(search, 'sequenceType', analysis.sequenceType);
-                setSearchFromString(search, 'mutations', analysis.mutations?.join('|'));
-                break;
             case 'variant':
                 setSearchFromString(search, 'sequenceType', analysis.sequenceType);
                 setSearchFromString(search, 'signatureType', analysis.signatureType);
@@ -198,6 +205,19 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
 
     getDefaultPageUrl(): string {
         return this.config.path;
+    }
+
+    /** The handler of the mode, if it has been moved to its own handler already. */
+    private getModeHandler(mode: WasapAnalysisMode): PageStateHandler<WasapFilter> | undefined {
+        switch (mode) {
+            case 'manual':
+                if (!isModeEnabled(this.config, 'manual')) {
+                    throw Error("The 'manual' analysis mode is not enabled.");
+                }
+                return new ManualPageStateHandler(this.config);
+            default:
+                return undefined;
+        }
     }
 }
 
