@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { Outlet, useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { getClientLogger } from '../clientLogger';
 import { DefaultModeRedirect, EnabledModeRoute } from './wasapModeRoutes';
 import { NoDataDisplay } from '../components/shared/no-data-display';
+import { WasapLayout, useWasapLayoutContext } from '../components/views/wasap/WasapLayout';
 import { WasapPage } from '../components/views/wasap/WasapPage';
 import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
 import { getAppConfig } from '../config/appConfig';
@@ -15,19 +16,13 @@ import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
 const logger = getClientLogger('WasapRoute');
 
-/** What `WasapRoute` hands down to the pages of the modes. */
-type WasapRouteContext = {
-    config: WasapPageConfig;
-    resistanceData: ResistanceData;
-};
-
 const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], displayMutationsBySet: {} };
 
 /**
  * The `/:organismPath` route. Replaces `Wasap.astro`: resolves
  * the per-organism config from the URL and fetches resistance-mutation data on the
  * client (Astro did this in page frontmatter). The page of the analysis mode
- * (see `WasapModeRoute`) is rendered inside, and gets both through the outlet context.
+ * (see `WasapModeRoute`) is rendered inside the `WasapLayout`.
  */
 export function WasapRoute() {
     const { organismPath } = useParams();
@@ -64,26 +59,24 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
         return <Loading />;
     }
 
-    const context: WasapRouteContext = { config, resistanceData: data ?? EMPTY_RESISTANCE_DATA };
-
-    return <Outlet context={context} />;
+    return <WasapLayout config={config} resistanceData={data ?? EMPTY_RESISTANCE_DATA} />;
 }
 
 /** The index route of `/:organismPath`. */
 export function WasapDefaultModeRoute() {
-    const { config } = useOutletContext<WasapRouteContext>();
+    const { config } = useWasapLayoutContext();
 
     return <DefaultModeRedirect config={config} />;
 }
 
 /** The `/:organismPath/:mode` route. */
 export function WasapModeRoute() {
-    const { config, resistanceData } = useOutletContext<WasapRouteContext>();
+    const { config } = useWasapLayoutContext();
     const { mode: segment } = useParams();
 
     return (
         <EnabledModeRoute config={config} segment={segment}>
-            {(mode) => <WasapPage config={config} resistanceData={resistanceData} mode={mode} />}
+            {(mode) => <WasapPage config={config} mode={mode} />}
         </EnabledModeRoute>
     );
 }
