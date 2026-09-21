@@ -54,18 +54,26 @@ export const ColorScaleSelector: FC<ColorScaleSelectorProps> = ({ colorScale, se
     );
 };
 
+/**
+ * How the opacity of the fill grows with the proportion, as a power of where the proportion is
+ * between the scale's min and max. The fourth root keeps low proportions visible without flattening
+ * the high ones: wastewater proportions are mostly small, and a linear ramp would leave them nearly
+ * transparent. For example, a proportion at 1% of the scale's maximum still gets an opacity of ~0.32.
+ */
+const RAMP_EXPONENT = 0.25;
+
+/**
+ * The fill for a proportion: one hue, whose opacity goes from 0 at the scale's min to 1 at its max
+ * (and stays there above it) along the ramp above. Grey for a value that could not be measured.
+ */
 export const getColorWithinScale = (value: number | undefined, colorScale: ColorScale) => {
     if (value === undefined) {
         return 'lightgrey';
     }
 
-    if (colorScale.min === colorScale.max) {
-        return singleGraphColorRGBByName(colorScale.color, 0);
-    }
-
     const colorRange = colorScale.max - colorScale.min;
+    const position = colorRange === 0 ? (value >= colorScale.max ? 1 : 0) : (value - colorScale.min) / colorRange;
+    const opacity = Math.min(1, Math.max(0, position)) ** RAMP_EXPONENT;
 
-    const alpha = (value - colorScale.min) / colorRange;
-
-    return singleGraphColorRGBByName(colorScale.color, alpha);
+    return singleGraphColorRGBByName(colorScale.color, opacity);
 };
