@@ -145,7 +145,10 @@ export function FeatureBands<F>({
         },
     });
 
-    // Over every loaded cell, so a band's thickness doesn't shift between pages.
+    // TODO: This is the largest coverage on the current page only, not of all the rows, so the
+    // thickness of a band changes when the page (or the page size) changes. It has to be the same
+    // for every page, e.g. the largest total number of sequences of any date bucket (no coverage
+    // can exceed that), or the largest coverage over all the rows, not just the loaded ones.
     const maxCoverage = useMemo(
         () =>
             rows.reduce((max, row) => row.reduce((rowMax, cell) => Math.max(rowMax, coverageOf(cell ?? null)), max), 0),
