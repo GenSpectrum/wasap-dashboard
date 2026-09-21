@@ -136,7 +136,7 @@ export function MutationBands<F>({
                                 date are labelled, the rest hide behind a container query
                                 unless there's room, so the two views read the same way. */}
                             {columns.map((column, index) => (
-                                <th key={column.dateString} className='p-0 align-bottom font-normal'>
+                                <th key={column.dateString} className='p-0'>
                                     <div className='@container min-w-[0.05rem]'>
                                         <p {...styleGridHeader(index, columns.length)}>{column.dateString}</p>
                                     </div>
