@@ -5,7 +5,8 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine
+# Application without config, use bind mount to configure
+FROM nginx:alpine AS app
 COPY --from=build /app/dist /usr/share/nginx/html
 RUN cat <<'EOF' > /etc/nginx/conf.d/default.conf
 server {
@@ -19,3 +20,7 @@ server {
     }
 }
 EOF
+
+# production config already built in
+FROM app AS prod
+COPY public/config.prod.example.json /usr/share/nginx/html/config.json
