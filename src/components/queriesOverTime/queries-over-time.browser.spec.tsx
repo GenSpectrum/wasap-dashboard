@@ -5,7 +5,6 @@ import { render } from 'vitest-browser-react';
 import { QueriesOverTime } from './queries-over-time';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import type { SiloSchema } from '../../dataLayer/queries/schema';
-import { views } from '../../types/dashboardComponents';
 
 const schema: SiloSchema = {
     table: 'default',
@@ -78,7 +77,6 @@ function renderOverTime() {
                 <QueriesOverTime
                     width='100%'
                     filter={{ samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-02' }}
-                    views={[views.grid]}
                     granularity='day'
                     queries={queries}
                     meanProportionInterval={{ min: 0, max: 1 }}
@@ -92,7 +90,7 @@ function renderOverTime() {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('QueriesOverTime (SILO)', () => {
-    it('renders a column per date bucket, a row per query, cells = count / coverage', async () => {
+    it('renders a row per query, and the first and last date bucket', async () => {
         stubSilo();
         const screen = renderOverTime();
 
@@ -101,36 +99,26 @@ describe('QueriesOverTime (SILO)', () => {
 
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
         await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
-
-        await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
-        await expect.element(screen.getByText('10%').first()).toBeInTheDocument();
     });
 
     it('sends a count and a coverage query per query, scoped and grouped by date', async () => {
         const fetchMock = stubSilo();
-        const screen = renderOverTime();
-        await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
+        renderOverTime();
 
-        const bodies = fetchMock.mock.calls.map(([, init]) => (typeof init?.body === 'string' ? init.body : ''));
+        const bodies = () => fetchMock.mock.calls.map(([, init]) => (typeof init?.body === 'string' ? init.body : ''));
+        const countQuery =
+            "default.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
+            "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
+            '.groupBy({n := count()}, {date})';
+        const coverageQuery =
+            "default.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
+            "(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main') || " +
+            "!maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))))" +
+            '.groupBy({n := count()}, {date})';
 
-        expect(
-            bodies.some(
-                (body) =>
-                    body ===
-                    "default.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
-                        "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
-                        '.groupBy({n := count()}, {date})',
-            ),
-        ).toBe(true);
-        expect(
-            bodies.some(
-                (body) =>
-                    body ===
-                    "default.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
-                        "(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main') || " +
-                        "!maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))))" +
-                        '.groupBy({n := count()}, {date})',
-            ),
-        ).toBe(true);
+        await vi.waitFor(() => {
+            expect(bodies()).toContain(countQuery);
+            expect(bodies()).toContain(coverageQuery);
+        });
     });
 });

@@ -16,7 +16,6 @@ import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { usePageState } from '../../../pageState/usePageState';
 import { WasapPageStateHandler } from '../../../pageState/wasap/WasapPageStateHandler';
 import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { views } from '../../../types/dashboardComponents';
 import { Loading } from '../../../util/Loading';
 import { ComponentWrapper } from '../../ComponentWrapper';
 import { GsApp } from '../../GsApp';
@@ -242,22 +241,19 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                             </div>
                         ) : (
                             <>
-                                <div className='rounded-md border-2 border-gray-100 p-4'>
-                                    <ComponentWrapper
-                                        title={`Collection over time${data.collection.title ? `: ${data.collection.title}` : ''}`}
-                                    >
-                                        <QueriesOverTime
-                                            width='100%'
-                                            filter={filter}
-                                            queries={data.collection.queries}
-                                            views={[views.grid]}
-                                            granularity={base.granularity}
-                                            hideGaps={base.excludeEmpty ? true : undefined}
-                                            pageSizes={[20, 50, 100, 250]}
-                                            meanProportionInterval={meanProportionInterval}
-                                        />
-                                    </ComponentWrapper>
-                                </div>
+                                <ComponentWrapper
+                                    title={`Collection over time${data.collection.title ? `: ${data.collection.title}` : ''}`}
+                                >
+                                    <QueriesOverTime
+                                        width='100%'
+                                        filter={filter}
+                                        queries={data.collection.queries}
+                                        granularity={base.granularity}
+                                        hideGaps={base.excludeEmpty ? true : undefined}
+                                        pageSizes={[20, 50, 100, 250]}
+                                        meanProportionInterval={meanProportionInterval}
+                                    />
+                                </ComponentWrapper>
                                 <CollectionInfo
                                     collectionId={data.collection.id}
                                     collectionTitle={data.collection.title}
