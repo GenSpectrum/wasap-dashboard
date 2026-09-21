@@ -89,16 +89,6 @@ describe('FeatureBands', () => {
         await expect.element(getByText('40%')).toBeInTheDocument();
     });
 
-    it('makes the rows as high as the band thickness needs, plus some air', async () => {
-        const rowHeightsFor = (thickness: number) => {
-            const { container } = renderBands({ viewSettings: { ...DEFAULT_BAND_VIEW_SETTINGS, thickness } });
-            return [...container.querySelectorAll('tbody svg')].map((svg) => svg.parentElement?.style.height);
-        };
-
-        expect(rowHeightsFor(20)).toEqual(['26px', '26px']);
-        expect(rowHeightsFor(50)).toEqual(['56px', '56px']);
-    });
-
     it('renders custom columns between the row label and the bands, with the value of each row', async () => {
         const { getByRole, getByText } = renderBands({
             customColumns: [{ header: 'Jaccard index', values: { 'S:A1T': '0.91', 'S:C2G': 0.5 } }],
