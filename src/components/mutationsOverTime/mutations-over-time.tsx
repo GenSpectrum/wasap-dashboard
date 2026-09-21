@@ -14,7 +14,7 @@ import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes } from './getFilteredMutationCodes';
 import { MutationBands } from './mutation-bands';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
-import { useConnection, useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useSiloSchema } from '../../dataLayer/hooks/connection';
 import {
     genesOf,
     useMutationsOverTimePage,
@@ -38,7 +38,6 @@ import {
 } from '../shared/features-over-time-grid';
 import { Fullscreen } from '../shared/fullscreen';
 import { FullscreenTargetContext } from '../shared/fullscreen-target';
-import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import { ResizeContainer } from '../shared/resize-container';
@@ -273,7 +272,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         },
     ];
 
-    const toolbar = <Toolbar originalComponentProps={originalComponentProps} />;
+    const toolbar = <Toolbar />;
 
     return (
         <div ref={tooltipPortalTargetRef}>
@@ -282,46 +281,11 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     );
 };
 
-type ToolbarProps = {
-    originalComponentProps: MutationsOverTimeProps;
-};
-
-const Toolbar: FC<ToolbarProps> = ({ originalComponentProps }) => {
+const Toolbar: FC = () => {
     return (
         <>
-            <MutationsOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>
-    );
-};
-
-type MutationsOverTimeInfoProps = {
-    originalComponentProps: MutationsOverTimeProps;
-};
-
-const MutationsOverTimeInfo: FC<MutationsOverTimeInfoProps> = ({ originalComponentProps }) => {
-    const connection = useConnection();
-    return (
-        <Info>
-            <InfoHeadline1>Mutations over time</InfoHeadline1>
-            <InfoParagraph>
-                This presents the proportions of {originalComponentProps.sequenceType} mutations per{' '}
-                {originalComponentProps.granularity}. Which mutations are displayed can be restricted through a filter
-                on the mean proportion of the mutation's occurrence over the entire time range, which is set from
-                outside this component.
-            </InfoParagraph>
-            <InfoParagraph>
-                The grid cells have a tooltip that will show more detailed information. It shows the count of samples
-                that have the mutation and the count of samples with coverage (i.e. a non-ambiguous read) in this
-                timeframe. Ambiguous reads are excluded when calculating the proportion. It also shows the total count
-                of samples in this timeframe.
-            </InfoParagraph>
-            <InfoComponentCode
-                componentName='mutations-over-time'
-                params={originalComponentProps}
-                lapisUrl={connection.url}
-            />
-        </Info>
     );
 };
 
