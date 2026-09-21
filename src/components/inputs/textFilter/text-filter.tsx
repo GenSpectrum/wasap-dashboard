@@ -1,10 +1,10 @@
 import z from 'zod';
 
-import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
-import { DownshiftCombobox } from '../shared/downshift-combobox';
-import { ErrorBoundary } from '../shared/error-boundary';
-import { LoadingDisplay } from '../shared/loading-display';
-import { ResizeContainer } from '../shared/resize-container';
+import { useStringFieldOptions } from '../../../dataLayer/hooks/stringFieldOptions';
+import { ErrorBoundary } from '../../shared/error-boundary';
+import { LoadingDisplay } from '../../shared/loading-display';
+import { ResizeContainer } from '../../shared/resize-container';
+import { DownshiftCombobox } from '../downshift-combobox';
 
 const textSelectorPropsSchema = z.object({
     field: z.string().min(1),

@@ -1,8 +1,8 @@
 import { type MutationFilterItem } from './mutation-filter';
 import { sequenceTypeFromSegment } from './sequenceTypeFromSegment';
-import type { ReferenceGenome } from '../../externalData/lapisApi/ReferenceGenome';
-import { type SequenceType, mutationType } from '../../types/dashboardComponents';
-import { DeletionClass, InsertionClass, type Mutation, SubstitutionClass } from '../../util/mutations';
+import type { ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
+import { type SequenceType, mutationType } from '../../../types/dashboardComponents';
+import { DeletionClass, InsertionClass, type Mutation, SubstitutionClass } from '../../../util/mutations';
 
 export const parseAndValidateMutation = (
     value: string,

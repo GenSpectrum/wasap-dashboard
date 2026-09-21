@@ -1,4 +1,4 @@
-import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../components/inputs/dateRangeFilter/dateRangeOption';
 import { CustomDateRangeLabel } from '../types/DateWindow';
 
 export const setSearchFromString = (

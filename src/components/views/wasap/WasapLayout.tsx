@@ -10,7 +10,7 @@ import { parseDatasetFilter, withDatasetFilter } from '../../../pageState/wasap/
 import { type WasapDatasetFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
-import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../../inputs/dateRangeFilter/dateRangeOption';
 
 /** What the layout hands down to the page of an analysis mode. */
 export type WasapLayoutContext = {

@@ -5,20 +5,20 @@ import z from 'zod';
 import { getExampleMutation } from './ExampleMutation';
 import { MutationFilterInfo } from './mutation-filter-info';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
-import { type ReferenceGenome } from '../../externalData/lapisApi/ReferenceGenome';
+import { type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
 import {
     type MutationsFilter,
     mutationsFilterSchema,
     mutationType,
     mutationTypeSchema,
     type MutationType,
-} from '../../types/dashboardComponents';
-import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../util/mutations';
-import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
-import { ReferenceGenomesAwaiter } from '../shared/ReferenceGenomesAwaiter';
-import { singleGraphColorRGBByName } from '../shared/charts/colors';
-import { ErrorBoundary } from '../shared/error-boundary';
-import { UserFacingError } from '../shared/error-display';
+} from '../../../types/dashboardComponents';
+import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
+import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
+import { ReferenceGenomesAwaiter } from '../../shared/ReferenceGenomesAwaiter';
+import { singleGraphColorRGBByName } from '../../shared/charts/colors';
+import { ErrorBoundary } from '../../shared/error-boundary';
+import { UserFacingError } from '../../shared/error-display';
 
 const mutationFilterInnerPropsSchema = z.object({
     initialValue: z.union([mutationsFilterSchema.optional(), z.array(z.string()), z.undefined()]),

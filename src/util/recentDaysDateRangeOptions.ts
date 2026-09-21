@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { type DateRangeOption } from '../components/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../components/inputs/dateRangeFilter/dateRangeOption';
 import { ALL_TIMES_LABEL } from '../types/DateWindow';
 
 function recentDaysLabel(days: number): string {

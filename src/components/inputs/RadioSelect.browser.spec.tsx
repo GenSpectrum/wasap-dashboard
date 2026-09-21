@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { RadioSelect } from './RadioSelect';
-import { it } from '../../../../../test-extend';
+import { it } from '../../../test-extend';
 
 describe('RadioSelect', () => {
     const options = [

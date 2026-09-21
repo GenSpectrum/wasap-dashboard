@@ -1,13 +1,13 @@
 import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { useDraftFilter } from './useDraftFilter';
-import { MeanProportionField } from './utils/MeanProportionField';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import {
     type WasapAnalysisFilter,
     type WasapBaseFilter,
     type WasapModeFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { MeanProportionField } from '../../inputs/MeanProportionField';
 import { Inset } from '../../shared/Inset';
 import { ApplyFilterButton } from '../ApplyFilterButton';
 import { SelectorHeadline } from '../SelectorHeadline';

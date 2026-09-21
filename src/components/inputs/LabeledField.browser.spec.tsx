@@ -2,7 +2,7 @@ import { describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { LabeledField } from './LabeledField';
-import { it } from '../../../../../test-extend';
+import { it } from '../../../test-extend';
 
 describe('LabeledField', () => {
     it('opens modal when info button is clicked', async () => {

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { parseAndValidateMutation } from './parseAndValidateMutation';
-import { mutationType } from '../../types/dashboardComponents';
-import { DeletionClass, InsertionClass, SubstitutionClass } from '../../util/mutations';
+import { mutationType } from '../../../types/dashboardComponents';
+import { DeletionClass, InsertionClass, SubstitutionClass } from '../../../util/mutations';
 
 describe('parseMutation', () => {
     const singleSegmentedReferenceGenome = {

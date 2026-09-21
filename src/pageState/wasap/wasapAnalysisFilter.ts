@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { sequenceTypeSchema, type TemporalGranularity } from '../../types/dashboardComponents';
 
 export const SEQUENCE_TYPE = {

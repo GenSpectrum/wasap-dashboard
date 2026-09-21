@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { SequenceTypeSelector } from './SequenceTypeSelector';
-import { it } from '../../../../../test-extend';
+import { it } from '../../../test-extend';
 
 describe('SequenceTypeSelector', () => {
     it('renders nucleotide and amino acid options', async () => {

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Modal } from '../../../shared/modal';
+import { Modal } from '../shared/modal';
 
 interface LabeledFieldProps {
     /**

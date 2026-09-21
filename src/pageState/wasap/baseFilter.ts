@@ -1,5 +1,5 @@
 import { type WasapBaseFilter, type WasapDatasetFilter, type WasapMeanProportion } from './wasapAnalysisFilter';
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { type TemporalGranularity } from '../../types/dashboardComponents';

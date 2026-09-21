@@ -10,14 +10,14 @@ import {
     type VariantTimeFrame,
     type WasapVariantFilter,
 } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { LineageFilter } from '../../../lineageFilter/lineage-filter';
+import { CollectionCombobox } from '../../../inputs/CollectionCombobox';
+import { LabeledField } from '../../../inputs/LabeledField';
+import { NumericInput } from '../../../inputs/NumericInput';
+import { SequenceTypeSelector } from '../../../inputs/SequenceTypeSelector';
+import { LineageFilter } from '../../../inputs/lineageFilter/lineage-filter';
 import { Inset } from '../../../shared/Inset';
 import { SelectorHeadline } from '../../SelectorHeadline';
 import { DefineClinicalSignatureInfo } from '../InfoBlocks';
-import { CollectionCombobox } from '../utils/CollectionCombobox';
-import { LabeledField } from '../utils/LabeledField';
-import { NumericInput } from '../utils/NumericInput';
-import { SequenceTypeSelector } from '../utils/SequenceTypeSelector';
 
 interface VariantExplorerFilterProps {
     pageState: WasapVariantFilter;

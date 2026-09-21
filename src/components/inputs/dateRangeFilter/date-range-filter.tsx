@@ -5,8 +5,8 @@ import { computeInitialValues } from './computeInitialValues';
 import { DatePicker } from './date-picker';
 import { toYYYYMMDD } from './dateConversion';
 import { type DateRangeOption, dateRangeOptionSchema, dateRangeValueSchema } from './dateRangeOption';
-import { ClearableSelect } from '../shared/clearable-select';
-import { ErrorBoundary } from '../shared/error-boundary';
+import { ErrorBoundary } from '../../shared/error-boundary';
+import { ClearableSelect } from '../clearable-select';
 
 const CUSTOM_OPTION = 'Custom';
 

@@ -3,8 +3,8 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { CollectionCombobox } from './CollectionCombobox';
-import { it } from '../../../../../test-extend';
-import type { CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
+import { it } from '../../../test-extend';
+import type { CollectionSummary } from '../../externalData/genSpectrum/Collection';
 
 const makeCollection = (id: number, name: string): CollectionSummary => ({
     id,

@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
-import { isSingleSegmented, type ReferenceGenome } from '../../externalData/lapisApi/ReferenceGenome';
-import { ReferenceGenomeContext } from '../ReferenceGenomeContext';
 import { ExampleMutation } from './ExampleMutation';
-import Info, { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../shared/info';
+import { isSingleSegmented, type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
+import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
+import Info, { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../../shared/info';
 
 export const MutationFilterInfo = () => {
     return (

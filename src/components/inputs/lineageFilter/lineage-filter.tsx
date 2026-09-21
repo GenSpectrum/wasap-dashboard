@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import z from 'zod';
 
-import { useLineageOptions, type LineageItem } from '../../dataLayer/hooks/lineageOptions';
-import { DownshiftCombobox, DownshiftMultiCombobox } from '../shared/downshift-combobox';
-import { ErrorBoundary } from '../shared/error-boundary';
-import { LoadingDisplay } from '../shared/loading-display';
-import { ResizeContainer } from '../shared/resize-container';
+import { useLineageOptions, type LineageItem } from '../../../dataLayer/hooks/lineageOptions';
+import { ErrorBoundary } from '../../shared/error-boundary';
+import { LoadingDisplay } from '../../shared/loading-display';
+import { ResizeContainer } from '../../shared/resize-container';
+import { DownshiftCombobox, DownshiftMultiCombobox } from '../downshift-combobox';
 
 const lineageSelectorPropsSchema = z.object({
     field: z.string().min(1),

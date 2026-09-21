@@ -1,6 +1,6 @@
 import { type ChangeEvent, useEffect, useState } from 'react';
 
-import { DeleteIcon } from './icons/DeleteIcon';
+import { DeleteIcon } from '../shared/icons/DeleteIcon';
 
 export const undefinedValue = '__undefined__';
 

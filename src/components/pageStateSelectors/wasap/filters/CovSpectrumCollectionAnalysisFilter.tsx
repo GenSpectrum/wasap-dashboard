@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getCollections } from '../../../../externalData/covSpectrum/getCollections';
 import type { WasapCovSpectrumCollectionFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
+import { LabeledField } from '../../../inputs/LabeledField';
 import { CollectionInfo } from '../InfoBlocks';
-import { LabeledField } from '../utils/LabeledField';
 
 export function CovSpectrumCollectionAnalysisFilter({
     pageState,

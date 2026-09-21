@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { NumericInput } from './NumericInput';
-import { it } from '../../../../../test-extend';
+import { it } from '../../../test-extend';
 
 describe('NumericInput', () => {
     it('renders with initial value', async () => {

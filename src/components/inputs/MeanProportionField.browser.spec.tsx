@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { MeanProportionField } from './MeanProportionField';
-import { it } from '../../../../../test-extend';
+import { it } from '../../../test-extend';
 
 describe('MeanProportionField', () => {
     it('renders the lower and upper value', async () => {

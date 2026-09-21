@@ -2,7 +2,7 @@ import { useDateExtent } from '../../../dataLayer/hooks/dateExtent';
 import { isUnresolvedSamplingDate } from '../../../pageState/wasap/baseFilter';
 import { ALL_TIMES_LABEL } from '../../../types/DateWindow';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
-import { type DateRangeOption } from '../../dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../../inputs/dateRangeFilter/dateRangeOption';
 
 const allTimes: DateRangeOption = { label: ALL_TIMES_LABEL };
 
