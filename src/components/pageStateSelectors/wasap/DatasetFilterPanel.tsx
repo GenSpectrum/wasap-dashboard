@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { DynamicDateFilter } from '../DynamicDateFilter';
 import { LabeledField } from './utils/LabeledField';
 import { RadioSelect } from './utils/RadioSelect';
@@ -19,6 +21,12 @@ export function DatasetFilterPanel({
     value: WasapDatasetFilter;
     onChange: (value: WasapDatasetFilter) => void;
 }) {
+    // Clearing the location is only a step towards picking another one. It is not applied, since a
+    // URL without a location means the default location, which would fill the field again right away.
+    // So the field stays empty until a location is picked (or the location in the URL changes).
+    const [clearedLocation, setClearedLocation] = useState<{ from: string | undefined }>();
+    const isLocationCleared = clearedLocation !== undefined && clearedLocation.from === value.locationName;
+
     return (
         <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-2 p-2'>
             <div className='w-64'>
@@ -26,8 +34,15 @@ export function DatasetFilterPanel({
                     <TextFilter
                         placeholderText='Sampling location'
                         field={config.locationNameField}
-                        onInputChange={({ locationName }) => onChange({ ...value, locationName })}
-                        value={value.locationName}
+                        onInputChange={({ locationName }) => {
+                            if (locationName === undefined) {
+                                setClearedLocation({ from: value.locationName });
+                                return;
+                            }
+                            setClearedLocation(undefined);
+                            onChange({ ...value, locationName });
+                        }}
+                        value={isLocationCleared ? undefined : value.locationName}
                     />
                 </LabeledField>
             </div>
