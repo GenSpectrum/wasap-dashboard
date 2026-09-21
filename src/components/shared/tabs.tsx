@@ -7,10 +7,9 @@ type Tab = {
 
 interface ComponentTabsProps {
     tabs: Tab[];
-    toolbar?: ReactElement | ((activeTab: string) => ReactElement);
 }
 
-const Tabs = forwardRef<HTMLDivElement, ComponentTabsProps>(({ tabs, toolbar }, ref) => {
+const Tabs = forwardRef<HTMLDivElement, ComponentTabsProps>(({ tabs }, ref) => {
     const [activeTab, setActiveTab] = useState(tabs[0]?.title);
 
     const tabElements = (
@@ -35,14 +34,9 @@ const Tabs = forwardRef<HTMLDivElement, ComponentTabsProps>(({ tabs, toolbar }, 
         </div>
     );
 
-    const toolbarElement = typeof toolbar === 'function' ? toolbar(activeTab) : toolbar;
-
     return (
         <div ref={ref} className='flex h-full w-full flex-col bg-white'>
-            <div className='flex flex-row flex-wrap justify-between'>
-                {tabElements}
-                {toolbar && <div className='flex flex-wrap gap-y-1 py-2'>{toolbarElement}</div>}
-            </div>
+            {tabElements}
             <div className={`grow overflow-scroll rounded-tr-md rounded-b-md border-2 border-gray-100 p-2`}>
                 {tabs.map((tab) => (
                     <div className='h-full' key={tab.title} hidden={activeTab !== tab.title}>

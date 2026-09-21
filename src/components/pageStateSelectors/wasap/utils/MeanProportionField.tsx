@@ -7,8 +7,8 @@ import { MinMaxRangeSlider } from '../../../shared/min-max-range-slider';
  * selected time range has to be in for it to be displayed.
  *
  * TODO: This is roughly 80% of the way to looking like the other sidebar sliders
- * (`NumericInput`) - the thumbs of the range slider are still the 24px white circles from the
- * over-time toolbar, not the native accent-colored ones. Revisit to make them match. Note that
+ * (`NumericInput`) - the thumbs of the range slider are still the 24px white circles of the
+ * shared `MinMaxRangeSlider`, not the native accent-colored ones. Revisit to make them match. Note that
  * native sliders render differently in every browser, so an exact match isn't the goal; a native
  * multi-thumb slider (the `<rangegroup>` proposal) doesn't exist in any browser yet.
  */
