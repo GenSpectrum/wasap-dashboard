@@ -1,13 +1,4 @@
-import {
-    type Dispatch,
-    type FC,
-    type SetStateAction,
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { type FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 import { getFilteredQueryOverTimeData } from './getFilteredQueriesOverTimeData';
@@ -27,7 +18,6 @@ import { ErrorBoundary } from '../shared/error-boundary';
 import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
 import { Fullscreen } from '../shared/fullscreen';
 import { FullscreenTargetContext } from '../shared/fullscreen-target';
-import { HideGapsButton } from '../shared/hide-gaps-button';
 import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
@@ -131,9 +121,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
-    const [hideGaps, setHideGaps] = useState<boolean>(originalComponentProps.hideGaps ?? false);
-
-    useEffect(() => setHideGaps(originalComponentProps.hideGaps ?? false), [originalComponentProps.hideGaps]);
+    const hideGaps = originalComponentProps.hideGaps ?? false;
 
     const filteredData = useMemo(() => {
         return getFilteredQueryOverTimeData({
@@ -213,9 +201,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 
     const tabs = originalComponentProps.views.map((view) => getTab(view));
 
-    const toolbar = (
-        <Toolbar hideGaps={hideGaps} setHideGaps={setHideGaps} originalComponentProps={originalComponentProps} />
-    );
+    const toolbar = <Toolbar originalComponentProps={originalComponentProps} />;
 
     return (
         <div ref={tooltipPortalTargetRef}>
@@ -227,15 +213,12 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
 };
 
 type ToolbarProps = {
-    hideGaps: boolean;
-    setHideGaps: Dispatch<SetStateAction<boolean>>;
     originalComponentProps: QueriesOverTimeProps;
 };
 
-const Toolbar: FC<ToolbarProps> = ({ hideGaps, setHideGaps, originalComponentProps }) => {
+const Toolbar: FC<ToolbarProps> = ({ originalComponentProps }) => {
     return (
         <>
-            <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             <QueriesOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>
