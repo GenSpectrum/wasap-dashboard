@@ -6,7 +6,7 @@ import { getProportion, type ProportionValue } from '../../query/queryMutationsO
 import { type Temporal } from '../../util/temporalClass';
 import { type ColorScale, getColorWithinScale } from '../shared/color-scale-selector';
 import { type CustomColumn, type FeatureRenderer } from '../shared/features-over-time-grid';
-import { getTooltipPosition, styleGridHeader } from '../shared/features-over-time-grid-shared';
+import { getTooltipPosition } from '../shared/features-over-time-grid-shared';
 import PortalTooltip from '../shared/portal-tooltip';
 import { Pagination, type PageSizes } from '../shared/tanstackTable/pagination';
 import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';
@@ -129,12 +129,12 @@ export function MutationBands<F>({
     return (
         <div className='w-full'>
             <div className='overflow-auto'>
-                {/* The date columns hold one colSpan'd band each rather than the grid's
-                    one cell per column, so auto layout can't size them from their own
-                    content - it would hand all the spare width to the label column
-                    instead. Fixed layout, with an explicit width on the label column
-                    only, keeps the date columns even and the label column the width
-                    the grid's own content-driven sizing settles on. */}
+                {/* All the date buckets live inside one table column (a flex row in the
+                    header, a band per row), instead of one table column per bucket:
+                    browsers disagree on how to size dozens of empty auto-width columns
+                    (Firefox gives each one a sliver and leaves the rest of the table
+                    unused). Fixed layout with explicit widths for the label and custom
+                    columns leaves the rest of the table to the date column. */}
                 <table className='w-full' style={{ tableLayout: 'fixed' }}>
                     <thead>
                         <tr>
@@ -144,16 +144,21 @@ export function MutationBands<F>({
                                     {customColumn.header}
                                 </th>
                             ))}
-                            {/* Same header treatment as the grid: only the first and last
-                                date are labelled, the rest hide behind a container query
-                                unless there's room, so the two views read the same way. */}
-                            {columns.map((column, index) => (
-                                <th key={column.dateString} className='p-0'>
-                                    <div className='@container min-w-[0.05rem]'>
-                                        <p {...styleGridHeader(index, columns.length)}>{column.dateString}</p>
-                                    </div>
-                                </th>
-                            ))}
+                            <th className='p-0'>
+                                {/* One equally wide slot per bucket, like the band's own
+                                    hover columns, so a label sits above its bucket. */}
+                                <div className='flex'>
+                                    {columns.map((column, index) => (
+                                        <div key={column.dateString} className='@container min-w-0 flex-1'>
+                                            <DateHeaderLabel
+                                                label={column.dateString}
+                                                index={index}
+                                                numberOfColumns={columns.length}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -164,7 +169,7 @@ export function MutationBands<F>({
                                       {rowIndex === 0 && (
                                           <td
                                               rowSpan={loadingRowLabels.length}
-                                              colSpan={customColumns.length + columns.length}
+                                              colSpan={customColumns.length + 1}
                                               className='text-center'
                                           >
                                               <span className='loading loading-spinner loading-sm' />
@@ -182,7 +187,7 @@ export function MutationBands<F>({
                                               {customColumn.values[featureRenderer.asString(feature)]}
                                           </td>
                                       ))}
-                                      <td className='p-0' colSpan={columns.length}>
+                                      <td className='p-0'>
                                           <BandRow
                                               feature={feature}
                                               values={rows[rowIndex] ?? []}
@@ -200,7 +205,7 @@ export function MutationBands<F>({
                               ))}
                         {!isLoading && features.length === 0 && (
                             <tr>
-                                <td colSpan={customColumns.length + columns.length + 1}>
+                                <td colSpan={customColumns.length + 2}>
                                     <div className='text-center'>No data available for your filters.</div>
                                 </td>
                             </tr>
@@ -218,6 +223,27 @@ export function MutationBands<F>({
             </div>
         </div>
     );
+}
+
+/**
+ * The label of one bucket above the bands. Only the first and last are always shown,
+ * the ones in between only when their slot is wide enough for the date, so the
+ * labels never run into each other. They are centred over their bucket, except when
+ * the slot is too narrow for the date: then the first starts at the left edge of the
+ * bands and the last ends at the right edge, and both reach over their neighbours.
+ */
+function DateHeaderLabel({ label, index, numberOfColumns }: { label: string; index: number; numberOfColumns: number }) {
+    if (index === 0) {
+        return <p className='overflow-visible text-nowrap'>{label}</p>;
+    }
+    if (index === numberOfColumns - 1) {
+        return (
+            <div className='flex justify-end @[6rem]:justify-center'>
+                <p className='shrink-0 text-nowrap'>{label}</p>
+            </div>
+        );
+    }
+    return <p className='invisible overflow-hidden text-nowrap @[6rem]:visible'>{label}</p>;
 }
 
 /** One mutation's band across the loaded date columns. */
