@@ -18,7 +18,7 @@ import { type Deletion, type Substitution } from '../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
 import { AnnotatedMutation } from '../shared/annotated-mutation';
-import { type ColorScale } from '../shared/color-scale-selector';
+import { DEFAULT_BAND_VIEW_SETTINGS } from '../shared/band-view-settings';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
 import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../shared/feature-bands';
@@ -126,7 +126,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     }, [wrapperRef]);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
-    const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
+    const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
 
     const hideGaps = originalComponentProps.hideGaps ?? false;
 
@@ -183,7 +183,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
 
     const paginationEnd = (
         <div className='flex items-center gap-1'>
-            <ViewSettingsDropdown colorScale={colorScale} setColorScale={setColorScale} />
+            <ViewSettingsDropdown settings={viewSettings} onChange={setViewSettings} />
             <CsvDownloadButton
                 className='btn btn-xs'
                 label='Download CSV'
@@ -201,7 +201,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 isLoading={isPageLoading}
                 loadingRowLabels={pageMutationCodes}
                 requestedDateRanges={requestedDateRanges}
-                colorScale={colorScale}
+                viewSettings={viewSettings}
                 featureRenderer={mutationRenderer}
                 tooltipPortalTarget={tooltipPortalTarget}
                 pageSizes={originalComponentProps.pageSizes}
