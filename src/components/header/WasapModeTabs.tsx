@@ -1,11 +1,11 @@
 import { NavLink, useParams, useSearchParams } from 'react-router-dom';
 
-import { ExplorationModeInfo } from './InfoBlocks';
-import { enabledAnalysisModes } from '../config/wasapPageConfig';
-import { resolveWasapConfig } from '../config/wastewaterOrganisms';
-import { Modal } from './shared/modal';
-import { datasetFilterSearchParams, parseDatasetFilter } from '../pageState/wasap/baseFilter';
-import { modeLabel, modePath } from '../pageState/wasap/wasapModes';
+import { enabledAnalysisModes } from '../../config/wasapPageConfig';
+import { resolveWasapConfig } from '../../config/wastewaterOrganisms';
+import { datasetFilterSearchParams, parseDatasetFilter } from '../../pageState/wasap/baseFilter';
+import { modeLabel, modePath } from '../../pageState/wasap/wasapModes';
+import { ExplorationModeInfo } from '../InfoBlocks';
+import { Modal } from '../shared/modal';
 
 /**
  * The menu to pick the analysis mode of the organism whose page is open, which is a page

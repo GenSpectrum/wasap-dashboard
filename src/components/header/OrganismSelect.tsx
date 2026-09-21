@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { listWastewaterOrganisms } from '../config/wastewaterOrganisms';
+import { listWastewaterOrganisms } from '../../config/wastewaterOrganisms';
 
 /**
  * Replaces Astro's per-page routing: pick an organism, navigate to its route.

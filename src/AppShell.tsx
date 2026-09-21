@@ -2,8 +2,8 @@ import { Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { OrganismSelect } from './components/OrganismSelect';
-import { WasapModeTabs } from './components/WasapModeTabs';
+import { OrganismSelect } from './components/header/OrganismSelect';
+import { WasapModeTabs } from './components/header/WasapModeTabs';
 
 /**
  * The frame every route sits in: a minimal header with the analysis mode tabs
