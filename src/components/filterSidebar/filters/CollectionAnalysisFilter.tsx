@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
-import { getCollections } from '../../../../externalData/genSpectrum/getCollections';
-import type { WasapCollectionFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { LabeledField } from '../../../inputs/LabeledField';
+import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
+import { getCollections } from '../../../externalData/genSpectrum/getCollections';
+import type { WasapCollectionFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { LabeledField } from '../../inputs/LabeledField';
 
 type CollectionAnalysisFilterProps = {
     pageState: WasapCollectionFilter;

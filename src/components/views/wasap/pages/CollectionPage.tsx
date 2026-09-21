@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { CollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CollectionPageStateHandler';
-import { FilterSidebar } from '../../../pageStateSelectors/wasap/FilterSidebar';
-import { CollectionAnalysisFilter } from '../../../pageStateSelectors/wasap/filters/CollectionAnalysisFilter';
+import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
+import { CollectionAnalysisFilter } from '../../../filterSidebar/filters/CollectionAnalysisFilter';
 import { CollectionResult } from '../CollectionResult';
 import { ModePageLayout } from '../ModePageLayout';
 import { WasapResults } from '../WasapResults';

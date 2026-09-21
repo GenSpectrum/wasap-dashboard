@@ -2,10 +2,10 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../../routeMocker';
-import { it } from '../../../../../test-extend';
-import type { WasapManualFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { GsApp } from '../../../GsApp';
+import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../routeMocker';
+import { it } from '../../../../test-extend';
+import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { GsApp } from '../../GsApp';
 
 describe('ManualAnalysisFilter', () => {
     const defaultPageState: WasapManualFilter = {

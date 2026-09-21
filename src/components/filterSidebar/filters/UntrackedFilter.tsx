@@ -1,12 +1,12 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
-import type { ExcludeSetName, WasapUntrackedFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { Loading } from '../../../../util/Loading';
-import { LabeledField } from '../../../inputs/LabeledField';
-import { SequenceTypeSelector } from '../../../inputs/SequenceTypeSelector';
-import { LineageFilter } from '../../../inputs/lineageFilter/lineage-filter';
-import { KnownVariantsExclusionInfo } from '../InfoBlocks';
+import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
+import type { ExcludeSetName, WasapUntrackedFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { Loading } from '../../../util/Loading';
+import { KnownVariantsExclusionInfo } from '../../InfoBlocks';
+import { LabeledField } from '../../inputs/LabeledField';
+import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
+import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
 
 interface UntrackedFilterProps {
     pageState: WasapUntrackedFilter;

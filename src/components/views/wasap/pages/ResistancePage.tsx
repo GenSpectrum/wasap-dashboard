@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { ResistancePageStateHandler } from '../../../../pageState/wasap/handlers/ResistancePageStateHandler';
-import { FilterSidebar } from '../../../pageStateSelectors/wasap/FilterSidebar';
-import { ResistanceMutationsFilter } from '../../../pageStateSelectors/wasap/filters/ResistanceMutationsFilter';
+import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
+import { ResistanceMutationsFilter } from '../../../filterSidebar/filters/ResistanceMutationsFilter';
 import { ModePageLayout } from '../ModePageLayout';
 import { MutationsResult } from '../MutationsResult';
 import { WasapResults } from '../WasapResults';

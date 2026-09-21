@@ -4,10 +4,10 @@ import { afterEach, describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { DatasetFilterPanel } from './DatasetFilterPanel';
-import { it } from '../../../../test-extend';
-import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../../dataLayer/queries/schema';
-import type { WasapDatasetFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { it } from '../../test-extend';
+import { ConnectionProvider } from '../dataLayer/hooks/connection';
+import type { SiloSchema } from '../dataLayer/queries/schema';
+import type { WasapDatasetFilter } from '../pageState/wasap/wasapAnalysisFilter';
 
 const schema: SiloSchema = {
     table: 'default',

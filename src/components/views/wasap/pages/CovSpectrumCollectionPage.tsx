@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { CovSpectrumCollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CovSpectrumCollectionPageStateHandler';
-import { FilterSidebar } from '../../../pageStateSelectors/wasap/FilterSidebar';
-import { CovSpectrumCollectionAnalysisFilter } from '../../../pageStateSelectors/wasap/filters/CovSpectrumCollectionAnalysisFilter';
+import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
+import { CovSpectrumCollectionAnalysisFilter } from '../../../filterSidebar/filters/CovSpectrumCollectionAnalysisFilter';
 import { CollectionResult } from '../CollectionResult';
 import { ModePageLayout } from '../ModePageLayout';
 import { WasapResults } from '../WasapResults';

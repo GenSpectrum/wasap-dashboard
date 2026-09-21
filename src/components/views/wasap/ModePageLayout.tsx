@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 
 import { useWasapLayoutContext } from './WasapLayout';
-import { DatasetFilterPanel } from '../../pageStateSelectors/wasap/DatasetFilterPanel';
+import { DatasetFilterPanel } from '../../DatasetFilterPanel';
 
 /**
  * The filter panel of an analysis mode on the left, and on the right the panel for the

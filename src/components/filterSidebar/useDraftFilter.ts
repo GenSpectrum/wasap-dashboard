@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { getDefaultMeanProportion } from '../../../pageState/wasap/defaultMeanProportion';
-import { type WasapAnalysisFilter, type WasapMeanProportion } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { getDefaultMeanProportion } from '../../pageState/wasap/defaultMeanProportion';
+import { type WasapAnalysisFilter, type WasapMeanProportion } from '../../pageState/wasap/wasapAnalysisFilter';
 
 /**
  * The filter of a mode as it is being edited, before it is applied.

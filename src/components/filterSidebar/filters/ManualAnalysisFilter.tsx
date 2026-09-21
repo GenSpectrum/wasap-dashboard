@@ -1,7 +1,7 @@
-import type { WasapManualFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { mutationType, type MutationType } from '../../../../types/dashboardComponents';
-import { SequenceTypeSelector } from '../../../inputs/SequenceTypeSelector';
-import { MutationFilter } from '../../../inputs/mutationFilter/mutation-filter';
+import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { mutationType, type MutationType } from '../../../types/dashboardComponents';
+import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
+import { MutationFilter } from '../../inputs/mutationFilter/mutation-filter';
 
 export function ManualAnalysisFilter({
     pageState,

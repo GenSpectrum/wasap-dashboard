@@ -3,7 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { OrganismSelect } from './components/OrganismSelect';
-import { WasapModeTabs } from './components/pageStateSelectors/wasap/WasapModeTabs';
+import { WasapModeTabs } from './components/WasapModeTabs';
 
 /**
  * The frame every route sits in: a minimal header with the analysis mode tabs

@@ -1,23 +1,23 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 import { useId } from 'react';
 
-import { type CollectionSummary } from '../../../../externalData/genSpectrum/Collection';
-import { LapisClientProvider } from '../../../../externalData/lapis/LapisClientContext';
+import { type CollectionSummary } from '../../../externalData/genSpectrum/Collection';
+import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
     type SignatureType,
     type VariantTimeFrame,
     type WasapVariantFilter,
-} from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { CollectionCombobox } from '../../../inputs/CollectionCombobox';
-import { LabeledField } from '../../../inputs/LabeledField';
-import { NumericInput } from '../../../inputs/NumericInput';
-import { SequenceTypeSelector } from '../../../inputs/SequenceTypeSelector';
-import { LineageFilter } from '../../../inputs/lineageFilter/lineage-filter';
-import { Inset } from '../../../shared/Inset';
-import { SelectorHeadline } from '../../SelectorHeadline';
-import { DefineClinicalSignatureInfo } from '../InfoBlocks';
+} from '../../../pageState/wasap/wasapAnalysisFilter';
+import { DefineClinicalSignatureInfo } from '../../InfoBlocks';
+import { CollectionCombobox } from '../../inputs/CollectionCombobox';
+import { LabeledField } from '../../inputs/LabeledField';
+import { NumericInput } from '../../inputs/NumericInput';
+import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
+import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
+import { Inset } from '../../shared/Inset';
+import { SelectorHeadline } from '../SelectorHeadline';
 
 interface VariantExplorerFilterProps {
     pageState: WasapVariantFilter;

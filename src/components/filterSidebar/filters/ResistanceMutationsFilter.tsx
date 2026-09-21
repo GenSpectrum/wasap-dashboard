@@ -1,5 +1,5 @@
-import type { WasapResistanceFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { LabeledField } from '../../../inputs/LabeledField';
+import type { WasapResistanceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { LabeledField } from '../../inputs/LabeledField';
 
 export function ResistanceMutationsFilter({
     pageState,

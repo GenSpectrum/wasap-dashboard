@@ -1,16 +1,16 @@
 import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
+import { ApplyFilterButton } from './ApplyFilterButton';
+import { SelectorHeadline } from './SelectorHeadline';
 import { useDraftFilter } from './useDraftFilter';
-import { type PageStateHandler } from '../../../pageState/PageStateHandler';
+import { type PageStateHandler } from '../../pageState/PageStateHandler';
 import {
     type WasapAnalysisFilter,
     type WasapBaseFilter,
     type WasapModeFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
-import { MeanProportionField } from '../../inputs/MeanProportionField';
-import { Inset } from '../../shared/Inset';
-import { ApplyFilterButton } from '../ApplyFilterButton';
-import { SelectorHeadline } from '../SelectorHeadline';
+} from '../../pageState/wasap/wasapAnalysisFilter';
+import { MeanProportionField } from '../inputs/MeanProportionField';
+import { Inset } from '../shared/Inset';
 
 type FilterSidebarProps<Analysis extends WasapAnalysisFilter> = {
     pageStateHandler: PageStateHandler<WasapModeFilter<Analysis>>;

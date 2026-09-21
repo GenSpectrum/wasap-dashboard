@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-import { type WasapPageConfig } from '../../../config/wasapPageConfig';
-import { type WasapDatasetFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
-import { DynamicDateFilter } from '../../inputs/DynamicDateFilter';
-import { LabeledField } from '../../inputs/LabeledField';
-import { RadioSelect } from '../../inputs/RadioSelect';
-import { TextFilter } from '../../inputs/textFilter/text-filter';
+import { type WasapPageConfig } from '../config/wasapPageConfig';
+import { type WasapDatasetFilter } from '../pageState/wasap/wasapAnalysisFilter';
+import { recentDaysDateRangeOptions } from '../util/recentDaysDateRangeOptions';
+import { DynamicDateFilter } from './inputs/DynamicDateFilter';
+import { LabeledField } from './inputs/LabeledField';
+import { RadioSelect } from './inputs/RadioSelect';
+import { TextFilter } from './inputs/textFilter/text-filter';
 
 /**
  * Selects the dataset that is analyzed: location, dates and how they are
