@@ -156,36 +156,31 @@ export const DateRangeFilterInner = ({
     };
 
     return (
-        <div className={'@container'}>
-            <div className='flex min-w-[7.5rem] flex-col @md:flex-row'>
-                <div className='grow'>
-                    <ClearableSelect
-                        items={options.map((item) => item.label)}
-                        placeholderText={placeholder}
-                        onChange={(value) => {
-                            const dateRangeOption = options.find((item) => item.label === value);
-                            onSelectChange(dateRangeOption ?? null);
-                        }}
-                        value={state?.label ?? null}
-                    />
-                </div>
-                <div className={'@4xs:flex-row flex grow flex-col'}>
-                    <DatePicker
-                        className={'min-w-[7.5rem] grow'}
-                        value={state?.dateFrom}
-                        onChange={onChangeDateFrom}
-                        maxDate={state?.dateTo}
-                        placeholderText={'Date from'}
-                    />
-                    <DatePicker
-                        className={'min-w-[7.5rem] grow'}
-                        value={state?.dateTo}
-                        onChange={onChangeDateTo}
-                        minDate={state?.dateFrom}
-                        placeholderText={'Date to'}
-                    />
-                </div>
-            </div>
+        <div className='grid grid-cols-[minmax(0,40fr)_minmax(0,30fr)_minmax(0,30fr)]'>
+            <ClearableSelect
+                items={options.map((item) => item.label)}
+                placeholderText={placeholder}
+                onChange={(value) => {
+                    const dateRangeOption = options.find((item) => item.label === value);
+                    onSelectChange(dateRangeOption ?? null);
+                }}
+                value={state?.label ?? null}
+                className='w-full'
+            />
+            <DatePicker
+                className='w-full'
+                value={state?.dateFrom}
+                onChange={onChangeDateFrom}
+                maxDate={state?.dateTo}
+                placeholderText={'Date from'}
+            />
+            <DatePicker
+                className='w-full'
+                value={state?.dateTo}
+                onChange={onChangeDateTo}
+                minDate={state?.dateFrom}
+                placeholderText={'Date to'}
+            />
         </div>
     );
 };

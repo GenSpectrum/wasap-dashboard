@@ -28,8 +28,11 @@ export function DatasetFilterPanel({
     const isLocationCleared = clearedLocation !== undefined && clearedLocation.from === value.locationName;
 
     return (
-        <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-2 p-2'>
-            <div className='w-64'>
+        // The date column is the widest: the select and the two dates of the date filter are in one row, which
+        // needs about 24rem. The flex bases are what the columns wrap at on a narrow page. The checkbox is
+        // aligned to the bottom, so that it sits next to the inputs, also when it wraps onto a row of its own.
+        <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-4 p-6'>
+            <div className='min-w-0 flex-[1_1_11rem]'>
                 <LabeledField label='Sampling location'>
                     <TextFilter
                         placeholderText='Sampling location'
@@ -47,7 +50,7 @@ export function DatasetFilterPanel({
                 </LabeledField>
             </div>
 
-            <div className='w-64'>
+            <div className='min-w-0 flex-[2_1_24rem]'>
                 <DynamicDateFilter
                     label='Sampling date'
                     generateOptions={recentDaysDateRangeOptions}
@@ -56,7 +59,7 @@ export function DatasetFilterPanel({
                 />
             </div>
 
-            <div className='w-56'>
+            <div className='min-w-0 flex-[1_1_9rem]'>
                 <RadioSelect
                     label='Granularity'
                     value={value.granularity}
@@ -68,7 +71,7 @@ export function DatasetFilterPanel({
                 />
             </div>
 
-            <div className='self-center text-sm'>
+            <div className='self-end pb-2.5 text-sm whitespace-nowrap'>
                 <input
                     className='accent-primary'
                     type='checkbox'
@@ -77,7 +80,7 @@ export function DatasetFilterPanel({
                     onChange={(e) => onChange({ ...value, excludeEmpty: e.target.checked })}
                 />
                 <label htmlFor='excludeEmpty' className='pl-2'>
-                    Exclude empty date ranges
+                    Hide empty dates
                 </label>
             </div>
         </section>
