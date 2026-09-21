@@ -11,7 +11,7 @@ import {
 import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
-import { displayMutationsSchema, getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
+import { displayMutationsSchema, getFilteredMutationCodes } from './getFilteredMutationCodes';
 import { MutationBands } from './mutation-bands';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
 import { useConnection, useSiloSchema } from '../../dataLayer/hooks/connection';
@@ -27,7 +27,6 @@ import { sequenceTypeSchema, temporalGranularitySchema, views } from '../../type
 import { type Deletion, type Substitution } from '../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
-import { useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 import { AnnotatedMutation } from '../shared/annotated-mutation';
 import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
@@ -43,7 +42,6 @@ import { HideGapsButton } from '../shared/hide-gaps-button';
 import Info, { InfoComponentCode, InfoHeadline1, InfoParagraph } from '../shared/info';
 import { LoadingDisplay } from '../shared/loading-display';
 import { type DisplayedMutationType, MutationTypeSelector } from '../shared/mutation-type-selector';
-import { MutationsOverTimeMutationsFilter } from '../shared/mutations-over-time-mutations-filter';
 import { NoDataDisplay } from '../shared/no-data-display';
 import { ResizeContainer } from '../shared/resize-container';
 import { type DisplayedSegment, SegmentSelector, useDisplayedSegments } from '../shared/segment-selector';
@@ -156,12 +154,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         setTooltipPortalTarget(tooltipPortalTargetRef.current);
     }, []);
 
-    const [mutationFilterValue, setMutationFilterValue] = useState<MutationFilter>({
-        textFilter: '',
-        annotationNameFilter: new Set(),
-    });
-    const annotationProvider = useMutationAnnotationsProvider();
-
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
 
@@ -181,19 +173,8 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                 displayedSegments,
                 displayedMutationTypes,
                 proportionInterval,
-                mutationFilterValue,
-                sequenceType: originalComponentProps.sequenceType,
-                annotationProvider,
             }),
-        [
-            overallMutations,
-            displayedSegments,
-            displayedMutationTypes,
-            proportionInterval,
-            originalComponentProps.sequenceType,
-            mutationFilterValue,
-            annotationProvider,
-        ],
+        [overallMutations, displayedSegments, displayedMutationTypes, proportionInterval],
     );
 
     useEffect(() => {
@@ -313,8 +294,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
             hideGaps={hideGaps}
             setHideGaps={setHideGaps}
             originalComponentProps={originalComponentProps}
-            setFilterValue={setMutationFilterValue}
-            mutationFilterValue={mutationFilterValue}
         />
     );
 
@@ -333,8 +312,6 @@ type ToolbarProps = {
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     originalComponentProps: MutationsOverTimeProps;
-    mutationFilterValue: MutationFilter;
-    setFilterValue: Dispatch<SetStateAction<MutationFilter>>;
 };
 
 const Toolbar: FC<ToolbarProps> = ({
@@ -345,12 +322,9 @@ const Toolbar: FC<ToolbarProps> = ({
     hideGaps,
     setHideGaps,
     originalComponentProps,
-    setFilterValue,
-    mutationFilterValue,
 }) => {
     return (
         <>
-            <MutationsOverTimeMutationsFilter setFilterValue={setFilterValue} value={mutationFilterValue} />
             <SegmentSelector
                 displayedSegments={displayedSegments}
                 setDisplayedSegments={setDisplayedSegments}

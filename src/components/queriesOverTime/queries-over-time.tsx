@@ -10,8 +10,7 @@ import {
 } from 'react';
 import z from 'zod';
 
-import { getFilteredQueryOverTimeData, type QueryFilter } from './getFilteredQueriesOverTimeData';
-import { QueriesOverTimeFilter } from './queries-over-time-filter';
+import { getFilteredQueryOverTimeData } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useConnection } from '../../dataLayer/hooks/connection';
@@ -130,10 +129,6 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         setTooltipPortalTarget(tooltipPortalTargetRef.current);
     }, []);
 
-    const [queryFilterValue, setQueryFilterValue] = useState<QueryFilter>({
-        textFilter: '',
-    });
-
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
     const [hideGaps, setHideGaps] = useState<boolean>(originalComponentProps.hideGaps ?? false);
@@ -145,9 +140,8 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
             data: queryOverTimeData,
             proportionInterval,
             hideGaps,
-            queryFilterValue,
         });
-    }, [queryOverTimeData, proportionInterval, hideGaps, queryFilterValue]);
+    }, [queryOverTimeData, proportionInterval, hideGaps]);
 
     const queryLookupMap = useMemo(
         () => new Map(originalComponentProps.queries.map((query) => [query.displayLabel, query])),
@@ -220,13 +214,7 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
     const tabs = originalComponentProps.views.map((view) => getTab(view));
 
     const toolbar = (
-        <Toolbar
-            hideGaps={hideGaps}
-            setHideGaps={setHideGaps}
-            originalComponentProps={originalComponentProps}
-            setFilterValue={setQueryFilterValue}
-            queryFilterValue={queryFilterValue}
-        />
+        <Toolbar hideGaps={hideGaps} setHideGaps={setHideGaps} originalComponentProps={originalComponentProps} />
     );
 
     return (
@@ -242,20 +230,11 @@ type ToolbarProps = {
     hideGaps: boolean;
     setHideGaps: Dispatch<SetStateAction<boolean>>;
     originalComponentProps: QueriesOverTimeProps;
-    queryFilterValue: QueryFilter;
-    setFilterValue: Dispatch<SetStateAction<QueryFilter>>;
 };
 
-const Toolbar: FC<ToolbarProps> = ({
-    hideGaps,
-    setHideGaps,
-    originalComponentProps,
-    setFilterValue,
-    queryFilterValue,
-}) => {
+const Toolbar: FC<ToolbarProps> = ({ hideGaps, setHideGaps, originalComponentProps }) => {
     return (
         <>
-            <QueriesOverTimeFilter setFilterValue={setFilterValue} value={queryFilterValue} />
             <HideGapsButton hideGaps={hideGaps} setHideGaps={setHideGaps} />
             <QueriesOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
@@ -275,9 +254,8 @@ const QueriesOverTimeInfo: FC<QueriesOverTimeInfoProps> = ({ originalComponentPr
             <InfoParagraph>
                 This component displays the proportions of custom queries per {originalComponentProps.granularity}. Each
                 query consists of a count query (what to count) and a coverage query (what to use as the denominator).
-                In the toolbar, you can filter queries by text. Which queries are displayed can also be restricted
-                through a filter on the mean proportion of the query's occurrence over the entire time range, which is
-                set from outside this component.
+                Which queries are displayed can be restricted through a filter on the mean proportion of the query's
+                occurrence over the entire time range, which is set from outside this component.
             </InfoParagraph>
             <InfoParagraph>
                 The grid cells have a tooltip that will show more detailed information. It shows the count of samples

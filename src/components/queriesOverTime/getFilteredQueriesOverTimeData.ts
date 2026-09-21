@@ -3,15 +3,10 @@ import { serializeQuery, serializeTemporal } from '../../query/queryQueriesOverT
 import { Map2dBase, Map2dView, type Map2DContents } from '../../util/map2d';
 import { type Temporal } from '../../util/temporalClass';
 
-export type QueryFilter = {
-    textFilter: string;
-};
-
 export type GetFilteredQueryOverTimeDataArgs = {
     data: Map2DContents<string, Temporal, ProportionValue>;
     proportionInterval: { min: number; max: number };
     hideGaps: boolean;
-    queryFilterValue: QueryFilter;
 };
 
 /**
@@ -24,12 +19,7 @@ export class QueryOverTimeDataMap extends Map2dBase<string, Temporal, Proportion
     }
 }
 
-export function getFilteredQueryOverTimeData({
-    data,
-    proportionInterval,
-    hideGaps,
-    queryFilterValue,
-}: GetFilteredQueryOverTimeDataArgs) {
+export function getFilteredQueryOverTimeData({ data, proportionInterval, hideGaps }: GetFilteredQueryOverTimeDataArgs) {
     const dataMap = new QueryOverTimeDataMap(data);
     const filteredData = new Map2dView(dataMap);
 
@@ -52,19 +42,7 @@ export function getFilteredQueryOverTimeData({
         const overallProportion = totalCoverage > 0 ? totalCount / totalCoverage : 0;
 
         // Filter by proportion interval
-        if (overallProportion < proportionInterval.min || overallProportion > proportionInterval.max) {
-            return true;
-        }
-
-        // Filter by text (case-insensitive search in displayLabel)
-        if (
-            queryFilterValue.textFilter !== '' &&
-            !query.toLowerCase().includes(queryFilterValue.textFilter.toLowerCase())
-        ) {
-            return true;
-        }
-
-        return false;
+        return overallProportion < proportionInterval.min || overallProportion > proportionInterval.max;
     });
 
     // Remove filtered queries from the data view

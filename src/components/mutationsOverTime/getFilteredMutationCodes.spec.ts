@@ -1,13 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { getFilteredMutationCodes, type MutationFilter } from './getFilteredMutationCodes';
+import { getFilteredMutationCodes } from './getFilteredMutationCodes';
 import { type DeletionEntry, type SubstitutionEntry } from '../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../util/mutations';
-import {
-    buildAnnotationIndex,
-    getMutationAnnotationsProvider,
-    type MutationAnnotations,
-} from '../MutationAnnotationsContext';
 
 describe('getFilteredMutationCodes', () => {
     it('should filter by displayed segments', () => {
@@ -19,9 +14,6 @@ describe('getFilteredMutationCodes', () => {
             ],
             displayedMutationTypes: [],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([anotherSubstitution.code]);
@@ -36,9 +28,6 @@ describe('getFilteredMutationCodes', () => {
                 { type: 'deletion', checked: true, label: 'Deletion' },
             ],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([someDeletion.code]);
@@ -54,9 +43,6 @@ describe('getFilteredMutationCodes', () => {
             displayedSegments: [],
             displayedMutationTypes: [],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([anotherSubstitution.code, someDeletion.code]);
@@ -72,9 +58,6 @@ describe('getFilteredMutationCodes', () => {
             displayedSegments: [],
             displayedMutationTypes: [],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([anotherSubstitution.code, someDeletion.code]);
@@ -90,9 +73,6 @@ describe('getFilteredMutationCodes', () => {
             displayedSegments: [],
             displayedMutationTypes: [],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([someSubstitution.code, anotherSubstitution.code, someDeletion.code]);
@@ -108,68 +88,9 @@ describe('getFilteredMutationCodes', () => {
             displayedSegments: [],
             displayedMutationTypes: [],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([someSubstitution.code, anotherSubstitution.code, someDeletion.code]);
-    });
-
-    it('should filter by mutation filter text value', () => {
-        const result = getFilteredMutationCodes({
-            overallMutationData: [someSubstitutionEntry, anotherSubstitutionEntry, someDeletionEntry],
-            displayedSegments: [],
-            displayedMutationTypes: [],
-            proportionInterval,
-            mutationFilterValue: { textFilter: '23T', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
-        });
-
-        expect(result).to.deep.equal([someSubstitution.code]);
-    });
-
-    describe('should filter by annotation', () => {
-        const expectFilteredValue = (filterValue: MutationFilter, annotations: MutationAnnotations) => {
-            const annotationProvider = getMutationAnnotationsProvider(buildAnnotationIndex(annotations));
-
-            const result = getFilteredMutationCodes({
-                overallMutationData: [someSubstitutionEntry, anotherSubstitutionEntry, someDeletionEntry],
-                displayedSegments: [],
-                displayedMutationTypes: [],
-                proportionInterval,
-                mutationFilterValue: filterValue,
-                sequenceType: 'nucleotide',
-                annotationProvider,
-            });
-
-            expect(result).to.deep.equal([someSubstitution.code]);
-        };
-
-        it('with filter value in symbol', () => {
-            expectFilteredValue({ textFilter: '#', annotationNameFilter: new Set() }, [
-                { name: 'Annotation 1', description: 'Description 1', symbol: '#', nucleotideMutations: ['A123T'] },
-            ]);
-        });
-
-        it('with filter value in name', () => {
-            expectFilteredValue({ textFilter: 'Annota', annotationNameFilter: new Set() }, [
-                { name: 'Annotation 1 #', description: 'Description 1', symbol: '+', nucleotideMutations: ['A123T'] },
-            ]);
-        });
-
-        it('with filter value in description', () => {
-            expectFilteredValue({ textFilter: 'Descr', annotationNameFilter: new Set() }, [
-                { name: 'Annotation 1', description: 'Description 1', symbol: '#', nucleotideMutations: ['A123T'] },
-            ]);
-        });
-
-        it('with annotation name filter', () => {
-            expectFilteredValue({ textFilter: '', annotationNameFilter: new Set(['Annotation 1']) }, [
-                { name: 'Annotation 1', description: 'Description 1', symbol: '#', nucleotideMutations: ['A123T'] },
-            ]);
-        });
     });
 
     it('should not filter by individual time-series proportions below the overall filter', () => {
@@ -178,9 +99,6 @@ describe('getFilteredMutationCodes', () => {
             displayedSegments: [],
             displayedMutationTypes: [],
             proportionInterval,
-            mutationFilterValue: { textFilter: '', annotationNameFilter: new Set() },
-            sequenceType: 'nucleotide',
-            annotationProvider: () => [],
         });
 
         expect(result).to.deep.equal([someSubstitution.code, anotherSubstitution.code, someDeletion.code]);
