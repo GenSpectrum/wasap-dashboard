@@ -44,7 +44,6 @@ import { LoadingDisplay } from '../shared/loading-display';
 import { type DisplayedMutationType, MutationTypeSelector } from '../shared/mutation-type-selector';
 import { NoDataDisplay } from '../shared/no-data-display';
 import { ResizeContainer } from '../shared/resize-container';
-import { type DisplayedSegment, SegmentSelector, useDisplayedSegments } from '../shared/segment-selector';
 import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../shared/tanstackTable/pagination-context';
@@ -157,7 +156,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
 
-    const [displayedSegments, setDisplayedSegments] = useDisplayedSegments(originalComponentProps.sequenceType);
     const [displayedMutationTypes, setDisplayedMutationTypes] = useState<DisplayedMutationType[]>([
         { label: 'Substitutions', checked: true, type: 'substitution' },
         { label: 'Deletions', checked: true, type: 'deletion' },
@@ -170,11 +168,10 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         () =>
             getFilteredMutationCodes({
                 overallMutationData: overallMutations,
-                displayedSegments,
                 displayedMutationTypes,
                 proportionInterval,
             }),
-        [overallMutations, displayedSegments, displayedMutationTypes, proportionInterval],
+        [overallMutations, displayedMutationTypes, proportionInterval],
     );
 
     useEffect(() => {
@@ -287,8 +284,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
 
     const toolbar = (
         <Toolbar
-            displayedSegments={displayedSegments}
-            setDisplayedSegments={setDisplayedSegments}
             displayedMutationTypes={displayedMutationTypes}
             setDisplayedMutationTypes={setDisplayedMutationTypes}
             hideGaps={hideGaps}
@@ -305,8 +300,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
 };
 
 type ToolbarProps = {
-    displayedSegments: DisplayedSegment[];
-    setDisplayedSegments: (segments: DisplayedSegment[]) => void;
     displayedMutationTypes: DisplayedMutationType[];
     setDisplayedMutationTypes: (types: DisplayedMutationType[]) => void;
     hideGaps: boolean;
@@ -315,8 +308,6 @@ type ToolbarProps = {
 };
 
 const Toolbar: FC<ToolbarProps> = ({
-    displayedSegments,
-    setDisplayedSegments,
     displayedMutationTypes,
     setDisplayedMutationTypes,
     hideGaps,
@@ -325,11 +316,6 @@ const Toolbar: FC<ToolbarProps> = ({
 }) => {
     return (
         <>
-            <SegmentSelector
-                displayedSegments={displayedSegments}
-                setDisplayedSegments={setDisplayedSegments}
-                sequenceType={originalComponentProps.sequenceType}
-            />
             <MutationTypeSelector
                 setDisplayedMutationTypes={setDisplayedMutationTypes}
                 displayedMutationTypes={displayedMutationTypes}
@@ -353,9 +339,8 @@ const MutationsOverTimeInfo: FC<MutationsOverTimeInfoProps> = ({ originalCompone
             <InfoParagraph>
                 This presents the proportions of {originalComponentProps.sequenceType} mutations per{' '}
                 {originalComponentProps.granularity}. In the toolbar, you can configure which mutations are displayed by
-                selecting the mutation type (substitution or deletion), choosing specific segments/genes (if the
-                organism has multiple segments/genes), and applying a filter based on the proportion of the mutation's
-                occurrence over the entire time range.
+                selecting the mutation type (substitution or deletion) and applying a filter based on the proportion of
+                the mutation's occurrence over the entire time range.
             </InfoParagraph>
             <InfoParagraph>
                 The grid cells have a tooltip that will show more detailed information. It shows the count of samples
