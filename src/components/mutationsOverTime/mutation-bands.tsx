@@ -1,5 +1,5 @@
 import { getCoreRowModel } from '@tanstack/table-core';
-import { Fragment, useId, useMemo, type Dispatch, type SetStateAction } from 'react';
+import { Fragment, useId, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { type TemporalDataMap } from './MutationOverTimeData';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
@@ -65,6 +65,8 @@ export interface MutationBandsProps<F> {
     /** Total number of rows across all pages. */
     totalRows: number;
     onPageChange: Dispatch<SetStateAction<number>>;
+    /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
+    paginationEnd?: ReactNode;
 }
 
 export function MutationBands<F>({
@@ -80,6 +82,7 @@ export function MutationBands<F>({
     pageIndex,
     totalRows,
     onPageChange,
+    paginationEnd,
 }: MutationBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
@@ -189,7 +192,12 @@ export function MutationBands<F>({
                 </table>
             </div>
             <div className='mt-2'>
-                <Pagination table={paginationTable} pageSizes={pageSizes} totalRows={totalRows} />
+                <Pagination
+                    table={paginationTable}
+                    pageSizes={pageSizes}
+                    totalRows={totalRows}
+                    endContent={paginationEnd}
+                />
             </div>
         </div>
     );

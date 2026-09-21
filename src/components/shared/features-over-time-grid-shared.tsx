@@ -1,5 +1,5 @@
 import type { Table } from '@tanstack/table-core';
-import { type FC, type ReactElement } from 'react';
+import { type FC, type ReactElement, type ReactNode } from 'react';
 
 import { type ColorScale, getColorWithinScale, getTextColorForScale } from './color-scale-selector';
 import PortalTooltip from './portal-tooltip';
@@ -52,6 +52,8 @@ type FeaturesOverTimeGridDisplayProps<T> = {
     table: Table<T>;
     pageSizes: PageSizes;
     totalRows?: number;
+    /** Shown at the very right of the pagination row below the grid. */
+    paginationEnd?: ReactNode;
     loadingState?:
         | {
               isLoading: boolean;
@@ -71,6 +73,7 @@ export function FeaturesOverTimeGridDisplay<T>({
     pageSizes,
     loadingState,
     totalRows,
+    paginationEnd,
 }: FeaturesOverTimeGridDisplayProps<T>) {
     const displayedTotalRows = totalRows ?? table.getCoreRowModel().rows.length;
 
@@ -129,7 +132,12 @@ export function FeaturesOverTimeGridDisplay<T>({
                 </tbody>
             </table>
             <div className={'mt-2'}>
-                <Pagination table={table} pageSizes={pageSizes} totalRows={displayedTotalRows} />
+                <Pagination
+                    table={table}
+                    pageSizes={pageSizes}
+                    totalRows={displayedTotalRows}
+                    endContent={paginationEnd}
+                />
             </div>
         </div>
     );

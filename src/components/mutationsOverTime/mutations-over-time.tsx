@@ -232,6 +232,21 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         [originalComponentProps.sequenceType],
     );
 
+    // `getData` is typed to return a Promise so callers can fetch on demand; this data is
+    // already in memory, so the wrapper has nothing to await.
+    // eslint-disable-next-line @typescript-eslint/require-await
+    const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
+        pageData === null ? [] : getDownloadData(pageData);
+
+    const downloadButton = (
+        <CsvDownloadButton
+            className='btn btn-xs'
+            label='Download CSV'
+            getData={getDownloadDataAsync}
+            filename='mutations_over_time.csv'
+        />
+    );
+
     const getTab = (view: MutationsOverTimeView) => {
         switch (view) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- for extensibility
@@ -253,6 +268,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                             customColumns={originalComponentProps.customColumns}
                             featureRenderer={mutationRenderer}
                             tooltipPortalTarget={tooltipPortalTarget}
+                            paginationEnd={downloadButton}
                         />
                     ),
                 };
@@ -279,6 +295,7 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
                     pageIndex={pageIndex}
                     totalRows={totalFilteredRows}
                     onPageChange={setPageIndex}
+                    paginationEnd={downloadButton}
                 />
             ),
         },
@@ -298,7 +315,6 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
             originalComponentProps={originalComponentProps}
             setFilterValue={setMutationFilterValue}
             mutationFilterValue={mutationFilterValue}
-            downloadData={pageData}
         />
     );
 
@@ -322,8 +338,6 @@ type ToolbarProps = {
     originalComponentProps: MutationsOverTimeProps;
     mutationFilterValue: MutationFilter;
     setFilterValue: Dispatch<SetStateAction<MutationFilter>>;
-    /** The matrix as currently shown (this page, hide-gaps applied); `null` while loading. */
-    downloadData: MutationOverTimeDataMap | null;
 };
 
 const Toolbar: FC<ToolbarProps> = ({
@@ -339,14 +353,7 @@ const Toolbar: FC<ToolbarProps> = ({
     originalComponentProps,
     setFilterValue,
     mutationFilterValue,
-    downloadData,
 }) => {
-    // `getData` (below) is typed to return a Promise so callers can fetch on
-    // demand; this data is already in memory, so the wrapper has nothing to await.
-    // eslint-disable-next-line @typescript-eslint/require-await
-    const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
-        downloadData === null ? [] : getDownloadData(downloadData);
-
     return (
         <>
             <MutationsOverTimeMutationsFilter setFilterValue={setFilterValue} value={mutationFilterValue} />
@@ -363,11 +370,6 @@ const Toolbar: FC<ToolbarProps> = ({
             {activeTab === 'Grid' && (
                 <ColorScaleSelectorDropdown colorScale={colorScale} setColorScale={setColorScale} />
             )}
-            <CsvDownloadButton
-                className='btn btn-xs'
-                getData={getDownloadDataAsync}
-                filename='mutations_over_time.csv'
-            />
             <MutationsOverTimeInfo originalComponentProps={originalComponentProps} />
             <Fullscreen />
         </>
