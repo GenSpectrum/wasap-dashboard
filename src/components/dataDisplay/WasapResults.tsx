@@ -35,7 +35,7 @@ export function WasapResults({
     }
 
     return (
-        <div className='h-full space-y-4 pr-4'>
+        <div className='h-full space-y-4'>
             {children(page.data)}
             <WasapStats />
         </div>

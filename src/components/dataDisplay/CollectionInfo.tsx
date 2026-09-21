@@ -22,7 +22,7 @@ export const CollectionInfo: FC<CollectionInfoProps> = ({
     invalidVariants,
 }) => {
     return (
-        <div className='flex min-w-[180px] flex-col gap-4 border-2 border-gray-100 sm:flex-row'>
+        <div className='flex min-w-[180px] flex-col gap-4 border border-stone-300 bg-white sm:flex-row'>
             {/* Collection Link Stat */}
             <div className='stat content-start'>
                 <div className='stat-title'>{sourceLabel}</div>

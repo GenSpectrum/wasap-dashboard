@@ -4,7 +4,7 @@ import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
 import { useTotalReadCount } from '../../dataLayer/hooks/totalReadCount';
 
 export const WasapStats: FC = () => (
-    <div className='flex min-w-[180px] flex-col gap-4 border-2 border-gray-100 sm:flex-row'>
+    <div className='flex min-w-[180px] flex-col gap-4 border border-stone-300 bg-white sm:flex-row'>
         <TotalCount />
         <DateRange />
     </div>

@@ -10,7 +10,6 @@ import {
     type WasapModeFilter,
 } from '../../pageState/wasap/wasapAnalysisFilter';
 import { MeanProportionField } from '../inputs/MeanProportionField';
-import { Inset } from '../shared/Inset';
 
 type FilterSidebarProps<Analysis extends WasapAnalysisFilter> = {
     pageStateHandler: PageStateHandler<WasapModeFilter<Analysis>>;
@@ -55,11 +54,11 @@ function FilterSidebarWithDraft<Analysis extends WasapAnalysisFilter>({
     return (
         <div className='flex flex-col gap-4'>
             <SelectorHeadline>Mutation selection</SelectorHeadline>
-            <Inset className='p-2'>
+            <div>
                 {children(draft.analysis, draft.setAnalysis)}
                 <div className='h-2' />
                 <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
-            </Inset>
+            </div>
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}
                 newPageState={{ base: { ...base, meanProportion: draft.meanProportion }, analysis: draft.analysis }}

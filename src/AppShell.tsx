@@ -10,10 +10,10 @@ import { AppHeader } from './components/header/AppHeader';
  */
 export function AppShell() {
     return (
-        <div className='bg-base-100 flex min-h-full flex-col'>
+        <div className='flex min-h-full flex-col bg-stone-100'>
             <AppHeader />
 
-            <main className='mx-auto w-full max-w-[110rem] flex-1 px-6 py-6'>
+            <main className='mx-auto flex w-full max-w-[110rem] flex-1 flex-col'>
                 <Outlet />
             </main>
 

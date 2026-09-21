@@ -27,25 +27,35 @@ export function WasapModeTabs() {
     const search = datasetFilterSearchParams(parseDatasetFilter(searchParams, config), config).toString();
 
     return (
-        <div className='flex items-center justify-between gap-2'>
-            <nav aria-label='Analysis mode' className='tabs tabs-border'>
+        <div className='flex flex-wrap items-center gap-1'>
+            <nav aria-label='Analysis mode' className='flex flex-wrap items-center gap-1'>
                 {enabledAnalysisModes(config).map((mode) => (
                     <NavLink
                         key={mode}
                         to={{ pathname: modePath(config.path, mode), search }}
-                        className={({ isActive }) => `tab ${isActive ? 'tab-active' : ''}`}
+                        className={({ isActive }) =>
+                            `px-3 py-1 text-sm font-semibold ${isActive ? 'text-brand-700' : 'text-gray-700 hover:bg-stone-300'}`
+                        }
                     >
-                        {modeLabel(mode)}
+                        {({ isActive }) => (
+                            // The underline is on the text itself, not on the link: one on the link would run
+                            // across its padding as well, wider than the label it marks.
+                            <span
+                                className={`border-b-[3px] pb-px ${isActive ? 'border-brand-700' : 'border-transparent'}`}
+                            >
+                                {modeLabel(mode)}
+                            </span>
+                        )}
                     </NavLink>
                 ))}
             </nav>
             <Modal
-                buttonClassName='btn btn-xs'
+                buttonClassName='p-1 text-gray-700 hover:bg-stone-300'
                 buttonAriaLabel='Show information about the analysis modes'
                 modalContent={<ExplorationModeInfo />}
                 size='large'
             >
-                ?
+                <span className='iconify mdi--help-circle-outline text-xl' />
             </Modal>
         </div>
     );

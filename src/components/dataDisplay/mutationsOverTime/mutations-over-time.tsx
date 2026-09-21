@@ -194,7 +194,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     );
 
     return (
-        <div ref={wrapperRef} className='border-2 border-gray-100 p-2'>
+        <div ref={wrapperRef} className='border border-stone-300 bg-white p-2'>
             <FeatureBands
                 rowLabelHeader='Mutation'
                 data={pageData}
