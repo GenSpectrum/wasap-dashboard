@@ -1,10 +1,9 @@
 import { parseBaseFilter, setBaseFilterSearchParams } from './baseFilter';
 import { getDefaultMeanProportion } from './defaultMeanProportion';
 import { ManualPageStateHandler } from './handlers/ManualPageStateHandler';
+import { VariantExplorerPageStateHandler } from './handlers/VariantExplorerPageStateHandler';
 import {
     type ExcludeSetName,
-    type SignatureType,
-    type VariantTimeFrame,
     type WasapAnalysisFilter,
     type WasapAnalysisMode,
     type WasapFilter,
@@ -51,35 +50,8 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         switch (mode) {
             case 'manual':
                 throw Error('The manual mode is handled by its own handler.');
-            case 'variant': {
-                if (!this.config.variantAnalysisModeEnabled) {
-                    throw Error("The 'variant' analysis mode is not enabled.");
-                }
-                analysis = {
-                    mode,
-                    signatureType:
-                        (texts.signatureType as SignatureType | undefined) ??
-                        this.config.filterDefaults.variant.signatureType,
-                    sequenceType: providedSequenceType ?? this.config.filterDefaults.variant.sequenceType,
-                    variant: texts.variant ?? this.config.filterDefaults.variant.variant,
-                    minProportion: Number(texts.minProportion ?? this.config.filterDefaults.variant.minProportion),
-                    minCount: Number(texts.minCount ?? this.config.filterDefaults.variant.minCount),
-                    minJaccard: Number(texts.minJaccard ?? this.config.filterDefaults.variant.minJaccard),
-                    timeFrame:
-                        (texts.timeFrame as VariantTimeFrame | undefined) ??
-                        this.config.filterDefaults.variant.timeFrame,
-                    collectionId:
-                        texts.collectionId !== undefined
-                            ? Number(texts.collectionId)
-                            : this.config.filterDefaults.variant.collectionId,
-                    newMutationsOnly: texts.newMutationsOnly === 'true',
-                    includeSublineagesForJaccard:
-                        texts.includeSublineagesForJaccard !== undefined
-                            ? texts.includeSublineagesForJaccard !== 'false'
-                            : this.config.filterDefaults.variant.includeSublineagesForJaccard,
-                };
-                break;
-            }
+            case 'variant':
+                throw Error('The variant mode is handled by its own handler.');
             case 'resistance':
                 if (!this.config.resistanceAnalysisModeEnabled) {
                     throw Error("The 'resistance' analysis mode is not enabled.");
@@ -149,31 +121,6 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
         // analysis mode dependent settings
         setSearchFromString(search, 'analysisMode', analysis.mode);
         switch (analysis.mode) {
-            case 'variant':
-                setSearchFromString(search, 'sequenceType', analysis.sequenceType);
-                setSearchFromString(search, 'signatureType', analysis.signatureType);
-                if (analysis.signatureType === 'predefined') {
-                    setSearchFromString(
-                        search,
-                        'collectionId',
-                        analysis.collectionId !== undefined ? String(analysis.collectionId) : undefined,
-                    );
-                    if (analysis.newMutationsOnly) {
-                        setSearchFromString(search, 'newMutationsOnly', 'true');
-                    }
-                    if (analysis.includeSublineagesForJaccard === false) {
-                        setSearchFromString(search, 'includeSublineagesForJaccard', 'false');
-                    }
-                    setSearchFromString(search, 'minJaccard', String(analysis.minJaccard));
-                    setSearchFromString(search, 'timeFrame', analysis.timeFrame);
-                } else {
-                    setSearchFromString(search, 'variant', analysis.variant);
-                    setSearchFromString(search, 'minProportion', String(analysis.minProportion));
-                    setSearchFromString(search, 'minCount', String(analysis.minCount));
-                    setSearchFromString(search, 'minJaccard', String(analysis.minJaccard));
-                    setSearchFromString(search, 'timeFrame', analysis.timeFrame);
-                }
-                break;
             case 'resistance':
                 setSearchFromString(search, 'resistanceSet', analysis.resistanceSet);
                 break;
@@ -215,6 +162,11 @@ export class WasapPageStateHandler implements PageStateHandler<WasapFilter> {
                     throw Error("The 'manual' analysis mode is not enabled.");
                 }
                 return new ManualPageStateHandler(this.config);
+            case 'variant':
+                if (!isModeEnabled(this.config, 'variant')) {
+                    throw Error("The 'variant' analysis mode is not enabled.");
+                }
+                return new VariantExplorerPageStateHandler(this.config);
             default:
                 return undefined;
         }
