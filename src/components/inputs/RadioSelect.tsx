@@ -21,7 +21,7 @@ export function RadioSelect<T extends string>({
     return (
         <>
             <LabeledField label={label}>
-                <div className='mb-2 flex gap-2 text-sm'>
+                <div className='flex gap-2 text-sm'>
                     {options.map((opt) => {
                         const isChecked = value === opt.value;
                         return (

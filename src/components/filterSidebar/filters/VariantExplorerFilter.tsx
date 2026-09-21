@@ -70,7 +70,7 @@ export function VariantExplorerFilter({
                 />
             )}
             {pageState.signatureType === 'computed' && (
-                <Inset className='mt-4 p-2'>
+                <Inset className='p-2'>
                     <SelectorHeadline info={<DefineClinicalSignatureInfo />}>
                         Define Clinical Signature
                     </SelectorHeadline>
@@ -158,7 +158,7 @@ function PredefinedSignature({
     const selectedCollection = collections.find((c) => c.id === pageState.collectionId) ?? null;
 
     return (
-        <Inset className='mt-4 p-2'>
+        <Inset className='p-2'>
             <LabeledField label='Variant'>
                 <CollectionCombobox
                     collections={collections}

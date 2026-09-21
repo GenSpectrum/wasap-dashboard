@@ -46,13 +46,14 @@ export function UntrackedFilter({
                     <option value='custom'>custom</option>
                 </select>
             </LabeledField>
+            {/* The list of variants (-mt-4) is about the select above, so it stays close to it instead of being a field of its own. */}
             {pageState.excludeSet === 'predefined' ? (
                 isPending ? (
                     <Loading />
                 ) : isError ? (
                     <span>Failed to load variant list. Please try again or use custom variant list.</span>
                 ) : (
-                    <div className='px-1 py-2 text-sm'>
+                    <div className='-mt-4 px-1 py-2 text-sm'>
                         {defaultLineages.join(', ')}{' '}
                         <button
                             className='cursor-pointer underline'
@@ -70,7 +71,6 @@ export function UntrackedFilter({
                 )
             ) : (
                 <>
-                    <div className='h-2' />
                     <LabeledField label='Custom variant list'>
                         <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
                             <LineageFilter

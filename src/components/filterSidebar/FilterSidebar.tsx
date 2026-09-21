@@ -51,12 +51,11 @@ function FilterSidebarWithDraft<Analysis extends WasapAnalysisFilter>({
     const draft = useDraftFilter(analysis, base.meanProportion);
 
     return (
-        <div className='flex flex-col gap-4'>
-            <div>
-                {children(draft.analysis, draft.setAnalysis)}
-                <div className='h-2' />
-                <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
-            </div>
+        // The filters of the modes return their fields as a fragment, so they are all direct children of
+        // this column and get the same gap, without margins of their own.
+        <div className='flex flex-col gap-6'>
+            {children(draft.analysis, draft.setAnalysis)}
+            <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}
                 newPageState={{ base: { ...base, meanProportion: draft.meanProportion }, analysis: draft.analysis }}
