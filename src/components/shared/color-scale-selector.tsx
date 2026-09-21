@@ -69,15 +69,3 @@ export const getColorWithinScale = (value: number | undefined, colorScale: Color
 
     return singleGraphColorRGBByName(colorScale.color, alpha);
 };
-
-export const getTextColorForScale = (value: number | undefined, colorScale: ColorScale) => {
-    if (value === undefined || colorScale.min === colorScale.max) {
-        return 'black';
-    }
-
-    const colorRange = colorScale.max - colorScale.min;
-
-    const alpha = (value - colorScale.min) / colorRange;
-
-    return alpha <= 0.5 ? 'black' : 'white';
-};

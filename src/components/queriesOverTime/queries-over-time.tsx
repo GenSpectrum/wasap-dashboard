@@ -14,8 +14,7 @@ import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedL
 import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
-import { FeatureBands } from '../shared/feature-bands';
-import { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
+import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../shared/feature-bands';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
