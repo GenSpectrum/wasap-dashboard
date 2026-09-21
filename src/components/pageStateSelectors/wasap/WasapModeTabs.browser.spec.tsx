@@ -1,29 +1,30 @@
-import { MemoryRouter } from 'react-router-dom';
-import { describe, expect } from 'vitest';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { beforeEach, describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { WasapModeTabs } from './WasapModeTabs';
 import { it } from '../../../../test-extend';
-import type { WasapBaseFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { setAppConfigForTesting } from '../../../config/appConfig';
 import { testConfig, testConfigWithCollection } from '../../../pageState/wasap/wasapTestConfig';
 
-const base: WasapBaseFilter = {
-    locationName: 'Basel',
-    samplingDate: { label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' },
-    granularity: 'week',
-    excludeEmpty: false,
-    meanProportion: { lower: 0.3, upper: 0.6 },
-};
+const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false';
 
-function renderTabs(entry = '/wastewater/covid/manual', config = testConfig) {
+function renderTabs(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
     return render(
         <MemoryRouter initialEntries={[entry]}>
-            <WasapModeTabs config={config} dataset={base} />
+            <Routes>
+                <Route path='/wastewater/:organismPath/*' element={<WasapModeTabs />} />
+                <Route path='/' element={<WasapModeTabs />} />
+            </Routes>
         </MemoryRouter>,
     );
 }
 
 describe('WasapModeTabs', () => {
+    beforeEach(() => {
+        setAppConfigForTesting({ organisms: [testConfig] });
+    });
+
     it('has a tab for each enabled mode', async () => {
         const { getByRole } = renderTabs();
 
@@ -37,27 +38,40 @@ describe('WasapModeTabs', () => {
     });
 
     it('has a tab for a mode that is enabled by the config only', async () => {
-        const { getByRole } = renderTabs('/wastewater/covid/manual', testConfigWithCollection);
+        setAppConfigForTesting({ organisms: [testConfigWithCollection] });
+        const { getByRole } = renderTabs();
 
         await expect.element(getByRole('link', { name: 'CovSpectrum Collection' })).toBeVisible();
     });
 
     it('links to the page of the mode, with the dataset filter but without the mean proportion', async () => {
-        const { getByRole } = renderTabs();
+        const { getByRole } = renderTabs(
+            `/wastewater/covid/manual?${DATASET_SEARCH}&meanProportionLower=0.3&meanProportionUpper=0.6&sequenceType=amino+acid`,
+        );
 
         const href = getByRole('link', { name: 'Variant Explorer' }).element().getAttribute('href');
 
-        expect(href).toBe(
-            '/wastewater/covid/variantExplorer?locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false',
-        );
+        expect(href).toBe(`/wastewater/covid/variantExplorer?${DATASET_SEARCH}`);
     });
 
     it('marks the tab of the current mode', async () => {
-        const { getByRole } = renderTabs('/wastewater/covid/resistance');
+        const { getByRole } = renderTabs(`/wastewater/covid/resistance?${DATASET_SEARCH}`);
 
         await expect
             .element(getByRole('link', { name: 'Resistance Mutations' }))
             .toHaveAttribute('aria-current', 'page');
         await expect.element(getByRole('link', { name: 'Manual' })).not.toHaveAttribute('aria-current');
+    });
+
+    it('has no tabs where no organism is open', async () => {
+        const { getByRole } = renderTabs('/');
+
+        expect(getByRole('navigation', { name: 'Analysis mode' }).elements()).toHaveLength(0);
+    });
+
+    it('has no tabs for an organism that does not exist', async () => {
+        const { getByRole } = renderTabs('/wastewater/nonsense/manual');
+
+        expect(getByRole('navigation', { name: 'Analysis mode' }).elements()).toHaveLength(0);
     });
 });

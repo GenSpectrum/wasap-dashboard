@@ -1,19 +1,30 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams, useSearchParams } from 'react-router-dom';
 
 import { ExplorationModeInfo } from './InfoBlocks';
-import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
-import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
-import { type WasapDatasetFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { enabledAnalysisModes } from '../../../config/wasapPageConfig';
+import { resolveWasapConfig } from '../../../config/wastewaterOrganisms';
+import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/wasap/baseFilter';
 import { modeLabel, modePath } from '../../../pageState/wasap/wasapModes';
 import { Modal } from '../../shared/modal';
 
 /**
- * The menu to pick the analysis mode, which is a page each. Picking a mode goes
- * there right away, taking the dataset filter along (but not the mean
- * proportion, which has a different default in each mode).
+ * The menu to pick the analysis mode of the organism whose page is open, which is a page
+ * each. Picking a mode goes there right away, taking the dataset filter along (but not the
+ * mean proportion, which has a different default in each mode).
+ *
+ * It is in the header, which sits above the routes, so it finds the organism and the dataset
+ * filter in the URL itself. There are no tabs where no organism is open, like on the landing page.
  */
-export function WasapModeTabs({ config, dataset }: { config: WasapPageConfig; dataset: WasapDatasetFilter }) {
-    const search = datasetFilterSearchParams(dataset, config).toString();
+export function WasapModeTabs() {
+    const { organismPath } = useParams();
+    const [searchParams] = useSearchParams();
+    const config = resolveWasapConfig(organismPath);
+
+    if (config === undefined) {
+        return null;
+    }
+
+    const search = datasetFilterSearchParams(parseDatasetFilter(searchParams, config), config).toString();
 
     return (
         <div className='flex items-center justify-between gap-2'>

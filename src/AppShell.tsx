@@ -2,8 +2,8 @@ import { Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { OrganismModeTabs } from './components/OrganismModeTabs';
 import { OrganismSelect } from './components/OrganismSelect';
+import { WasapModeTabs } from './components/pageStateSelectors/wasap/WasapModeTabs';
 
 /**
  * The frame every route sits in: a minimal header with the analysis mode tabs
@@ -16,7 +16,7 @@ export function AppShell() {
             <header className='border-base-300 border-b'>
                 <div className='mx-auto flex w-full max-w-[110rem] flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3'>
                     <span className='text-lg leading-tight font-semibold'>W-ASAP — Wastewater Dashboards</span>
-                    <OrganismModeTabs />
+                    <WasapModeTabs />
                     <div className='ml-auto'>
                         <OrganismSelect />
                     </div>
