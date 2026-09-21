@@ -133,18 +133,19 @@ export function MutationBands<F>({
                     header, a band per row), instead of one table column per bucket:
                     browsers disagree on how to size dozens of empty auto-width columns
                     (Firefox gives each one a sliver and leaves the rest of the table
-                    unused). Fixed layout with explicit widths for the label and custom
-                    columns leaves the rest of the table to the date column. */}
-                <table className='w-full' style={{ tableLayout: 'fixed' }}>
+                    unused). The label and custom columns are as wide as their content
+                    (`w-px` + no wrapping), and the date column, being `w-full`, gets
+                    all the rest. */}
+                <table className='w-full'>
                     <thead>
                         <tr>
-                            <th className='w-32'>{rowLabelHeader}</th>
+                            <th className='w-px px-2 whitespace-nowrap'>{rowLabelHeader}</th>
                             {customColumns.map((customColumn) => (
-                                <th key={customColumn.header} className='w-24'>
+                                <th key={customColumn.header} className='w-px px-2 whitespace-nowrap'>
                                     {customColumn.header}
                                 </th>
                             ))}
-                            <th className='p-0'>
+                            <th className='w-full p-0'>
                                 {/* One equally wide slot per bucket, like the band's own
                                     hover columns, so a label sits above its bucket. */}
                                 <div className='flex'>
@@ -179,11 +180,11 @@ export function MutationBands<F>({
                               ))
                             : features.map((feature, rowIndex) => (
                                   <tr key={featureRenderer.asString(feature)}>
-                                      <th className='font-medium whitespace-nowrap'>
+                                      <th className='px-2 font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
                                       {customColumns.map((customColumn) => (
-                                          <td key={customColumn.header} className='text-center'>
+                                          <td key={customColumn.header} className='px-2 text-center whitespace-nowrap'>
                                               {customColumn.values[featureRenderer.asString(feature)]}
                                           </td>
                                       ))}
