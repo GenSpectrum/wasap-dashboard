@@ -101,3 +101,17 @@ export const testConfigWithCollection = {
         },
     },
 } satisfies WasapPageConfig;
+
+/** Like `testConfig`, with the GenSpectrum collection mode enabled as well. */
+export const testConfigWithGenSpectrumCollection = {
+    ...testConfig,
+    collectionAnalysisModeEnabled: true,
+    genSpectrumCollectionLinkOut: 'https://genspectrum.org/collections/covid/{{id}}',
+    filterDefaults: {
+        ...testConfig.filterDefaults,
+        collection: {
+            mode: 'collection',
+            collectionId: undefined,
+        },
+    },
+} satisfies WasapPageConfig;

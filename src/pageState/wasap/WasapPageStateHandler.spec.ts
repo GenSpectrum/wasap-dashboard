@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import { WasapPageStateHandler } from './WasapPageStateHandler';
-import { type WasapCovSpectrumCollectionFilter, type WasapResistanceFilter } from './wasapAnalysisFilter';
-import { testConfig, testConfigWithCollection } from './wasapTestConfig';
+import { type WasapResistanceFilter } from './wasapAnalysisFilter';
+import { testConfig } from './wasapTestConfig';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 
 const config: WasapPageConfig = testConfig;
-const configWithCollection: WasapPageConfig = testConfigWithCollection;
 
 describe('WasapPageStateHandler', () => {
     const handler = new WasapPageStateHandler(config);
@@ -53,81 +52,22 @@ describe('WasapPageStateHandler', () => {
         });
     });
 
-    describe('collection mode', () => {
-        const handlerWithCollection = new WasapPageStateHandler(configWithCollection);
+    describe('analysis mode', () => {
+        it('uses the handler of the mode in the URL and writes the mode back', () => {
+            const filter = handler.parsePageStateFromUrl(
+                new URL('http://example.com/wastewater/covid?analysisMode=untracked&excludeSet=custom').searchParams,
+            );
 
-        it('throws error when feature is disabled', () => {
+            expect(filter.analysis.mode).toBe('untracked');
+            expect(handler.toUrl(filter)).toContain('analysisMode=untracked&');
+        });
+
+        it('throws when the mode in the URL is not enabled', () => {
             const url = '/wastewater/covid?analysisMode=covSpectrumCollection&collectionId=123&';
+
             expect(() => handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams)).toThrow(
                 "The 'covSpectrumCollection' analysis mode is not enabled.",
             );
-        });
-
-        it('parses and encodes collection filter with collectionId', () => {
-            const url =
-                '/wastewater/covid?' +
-                'locationName=Z%C3%BCrich+%28ZH%29&' +
-                'samplingDate=2024-01-01--2024-12-31&' +
-                'granularity=day&' +
-                'analysisMode=covSpectrumCollection&' +
-                'collectionId=123&';
-            const filter = handlerWithCollection.parsePageStateFromUrl(
-                new URL(`http://example.com${url}`).searchParams,
-            );
-
-            expect(filter.analysis.mode).toBe('covSpectrumCollection');
-            const analysis = filter.analysis as WasapCovSpectrumCollectionFilter;
-            expect(analysis.collectionId).toBe(123);
-
-            const newUrl = handlerWithCollection.toUrl(filter);
-            expect(newUrl).toBe(url);
-        });
-
-        it('parses collection filter without collectionId', () => {
-            const url = '/wastewater/covid?analysisMode=covSpectrumCollection&';
-            const filter = handlerWithCollection.parsePageStateFromUrl(
-                new URL(`http://example.com${url}`).searchParams,
-            );
-
-            expect(filter.analysis.mode).toBe('covSpectrumCollection');
-            const analysis = filter.analysis as WasapCovSpectrumCollectionFilter;
-            expect(analysis.collectionId).toBeUndefined();
-        });
-
-        it('encodes collection filter omits undefined collectionId', () => {
-            const url = '/wastewater/covid?analysisMode=covSpectrumCollection&';
-            const filter = handlerWithCollection.parsePageStateFromUrl(
-                new URL(`http://example.com${url}`).searchParams,
-            );
-
-            const encodedUrl = handlerWithCollection.toUrl(filter);
-            expect(encodedUrl).not.toContain('collectionId');
-        });
-
-        it('converts collectionId string to number', () => {
-            const url = '/wastewater/covid?analysisMode=covSpectrumCollection&collectionId=456&';
-            const filter = handlerWithCollection.parsePageStateFromUrl(
-                new URL(`http://example.com${url}`).searchParams,
-            );
-
-            const analysis = filter.analysis as WasapCovSpectrumCollectionFilter;
-            expect(typeof analysis.collectionId).toBe('number');
-            expect(analysis.collectionId).toBe(456);
-        });
-
-        it('collection mode round-trip preserves collectionId', () => {
-            const url = '/wastewater/covid?analysisMode=covSpectrumCollection&collectionId=789&';
-            const filter1 = handlerWithCollection.parsePageStateFromUrl(
-                new URL(`http://example.com${url}`).searchParams,
-            );
-            const url2 = handlerWithCollection.toUrl(filter1);
-            const filter2 = handlerWithCollection.parsePageStateFromUrl(
-                new URL(`http://example.com${url2}`).searchParams,
-            );
-
-            const analysis1 = filter1.analysis as WasapCovSpectrumCollectionFilter;
-            const analysis2 = filter2.analysis as WasapCovSpectrumCollectionFilter;
-            expect(analysis2.collectionId).toBe(analysis1.collectionId);
         });
     });
 });
