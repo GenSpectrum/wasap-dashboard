@@ -9,7 +9,7 @@ import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
 import { type WasapAnalysisFilter, type WasapModeFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 
-const logger = getClientLogger('WasapPage');
+const logger = getClientLogger('useModePage');
 
 /**
  * What the page of an analysis mode needs: its state from the URL, and the data
