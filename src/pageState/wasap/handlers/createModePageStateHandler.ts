@@ -4,7 +4,7 @@ import { ManualPageStateHandler } from './ManualPageStateHandler';
 import { ResistancePageStateHandler } from './ResistancePageStateHandler';
 import { UntrackedPageStateHandler } from './UntrackedPageStateHandler';
 import { VariantExplorerPageStateHandler } from './VariantExplorerPageStateHandler';
-import { isModeEnabled, type WasapPageConfig } from '../../../config/wasapPageConfig';
+import { assertModeEnabled, type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { type PageStateHandler } from '../../PageStateHandler';
 import { type WasapAnalysisMode, type WasapFilter } from '../wasapAnalysisFilter';
 
@@ -18,23 +18,21 @@ export function createModePageStateHandler(
 ): PageStateHandler<WasapFilter> {
     switch (mode) {
         case 'manual':
-            return new ManualPageStateHandler(narrow(config, 'manual'));
+            return new ManualPageStateHandler(narrowed(config, 'manual'));
         case 'variant':
-            return new VariantExplorerPageStateHandler(narrow(config, 'variant'));
+            return new VariantExplorerPageStateHandler(narrowed(config, 'variant'));
         case 'resistance':
-            return new ResistancePageStateHandler(narrow(config, 'resistance'));
+            return new ResistancePageStateHandler(narrowed(config, 'resistance'));
         case 'untracked':
-            return new UntrackedPageStateHandler(narrow(config, 'untracked'));
+            return new UntrackedPageStateHandler(narrowed(config, 'untracked'));
         case 'covSpectrumCollection':
-            return new CovSpectrumCollectionPageStateHandler(narrow(config, 'covSpectrumCollection'));
+            return new CovSpectrumCollectionPageStateHandler(narrowed(config, 'covSpectrumCollection'));
         case 'collection':
-            return new CollectionPageStateHandler(narrow(config, 'collection'));
+            return new CollectionPageStateHandler(narrowed(config, 'collection'));
     }
 }
 
-function narrow<Mode extends WasapAnalysisMode>(config: WasapPageConfig, mode: Mode) {
-    if (!isModeEnabled(config, mode)) {
-        throw Error(`The '${mode}' analysis mode is not enabled.`);
-    }
+function narrowed<Mode extends WasapAnalysisMode>(config: WasapPageConfig, mode: Mode) {
+    assertModeEnabled(config, mode);
     return config;
 }

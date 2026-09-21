@@ -5,7 +5,7 @@ import { getClientLogger } from '../clientLogger';
 import { DefaultModeRedirect, EnabledModeRoute } from './wasapModeRoutes';
 import { NoDataDisplay } from '../components/shared/no-data-display';
 import { WasapLayout, useWasapLayoutContext } from '../components/views/wasap/WasapLayout';
-import { WasapPage } from '../components/views/wasap/WasapPage';
+import { WasapModePage } from '../components/views/wasap/WasapModePage';
 import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
 import { getAppConfig } from '../config/appConfig';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
@@ -76,7 +76,7 @@ export function WasapModeRoute() {
 
     return (
         <EnabledModeRoute config={config} segment={segment}>
-            {(mode) => <WasapPage config={config} mode={mode} />}
+            {(mode) => <WasapModePage config={config} mode={mode} />}
         </EnabledModeRoute>
     );
 }

@@ -14,13 +14,11 @@ import type { PageStateHandler } from './PageStateHandler';
  * derived from the URL rather than held in local `useState` — back/forward and
  * shared links then need no extra wiring.
  */
-export function usePageState<StateHandler extends PageStateHandler<object>>(pageStateHandler: StateHandler) {
-    type PageState = StateHandler extends PageStateHandler<infer PS> ? PS : never;
-
+export function usePageState<PageState extends object>(pageStateHandler: PageStateHandler<PageState>) {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const pageState = useMemo(
-        () => pageStateHandler.parsePageStateFromUrl(searchParams) as PageState,
+        () => pageStateHandler.parsePageStateFromUrl(searchParams),
         [pageStateHandler, searchParams],
     );
 
@@ -28,7 +26,7 @@ export function usePageState<StateHandler extends PageStateHandler<object>>(page
         (newPageStateOrUpdater) => {
             const newPageState =
                 typeof newPageStateOrUpdater === 'function'
-                    ? newPageStateOrUpdater(pageStateHandler.parsePageStateFromUrl(searchParams) as PageState)
+                    ? newPageStateOrUpdater(pageStateHandler.parsePageStateFromUrl(searchParams))
                     : newPageStateOrUpdater;
             setSearchParams(pageStateHandler.toSearchParams(newPageState));
         },
