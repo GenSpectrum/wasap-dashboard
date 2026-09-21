@@ -1,4 +1,4 @@
-import { type FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
 import { getFilteredQueryOverTimeData } from './getFilteredQueriesOverTimeData';
@@ -7,25 +7,22 @@ import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-to
 import { useQueriesOverTime } from '../../dataLayer/hooks/queriesOverTime';
 import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../dataLayer/queries';
 import { type ProportionValue, getProportion } from '../../query/queryMutationsOverTime';
-import { temporalGranularitySchema, views } from '../../types/dashboardComponents';
-import { type Map2DContents } from '../../util/map2d';
+import { temporalGranularitySchema } from '../../types/dashboardComponents';
+import { type Map2DContents, Map2dView } from '../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
+import { MutationBands } from '../mutationsOverTime/mutation-bands';
 import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
-import FeaturesOverTimeGrid, { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
+import { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import PortalTooltip from '../shared/portal-tooltip';
 import { ResizeContainer } from '../shared/resize-container';
-import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
-import { PageSizeContextProvider } from '../shared/tanstackTable/pagination-context';
+import { PageSizeContextProvider, usePageSizeContext } from '../shared/tanstackTable/pagination-context';
 import { ViewSettingsDropdown } from '../shared/view-settings-dropdown';
-
-const queriesOverTimeViewSchema = z.literal(views.grid);
-export type QueriesOverTimeView = z.infer<typeof queriesOverTimeViewSchema>;
 
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
@@ -57,7 +54,6 @@ const queriesOverTimeSchema = z.object({
                 });
             }
         }),
-    views: z.array(queriesOverTimeViewSchema),
     granularity: temporalGranularitySchema,
     /** Only queries whose mean proportion over the time range lies within this interval are shown. */
     meanProportionInterval: meanProportionIntervalSchema,
@@ -95,22 +91,28 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
         return <NoDataDisplay />;
     }
 
-    return <QueriesOverTimeTabs queryOverTimeData={queryOverTimeData} originalComponentProps={componentProps} />;
+    return (
+        <PageSizeContextProvider pageSizes={componentProps.pageSizes}>
+            <QueriesOverTimeWithData queryOverTimeData={queryOverTimeData} originalComponentProps={componentProps} />
+        </PageSizeContextProvider>
+    );
 };
 
-type QueriesOverTimeTabsProps = {
+type QueriesOverTimeWithDataProps = {
     queryOverTimeData: Map2DContents<string, Temporal, ProportionValue>;
     originalComponentProps: QueriesOverTimeProps;
 };
 
-const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, originalComponentProps }) => {
-    const tabsRef = useDispatchFinishedLoadingEvent();
-    const tooltipPortalTargetRef = useRef<HTMLDivElement>(null);
+const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTimeData, originalComponentProps }) => {
+    const wrapperRef = useDispatchFinishedLoadingEvent();
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
 
     useLayoutEffect(() => {
-        setTooltipPortalTarget(tooltipPortalTargetRef.current);
-    }, []);
+        setTooltipPortalTarget(wrapperRef.current);
+    }, [wrapperRef]);
+
+    const { pageSize } = usePageSizeContext();
+    const [pageIndex, setPageIndex] = useState(0);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
@@ -123,6 +125,8 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
             hideGaps,
         });
     }, [queryOverTimeData, proportionInterval, hideGaps]);
+
+    useEffect(() => setPageIndex(0), [filteredData]);
 
     const queryLookupMap = useMemo(
         () => new Map(originalComponentProps.queries.map((query) => [query.displayLabel, query])),
@@ -170,35 +174,35 @@ const QueriesOverTimeTabs: FC<QueriesOverTimeTabsProps> = ({ queryOverTimeData, 
         </div>
     );
 
-    const getTab = (view: QueriesOverTimeView) => {
-        switch (view) {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- for extensibility
-            case 'grid':
-                return {
-                    title: 'Grid',
-                    content: (
-                        <FeaturesOverTimeGrid
-                            rowLabelHeader='Query'
-                            data={filteredData}
-                            colorScale={colorScale}
-                            pageSizes={originalComponentProps.pageSizes}
-                            customColumns={originalComponentProps.customColumns}
-                            featureRenderer={queryRenderer}
-                            tooltipPortalTarget={tooltipPortalTarget}
-                            paginationEnd={paginationEnd}
-                        />
-                    ),
-                };
-        }
-    };
-
-    const tabs = originalComponentProps.views.map((view) => getTab(view));
+    const rowKeys = filteredData.getFirstAxisKeys();
+    const pageData = useMemo(() => {
+        const page = new Map2dView(filteredData);
+        filteredData.getFirstAxisKeys().forEach((query, index) => {
+            if (index < pageIndex * pageSize || index >= (pageIndex + 1) * pageSize) {
+                page.deleteRow(query);
+            }
+        });
+        return page;
+    }, [filteredData, pageIndex, pageSize]);
 
     return (
-        <div ref={tooltipPortalTargetRef}>
-            <PageSizeContextProvider pageSizes={originalComponentProps.pageSizes}>
-                <Tabs ref={tabsRef} tabs={tabs} />
-            </PageSizeContextProvider>
+        <div ref={wrapperRef} className='rounded-md border-2 border-gray-100 p-2'>
+            <MutationBands
+                rowLabelHeader='Query'
+                data={pageData}
+                isLoading={false}
+                loadingRowLabels={[]}
+                requestedDateRanges={filteredData.getSecondAxisKeys()}
+                colorScale={colorScale}
+                featureRenderer={queryRenderer}
+                tooltipPortalTarget={tooltipPortalTarget}
+                pageSizes={originalComponentProps.pageSizes}
+                pageIndex={pageIndex}
+                totalRows={rowKeys.length}
+                onPageChange={setPageIndex}
+                paginationEnd={paginationEnd}
+                customColumns={originalComponentProps.customColumns}
+            />
         </div>
     );
 };
