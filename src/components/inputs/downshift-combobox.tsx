@@ -258,7 +258,7 @@ export function DownshiftMultiCombobox<Item>({
                     {selectedItems.map((selectedItem, index) => (
                         <span
                             key={`${itemToString(selectedItem)}-${index}`}
-                            className='inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-black'
+                            className='bg-brand-100 inline-flex items-center gap-1 rounded px-2 py-0.5 text-black'
                         >
                             {formatSelectedItem ? formatSelectedItem(selectedItem) : itemToString(selectedItem)}
                             <button
@@ -379,7 +379,7 @@ function DropdownMenu<Item>({
             {items.length > 0 ? (
                 items.map((item, index) => (
                     <li
-                        className={`${highlightedIndex === index ? 'bg-blue-300' : ''} ${isItemSelected(item) ? 'font-bold' : ''} cursor-pointer px-3 py-2 shadow-xs`}
+                        className={`${highlightedIndex === index ? 'bg-brand-200' : ''} ${isItemSelected(item) ? 'font-bold' : ''} cursor-pointer px-3 py-2 shadow-xs`}
                         key={itemToString(item)}
                         {...getItemProps({ item, index })}
                     >

@@ -29,7 +29,7 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
     rangeMin = 0,
     rangeMax = 100,
     step = 0.1,
-    rangeColor = '#387bbe',
+    rangeColor = 'var(--color-primary)',
 }) => {
     const sliderColor = '#C6C6C6';
 

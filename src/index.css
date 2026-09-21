@@ -37,6 +37,30 @@
     --color-wineMuted: rgba(136, 34, 85, 0.3);
     --color-purpleMuted: rgba(170, 68, 153, 0.3);
     --color-limeMuted: rgba(136, 204, 34, 0.3);
+
+    /* Brand accent for the controls, derived from #21925D (sea green): 700 is the
+       exact brand hex, 50-600 are that hue mixed toward white, 800-900 toward black.
+       Deliberately a different hue from the indigo of the plotted data, so that
+       controls and data read as two separate systems. */
+    --color-brand-50: #f4faf7;
+    --color-brand-100: #e4f2ec;
+    --color-brand-200: #c1e0d2;
+    --color-brand-300: #9bceb6;
+    --color-brand-400: #64b38e;
+    --color-brand-500: #42a275;
+    --color-brand-600: #2e9967;
+    --color-brand-700: #21925d;
+    --color-brand-800: #1c7c4f;
+    --color-brand-900: #16633f;
+}
+
+/* Unlayered so it beats daisyUI's own (layered) light-theme defaults:
+   --color-primary drives btn-primary / accent-primary / border-primary /
+   text-primary everywhere (Apply filters button, checkboxes, toggles,
+   radio selects, links). */
+:root {
+    --color-primary: var(--color-brand-700);
+    --color-primary-content: var(--color-brand-50);
 }
 
 html,

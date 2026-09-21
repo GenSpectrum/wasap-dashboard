@@ -265,7 +265,7 @@ function MutationFilterInner({
             >
                 {items.map((item, index) => (
                     <li
-                        className={`${highlightedIndex === index && 'bg-blue-300'} ${selectedItem === item && 'font-bold'} flex cursor-pointer flex-col px-3 py-2 shadow-sm`}
+                        className={`${highlightedIndex === index && 'bg-brand-200'} ${selectedItem === item && 'font-bold'} flex cursor-pointer flex-col px-3 py-2 shadow-sm`}
                         key={`${item.value.code}${index}`}
                         {...getItemProps({ item, index })}
                         style={{

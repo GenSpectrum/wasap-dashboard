@@ -67,7 +67,7 @@ export const ModalDialog: FC<ModalProps> = ({ children, modalRef, size }) => {
                 <div className={'flex flex-col'}>{children}</div>
                 <div className='modal-action'>
                     <form method='dialog'>
-                        <button className={'float-right mr-2 text-sm underline hover:text-blue-700'}>Close</button>
+                        <button className={'hover:text-brand-700 float-right mr-2 text-sm underline'}>Close</button>
                     </form>
                 </div>
             </div>
