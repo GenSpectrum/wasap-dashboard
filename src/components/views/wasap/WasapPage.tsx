@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { type Dispatch, type FC, type SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { ClinicalSequenceCountStat } from './components/ClinicalSequenceCountStat';
 import { CollectionInfo } from './components/CollectionInfo';
@@ -13,9 +14,17 @@ import { siloSchema } from '../../../config/siloSchema';
 import type { WasapPageConfig } from '../../../config/wasapPageConfig';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import { type SiloReadFilter } from '../../../dataLayer/queries';
+import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
-import { WasapPageStateHandler } from '../../../pageState/wasap/WasapPageStateHandler';
-import type { WasapAnalysisFilter, WasapBaseFilter, WasapFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { carryOverBaseFilterSearchParams } from '../../../pageState/wasap/baseFilter';
+import { createModePageStateHandler } from '../../../pageState/wasap/handlers/createModePageStateHandler';
+import type {
+    WasapAnalysisFilter,
+    WasapAnalysisMode,
+    WasapBaseFilter,
+    WasapFilter,
+} from '../../../pageState/wasap/wasapAnalysisFilter';
+import { modePath } from '../../../pageState/wasap/wasapModes';
 import { Loading } from '../../../util/Loading';
 import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
@@ -28,11 +37,13 @@ const logger = getClientLogger('WasapPage');
 export type WasapPageProps = {
     config: WasapPageConfig;
     resistanceData: ResistanceData;
+    /** The analysis mode of the page, from the path of the URL. */
+    mode: WasapAnalysisMode;
 };
 
-export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData }) => {
+export const WasapPage: FC<WasapPageProps> = ({ config, resistanceData, mode }) => {
     // initialize page state from the URL
-    const pageStateHandler = useMemo(() => new WasapPageStateHandler(config), [config]);
+    const pageStateHandler = useMemo(() => createModePageStateHandler(config, mode), [config, mode]);
 
     const {
         pageState: { base, analysis },
@@ -85,7 +96,7 @@ type WasapPageConnectedProps = {
     isError: boolean;
     mutationAnnotations: ResistanceData['mutationAnnotations'];
     displayMutationsBySet: ResistanceData['displayMutationsBySet'];
-    pageStateHandler: WasapPageStateHandler;
+    pageStateHandler: PageStateHandler<WasapFilter>;
     setPageState: Dispatch<SetStateAction<WasapFilter>>;
 };
 
@@ -107,6 +118,14 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
     pageStateHandler,
     setPageState,
 }) => {
+    const navigate = useNavigate();
+    // The base filter (location, dates, ...) stays the same when going to another mode, the mean proportion doesn't.
+    const goToMode = (mode: WasapAnalysisMode, baseFilter: WasapBaseFilter) =>
+        void navigate({
+            pathname: modePath(config.path, mode),
+            search: carryOverBaseFilterSearchParams(baseFilter, config).toString(),
+        });
+
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(base.samplingDate);
     const isPending = isDataPending || isSamplingDatePending;
@@ -145,6 +164,7 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                         initialBaseFilterState={base}
                         initialAnalysisFilterState={analysis}
                         setPageState={setPageState}
+                        onModeChange={goToMode}
                         resistanceSetNames={Object.keys(displayMutationsBySet)}
                     />
                 </div>

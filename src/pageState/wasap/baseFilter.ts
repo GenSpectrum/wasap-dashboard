@@ -69,6 +69,21 @@ export function setBaseFilterSearchParams(
 }
 
 /**
+ * The search params to take along when going to the page of another mode: the
+ * base filter, except for the mean proportion, which has a different default
+ * in each mode.
+ */
+export function carryOverBaseFilterSearchParams(
+    base: WasapBaseFilter,
+    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+): URLSearchParams {
+    const search = new URLSearchParams();
+    // Everything that equals the default is left out, which is what we want for the mean proportion.
+    setBaseFilterSearchParams(search, base, config, base.meanProportion);
+    return search;
+}
+
+/**
  * Parses the `samplingDate` URL param, which is either literal `dateFrom--dateTo`
  * dates or a preset's label (e.g. "Most recent 14 days") written by `toUrl`. A
  * label-only value has no concrete dates yet: WASAP's presets are relative to

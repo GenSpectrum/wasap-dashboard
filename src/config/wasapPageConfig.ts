@@ -260,3 +260,14 @@ export function isModeEnabled<Mode extends WasapAnalysisMode>(
 ): config is WasapPageConfigFor<Mode> {
     return config[MODE_ENABLED_FLAGS[mode]] === true;
 }
+
+/**
+ * The mode that a bare organism URL shows: the configured default, or else the
+ * first enabled mode. `undefined` if no mode is enabled at all.
+ */
+export function getDefaultAnalysisMode(config: WasapPageConfig): WasapAnalysisMode | undefined {
+    const enabled = enabledAnalysisModes(config);
+    return config.defaultAnalysisMode !== undefined && enabled.includes(config.defaultAnalysisMode)
+        ? config.defaultAnalysisMode
+        : enabled[0];
+}

@@ -26,6 +26,11 @@ export function modeToSegment(mode: WasapAnalysisMode): string {
     return MODE_SEGMENTS[mode];
 }
 
+/** The path of the page of a mode, below the path of the organism (like `/covid`). */
+export function modePath(organismPath: string, mode: WasapAnalysisMode): string {
+    return `${organismPath}/${MODE_SEGMENTS[mode]}`;
+}
+
 /** The mode a URL segment stands for, or `undefined` if it is not one of ours. */
 export function segmentToMode(segment: string | undefined): WasapAnalysisMode | undefined {
     return Object.values(WASAP_ANALYSIS_MODE).find((mode) => MODE_SEGMENTS[mode] === segment);

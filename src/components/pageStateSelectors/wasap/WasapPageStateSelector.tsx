@@ -43,6 +43,7 @@ export function WasapPageStateSelector({
     initialBaseFilterState,
     initialAnalysisFilterState,
     setPageState,
+    onModeChange,
 }: {
     config: WasapPageConfig;
     resistanceSetNames: string[];
@@ -50,6 +51,11 @@ export function WasapPageStateSelector({
     initialBaseFilterState: WasapBaseFilter;
     initialAnalysisFilterState: WasapAnalysisFilter;
     setPageState: Dispatch<SetStateAction<WasapFilter>>;
+    /**
+     * Called as soon as another mode is picked, which is a different page. Gets the base filter as it
+     * is in the panel now, applied or not, so that it stays the same between the modes.
+     */
+    onModeChange: (mode: WasapAnalysisMode, baseFilter: WasapBaseFilter) => void;
 }) {
     const [baseFilterState, setBaseFilterState] = useState(initialBaseFilterState);
 
@@ -69,7 +75,7 @@ export function WasapPageStateSelector({
         setCollectionFilter,
     } = useAnalysisFilterStates(initialAnalysisFilterState, config);
 
-    const [selectedAnalysisMode, setSelectedAnalysisMode] = useState(initialAnalysisFilterState.mode);
+    const selectedAnalysisMode = initialAnalysisFilterState.mode;
 
     function getAnalysisFilter(): WasapAnalysisFilter {
         // We're using the ! below because we know that for the selected mode we have a defined state.
@@ -205,7 +211,7 @@ export function WasapPageStateSelector({
                 className='select select-bordered'
                 value={selectedAnalysisMode}
                 onChange={(e) => {
-                    setSelectedAnalysisMode(e.target.value as WasapAnalysisMode);
+                    onModeChange(e.target.value as WasapAnalysisMode, baseFilterState);
                 }}
             >
                 {enabledAnalysisModes(config).map((mode) => (

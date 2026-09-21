@@ -4,7 +4,7 @@ import { type PageStateHandler } from '../../PageStateHandler';
 import { parseBaseFilter, setBaseFilterSearchParams } from '../baseFilter';
 import { getDefaultMeanProportion } from '../defaultMeanProportion';
 import { type WasapAnalysisFilter, type WasapModeFilter } from '../wasapAnalysisFilter';
-import { modeToSegment } from '../wasapModes';
+import { modePath } from '../wasapModes';
 
 /**
  * The page state handler of one analysis mode page. The settings all modes have
@@ -37,7 +37,7 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
     }
 
     getDefaultPageUrl(): string {
-        return `${this.config.path}/${modeToSegment(this.mode)}`;
+        return modePath(this.config.path, this.mode);
     }
 
     protected abstract parseAnalysis(search: URLSearchParams): Analysis;

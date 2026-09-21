@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { isUnresolvedSamplingDate, parseBaseFilter, setBaseFilterSearchParams } from './baseFilter';
+import {
+    carryOverBaseFilterSearchParams,
+    isUnresolvedSamplingDate,
+    parseBaseFilter,
+    setBaseFilterSearchParams,
+} from './baseFilter';
 import { type WasapBaseFilter } from './wasapAnalysisFilter';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
@@ -132,6 +137,29 @@ describe('baseFilter', () => {
                 'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false&meanProportionLower=0.2&meanProportionUpper=0.7';
 
             expect(serialize(parse(query))).toBe(new URLSearchParams(query).toString());
+        });
+    });
+
+    describe('carryOverBaseFilterSearchParams', () => {
+        it('keeps the base filter but not the mean proportion', () => {
+            const base = parse(
+                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false&meanProportionLower=0.2&meanProportionUpper=0.7',
+            );
+
+            expect(carryOverBaseFilterSearchParams(base, config).toString()).toBe(
+                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false',
+            );
+        });
+
+        it('gives the mode it is carried to its own default mean proportion', () => {
+            const base = parse('meanProportionLower=0.2');
+
+            const carried = carryOverBaseFilterSearchParams(base, config);
+
+            expect(parseBaseFilter(carried, config, { lower: 0, upper: 1 }).meanProportion).toEqual({
+                lower: 0,
+                upper: 1,
+            });
         });
     });
 });

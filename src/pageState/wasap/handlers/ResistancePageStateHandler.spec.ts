@@ -31,4 +31,31 @@ describe('ResistancePageStateHandler', () => {
         const analysis = filter.analysis;
         expect(analysis.sequenceType).toBe('amino acid');
     });
+
+    it('lives at the resistance segment below the path of the organism', () => {
+        expect(handler.getDefaultPageUrl()).toBe('/wastewater/covid/resistance');
+    });
+
+    it('takes the resistance set from the defaults of the config when it is not in the URL', () => {
+        const filter = handler.parsePageStateFromUrl(new URLSearchParams(''));
+
+        expect(filter.analysis.resistanceSet).toBe('3CLpro');
+    });
+
+    it('defaults the mean proportion to 5% to 100%', () => {
+        const filter = handler.parsePageStateFromUrl(new URLSearchParams(''));
+
+        expect(filter.base.meanProportion).toEqual({ lower: 0.05, upper: 1 });
+    });
+
+    it('omits a mean proportion from the URL when it is the default of the mode', () => {
+        const filter = handler.parsePageStateFromUrl(
+            new URLSearchParams('meanProportionLower=0.05&meanProportionUpper=0.5'),
+        );
+
+        const url = handler.toUrl(filter);
+
+        expect(url).not.toContain('meanProportionLower');
+        expect(url).toContain('meanProportionUpper=0.5');
+    });
 });
