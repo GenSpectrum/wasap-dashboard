@@ -1,13 +1,4 @@
-import {
-    type Dispatch,
-    type FC,
-    type SetStateAction,
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { type Dispatch, type FC, type SetStateAction, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
@@ -23,7 +14,7 @@ import {
 } from '../../dataLayer/hooks/mutationsOverTime';
 import { siloReadFilterSchema } from '../../dataLayer/queries/filter';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
-import { sequenceTypeSchema, temporalGranularitySchema, views } from '../../types/dashboardComponents';
+import { sequenceTypeSchema, temporalGranularitySchema } from '../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
@@ -31,21 +22,13 @@ import { AnnotatedMutation } from '../shared/annotated-mutation';
 import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
-import {
-    customColumnSchema,
-    type FeatureRenderer,
-    FeaturesOverTimeGridServerPaginated,
-} from '../shared/features-over-time-grid';
+import { customColumnSchema, type FeatureRenderer } from '../shared/features-over-time-grid';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
 import { ResizeContainer } from '../shared/resize-container';
-import Tabs from '../shared/tabs';
 import { pageSizesSchema } from '../shared/tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../shared/tanstackTable/pagination-context';
 import { ViewSettingsDropdown } from '../shared/view-settings-dropdown';
-
-const mutationsOverTimeViewSchema = z.literal(views.grid);
-export type MutationsOverTimeView = z.infer<typeof mutationsOverTimeViewSchema>;
 
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
@@ -56,7 +39,6 @@ export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema
 const mutationOverTimeSchema = z.object({
     filter: siloReadFilterSchema,
     sequenceType: sequenceTypeSchema,
-    views: z.array(mutationsOverTimeViewSchema),
     granularity: temporalGranularitySchema,
     displayMutations: displayMutationsSchema.optional(),
     /** Only mutations whose mean proportion over the time range lies within this interval are shown. */
@@ -109,7 +91,7 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
 
     return (
         <PageSizeContextProvider pageSizes={pageSizes}>
-            <MutationsOverTimeTabs
+            <MutationsOverTimeWithMetadata
                 metadata={metadata}
                 originalComponentProps={componentProps}
                 pageIndex={pageIndex}
@@ -119,14 +101,14 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
     );
 };
 
-type MutationOverTimeTabsProps = {
+type MutationsOverTimeWithMetadataProps = {
     metadata: OverTimeMetadata;
     originalComponentProps: MutationsOverTimeProps;
     pageIndex: number;
     setPageIndex: Dispatch<SetStateAction<number>>;
 };
 
-const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
+const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     metadata,
     originalComponentProps,
     pageIndex,
@@ -137,13 +119,12 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
     const { nucleotideSequence } = useSiloSchema();
     const { pageSize } = usePageSizeContext();
 
-    const tabsRef = useDispatchFinishedLoadingEvent();
-    const tooltipPortalTargetRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useDispatchFinishedLoadingEvent();
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
 
     useLayoutEffect(() => {
-        setTooltipPortalTarget(tooltipPortalTargetRef.current);
-    }, []);
+        setTooltipPortalTarget(wrapperRef.current);
+    }, [wrapperRef]);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [colorScale, setColorScale] = useState<ColorScale>({ min: 0, max: 1, color: 'indigo' });
@@ -213,64 +194,24 @@ const MutationsOverTimeTabs: FC<MutationOverTimeTabsProps> = ({
         </div>
     );
 
-    const getTab = (view: MutationsOverTimeView) => {
-        switch (view) {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- for extensibility
-            case 'grid':
-                return {
-                    title: 'Grid',
-                    content: (
-                        <FeaturesOverTimeGridServerPaginated
-                            rowLabelHeader='Mutation'
-                            data={pageData}
-                            isLoading={isPageLoading}
-                            loadingRowLabels={pageMutationCodes}
-                            requestedDateRanges={requestedDateRanges}
-                            colorScale={colorScale}
-                            pageSizes={originalComponentProps.pageSizes}
-                            pageIndex={pageIndex}
-                            totalRows={totalFilteredRows}
-                            onPageChange={setPageIndex}
-                            customColumns={originalComponentProps.customColumns}
-                            featureRenderer={mutationRenderer}
-                            tooltipPortalTarget={tooltipPortalTarget}
-                            paginationEnd={paginationEnd}
-                        />
-                    ),
-                };
-        }
-    };
-
-    const tabs = [
-        ...originalComponentProps.views.map((view) => getTab(view)),
-        // Prototype tab, not wired into `views`/the component's props schema: see
-        // planning notes on this spike before promoting it past a design spike.
-        {
-            title: 'Bands (spike)',
-            content: (
-                <MutationBands
-                    rowLabelHeader='Mutation'
-                    data={pageData}
-                    isLoading={isPageLoading}
-                    loadingRowLabels={pageMutationCodes}
-                    requestedDateRanges={requestedDateRanges}
-                    colorScale={colorScale}
-                    featureRenderer={mutationRenderer}
-                    tooltipPortalTarget={tooltipPortalTarget}
-                    pageSizes={originalComponentProps.pageSizes}
-                    pageIndex={pageIndex}
-                    totalRows={totalFilteredRows}
-                    onPageChange={setPageIndex}
-                    paginationEnd={paginationEnd}
-                    customColumns={originalComponentProps.customColumns}
-                />
-            ),
-        },
-    ];
-
     return (
-        <div ref={tooltipPortalTargetRef}>
-            <Tabs ref={tabsRef} tabs={tabs} />
+        <div ref={wrapperRef} className='rounded-md border-2 border-gray-100 p-2'>
+            <MutationBands
+                rowLabelHeader='Mutation'
+                data={pageData}
+                isLoading={isPageLoading}
+                loadingRowLabels={pageMutationCodes}
+                requestedDateRanges={requestedDateRanges}
+                colorScale={colorScale}
+                featureRenderer={mutationRenderer}
+                tooltipPortalTarget={tooltipPortalTarget}
+                pageSizes={originalComponentProps.pageSizes}
+                pageIndex={pageIndex}
+                totalRows={totalFilteredRows}
+                onPageChange={setPageIndex}
+                paginationEnd={paginationEnd}
+                customColumns={originalComponentProps.customColumns}
+            />
         </div>
     );
 };

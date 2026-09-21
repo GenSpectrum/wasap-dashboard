@@ -187,7 +187,6 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                                             width='100%'
                                             filter={filter}
                                             sequenceType={sequenceType}
-                                            views={[views.grid]}
                                             granularity={base.granularity}
                                             displayMutations={data.displayMutations}
                                             hideGaps={base.excludeEmpty ? true : undefined}

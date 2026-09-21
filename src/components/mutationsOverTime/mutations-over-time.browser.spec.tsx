@@ -5,7 +5,6 @@ import { render } from 'vitest-browser-react';
 import { MutationsOverTime } from './mutations-over-time';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import type { SiloSchema } from '../../dataLayer/queries/schema';
-import { views } from '../../types/dashboardComponents';
 import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
 
 const schema: SiloSchema = {
@@ -103,7 +102,6 @@ function renderOverTime() {
                         width='100%'
                         filter={{ samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-02' }}
                         sequenceType='nucleotide'
-                        views={[views.grid]}
                         granularity='day'
                         displayMutations={['C241T', 'C3037T']}
                         meanProportionInterval={{ min: 0, max: 1 }}
@@ -118,7 +116,7 @@ function renderOverTime() {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('MutationsOverTime (SILO position-over-time)', () => {
-    it('renders a column per date bucket, a row per display mutation, cells = alt / coverage', async () => {
+    it('renders a row per display mutation, and the first and last date bucket', async () => {
         stubSilo();
         const screen = renderOverTime();
 
@@ -127,22 +125,20 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
 
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
         await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
-
-        // C241T: 900/1000 in every bucket; C3037T: 100/1000.
-        await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
-        await expect.element(screen.getByText('10%').first()).toBeInTheDocument();
     });
 
     it('sends one position query per distinct position, location-scoped, no date bounds', async () => {
         const fetchMock = stubSilo();
-        const screen = renderOverTime();
-        await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
+        renderOverTime();
 
-        const positionBodies = fetchMock.mock.calls
-            .map(([, init]) => (typeof init?.body === 'string' ? init.body : ''))
-            .filter((body) => body.includes('sym := main.at('));
+        const positionBodies = () =>
+            fetchMock.mock.calls
+                .map(([, init]) => (typeof init?.body === 'string' ? init.body : ''))
+                .filter((body) => body.includes('sym := main.at('));
 
-        expect(positionBodies).toEqual([
+        await vi.waitFor(() => expect(positionBodies()).toHaveLength(2));
+
+        expect(positionBodies()).toEqual([
             'default.map({sym := main.at(241)}).groupBy({count := count()}, {date, sym})',
             'default.map({sym := main.at(3037)}).groupBy({count := count()}, {date, sym})',
         ]);
