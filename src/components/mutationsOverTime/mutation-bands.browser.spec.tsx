@@ -62,6 +62,16 @@ describe('MutationBands', () => {
         await expect.element(getByText('2024-01-02')).toBeVisible();
     });
 
+    it('keeps all date buckets in a single table column, whatever their number', async () => {
+        // Sizing many tiny table columns is done differently by each browser: in Firefox the
+        // bands were squeezed into a fraction of the table when each bucket was its own column.
+        const { container } = renderBands();
+
+        await expect.element(container.querySelector('table')!).toBeInTheDocument();
+        expect(container.querySelectorAll('thead th')).toHaveLength(2); // row label + all dates
+        expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(2);
+    });
+
     it('renders custom columns between the row label and the bands, with the value of each row', async () => {
         const { getByRole, getByText } = renderBands({
             customColumns: [{ header: 'Jaccard index', values: { 'S:A1T': '0.91', 'S:C2G': 0.5 } }],
