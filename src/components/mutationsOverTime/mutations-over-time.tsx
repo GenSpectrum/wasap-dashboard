@@ -3,7 +3,6 @@ import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes } from './getFilteredMutationCodes';
-import { MutationBands } from './mutation-bands';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
 import { useSiloSchema } from '../../dataLayer/hooks/connection';
 import {
@@ -22,6 +21,7 @@ import { AnnotatedMutation } from '../shared/annotated-mutation';
 import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
+import { FeatureBands } from '../shared/feature-bands';
 import { customColumnSchema, type FeatureRenderer } from '../shared/features-over-time-grid';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
@@ -196,7 +196,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
 
     return (
         <div ref={wrapperRef} className='rounded-md border-2 border-gray-100 p-2'>
-            <MutationBands
+            <FeatureBands
                 rowLabelHeader='Mutation'
                 data={pageData}
                 isLoading={isPageLoading}
