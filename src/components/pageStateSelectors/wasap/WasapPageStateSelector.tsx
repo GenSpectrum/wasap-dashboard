@@ -6,7 +6,6 @@ import { getCollections } from '../../../externalData/genSpectrum/getCollections
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { ApplyFilterButton } from '../ApplyFilterButton';
 import { SelectorHeadline } from '../SelectorHeadline';
-import { ExplorationModeInfo } from './InfoBlocks';
 import { CollectionAnalysisFilter } from './filters/CollectionAnalysisFilter';
 import { CovSpectrumCollectionAnalysisFilter } from './filters/CovSpectrumCollectionAnalysisFilter';
 import { ManualAnalysisFilter } from './filters/ManualAnalysisFilter';
@@ -14,17 +13,15 @@ import { ResistanceMutationsFilter } from './filters/ResistanceMutationsFilter';
 import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
 import { MeanProportionField } from './utils/MeanProportionField';
-import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
+import { type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import { getDefaultMeanProportion } from '../../../pageState/wasap/defaultMeanProportion';
 import {
     type WasapAnalysisFilter,
-    type WasapAnalysisMode,
     type WasapBaseFilter,
     type WasapFilter,
     type WasapMeanProportion,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { modeLabel } from '../../../pageState/wasap/wasapModes';
 import { Inset } from '../../shared/Inset';
 
 /**
@@ -38,7 +35,6 @@ export function WasapPageStateSelector({
     baseFilter,
     initialAnalysisFilterState,
     setPageState,
-    onModeChange,
 }: {
     config: WasapPageConfig;
     resistanceSetNames: string[];
@@ -47,8 +43,6 @@ export function WasapPageStateSelector({
     baseFilter: WasapBaseFilter;
     initialAnalysisFilterState: WasapAnalysisFilter;
     setPageState: Dispatch<SetStateAction<WasapFilter>>;
-    /** Called as soon as another mode is picked, which is a different page. */
-    onModeChange: (mode: WasapAnalysisMode) => void;
 }) {
     // State for each individual analysis mode setting component
     const {
@@ -154,21 +148,8 @@ export function WasapPageStateSelector({
 
     return (
         <div className='flex flex-col gap-4'>
-            <SelectorHeadline info={<ExplorationModeInfo />}>Mutation selection</SelectorHeadline>
+            <SelectorHeadline>Mutation selection</SelectorHeadline>
 
-            <select
-                className='select select-bordered'
-                value={selectedAnalysisMode}
-                onChange={(e) => {
-                    onModeChange(e.target.value as WasapAnalysisMode);
-                }}
-            >
-                {enabledAnalysisModes(config).map((mode) => (
-                    <option key={mode} value={mode}>
-                        {modeLabel(mode)}
-                    </option>
-                ))}
-            </select>
             <Inset className='p-2'>
                 {(() => {
                     switch (selectedAnalysisMode) {

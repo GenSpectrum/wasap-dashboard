@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react';
 import { type Dispatch, type FC, type SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { ClinicalSequenceCountStat } from './components/ClinicalSequenceCountStat';
 import { CollectionInfo } from './components/CollectionInfo';
@@ -16,7 +15,6 @@ import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
-import { carryOverBaseFilterSearchParams } from '../../../pageState/wasap/baseFilter';
 import { createModePageStateHandler } from '../../../pageState/wasap/handlers/createModePageStateHandler';
 import type {
     WasapAnalysisFilter,
@@ -24,12 +22,12 @@ import type {
     WasapBaseFilter,
     WasapFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { modePath } from '../../../pageState/wasap/wasapModes';
 import { Loading } from '../../../util/Loading';
 import { GsApp } from '../../GsApp';
 import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
 import { MutationsOverTime } from '../../mutationsOverTime/mutations-over-time';
 import { DatasetFilterPanel } from '../../pageStateSelectors/wasap/DatasetFilterPanel';
+import { WasapModeTabs } from '../../pageStateSelectors/wasap/WasapModeTabs';
 import { WasapPageStateSelector } from '../../pageStateSelectors/wasap/WasapPageStateSelector';
 import { QueriesOverTime } from '../../queriesOverTime/queries-over-time';
 
@@ -119,14 +117,6 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
     pageStateHandler,
     setPageState,
 }) => {
-    const navigate = useNavigate();
-    // The base filter (location, dates, ...) stays the same when going to another mode, the mean proportion doesn't.
-    const goToMode = (mode: WasapAnalysisMode) =>
-        void navigate({
-            pathname: modePath(config.path, mode),
-            search: carryOverBaseFilterSearchParams(base, config).toString(),
-        });
-
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(base.samplingDate);
     const isPending = isDataPending || isSamplingDatePending;
@@ -150,6 +140,9 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
             mutationAnnotations={mutationAnnotations}
             mutationLinkTemplate={config.linkTemplate}
         >
+            <div className='mb-4'>
+                <WasapModeTabs config={config} base={base} />
+            </div>
             <div className='grid-cols-[300px_1fr] gap-x-4 lg:grid'>
                 <div className='h-fit p-2 shadow-lg'>
                     <WasapPageStateSelector
@@ -166,7 +159,6 @@ const WasapPageConnected: FC<WasapPageConnectedProps> = ({
                         baseFilter={base}
                         initialAnalysisFilterState={analysis}
                         setPageState={setPageState}
-                        onModeChange={goToMode}
                         resistanceSetNames={Object.keys(displayMutationsBySet)}
                     />
                 </div>
