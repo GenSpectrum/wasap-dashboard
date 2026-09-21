@@ -15,14 +15,17 @@ import { ResistanceMutationsFilter } from './filters/ResistanceMutationsFilter';
 import { UntrackedFilter } from './filters/UntrackedFilter';
 import { VariantExplorerFilter } from './filters/VariantExplorerFilter';
 import { LabeledField } from './utils/LabeledField';
+import { MeanProportionField } from './utils/MeanProportionField';
 import { RadioSelect } from './utils/RadioSelect';
 import { enabledAnalysisModes, type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
+import { getDefaultMeanProportion } from '../../../pageState/wasap/defaultMeanProportion';
 import {
     type WasapAnalysisFilter,
     type WasapAnalysisMode,
     type WasapBaseFilter,
     type WasapFilter,
+    type WasapMeanProportion,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { recentDaysDateRangeOptions } from '../../../util/recentDaysDateRangeOptions';
 import { Inset } from '../../shared/Inset';
@@ -67,24 +70,39 @@ export function WasapPageStateSelector({
 
     const [selectedAnalysisMode, setSelectedAnalysisMode] = useState(initialAnalysisFilterState.mode);
 
-    function getMergedPageState(): WasapFilter {
+    function getAnalysisFilter(): WasapAnalysisFilter {
         // We're using the ! below because we know that for the selected mode we have a defined state.
         // based on the initialization in useAnalysisFilterStates
 
         switch (selectedAnalysisMode) {
             case 'manual':
-                return { base: baseFilterState, analysis: manualFilter! };
+                return manualFilter!;
             case 'variant':
-                return { base: baseFilterState, analysis: variantFilter! };
+                return variantFilter!;
             case 'resistance':
-                return { base: baseFilterState, analysis: resistanceFilter! };
+                return resistanceFilter!;
             case 'untracked':
-                return { base: baseFilterState, analysis: untrackedFilter! };
+                return untrackedFilter!;
             case 'covSpectrumCollection':
-                return { base: baseFilterState, analysis: covSpectrumCollectionFilter! };
+                return covSpectrumCollectionFilter!;
             case 'collection':
-                return { base: baseFilterState, analysis: collectionFilter! };
+                return collectionFilter!;
         }
+    }
+
+    // Until the user touches the mean proportion control it follows the default of the selected mode
+    // (which can change with the mode, or with the manually entered mutations), so we only keep an
+    // explicit value once they have changed it.
+    const [meanProportionOverride, setMeanProportionOverride] = useState<WasapMeanProportion | undefined>(
+        isDefaultMeanProportion(initialBaseFilterState.meanProportion, initialAnalysisFilterState)
+            ? undefined
+            : initialBaseFilterState.meanProportion,
+    );
+
+    function getMergedPageState(): WasapFilter {
+        const analysis = getAnalysisFilter();
+        const meanProportion = meanProportionOverride ?? getDefaultMeanProportion(analysis);
+        return { base: { ...baseFilterState, meanProportion }, analysis };
     }
 
     // data for the 'untracked' analysis mode - loaded here already so it's available when the mode is selected
@@ -273,6 +291,11 @@ export function WasapPageStateSelector({
                             );
                     }
                 })()}
+                <div className='h-2' />
+                <MeanProportionField
+                    value={meanProportionOverride ?? getDefaultMeanProportion(getAnalysisFilter())}
+                    onChange={setMeanProportionOverride}
+                />
             </Inset>
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}
@@ -281,6 +304,11 @@ export function WasapPageStateSelector({
             />
         </div>
     );
+}
+
+function isDefaultMeanProportion(meanProportion: WasapMeanProportion, analysis: WasapAnalysisFilter): boolean {
+    const defaults = getDefaultMeanProportion(analysis);
+    return meanProportion.lower === defaults.lower && meanProportion.upper === defaults.upper;
 }
 
 function modeLabel(mode: WasapAnalysisMode): string {

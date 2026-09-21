@@ -16,6 +16,8 @@ export interface MinMaxPercentSliderProps {
     rangeMin?: number;
     rangeMax?: number;
     step?: number;
+    /** The color of the selected range. */
+    rangeColor?: string;
 }
 
 export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
@@ -27,9 +29,9 @@ export const MinMaxRangeSlider: FC<MinMaxPercentSliderProps> = ({
     rangeMin = 0,
     rangeMax = 100,
     step = 0.1,
+    rangeColor = '#387bbe',
 }) => {
     const sliderColor = '#C6C6C6';
-    const rangeColor = '#387bbe';
 
     const [zIndexTo, setZIndexTo] = useState(0);
 
