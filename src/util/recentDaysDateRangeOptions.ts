@@ -10,7 +10,7 @@ function recentDaysLabel(days: number): string {
 const RECENT_DAYS_OPTIONS = [7, 14, 30, 60, 90] as const;
 
 /**
- * The default `samplingDate` for a bare WASAP URL (`WasapPageStateHandler`).
+ * The default `samplingDate` for a bare WASAP URL (see `parseDatasetFilter`).
  * An unrestricted range at 'day' granularity can exceed mutations-over-time's
  * column limit ("Too many dates"); this bounds it without guessing at a fixed
  * window size.

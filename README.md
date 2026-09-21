@@ -99,7 +99,7 @@ building locally.
 src/
   main.tsx, AppShell.tsx    entry point + top-level chrome (organism dropdown)
   routes/                   WasapRoute (fetches resistance data, wires per-organism config)
-  views/                    WasapPageStateHandler + the per-mode page-state logic
+  pageState/wasap/          the page state of the mode pages: a handler per mode + the shared base filter
   layouts/                  page layout wrappers
   components/               the ported dashboard-components fork — filters,
                              over-time grids, gs-* wrappers

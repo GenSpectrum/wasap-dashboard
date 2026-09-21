@@ -148,7 +148,7 @@ export type WasapMeanProportion = {
 /**
  * Mode-independent settings, like the filter for location and date range —
  * the *current* filter selection (derived from URL state, see
- * `WasapPageStateHandler`), not a `WasapPageConfig` default.
+ * `WasapModePageStateHandler`), not a `WasapPageConfig` default.
  */
 export type WasapBaseFilter = {
     locationName?: string;
