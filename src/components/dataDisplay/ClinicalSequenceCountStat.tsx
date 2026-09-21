@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 
-import { getTotalCount } from '../../../../externalData/lapis/getTotalCount';
-import { variantTimeFrameLabel, type WasapVariantFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { getLapisFilterForTimeFrame } from '../useWasapPageData';
+import { getTotalCount } from '../../externalData/lapis/getTotalCount';
+import { variantTimeFrameLabel, type WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { getLapisFilterForTimeFrame } from '../views/wasap/useWasapPageData';
 
 type ClinicalSequenceCountStatProps = {
     lineage: string;

@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { CovSpectrumCollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CovSpectrumCollectionPageStateHandler';
+import { CollectionResult } from '../../../dataDisplay/CollectionResult';
+import { NothingSelected } from '../../../dataDisplay/NothingSelected';
+import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { CovSpectrumCollectionAnalysisFilter } from '../../../filterSidebar/filters/CovSpectrumCollectionAnalysisFilter';
-import { CollectionResult } from '../CollectionResult';
 import { ModePageLayout } from '../ModePageLayout';
-import { WasapResults } from '../WasapResults';
-import { NothingSelected } from '../components/NothingSelected';
 import { useModePage } from '../useModePage';
 
 export function CovSpectrumCollectionPage({ config }: { config: WasapPageConfigFor<'covSpectrumCollection'> }) {

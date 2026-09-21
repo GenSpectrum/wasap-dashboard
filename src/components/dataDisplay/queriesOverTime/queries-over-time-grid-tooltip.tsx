@@ -1,9 +1,9 @@
 import { type FC } from 'react';
 
-import { MUTATIONS_OVER_TIME_MIN_PROPORTION, type ProportionValue } from '../../query/queryMutationsOverTime';
-import { type Temporal } from '../../util/temporalClass';
-import { OverTimeGridTooltip } from '../shared/over-time-grid-tooltip';
-import { formatProportion } from '../shared/table/formatProportion';
+import { MUTATIONS_OVER_TIME_MIN_PROPORTION, type ProportionValue } from '../../../query/queryMutationsOverTime';
+import { type Temporal } from '../../../util/temporalClass';
+import { formatProportion } from '../formatProportion';
+import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 
 export type QueriesOverTimeGridTooltipProps = {
     query: string; // displayLabel

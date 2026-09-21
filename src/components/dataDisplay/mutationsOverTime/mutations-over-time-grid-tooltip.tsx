@@ -1,10 +1,10 @@
 import { type FC } from 'react';
 
-import { type ProportionValue, MUTATIONS_OVER_TIME_MIN_PROPORTION } from '../../query/queryMutationsOverTime';
-import type { Deletion, Substitution } from '../../util/mutations';
-import { type Temporal } from '../../util/temporalClass';
-import { OverTimeGridTooltip } from '../shared/over-time-grid-tooltip';
-import { formatProportion } from '../shared/table/formatProportion';
+import { type ProportionValue, MUTATIONS_OVER_TIME_MIN_PROPORTION } from '../../../query/queryMutationsOverTime';
+import type { Deletion, Substitution } from '../../../util/mutations';
+import { type Temporal } from '../../../util/temporalClass';
+import { formatProportion } from '../formatProportion';
+import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 
 export type MutationsOverTimeGridTooltipProps = {
     mutation: Substitution | Deletion;

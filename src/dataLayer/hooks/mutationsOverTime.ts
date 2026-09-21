@@ -21,7 +21,7 @@ import { useConnection, useSiloSchema } from './connection';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
-} from '../../components/mutationsOverTime/MutationOverTimeData';
+} from '../../components/dataDisplay/mutationsOverTime/MutationOverTimeData';
 import { UserFacingError } from '../../components/shared/error-display';
 import { sortSubstitutionsAndDeletions } from '../../components/shared/sort/sortSubstitutionsAndDeletions';
 import { hideGapsInPlace, type ProportionValue } from '../../query/queryMutationsOverTime';

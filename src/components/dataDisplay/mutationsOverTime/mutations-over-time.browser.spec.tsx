@@ -3,9 +3,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { MutationsOverTime } from './mutations-over-time';
-import { ConnectionProvider } from '../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../dataLayer/queries/schema';
-import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
+import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
+import type { SiloSchema } from '../../../dataLayer/queries/schema';
+import { MutationAnnotationsContextProvider } from '../../MutationAnnotationsContext';
 
 const schema: SiloSchema = {
     table: 'default',

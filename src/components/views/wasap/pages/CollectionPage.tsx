@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { CollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CollectionPageStateHandler';
+import { CollectionResult } from '../../../dataDisplay/CollectionResult';
+import { NothingSelected } from '../../../dataDisplay/NothingSelected';
+import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { CollectionAnalysisFilter } from '../../../filterSidebar/filters/CollectionAnalysisFilter';
-import { CollectionResult } from '../CollectionResult';
 import { ModePageLayout } from '../ModePageLayout';
-import { WasapResults } from '../WasapResults';
-import { NothingSelected } from '../components/NothingSelected';
 import { useModePage } from '../useModePage';
 
 export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {

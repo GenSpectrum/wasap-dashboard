@@ -4,30 +4,30 @@ import z from 'zod';
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes } from './getFilteredMutationCodes';
 import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
-import { useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import {
     genesOf,
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
-} from '../../dataLayer/hooks/mutationsOverTime';
-import { siloReadFilterSchema } from '../../dataLayer/queries/filter';
-import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
-import { sequenceTypeSchema, temporalGranularitySchema } from '../../types/dashboardComponents';
-import { type Deletion, type Substitution } from '../../util/mutations';
-import { type Temporal, toTemporalClass } from '../../util/temporalClass';
-import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
-import { AnnotatedMutation } from '../shared/annotated-mutation';
-import { DEFAULT_BAND_VIEW_SETTINGS } from '../shared/band-view-settings';
-import { CsvDownloadButton } from '../shared/csv-download-button';
-import { ErrorBoundary } from '../shared/error-boundary';
-import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../shared/feature-bands';
-import { LoadingDisplay } from '../shared/loading-display';
-import { NoDataDisplay } from '../shared/no-data-display';
-import { ResizeContainer } from '../shared/resize-container';
-import { pageSizesSchema } from '../shared/tanstackTable/pagination';
-import { PageSizeContextProvider, usePageSizeContext } from '../shared/tanstackTable/pagination-context';
-import { ViewSettingsDropdown } from '../shared/view-settings-dropdown';
+} from '../../../dataLayer/hooks/mutationsOverTime';
+import { siloReadFilterSchema } from '../../../dataLayer/queries/filter';
+import { getProportion, type ProportionValue } from '../../../query/queryMutationsOverTime';
+import { sequenceTypeSchema, temporalGranularitySchema } from '../../../types/dashboardComponents';
+import { type Deletion, type Substitution } from '../../../util/mutations';
+import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
+import { useDispatchFinishedLoadingEvent } from '../../../util/useDispatchFinishedLoadingEvent';
+import { ErrorBoundary } from '../../shared/error-boundary';
+import { LoadingDisplay } from '../../shared/loading-display';
+import { NoDataDisplay } from '../../shared/no-data-display';
+import { ResizeContainer } from '../../shared/resize-container';
+import { AnnotatedMutation } from '../annotated-mutation';
+import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
+import { CsvDownloadButton } from '../csv-download-button';
+import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { pageSizesSchema } from '../tanstackTable/pagination';
+import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
+import { ViewSettingsDropdown } from '../view-settings-dropdown';
 
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),

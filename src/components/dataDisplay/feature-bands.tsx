@@ -4,15 +4,15 @@ import z from 'zod';
 
 import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
+import { formatProportion } from './formatProportion';
+import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import PortalTooltip from './portal-tooltip';
-import { formatProportion } from './table/formatProportion';
 import { Pagination, type PageSizes } from './tanstackTable/pagination';
 import { usePageSizeContext } from './tanstackTable/pagination-context';
 import { useReactTable } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
-import { type TemporalDataMap } from '../mutationsOverTime/MutationOverTimeData';
 
 export const customColumnSchema = z.object({
     header: z.string(),

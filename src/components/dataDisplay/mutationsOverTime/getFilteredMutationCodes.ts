@@ -1,7 +1,7 @@
 import z from 'zod';
 
-import { type SubstitutionOrDeletionEntry } from '../../types/dashboardComponents';
-import type { Deletion, Substitution } from '../../util/mutations';
+import { type SubstitutionOrDeletionEntry } from '../../../types/dashboardComponents';
+import type { Deletion, Substitution } from '../../../util/mutations';
 
 export const displayMutationsSchema = z.array(z.string(), {
     errorMap: () => ({ message: `invalid display mutations` }),

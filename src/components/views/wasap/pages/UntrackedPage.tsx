@@ -4,11 +4,11 @@ import { useMemo } from 'react';
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { getCladeLineages } from '../../../../externalData/lapis/getCladeLineages';
 import { UntrackedPageStateHandler } from '../../../../pageState/wasap/handlers/UntrackedPageStateHandler';
+import { MutationsResult } from '../../../dataDisplay/MutationsResult';
+import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { UntrackedFilter } from '../../../filterSidebar/filters/UntrackedFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { MutationsResult } from '../MutationsResult';
-import { WasapResults } from '../WasapResults';
 import { useModePage } from '../useModePage';
 
 export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracked'> }) {

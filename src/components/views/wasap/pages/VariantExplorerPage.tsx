@@ -5,13 +5,13 @@ import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
 import { getCollections } from '../../../../externalData/genSpectrum/getCollections';
 import { VariantExplorerPageStateHandler } from '../../../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
+import { ClinicalSequenceCountStat } from '../../../dataDisplay/ClinicalSequenceCountStat';
+import { MutationsResult } from '../../../dataDisplay/MutationsResult';
+import { NothingSelected } from '../../../dataDisplay/NothingSelected';
+import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../../../filterSidebar/filters/VariantExplorerFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { MutationsResult } from '../MutationsResult';
-import { WasapResults } from '../WasapResults';
-import { ClinicalSequenceCountStat } from '../components/ClinicalSequenceCountStat';
-import { NothingSelected } from '../components/NothingSelected';
 import { useModePage } from '../useModePage';
 
 export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {

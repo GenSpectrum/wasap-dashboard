@@ -1,9 +1,9 @@
-import { CollectionInfo } from './components/CollectionInfo';
-import { NothingSelected } from './components/NothingSelected';
-import { type WasapPageData } from './useWasapPageData';
-import { type SiloReadFilter } from '../../../dataLayer/queries';
-import { type WasapBaseFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { QueriesOverTime } from '../../queriesOverTime/queries-over-time';
+import { CollectionInfo } from './CollectionInfo';
+import { NothingSelected } from './NothingSelected';
+import { QueriesOverTime } from './queriesOverTime/queries-over-time';
+import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type WasapBaseFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**
  * The queries of a collection over time, and what there is to know about the collection.

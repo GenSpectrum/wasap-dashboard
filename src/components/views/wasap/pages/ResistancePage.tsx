@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { ResistancePageStateHandler } from '../../../../pageState/wasap/handlers/ResistancePageStateHandler';
+import { MutationsResult } from '../../../dataDisplay/MutationsResult';
+import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { ResistanceMutationsFilter } from '../../../filterSidebar/filters/ResistanceMutationsFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { MutationsResult } from '../MutationsResult';
-import { WasapResults } from '../WasapResults';
 import { useModePage } from '../useModePage';
 
 export function ResistancePage({ config }: { config: WasapPageConfigFor<'resistance'> }) {

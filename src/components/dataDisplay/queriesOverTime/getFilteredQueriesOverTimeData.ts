@@ -1,7 +1,7 @@
-import { hideGapsInPlace, type ProportionValue } from '../../query/queryMutationsOverTime';
-import { serializeQuery, serializeTemporal } from '../../query/queryQueriesOverTime';
-import { Map2dBase, Map2dView, type Map2DContents } from '../../util/map2d';
-import { type Temporal } from '../../util/temporalClass';
+import { hideGapsInPlace, type ProportionValue } from '../../../query/queryMutationsOverTime';
+import { serializeQuery, serializeTemporal } from '../../../query/queryQueriesOverTime';
+import { Map2dBase, Map2dView, type Map2DContents } from '../../../util/map2d';
+import { type Temporal } from '../../../util/temporalClass';
 
 export type GetFilteredQueryOverTimeDataArgs = {
     data: Map2DContents<string, Temporal, ProportionValue>;

@@ -2,7 +2,7 @@ import { flip, offset, shift } from '@floating-ui/dom';
 import { type Placement } from '@floating-ui/utils';
 import { type FC, type ReactNode, useRef, useState } from 'react';
 
-import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from './floating-ui/hooks';
+import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from './floating-ui-hooks';
 
 interface DropdownProps {
     /** The text of the button. With an `icon` it's only the tooltip and accessible name of the button. */

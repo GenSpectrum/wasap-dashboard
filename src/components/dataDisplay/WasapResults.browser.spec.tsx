@@ -2,7 +2,7 @@ import { describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { WasapResults } from './WasapResults';
-import { it } from '../../../../test-extend';
+import { it } from '../../../test-extend';
 
 const ERROR_TEXT = 'There was an error fetching the data to display.';
 

@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { ManualPageStateHandler } from '../../../../pageState/wasap/handlers/ManualPageStateHandler';
+import { MutationsResult } from '../../../dataDisplay/MutationsResult';
+import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { ManualAnalysisFilter } from '../../../filterSidebar/filters/ManualAnalysisFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { MutationsResult } from '../MutationsResult';
-import { WasapResults } from '../WasapResults';
 import { useModePage } from '../useModePage';
 
 export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> }) {

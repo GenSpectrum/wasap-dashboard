@@ -1,11 +1,11 @@
 import { type ReactNode } from 'react';
 
-import { NoDataHelperText } from './components/NoDataHelperText';
-import { type WasapPageData } from './useWasapPageData';
-import { type SiloReadFilter } from '../../../dataLayer/queries';
-import { type WasapAnalysisFilter, type WasapBaseFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type SequenceType } from '../../../types/dashboardComponents';
-import { MutationsOverTime } from '../../mutationsOverTime/mutations-over-time';
+import { NoDataHelperText } from './NoDataHelperText';
+import { MutationsOverTime } from './mutationsOverTime/mutations-over-time';
+import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type WasapAnalysisFilter, type WasapBaseFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { type SequenceType } from '../../types/dashboardComponents';
+import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**
  * The mutations over time of a mode that selects mutations, or a note that

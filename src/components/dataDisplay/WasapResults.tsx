@@ -1,8 +1,8 @@
 import { type ReactNode } from 'react';
 
-import { WasapStats } from './components/WasapStats';
-import { type WasapPageData } from './useWasapPageData';
-import { Loading } from '../../../util/Loading';
+import { WasapStats } from './WasapStats';
+import { Loading } from '../../util/Loading';
+import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**
  * The results of an analysis mode, once there are any. Until then it shows that
