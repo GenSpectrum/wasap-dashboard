@@ -5,7 +5,10 @@ import { type FC, type ReactNode, useRef, useState } from 'react';
 import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from './floating-ui/hooks';
 
 interface DropdownProps {
+    /** The text of the button. With an `icon` it's only the tooltip and accessible name of the button. */
     buttonTitle: string;
+    /** Shows this (e.g. an iconify `<span>`) in the button instead of the title text. */
+    icon?: ReactNode;
     placement?: Placement;
     children?: ReactNode;
 }
@@ -13,7 +16,7 @@ interface DropdownProps {
 export const dropdownClass =
     'z-10 absolute w-max top-0 left-0 bg-white p-4 border border-gray-200 shadow-lg rounded-md';
 
-export const Dropdown: FC<DropdownProps> = ({ children, buttonTitle, placement }) => {
+export const Dropdown: FC<DropdownProps> = ({ children, buttonTitle, icon, placement }) => {
     const [showContent, setShowContent] = useState(false);
     const referenceRef = useRef<HTMLButtonElement>(null);
     const floatingRef = useRef<HTMLDivElement>(null);
@@ -29,8 +32,14 @@ export const Dropdown: FC<DropdownProps> = ({ children, buttonTitle, placement }
 
     return (
         <>
-            <button type='button' className='btn btn-xs w-full whitespace-nowrap' onClick={toggle} ref={referenceRef}>
-                <span className={'w-full truncate'}>{buttonTitle}</span>
+            <button
+                type='button'
+                className={`btn btn-xs whitespace-nowrap ${icon === undefined ? 'w-full' : ''}`}
+                onClick={toggle}
+                ref={referenceRef}
+                {...(icon !== undefined && { 'aria-label': buttonTitle, title: buttonTitle })}
+            >
+                {icon ?? <span className={'w-full truncate'}>{buttonTitle}</span>}
             </button>
             <div ref={floatingRef} className={`${dropdownClass} ${showContent ? '' : 'hidden'}`}>
                 {children}
