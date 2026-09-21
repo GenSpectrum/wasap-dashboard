@@ -5,19 +5,6 @@ import { type DeletionEntry, type SubstitutionEntry } from '../../types/dashboar
 import { type Deletion, type Substitution } from '../../util/mutations';
 
 describe('getFilteredMutationCodes', () => {
-    it('should filter by mutation types', () => {
-        const result = getFilteredMutationCodes({
-            overallMutationData: [someSubstitutionEntry, anotherSubstitutionEntry, someDeletionEntry],
-            displayedMutationTypes: [
-                { type: 'substitution', checked: false, label: 'Substitution' },
-                { type: 'deletion', checked: true, label: 'Deletion' },
-            ],
-            proportionInterval,
-        });
-
-        expect(result).to.deep.equal([someDeletion.code]);
-    });
-
     it('should remove mutations where overall proportion is below filter', () => {
         const result = getFilteredMutationCodes({
             overallMutationData: [
@@ -25,7 +12,6 @@ describe('getFilteredMutationCodes', () => {
                 { ...anotherSubstitutionEntry, proportion: inFilter },
                 { ...someDeletionEntry, proportion: inFilter },
             ],
-            displayedMutationTypes: [],
             proportionInterval,
         });
 
@@ -39,7 +25,6 @@ describe('getFilteredMutationCodes', () => {
                 { ...anotherSubstitutionEntry, proportion: inFilter },
                 { ...someDeletionEntry, proportion: inFilter },
             ],
-            displayedMutationTypes: [],
             proportionInterval,
         });
 
@@ -53,7 +38,6 @@ describe('getFilteredMutationCodes', () => {
                 { ...anotherSubstitutionEntry, proportion: inFilter },
                 { ...someDeletionEntry, proportion: inFilter },
             ],
-            displayedMutationTypes: [],
             proportionInterval,
         });
 
@@ -67,7 +51,6 @@ describe('getFilteredMutationCodes', () => {
                 { ...anotherSubstitutionEntry, proportion: inFilter },
                 { ...someDeletionEntry, proportion: inFilter },
             ],
-            displayedMutationTypes: [],
             proportionInterval,
         });
 
@@ -77,7 +60,6 @@ describe('getFilteredMutationCodes', () => {
     it('should not filter by individual time-series proportions below the overall filter', () => {
         const result = getFilteredMutationCodes({
             overallMutationData: [someSubstitutionEntry, anotherSubstitutionEntry, someDeletionEntry],
-            displayedMutationTypes: [],
             proportionInterval,
         });
 
