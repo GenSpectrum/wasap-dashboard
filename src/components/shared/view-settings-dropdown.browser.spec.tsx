@@ -40,4 +40,18 @@ describe('ViewSettingsDropdown', () => {
 
         expect(onChange).toHaveBeenCalledWith({ ...DEFAULT_BAND_VIEW_SETTINGS, showPercentages: true });
     });
+
+    it('offers a slider for the thickness of the bands', async () => {
+        const onChange = vi.fn();
+        const { getByRole } = render(
+            <ViewSettingsDropdown settings={DEFAULT_BAND_VIEW_SETTINGS} onChange={onChange} />,
+        );
+
+        const slider = getByRole('slider', { name: 'Band thickness' });
+        await expect.element(slider).toHaveValue(String(DEFAULT_BAND_VIEW_SETTINGS.thickness));
+
+        await slider.fill('44');
+
+        expect(onChange).toHaveBeenCalledWith({ ...DEFAULT_BAND_VIEW_SETTINGS, thickness: 44 });
+    });
 });

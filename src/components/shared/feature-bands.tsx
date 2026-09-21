@@ -51,12 +51,10 @@ function getTooltipPosition(rowIndex: number, rows: number, columnIndex: number,
  * also has a legend and column windowing that are not here yet.
  */
 
-/** Half the thickness, in pixels, of the band at its thickest bucket. */
-const COVERAGE_BAND_MAX_HALF = 15;
 /** A covered bucket never thins away to nothing, or it can't be told from an uncovered one. */
 const COVERAGE_BAND_MIN_HALF = 1.5;
-/** Room for the thickest band, with a little air above and below it. */
-const ROW_HEIGHT = COVERAGE_BAND_MAX_HALF * 2 + 6;
+/** Air, in pixels, above and below the thickest band of a row. */
+const ROW_PADDING = 6;
 /** The band is drawn in a stretched space, so x is an arbitrary round number. */
 const SPAN = 1000;
 /** Black text stays readable on the dark parts of a band, and the light parts, with a white outline. */
@@ -66,12 +64,13 @@ const PERCENTAGE_OUTLINE = ['-1px 0', '1px 0', '0 -1px', '0 1px', '-1px -1px', '
 /** Width, in screen pixels, of the white gap that separates two buckets. */
 const BUCKET_GAP = 1;
 
-function coverageHalfThickness(coverage: number, maxCoverage: number): number {
+/** Half the thickness of the band at a bucket, given the half thickness it has at the most covered bucket. */
+function coverageHalfThickness(coverage: number, maxCoverage: number, maxHalf: number): number {
     if (coverage <= 0 || maxCoverage <= 0) {
         return 0;
     }
     const share = Math.log10(coverage + 1) / Math.log10(maxCoverage + 1);
-    return Math.max(COVERAGE_BAND_MIN_HALF, Math.min(1, share) * COVERAGE_BAND_MAX_HALF);
+    return Math.max(COVERAGE_BAND_MIN_HALF, Math.min(1, share) * maxHalf);
 }
 
 function coverageOf(value: ProportionValue): number {
@@ -298,7 +297,9 @@ function BandRow<F>({
     tooltipPortalTarget: HTMLElement | null;
 }) {
     const width = SPAN / columns.length;
-    const centre = ROW_HEIGHT / 2;
+    const maxHalf = viewSettings.thickness / 2;
+    const rowHeight = viewSettings.thickness + ROW_PADDING;
+    const centre = rowHeight / 2;
 
     // A bucket is measured at the middle of its column, and the band is drawn
     // from nothing at either edge of the row, as a violin tapers.
@@ -306,16 +307,16 @@ function BandRow<F>({
         { x: 0, half: 0 },
         ...columns.map((_, index) => ({
             x: (index + 0.5) * width,
-            half: coverageHalfThickness(coverageOf(values[index] ?? null), maxCoverage),
+            half: coverageHalfThickness(coverageOf(values[index] ?? null), maxCoverage, maxHalf),
         })),
         { x: SPAN, half: 0 },
     ];
 
     return (
-        <div className='border-base-200 relative border-b' style={{ height: `${ROW_HEIGHT}px` }}>
+        <div className='border-base-200 relative border-b' style={{ height: `${rowHeight}px` }}>
             <svg
                 className='absolute inset-0 h-full w-full'
-                viewBox={`0 0 ${SPAN} ${ROW_HEIGHT}`}
+                viewBox={`0 0 ${SPAN} ${rowHeight}`}
                 preserveAspectRatio='none'
                 aria-hidden='true'
             >
@@ -349,7 +350,7 @@ function BandRow<F>({
                         x1={(index + 1) * width}
                         x2={(index + 1) * width}
                         y1={0}
-                        y2={ROW_HEIGHT}
+                        y2={rowHeight}
                         stroke='white'
                         strokeWidth={BUCKET_GAP}
                         vectorEffect='non-scaling-stroke'
@@ -374,7 +375,7 @@ function BandRow<F>({
                             >
                                 <div
                                     className='@container flex cursor-default items-center justify-center'
-                                    style={{ height: `${ROW_HEIGHT}px` }}
+                                    style={{ height: `${rowHeight}px` }}
                                 >
                                     {viewSettings.showPercentages && proportion !== undefined && (
                                         <span
