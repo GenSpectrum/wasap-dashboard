@@ -1,32 +1,28 @@
 import { getCoreRowModel } from '@tanstack/table-core';
 import { Fragment, useId, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
-import { type TemporalDataMap } from './MutationOverTimeData';
+import { type ColorScale, getColorWithinScale } from './color-scale-selector';
+import { type CustomColumn, type FeatureRenderer } from './features-over-time-grid';
+import { getTooltipPosition } from './features-over-time-grid-shared';
+import PortalTooltip from './portal-tooltip';
+import { Pagination, type PageSizes } from './tanstackTable/pagination';
+import { usePageSizeContext } from './tanstackTable/pagination-context';
+import { useReactTable } from './tanstackTable/tanstackTable';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
-import { type ColorScale, getColorWithinScale } from '../shared/color-scale-selector';
-import { type CustomColumn, type FeatureRenderer } from '../shared/features-over-time-grid';
-import { getTooltipPosition } from '../shared/features-over-time-grid-shared';
-import PortalTooltip from '../shared/portal-tooltip';
-import { Pagination, type PageSizes } from '../shared/tanstackTable/pagination';
-import { usePageSizeContext } from '../shared/tanstackTable/pagination-context';
-import { useReactTable } from '../shared/tanstackTable/tanstackTable';
+import { type TemporalDataMap } from '../mutationsOverTime/MutationOverTimeData';
 
 /**
- * Prototype: the mutation x time-bucket matrix drawn as one band per mutation,
- * instead of a grid of colour-scaled cells.
+ * The feature x time-bucket matrix (mutations, or queries) drawn as one band per feature.
  *
- * A grid cell says what share of the reads carried a mutation but not how many
- * reads that was, so one read in four and a thousand in four thousand look the
- * same. Here each row is a band along the time axis whose thickness at a bucket
- * is the reads covering it and whose fill is the proportion measured in them,
- * so a share of a handful of reads is a thread and a deeply read bucket is wide
- * whatever was found in it.
+ * A plain grid cell says what share of the reads carried a feature but not how many
+ * reads that was, so one read in four and a thousand in four thousand look the same.
+ * Here each row is a band along the time axis whose thickness at a bucket is the reads
+ * covering it and whose fill is the proportion measured in them, so a share of a
+ * handful of reads is a thread and a deeply read bucket is wide whatever was found in it.
  *
- * Spike scope: reuses whatever page of rows/dates the grid already fetched, and
- * the grid's own colour scale and tooltip. No legend, no thickness-mode toggle,
- * no column windowing yet - see the follow-up commits on the design this is
- * ported from (wastewater-analytics-experiment, MutationViolins.tsx) for those.
+ * Ported from the design in wastewater-analytics-experiment (MutationViolins.tsx), which
+ * also has a legend and column windowing that are not here yet.
  */
 
 /** Half the thickness, in pixels, of the band at its thickest bucket. */
@@ -52,7 +48,7 @@ function coverageOf(value: ProportionValue): number {
     return value?.type === 'valueWithCoverage' ? value.coverage : 0;
 }
 
-export interface MutationBandsProps<F> {
+export interface FeatureBandsProps<F> {
     rowLabelHeader: string;
     data: TemporalDataMap<F> | null;
     isLoading: boolean;
@@ -62,7 +58,7 @@ export interface MutationBandsProps<F> {
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
     pageSizes: PageSizes;
-    /** Controlled page index (0-based); shared with the grid tab. */
+    /** Controlled page index (0-based). */
     pageIndex: number;
     /** Total number of rows across all pages. */
     totalRows: number;
@@ -75,7 +71,7 @@ export interface MutationBandsProps<F> {
 
 const NO_CUSTOM_COLUMNS: CustomColumn[] = [];
 
-export function MutationBands<F>({
+export function FeatureBands<F>({
     rowLabelHeader,
     data,
     isLoading,
@@ -90,7 +86,7 @@ export function MutationBands<F>({
     onPageChange,
     paginationEnd,
     customColumns = NO_CUSTOM_COLUMNS,
-}: MutationBandsProps<F>) {
+}: FeatureBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);

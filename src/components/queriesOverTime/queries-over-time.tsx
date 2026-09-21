@@ -11,10 +11,10 @@ import { temporalGranularitySchema } from '../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../util/temporalClass';
 import { useDispatchFinishedLoadingEvent } from '../../util/useDispatchFinishedLoadingEvent';
-import { MutationBands } from '../mutationsOverTime/mutation-bands';
 import { type ColorScale } from '../shared/color-scale-selector';
 import { CsvDownloadButton } from '../shared/csv-download-button';
 import { ErrorBoundary } from '../shared/error-boundary';
+import { FeatureBands } from '../shared/feature-bands';
 import { type FeatureRenderer, customColumnSchema } from '../shared/features-over-time-grid';
 import { LoadingDisplay } from '../shared/loading-display';
 import { NoDataDisplay } from '../shared/no-data-display';
@@ -187,7 +187,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
 
     return (
         <div ref={wrapperRef} className='rounded-md border-2 border-gray-100 p-2'>
-            <MutationBands
+            <FeatureBands
                 rowLabelHeader='Query'
                 data={pageData}
                 isLoading={false}

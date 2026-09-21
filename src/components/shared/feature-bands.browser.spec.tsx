@@ -1,12 +1,12 @@
 import { describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { MutationBands, type MutationBandsProps } from './mutation-bands';
+import { FeatureBands, type FeatureBandsProps } from './feature-bands';
+import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
 import { serializeTemporal, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { Map2dBase } from '../../util/map2d';
 import { type Temporal, TemporalCache } from '../../util/temporalClass';
-import { PageSizeContextProvider } from '../shared/tanstackTable/pagination-context';
 
 const dates: Temporal[] = [
     TemporalCache.getInstance().getYearMonthDay('2024-01-01'),
@@ -26,10 +26,10 @@ function someData() {
     return data;
 }
 
-function renderBands(props: Partial<MutationBandsProps<string>> = {}) {
+function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
     return render(
         <PageSizeContextProvider pageSizes={[10]}>
-            <MutationBands
+            <FeatureBands
                 rowLabelHeader='Mutation'
                 data={someData()}
                 isLoading={false}
@@ -52,7 +52,7 @@ function renderBands(props: Partial<MutationBandsProps<string>> = {}) {
     );
 }
 
-describe('MutationBands', () => {
+describe('FeatureBands', () => {
     it('renders a row per feature, and the first and last date', async () => {
         const { getByText } = renderBands();
 
