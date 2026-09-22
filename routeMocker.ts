@@ -5,7 +5,7 @@ import type { SetupServer } from 'msw/node';
 import { expect } from 'vitest';
 
 import type { CollectionRaw } from './src/externalData/covSpectrum/types.ts';
-import type { Collection } from './src/externalData/genSpectrum/Collection.ts';
+import type { Collection, CollectionSummary } from './src/externalData/genSpectrum/Collection.ts';
 import type { ParsedQueryResult, ParseQueryRequest } from './src/externalData/lapis/parseQuery.ts';
 
 // Standalone: the AstroApiRouteMocker (the `/api` proxy), the Subscription
@@ -149,6 +149,15 @@ export class BackendRouteMocker {
     mockGetCollectionTags(tags: string[] = [], statusCode = 200) {
         this.workerOrServer.use(
             http.get(`${DUMMY_BACKEND_URL}/collections/tags`, resolver([{ statusCode, response: { tags } }])),
+        );
+    }
+
+    mockGetCollections(organism: string, response: CollectionSummary[], statusCode = 200) {
+        this.workerOrServer.use(
+            http.get(
+                `${DUMMY_BACKEND_URL}/collections`,
+                resolver([{ statusCode, response, requestParam: { organism } }]),
+            ),
         );
     }
 }

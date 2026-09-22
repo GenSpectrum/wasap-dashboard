@@ -9,7 +9,6 @@ const MODE_SEGMENTS = {
     variant: 'variantExplorer',
     resistance: 'resistance',
     untracked: 'untracked',
-    covSpectrumCollection: 'covSpectrumCollection',
     collection: 'collection',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
@@ -18,7 +17,6 @@ const MODE_LABELS = {
     variant: 'Variant Explorer',
     resistance: 'Resistance Mutations',
     untracked: 'Untracked Mutations',
-    covSpectrumCollection: 'CovSpectrum Collection',
     collection: 'Collection',
 } as const satisfies Record<WasapAnalysisMode, string>;
 

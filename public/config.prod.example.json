@@ -14,7 +14,7 @@
             "variantAnalysisModeEnabled": true,
             "resistanceAnalysisModeEnabled": true,
             "untrackedAnalysisModeEnabled": true,
-            "covSpectrumCollectionAnalysisModeEnabled": true,
+            "covSpectrumCollectionSourceEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/covid/{{id}}",
             "defaultAnalysisMode": "resistance",
@@ -97,7 +97,8 @@
                     "collectionId": 1
                 },
                 "collection": {
-                    "mode": "collection"
+                    "mode": "collection",
+                    "source": "genSpectrum"
                 }
             }
         },
@@ -176,7 +177,8 @@
                     "resistanceSet": "Nirsevimab"
                 },
                 "collection": {
-                    "mode": "collection"
+                    "mode": "collection",
+                    "source": "genSpectrum"
                 }
             }
         },
@@ -255,7 +257,8 @@
                     "resistanceSet": "Nirsevimab"
                 },
                 "collection": {
-                    "mode": "collection"
+                    "mode": "collection",
+                    "source": "genSpectrum"
                 }
             }
         }

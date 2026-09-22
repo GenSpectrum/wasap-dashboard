@@ -41,7 +41,7 @@ describe('WasapModeTabs', () => {
         setAppConfigForTesting({ organisms: [testConfigWithCollection] });
         const { getByRole } = renderTabs();
 
-        await expect.element(getByRole('link', { name: 'CovSpectrum Collection' })).toBeVisible();
+        await expect.element(getByRole('link', { name: 'Collection' })).toBeVisible();
     });
 
     it('links to the page of the mode, with the dataset filter but without the mean proportion', async () => {

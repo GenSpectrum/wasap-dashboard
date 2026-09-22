@@ -98,32 +98,33 @@ export const wasapUntrackedFilterSchema = z.object({
 });
 export type WasapUntrackedFilter = z.infer<typeof wasapUntrackedFilterSchema>;
 
-export const wasapCovSpectrumCollectionFilterSchema = z.object({
-    mode: z.literal('covSpectrumCollection'),
-    collectionId: z.number().optional(),
-});
-export type WasapCovSpectrumCollectionFilter = z.infer<typeof wasapCovSpectrumCollectionFilterSchema>;
+/**
+ * Where a collection comes from: GenSpectrum's own collections, which are always available once
+ * the collection mode is enabled, or CoV-Spectrum's, which an organism can additionally enable
+ * (not every organism has a CoV-Spectrum instance to pull collections from).
+ */
+export const COLLECTION_SOURCE = {
+    genSpectrum: 'genSpectrum',
+    covSpectrum: 'covSpectrum',
+} as const;
+export const collectionSourceSchema = z.enum([COLLECTION_SOURCE.genSpectrum, COLLECTION_SOURCE.covSpectrum]);
+export type CollectionSource = z.infer<typeof collectionSourceSchema>;
 
 export const wasapCollectionFilterSchema = z.object({
     mode: z.literal('collection'),
+    source: collectionSourceSchema,
     collectionId: z.number().optional(),
 });
 export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
 
 export type WasapAnalysisFilter =
-    | WasapManualFilter
-    | WasapVariantFilter
-    | WasapResistanceFilter
-    | WasapUntrackedFilter
-    | WasapCovSpectrumCollectionFilter
-    | WasapCollectionFilter;
+    WasapManualFilter | WasapVariantFilter | WasapResistanceFilter | WasapUntrackedFilter | WasapCollectionFilter;
 
 export const WASAP_ANALYSIS_MODE = {
     manual: 'manual',
     variant: 'variant',
     resistance: 'resistance',
     untracked: 'untracked',
-    covSpectrumCollection: 'covSpectrumCollection',
     collection: 'collection',
 } as const;
 export const wasapAnalysisModeSchema = z.enum([
@@ -131,7 +132,6 @@ export const wasapAnalysisModeSchema = z.enum([
     WASAP_ANALYSIS_MODE.variant,
     WASAP_ANALYSIS_MODE.resistance,
     WASAP_ANALYSIS_MODE.untracked,
-    WASAP_ANALYSIS_MODE.covSpectrumCollection,
     WASAP_ANALYSIS_MODE.collection,
 ]);
 export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
