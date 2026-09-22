@@ -3,8 +3,8 @@
 The GenSpectrum wastewater ("W‑ASAP") dashboards as a standalone **Vite + React
 SPA**, extracted from `GenSpectrum/dashboards` (an Astro app). Renders the
 `covid` / `rsvA` / `rsvB` wastewater dashboards — organism dropdown, six
-analysis modes (manual, variant, resistance, untracked, collection,
-covSpectrumCollection), mutations-/queries-over-time grids — without Astro.
+analysis modes (manual, variant, resistance, untracked, collection),
+mutations-/queries-over-time grids — without Astro.
 
 From a service to a tool: today this hosts _our_ data for _our_ users. The goal
 is a tool other people can point at their own data, in three run modes:
@@ -55,11 +55,14 @@ that serve from a sub-path. Defaults to `/`.
 
 Every organism has a page per analysis mode: `/<organism>/<mode>`, for example
 `/covid/manual`, `/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`,
-`/covid/collection` and `/covid/covSpectrumCollection`. The modes are the ones that are enabled
+and `/covid/collection`. The modes are the ones that are enabled
 in the organism's config. The bare `/<organism>` goes to the `defaultAnalysisMode` of the
 config, or else the first enabled mode. Location, sampling date and granularity are search
 params that stay the same when going from one mode to another; the settings of a mode are search
-params of its own page.
+params of its own page. The collection mode itself has two sources, GenSpectrum's own
+collections (always available) and CoV-Spectrum's (an organism-level opt-in, since not every
+organism has a CoV-Spectrum instance) — which one is picked is a `source` search param of that
+page, not a separate mode.
 
 ### SPA fallback
 
