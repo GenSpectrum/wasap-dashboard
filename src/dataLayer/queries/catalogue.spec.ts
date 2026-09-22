@@ -1,6 +1,12 @@
 import { describe, expect, test } from 'vitest';
 
-import { samplingDatesQuery, stringFieldValuesQuery, totalReadCountQuery } from './catalogue';
+import {
+    batchCountQuery,
+    locationSampleOverviewQuery,
+    samplingDatesQuery,
+    stringFieldValuesQuery,
+    totalReadCountQuery,
+} from './catalogue';
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
@@ -10,6 +16,8 @@ const schema: SiloSchema = {
     groupingDate: 'date',
     groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
+    sampleId: 'sampleId',
+    batchId: 'batchId',
 };
 
 describe('the Tier-1 read catalogue', () => {
@@ -36,5 +44,15 @@ describe('the Tier-1 read catalogue', () => {
         expect(samplingDatesQuery(schema, { samplingDateFrom: '2024-01-01' }).render()).toBe(
             "default.filter(date >= '2024-01-01').groupBy({n := count()}, {date}).orderBy({date.asc()})",
         );
+    });
+
+    test('locationSampleOverviewQuery groups the whole table by location, date and sample, unfiltered', () => {
+        expect(locationSampleOverviewQuery(schema).render()).toBe(
+            'default.groupBy({n := count()}, {locationName, date, sampleId})',
+        );
+    });
+
+    test('batchCountQuery groups the whole table by batch, unfiltered', () => {
+        expect(batchCountQuery(schema).render()).toBe('default.groupBy({n := count()}, {batchId})');
     });
 });

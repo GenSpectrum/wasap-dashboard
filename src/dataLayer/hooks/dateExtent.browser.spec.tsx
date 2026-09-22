@@ -14,6 +14,8 @@ const schema: SiloSchema = {
     groupingDate: 'date',
     groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
+    sampleId: 'sampleId',
+    batchId: 'batchId',
 };
 
 /** An NDJSON `Response`, as SILO's `/query` returns. */

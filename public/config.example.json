@@ -17,7 +17,6 @@
             "covSpectrumCollectionSourceEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/covid/{{id}}",
-            "defaultAnalysisMode": "resistance",
             "resistanceMutationCollections": [
                 {
                     "collectionId": 4,
@@ -47,7 +46,9 @@
                 "dateColumn": "date",
                 "dateColumnIsDictionaryEncoded": true,
                 "samplingDateColumn": "samplingDate",
-                "locationNameColumn": "locationName"
+                "locationNameColumn": "locationName",
+                "sampleIdColumn": "sampleId",
+                "batchIdColumn": "batchId"
             },
             "predefinedVariantsSource": {
                 "collectionsUserId": 3,
@@ -125,7 +126,9 @@
                 "dateColumn": "samplingDate",
                 "dateColumnIsDictionaryEncoded": false,
                 "samplingDateColumn": "samplingDate",
-                "locationNameColumn": "locationName"
+                "locationNameColumn": "locationName",
+                "sampleIdColumn": "sampleId",
+                "batchIdColumn": "batchId"
             },
             "predefinedVariantsSource": {
                 "collectionsUserId": 3,
@@ -205,7 +208,9 @@
                 "dateColumn": "samplingDate",
                 "dateColumnIsDictionaryEncoded": false,
                 "samplingDateColumn": "samplingDate",
-                "locationNameColumn": "locationName"
+                "locationNameColumn": "locationName",
+                "sampleIdColumn": "sampleId",
+                "batchIdColumn": "batchId"
             },
             "predefinedVariantsSource": {
                 "collectionsUserId": 3,

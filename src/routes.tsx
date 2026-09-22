@@ -2,13 +2,13 @@ import { Navigate, type RouteObject } from 'react-router-dom';
 
 import { AppShell } from './AppShell';
 import { LandingPage } from './routes/LandingPage';
-import { WasapDefaultModeRoute, WasapModeRoute, WasapRoute } from './routes/WasapRoute';
+import { WasapModeRoute, WasapOverviewRoute, WasapRoute } from './routes/WasapRoute';
 
 /**
  * The route tree. Real paths (see `main.tsx`) — no `#`.
  * `/:organismPath` matches the per-organism `config.path` so the URLs the
- * wasap code builds stay valid. Every analysis mode is a page below it,
- * `/:organismPath/:mode`.
+ * wasap code builds stay valid. It is the organism's overview page (the bare
+ * URL, no redirect); every analysis mode is a page below it, `/:organismPath/:mode`.
  */
 export const routes: RouteObject[] = [
     {
@@ -20,7 +20,7 @@ export const routes: RouteObject[] = [
                 path: ':organismPath',
                 element: <WasapRoute />,
                 children: [
-                    { index: true, element: <WasapDefaultModeRoute /> },
+                    { index: true, element: <WasapOverviewRoute /> },
                     { path: ':mode', element: <WasapModeRoute /> },
                 ],
             },

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
-import { enabledAnalysisModes, wasapPageConfigSchema, type WasapPageConfig } from './wasapPageConfig';
+import { wasapPageConfigSchema, type WasapPageConfig } from './wasapPageConfig';
 
 // These pin behaviour of the GenSpectrum-hosted deployment's own data, which
 // now lives in `public/config.example.json` rather than in TypeScript.
@@ -20,27 +20,16 @@ describe.each(prodOrganisms.map((config) => [config.genSpectrumOrganismName, con
                 expect(resistanceSetNames).include(defaultSetName);
             }
         });
-
-        test('configured default mode must be enabled', () => {
-            const defaultMode = config.defaultAnalysisMode;
-            if (defaultMode === undefined) {
-                return;
-            }
-
-            // Prevent configs from pointing the URL-less page state at a disabled mode.
-            expect(enabledAnalysisModes(config)).include(defaultMode);
-        });
     },
 );
 
-test('COVID wastewater opens on Spike resistance mutations by default', () => {
+test('COVID wastewater defaults resistance mutation mode to Spike', () => {
     const covidConfig = prodOrganisms.find((config) => config.genSpectrumOrganismName === 'covid');
     if (covidConfig === undefined) {
         throw new Error('No covid config found in config.example.json.');
     }
 
-    // This pins the default requested for the COVID wastewater dashboard landing state.
-    expect(covidConfig.defaultAnalysisMode).toBe('resistance');
+    // This pins the default resistance set requested for the COVID wastewater dashboard.
     if (!covidConfig.resistanceAnalysisModeEnabled) {
         throw new Error('COVID wastewater resistance analysis mode must be enabled.');
     }

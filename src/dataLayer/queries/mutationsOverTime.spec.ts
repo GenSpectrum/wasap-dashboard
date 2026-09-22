@@ -15,6 +15,8 @@ const schema: SiloSchema = {
     groupingDate: 'date',
     groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
+    sampleId: 'sampleId',
+    batchId: 'batchId',
 };
 
 const fields = '{mutationFrom, mutationTo, sequenceName, position, count, coverage}';
@@ -73,6 +75,8 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             groupingDate: 'samplingDate',
             groupingDateIsDictionary: false,
             nucleotideSequence: 'main',
+            sampleId: 'sampleId',
+            batchId: 'batchId',
         };
         expect(
             positionOverTimeQuery(

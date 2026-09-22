@@ -12,6 +12,8 @@ const schema: SiloSchema = {
     groupingDate: 'date',
     groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
+    sampleId: 'sampleId',
+    batchId: 'batchId',
 };
 
 const wrapper: FC<PropsWithChildren> = ({ children }) => (

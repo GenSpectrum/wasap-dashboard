@@ -18,5 +18,7 @@ export function siloSchema(silo: SiloInstanceConfig): SiloSchema {
         groupingDate: silo.dateColumn,
         groupingDateIsDictionary: silo.dateColumnIsDictionaryEncoded,
         nucleotideSequence: 'main',
+        sampleId: silo.sampleIdColumn,
+        batchId: silo.batchIdColumn,
     };
 }

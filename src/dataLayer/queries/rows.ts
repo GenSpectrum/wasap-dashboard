@@ -6,6 +6,7 @@
  */
 
 import { READS } from './catalogue';
+import type { SiloSchema } from './schema';
 import { readCount, readText, type RhydbRow } from '../transport/row';
 
 /**
@@ -35,4 +36,39 @@ export function readValueExtent(rows: readonly RhydbRow[], column: string): { mi
         return undefined;
     }
     return { min: readText(rows[0], column), max: readText(rows[rows.length - 1], column) };
+}
+
+export type LocationOverview = {
+    name: string;
+    sampleCount: number;
+    /** The sampling date of the most recently collected sample at this location. */
+    mostRecentSampleDate: string;
+};
+
+/**
+ * `locationSampleOverviewQuery`'s one-row-per-sample result, folded into one entry per
+ * location — how many samples it has, and the most recent of their sampling dates. Sorted by
+ * location name. Rows with a blank location are dropped, the same as `readNamedCounts`.
+ */
+export function readLocationOverview(rows: readonly RhydbRow[], schema: SiloSchema): LocationOverview[] {
+    const byLocation = new Map<string, { sampleCount: number; mostRecentSampleDate: string }>();
+    for (const row of rows) {
+        const name = readText(row, schema.locationName);
+        if (name === '') {
+            continue;
+        }
+        const date = readText(row, schema.groupingDate);
+        const existing = byLocation.get(name);
+        if (existing === undefined) {
+            byLocation.set(name, { sampleCount: 1, mostRecentSampleDate: date });
+        } else {
+            existing.sampleCount += 1;
+            if (date > existing.mostRecentSampleDate) {
+                existing.mostRecentSampleDate = date;
+            }
+        }
+    }
+    return [...byLocation.entries()]
+        .map(([name, stats]) => ({ name, ...stats }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 }

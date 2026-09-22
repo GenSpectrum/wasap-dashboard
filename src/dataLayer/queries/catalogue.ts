@@ -60,3 +60,26 @@ export function samplingDatesQuery(schema: SiloSchema, filter: SiloReadFilter = 
         .groupBy(readCounts(), [schema.groupingDate])
         .orderBy(field(schema.groupingDate).asc());
 }
+
+/**
+ * Every distinct sample the instance holds, with its location and sampling date — one row
+ * each. Unfiltered, for the overview page's per-location table.
+ *
+ * SILO's `groupBy` has only `count()`, no `max`/`countDistinct`, so this groups by all three
+ * columns together rather than aggregating them: the resulting row count is the same whether
+ * grouping by `sampleId` alone or by all three (checked against the live instances), meaning a
+ * sample always carries exactly one location and one date. The caller folds these rows into
+ * a sample count and the most recent date per location client-side (`readLocationOverview`).
+ */
+export function locationSampleOverviewQuery(schema: SiloSchema): Relation {
+    return table(schema.table).groupBy(readCounts(), [schema.locationName, schema.groupingDate, schema.sampleId]);
+}
+
+/**
+ * The number of distinct batches the instance holds, as one row per batch — the caller counts
+ * the rows. Unfiltered, for the overview page's stats. Grouping the dictionary-encoded batch ID
+ * column is as cheap as `stringFieldValuesQuery` above.
+ */
+export function batchCountQuery(schema: SiloSchema): Relation {
+    return table(schema.table).groupBy(readCounts(), [schema.batchId]);
+}

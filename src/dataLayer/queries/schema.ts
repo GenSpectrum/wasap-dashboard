@@ -48,4 +48,8 @@ export type SiloSchema = {
     groupingDateIsDictionary: boolean;
     /** The single nucleotide-sequence column (`main` on every current instance). */
     nucleotideSequence: string;
+    /** Dictionary-encoded column holding the sample ID every amplicon sequence carries. */
+    sampleId: string;
+    /** Dictionary-encoded column holding the batch ID every amplicon sequence carries. */
+    batchId: string;
 };
