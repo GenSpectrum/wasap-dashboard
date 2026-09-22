@@ -22,6 +22,9 @@ export default defineConfig({
                 },
             },
             {
+                // Found only while the tests run otherwise, which re-bundles the dependencies half-way
+                // and leaves two copies of React ("Invalid hook call").
+                optimizeDeps: { include: ['react-router-dom'] },
                 test: {
                     name: 'browser',
                     include: BROWSER_SPEC_PATTERNS,

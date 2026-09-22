@@ -1,0 +1,50 @@
+import { createTable, type RowData, type TableOptions, type TableOptionsResolved } from '@tanstack/table-core';
+import { useEffect, useState } from 'react';
+
+import { usePageSizeContext } from './pagination-context';
+
+/*
+ * Taken from https://github.com/TanStack/table/blob/f7bf6f1adfa4f8b28b9968b29745f2452d4be9d8/packages/react-table/src/index.tsx
+ */
+export function useReactTable<TData extends RowData>(options: TableOptions<TData>) {
+    const resolvedOptions: TableOptionsResolved<TData> = {
+        state: {},
+        onStateChange: () => {},
+        renderFallbackValue: null,
+        ...options,
+    };
+
+    const [tableRef] = useState(() => ({
+        current: createTable<TData>(resolvedOptions),
+    }));
+
+    const [state, setState] = useState(() => tableRef.current.initialState);
+
+    tableRef.current.setOptions((prev) => ({
+        ...prev,
+        ...options,
+        state: {
+            ...state,
+            ...options.state,
+        },
+        onStateChange: (updater) => {
+            setState(updater);
+            options.onStateChange?.(updater);
+        },
+    }));
+
+    // When pagination is controlled externally (manualPagination: true with a state override),
+    // the caller manages pageSize themselves — skip the context sync to avoid conflicts.
+    const isControlled = options.manualPagination === true && options.state?.pagination !== undefined;
+    const { pageSize } = usePageSizeContext();
+    useEffect(
+        () => {
+            if (!isControlled) {
+                tableRef.current.setPageSize(pageSize);
+            }
+        },
+        [pageSize, isControlled], // eslint-disable-line react-hooks/exhaustive-deps -- only run this when the pageSize changes
+    );
+
+    return tableRef.current;
+}

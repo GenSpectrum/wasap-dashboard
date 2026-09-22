@@ -23,8 +23,8 @@ import type {
     WasapVariantFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type LapisFilter } from '../../../types/dashboardComponents';
-import { type QueriesOverTimeQuery } from '../../queriesOverTime/queries-over-time';
-import { type CustomColumn } from '../../shared/features-over-time-grid';
+import { type CustomColumn } from '../../dataDisplay/feature-bands';
+import { type QueriesOverTimeQuery } from '../../dataDisplay/queriesOverTime/queries-over-time';
 
 /**
  * Hook that fetches and returns `WasapPageData` for the W-ASAP page,

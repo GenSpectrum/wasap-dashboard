@@ -1,0 +1,95 @@
+import { type UseQueryResult } from '@tanstack/react-query';
+
+import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
+import type { ExcludeSetName, WasapUntrackedFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { Loading } from '../../../util/Loading';
+import { KnownVariantsExclusionInfo } from '../../InfoBlocks';
+import { LabeledField } from '../../inputs/LabeledField';
+import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
+import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
+
+interface UntrackedFilterProps {
+    pageState: WasapUntrackedFilter;
+    setPageState: (newState: WasapUntrackedFilter) => void;
+    cladeLineageQueryResult: UseQueryResult<Record<string, string>>;
+    /**
+     * The LAPIS base URL for the clinical sequence data used in the variant selector.
+     * This is _not_ the same as the LAPIS providing the wastewater amplicon sequences.
+     */
+    clinicalSequenceLapisBaseUrl: string;
+    clinicalSequenceLapisLineageField: string;
+}
+
+export function UntrackedFilter({
+    pageState,
+    setPageState,
+    cladeLineageQueryResult: { isPending, isError, data: cladeLineages },
+    clinicalSequenceLapisBaseUrl,
+    clinicalSequenceLapisLineageField,
+}: UntrackedFilterProps) {
+    const defaultLineages = cladeLineages ? Object.values(cladeLineages) : [];
+    defaultLineages.sort();
+
+    return (
+        <>
+            <SequenceTypeSelector
+                value={pageState.sequenceType}
+                onChange={(sequenceType) => setPageState({ ...pageState, sequenceType })}
+            />
+            <LabeledField label='Known variants to exclude' info={<KnownVariantsExclusionInfo />}>
+                <select
+                    className='select select-bordered'
+                    value={pageState.excludeSet}
+                    onChange={(e) => setPageState({ ...pageState, excludeSet: e.target.value as ExcludeSetName })}
+                >
+                    <option value='predefined'>Nextstrain clades</option>
+                    <option value='custom'>custom</option>
+                </select>
+            </LabeledField>
+            {/* The list of variants (-mt-4) is about the select above, so it stays close to it instead of being a field of its own. */}
+            {pageState.excludeSet === 'predefined' ? (
+                isPending ? (
+                    <Loading />
+                ) : isError ? (
+                    <span>Failed to load variant list. Please try again or use custom variant list.</span>
+                ) : (
+                    <div className='-mt-4 px-1 py-2 text-sm'>
+                        {defaultLineages.join(', ')}{' '}
+                        <button
+                            className='cursor-pointer underline'
+                            onClick={() => {
+                                setPageState({
+                                    ...pageState,
+                                    excludeSet: 'custom',
+                                    excludeVariants: defaultLineages,
+                                });
+                            }}
+                        >
+                            Customize ...
+                        </button>
+                    </div>
+                )
+            ) : (
+                <>
+                    <LabeledField label='Custom variant list'>
+                        <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
+                            <LineageFilter
+                                field={clinicalSequenceLapisLineageField}
+                                placeholderText='Variant'
+                                value={pageState.excludeVariants}
+                                onLineageMultiChange={(lineages) => {
+                                    setPageState({
+                                        ...pageState,
+                                        excludeVariants: lineages[clinicalSequenceLapisLineageField],
+                                    });
+                                }}
+                                hideCounts={true}
+                                multiSelect={true}
+                            />
+                        </LapisClientProvider>
+                    </LabeledField>
+                </>
+            )}
+        </>
+    );
+}

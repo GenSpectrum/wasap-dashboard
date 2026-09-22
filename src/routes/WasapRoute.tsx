@@ -2,8 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { getClientLogger } from '../clientLogger';
+import { DefaultModeRedirect, EnabledModeRoute } from './wasapModeRoutes';
 import { NoDataDisplay } from '../components/shared/no-data-display';
-import { WasapPage } from '../components/views/wasap/WasapPage';
+import { WasapLayout, useWasapLayoutContext } from '../components/views/wasap/WasapLayout';
+import { WasapModePage } from '../components/views/wasap/WasapModePage';
 import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
 import { getAppConfig } from '../config/appConfig';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
@@ -18,8 +20,9 @@ const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], display
 
 /**
  * The `/:organismPath` route. Replaces `Wasap.astro`: resolves
- * the per-organism config from the URL, fetches resistance-mutation data on the
- * client (Astro did this in page frontmatter), and renders `<WasapPage>`.
+ * the per-organism config from the URL and fetches resistance-mutation data on the
+ * client (Astro did this in page frontmatter). The page of the analysis mode
+ * (see `WasapModeRoute`) is rendered inside the `WasapLayout`.
  */
 export function WasapRoute() {
     const { organismPath } = useParams();
@@ -56,5 +59,24 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
         return <Loading />;
     }
 
-    return <WasapPage config={config} resistanceData={data ?? EMPTY_RESISTANCE_DATA} />;
+    return <WasapLayout config={config} resistanceData={data ?? EMPTY_RESISTANCE_DATA} />;
+}
+
+/** The index route of `/:organismPath`. */
+export function WasapDefaultModeRoute() {
+    const { config } = useWasapLayoutContext();
+
+    return <DefaultModeRedirect config={config} />;
+}
+
+/** The `/:organismPath/:mode` route. */
+export function WasapModeRoute() {
+    const { config } = useWasapLayoutContext();
+    const { mode: segment } = useParams();
+
+    return (
+        <EnabledModeRoute config={config} segment={segment}>
+            {(mode) => <WasapModePage config={config} mode={mode} />}
+        </EnabledModeRoute>
+    );
 }

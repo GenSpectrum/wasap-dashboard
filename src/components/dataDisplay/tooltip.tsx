@@ -1,0 +1,65 @@
+import { type CSSProperties, type FC, type PropsWithChildren, type ReactElement } from 'react';
+
+export type TooltipPosition =
+    'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'right';
+
+export type TooltipProps = {
+    content: string | ReactElement;
+    position?: TooltipPosition;
+    tooltipStyle?: CSSProperties;
+};
+
+export const TOOLTIP_BASE_STYLES = 'z-10 w-max bg-white p-4 border border-gray-200';
+
+/**
+ * A simple CSS-based tooltip component that displays content on hover.
+ *
+ * **Note:** If you need the tooltip to escape overflow constraints or render at a specific
+ * location in the DOM (e.g., to avoid clipping by parent containers with `overflow: hidden`),
+ * use `PortalTooltip` instead.
+ *
+ * @example
+ * ```tsx
+ * <Tooltip content="This is a tooltip" position="top">
+ *   <button>Hover me</button>
+ * </Tooltip>
+ * ```
+ */
+const Tooltip: FC<PropsWithChildren<TooltipProps>> = ({ children, content, position = 'bottom', tooltipStyle }) => {
+    return (
+        <div className={`group relative`}>
+            <div>{children}</div>
+            <div
+                className={`absolute ${TOOLTIP_BASE_STYLES} invisible group-hover:visible ${getPositionCss(position)}`}
+                style={tooltipStyle}
+            >
+                {content}
+            </div>
+        </div>
+    );
+};
+
+export default Tooltip;
+
+function getPositionCss(position?: TooltipPosition) {
+    switch (position) {
+        case 'top':
+            return 'bottom-full translate-x-[-50%] left-1/2 mb-1';
+        case 'top-start':
+            return 'bottom-full mr-1 mb-1';
+        case 'top-end':
+            return 'bottom-full right-0 ml-1 mb-1';
+        case 'bottom':
+            return 'top-full translate-x-[-50%] left-1/2 mt-1';
+        case 'bottom-start':
+            return 'mr-1 mt-1';
+        case 'bottom-end':
+            return 'right-0 ml-1 mt-1';
+        case 'left':
+            return 'right-full translate-y-[-50%] top-1/2 mr-1';
+        case 'right':
+            return 'left-full translate-y-[-50%] top-1/2 ml-1';
+        case undefined:
+            return '';
+    }
+}

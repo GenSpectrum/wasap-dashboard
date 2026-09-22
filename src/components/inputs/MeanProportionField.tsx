@@ -1,0 +1,87 @@
+import { LabeledField } from './LabeledField';
+import { MinMaxRangeSlider } from './min-max-range-slider';
+import type { WasapMeanProportion } from '../../pageState/wasap/wasapAnalysisFilter';
+
+/**
+ * Selects the interval that the mean proportion of a mutation (or query) over the
+ * selected time range has to be in for it to be displayed.
+ *
+ * TODO: This is roughly 80% of the way to looking like the other sidebar sliders
+ * (`NumericInput`) - the thumbs of the range slider are still the 24px white circles of the
+ * shared `MinMaxRangeSlider`, not the native accent-colored ones. Revisit to make them match. Note that
+ * native sliders render differently in every browser, so an exact match isn't the goal; a native
+ * multi-thumb slider (the `<rangegroup>` proposal) doesn't exist in any browser yet.
+ */
+export function MeanProportionField({
+    value,
+    onChange,
+}: {
+    value: WasapMeanProportion;
+    onChange: (v: WasapMeanProportion) => void;
+}) {
+    const indicateError = value.lower > value.upper;
+
+    return (
+        <LabeledField label='Mean proportion'>
+            <div className='w-full'>
+                <div className='flex items-center gap-2'>
+                    <ProportionInput
+                        label='Lower'
+                        value={value.lower}
+                        indicateError={indicateError}
+                        onChange={(lower) => onChange({ ...value, lower })}
+                    />
+                    <span>-</span>
+                    <ProportionInput
+                        label='Upper'
+                        value={value.upper}
+                        indicateError={indicateError}
+                        onChange={(upper) => onChange({ ...value, upper })}
+                    />
+                </div>
+                <div className='px-3'>
+                    <MinMaxRangeSlider
+                        min={value.lower}
+                        max={value.upper}
+                        setMin={(lower) => onChange({ ...value, lower })}
+                        setMax={(upper) => onChange({ ...value, upper })}
+                        rangeMin={0}
+                        rangeMax={1}
+                        step={0.01}
+                        rangeColor='var(--color-primary)'
+                    />
+                </div>
+            </div>
+        </LabeledField>
+    );
+}
+
+function ProportionInput({
+    label,
+    value,
+    indicateError,
+    onChange,
+}: {
+    label: string;
+    value: number;
+    indicateError: boolean;
+    onChange: (v: number) => void;
+}) {
+    return (
+        <input
+            className={`input input-bordered w-full min-w-0 ${indicateError ? 'input-error' : ''}`}
+            type='number'
+            aria-label={`${label} mean proportion`}
+            min={0}
+            max={1}
+            step={0.01}
+            value={value}
+            onChange={(e) => {
+                const parsedNumber = Number(e.target.value);
+                if (e.target.value !== '' && Number.isFinite(parsedNumber)) {
+                    onChange(Math.min(1, Math.max(0, parsedNumber)));
+                }
+            }}
+        />
+    );
+}

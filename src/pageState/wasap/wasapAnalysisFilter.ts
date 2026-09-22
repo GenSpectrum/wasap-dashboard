@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { type DateRangeOption } from '../../components/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { sequenceTypeSchema, type TemporalGranularity } from '../../types/dashboardComponents';
 
 export const SEQUENCE_TYPE = {
@@ -137,18 +137,40 @@ export const wasapAnalysisModeSchema = z.enum([
 export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
 
 /**
+ * Only mutations (or queries) whose mean proportion over the selected time range
+ * lies within [lower, upper] are displayed. Both are proportions between 0 and 1.
+ */
+export type WasapMeanProportion = {
+    lower: number;
+    upper: number;
+};
+
+/**
  * Mode-independent settings, like the filter for location and date range —
  * the *current* filter selection (derived from URL state, see
- * `WasapPageStateHandler`), not a `WasapPageConfig` default.
+ * `WasapModePageStateHandler`), not a `WasapPageConfig` default.
  */
 export type WasapBaseFilter = {
     locationName?: string;
     samplingDate?: DateRangeOption;
     granularity: TemporalGranularity;
     excludeEmpty: boolean;
+    meanProportion: WasapMeanProportion;
 };
 
-export type WasapFilter = {
+/**
+ * The part of the base filter that selects the dataset, and that stays the same
+ * when going from one analysis mode to another (the mean proportion doesn't).
+ */
+export type WasapDatasetFilter = Omit<WasapBaseFilter, 'meanProportion'>;
+
+/**
+ * The page state of one analysis mode page, where `analysis` is narrowed to the
+ * filter of that mode.
+ */
+export type WasapModeFilter<Analysis extends WasapAnalysisFilter = WasapAnalysisFilter> = {
     base: WasapBaseFilter;
-    analysis: WasapAnalysisFilter;
+    analysis: Analysis;
 };
+
+export type WasapFilter = WasapModeFilter;

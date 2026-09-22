@@ -72,7 +72,8 @@ export const wasapPageConfigBaseSchema = z.object({
     name: z.string(),
 
     /**
-     * The path to the page itself.
+     * The path to the page of the organism, like `/covid`. The pages of the
+     * analysis modes are below it (`/covid/manual`).
      * Used to generate URLs and in the breadcrumbs.
      */
     path: z.string(),
@@ -103,6 +104,7 @@ export const wasapPageConfigBaseSchema = z.object({
     browseDataUrl: z.string(),
     browseDataDescription: z.string(),
 
+    /** The mode that the bare organism URL (like `/covid`) goes to. The first enabled mode if not set. */
     defaultAnalysisMode: wasapAnalysisModeSchema.optional(),
 });
 export type WasapPageConfigBase = z.infer<typeof wasapPageConfigBaseSchema>;
@@ -234,4 +236,53 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
         result.push('covSpectrumCollection');
     }
     return result;
+}
+
+const MODE_ENABLED_FLAGS = {
+    manual: 'manualAnalysisModeEnabled',
+    variant: 'variantAnalysisModeEnabled',
+    resistance: 'resistanceAnalysisModeEnabled',
+    untracked: 'untrackedAnalysisModeEnabled',
+    covSpectrumCollection: 'covSpectrumCollectionAnalysisModeEnabled',
+    collection: 'collectionAnalysisModeEnabled',
+} as const satisfies Record<WasapAnalysisMode, string>;
+
+/**
+ * The config of a page where the given mode is enabled, so that the settings
+ * of that mode (like `filterDefaults.manual`) are known to be there.
+ */
+export type WasapPageConfigFor<Mode extends WasapAnalysisMode> = Extract<
+    WasapPageConfig,
+    { [Flag in (typeof MODE_ENABLED_FLAGS)[Mode]]: true }
+>;
+
+export function isModeEnabled<Mode extends WasapAnalysisMode>(
+    config: WasapPageConfig,
+    mode: Mode,
+): config is WasapPageConfigFor<Mode> {
+    return config[MODE_ENABLED_FLAGS[mode]] === true;
+}
+
+/**
+ * The mode that a bare organism URL shows: the configured default, or else the
+ * first enabled mode. `undefined` if no mode is enabled at all.
+ */
+export function getDefaultAnalysisMode(config: WasapPageConfig): WasapAnalysisMode | undefined {
+    const enabled = enabledAnalysisModes(config);
+    return config.defaultAnalysisMode !== undefined && enabled.includes(config.defaultAnalysisMode)
+        ? config.defaultAnalysisMode
+        : enabled[0];
+}
+
+/**
+ * For code that has been given the config of a page whose mode is known to be enabled
+ * (see `EnabledModeRoute`), but has to get the type to say so.
+ */
+export function assertModeEnabled<Mode extends WasapAnalysisMode>(
+    config: WasapPageConfig,
+    mode: Mode,
+): asserts config is WasapPageConfigFor<Mode> {
+    if (!isModeEnabled(config, mode)) {
+        throw Error(`The '${mode}' analysis mode is not enabled.`);
+    }
 }
