@@ -196,7 +196,10 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                         </colgroup>
                         <thead>
                             <tr>
-                                <th className='sticky left-0 z-10 bg-white px-2 text-left align-bottom text-sm font-normal text-stone-500'>
+                                {/* No explicit weight/colour - matches LocationOverviewTable's own
+                                    unstyled "Location" header below, which is bold and dark by
+                                    default rather than the muted style most of this page's labels use. */}
+                                <th className='sticky left-0 z-10 bg-white px-2 text-left align-bottom text-sm'>
                                     Location
                                 </th>
                                 <th className='p-0 align-bottom'>
@@ -216,7 +219,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                                     overflows into the six undated columns after it,
                                                     the same way the week that starts here does. */}
                                                 {isMonday(date) && (
-                                                    <div className='absolute left-0 text-sm text-nowrap text-stone-500'>
+                                                    <div className='absolute left-0 text-xs text-nowrap text-stone-500'>
                                                         {formatDayLabel(date)}
                                                     </div>
                                                 )}
