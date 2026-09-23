@@ -1,13 +1,15 @@
-import type { FC } from 'react';
+import { useMemo, type FC } from 'react';
 
-import { useLocationOverview } from '../../../dataLayer/hooks/locationOverview';
+import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
+import { readLocationOverview } from '../../../dataLayer/queries';
 import { Loading } from '../../../util/Loading';
 
 /** One row per location: its name, how many samples were collected there, and the most recent. */
 export const LocationOverviewTable: FC = () => {
-    const { data, isPending, isError, error } = useLocationOverview();
+    const { data, isPending, isError, error } = useSampleOverview();
+    const locations = useMemo(() => (data === undefined ? undefined : readLocationOverview(data)), [data]);
 
-    if (isPending) {
+    if (isPending || locations === undefined) {
         return <Loading />;
     }
 
@@ -25,7 +27,7 @@ export const LocationOverviewTable: FC = () => {
                 </tr>
             </thead>
             <tbody>
-                {data.map((location) => (
+                {locations.map((location) => (
                     <tr key={location.name} className='border-b border-stone-200 last:border-b-0'>
                         <td className='p-2'>{location.name}</td>
                         <td className='p-2'>{location.sampleCount.toLocaleString('en-us')}</td>

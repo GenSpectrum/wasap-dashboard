@@ -3,7 +3,7 @@ import type { FC, ReactNode } from 'react';
 import { useBatchCount } from '../../../dataLayer/hooks/batchCount';
 import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import { useDateExtent } from '../../../dataLayer/hooks/dateExtent';
-import { useLocationOverview } from '../../../dataLayer/hooks/locationOverview';
+import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
 import { useStringFieldOptions } from '../../../dataLayer/hooks/stringFieldOptions';
 import { useTotalReadCount } from '../../../dataLayer/hooks/totalReadCount';
 
@@ -51,14 +51,13 @@ const BatchCount: FC = () => {
 };
 
 const SampleCount: FC = () => {
-    const { data, isPending, isError, error } = useLocationOverview();
-
-    const total = data?.reduce((sum, location) => sum + location.sampleCount, 0);
+    // One row per sample, so the count is simply the number of rows.
+    const { data, isPending, isError, error } = useSampleOverview();
 
     return (
         <Stat
             title='Samples'
-            value={isPending ? '…' : isError ? 'Error' : (total ?? 0).toLocaleString('en-us')}
+            value={isPending ? '…' : isError ? 'Error' : data.length.toLocaleString('en-us')}
             description={isError ? error.message : 'Across all locations'}
         />
     );
