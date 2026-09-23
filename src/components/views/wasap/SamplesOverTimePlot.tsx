@@ -68,10 +68,10 @@ function depthOpacity(reads: number): number {
 /** Matches the hatch the app already uses for "nothing here" cells elsewhere, in this app's greys. */
 const ABSENT_FILL = 'repeating-linear-gradient(45deg, var(--color-stone-300) 0 1px, var(--color-stone-100) 1px 4px)';
 
-// Matches LocationOverviewTable's own row height (p-2 padding around text-sm), so the two tables
-// on this page read as one visual rhythm rather than the plot looking cramped next to it.
-const ROW_HEIGHT = '37px';
-const HEADER_HEIGHT = '37px';
+// Between the original 20px (too cramped next to LocationOverviewTable's rows) and that table's
+// own 37px (too spaced out for a grid of colour swatches rather than text).
+const ROW_HEIGHT = '28px';
+const HEADER_HEIGHT = '28px';
 const LOCATION_COLUMN_WIDTH = '10rem';
 
 /**
