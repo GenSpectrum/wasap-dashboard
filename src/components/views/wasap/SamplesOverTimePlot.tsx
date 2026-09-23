@@ -77,7 +77,7 @@ const LOCATION_COLUMN_WIDTH = '10rem';
 /**
  * Narrow enough that a typical window shows roughly the most recent 90 days before the
  * horizontal scrollbar is needed, wide enough that a week - 7 of these - comfortably fits a
- * Monday's upright date label without crowding the next week's.
+ * Monday's date label without crowding the next week's.
  */
 const DAY_WIDTH_PX = 13;
 
