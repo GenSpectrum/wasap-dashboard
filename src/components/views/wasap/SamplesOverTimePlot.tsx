@@ -89,13 +89,13 @@ function isMonday(date: string): boolean {
 
 const DAY_LABEL_FORMAT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
 
-/** "24. Jan", "8. Sep": day of month, then the month abbreviated - shorter than the ISO form and
+/** "24 Jan", "8 Sep": day of month, then the month abbreviated - shorter than the ISO form and
  * closer to how a date gets said out loud. */
 function formatDayLabel(date: string): string {
     const parts = DAY_LABEL_FORMAT.formatToParts(new Date(`${date}T00:00:00Z`));
     const day = parts.find((part) => part.type === 'day')?.value ?? '';
     const month = parts.find((part) => part.type === 'month')?.value ?? '';
-    return `${day}. ${month}`;
+    return `${day} ${month}`;
 }
 
 /** Every calendar day from `from` to `to`, inclusive, both `YYYY-MM-DD`. */
@@ -217,9 +217,11 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                                 {/* Anchored to its own narrow column but not confined
                                                     to it - a date is wider than one day, so it
                                                     overflows into the six undated columns after it,
-                                                    the same way the week that starts here does. */}
+                                                    the same way the week that starts here does. Sits
+                                                    on the bottom edge, matching the "Location" header
+                                                    next to it, rather than floating at the top. */}
                                                 {isMonday(date) && (
-                                                    <div className='absolute left-0 text-xs text-nowrap text-stone-500'>
+                                                    <div className='absolute bottom-0 left-0 text-xs text-nowrap text-stone-500'>
                                                         {formatDayLabel(date)}
                                                     </div>
                                                 )}
@@ -294,19 +296,26 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
 
 function SamplesOverTimeLegend() {
     return (
-        <div className='mt-2 flex flex-wrap items-center gap-4 px-2 text-sm text-stone-500'>
-            <LegendSwatch style={{ background: ABSENT_FILL }}>no sample</LegendSwatch>
-            <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, LOW_OPACITY) }}>
-                &lt; {LOW_READS_THRESHOLD.toLocaleString('en-us')}
-            </LegendSwatch>
-            <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, MID_OPACITY) }}>
-                {LOW_READS_THRESHOLD.toLocaleString('en-us')} – {HIGH_READS_THRESHOLD.toLocaleString('en-us')}
-            </LegendSwatch>
-            <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, 1) }}>
-                ≥ {HIGH_READS_THRESHOLD.toLocaleString('en-us')} reads
-            </LegendSwatch>
-            <span>Samples of the same batch have the same colour.</span>
-            <span>A thick line marks the start of each week.</span>
+        <div className='mt-2 flex flex-wrap items-center gap-4 text-sm text-stone-500'>
+            {/* Lines up with the grid's date columns, not the location names above it - so there's
+                nothing sitting under "Location" the way there would be if this started at the left
+                edge like the grid's own header does. */}
+            <div className='flex flex-wrap items-center gap-4' style={{ marginLeft: LOCATION_COLUMN_WIDTH }}>
+                <span>Samples of the same batch have the same colour.</span>
+                <span>A thick line marks the start of each week.</span>
+            </div>
+            <div className='ml-auto flex flex-wrap items-center gap-4'>
+                <LegendSwatch style={{ background: ABSENT_FILL }}>no sample</LegendSwatch>
+                <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, LOW_OPACITY) }}>
+                    &lt; {LOW_READS_THRESHOLD.toLocaleString('en-us')}
+                </LegendSwatch>
+                <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, MID_OPACITY) }}>
+                    {LOW_READS_THRESHOLD.toLocaleString('en-us')} – {HIGH_READS_THRESHOLD.toLocaleString('en-us')}
+                </LegendSwatch>
+                <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, 1) }}>
+                    ≥ {HIGH_READS_THRESHOLD.toLocaleString('en-us')} reads
+                </LegendSwatch>
+            </div>
         </div>
     );
 }

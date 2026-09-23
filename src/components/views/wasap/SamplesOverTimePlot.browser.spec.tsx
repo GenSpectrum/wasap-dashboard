@@ -29,14 +29,14 @@ describe('SamplesOverTimeGrid', () => {
 
         await expect.element(getByText('Basel (BS)')).toBeVisible();
         await expect.element(getByText('Zürich (ZH)')).toBeVisible();
-        await expect.element(getByText('8. Jan', { exact: true })).toBeVisible();
-        await expect.element(getByText('15. Jan', { exact: true })).toBeVisible();
+        await expect.element(getByText('8 Jan', { exact: true })).toBeVisible();
+        await expect.element(getByText('15 Jan', { exact: true })).toBeVisible();
     });
 
     it('does not label a date that is not a Monday', async () => {
         const { getByText } = render(<SamplesOverTimeGrid samples={[sample({ date: '2024-01-10' })]} />);
 
-        await expect.element(getByText('10. Jan', { exact: true })).not.toBeInTheDocument();
+        await expect.element(getByText('10 Jan', { exact: true })).not.toBeInTheDocument();
     });
 
     it('renders nothing when there are no samples', () => {
