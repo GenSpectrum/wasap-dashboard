@@ -53,16 +53,17 @@ that serve from a sub-path. Defaults to `/`.
 
 ### URLs
 
-Every organism has a page per analysis mode: `/<organism>/<mode>`, for example
-`/covid/manual`, `/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`,
-and `/covid/collection`. The modes are the ones that are enabled
-in the organism's config. The bare `/<organism>` goes to the `defaultAnalysisMode` of the
-config, or else the first enabled mode. Location, sampling date and granularity are search
-params that stay the same when going from one mode to another; the settings of a mode are search
-params of its own page. The collection mode itself has two sources, GenSpectrum's own
-collections (always available) and CoV-Spectrum's (an organism-level opt-in, since not every
-organism has a CoV-Spectrum instance) — which one is picked is a `source` search param of that
-page, not a separate mode.
+The bare `/<organism>` is the organism's overview page (whole-instance stats and a table of
+its sampling locations, unfiltered) — the first tab, and the landing page. Every organism also
+has a page per analysis mode: `/<organism>/<mode>`, for example `/covid/manual`,
+`/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`, and `/covid/collection`. The
+modes are the ones that are enabled in the organism's config; a `/<organism>/<mode>` URL whose
+mode isn't one of them shows a 404. Location, sampling date and granularity are search params
+that stay the same when going from one mode to another (the overview page ignores them); the
+settings of a mode are search params of its own page. The collection mode itself has two
+sources, GenSpectrum's own collections (always available) and CoV-Spectrum's (an organism-level
+opt-in, since not every organism has a CoV-Spectrum instance) — which one is picked is a
+`source` search param of that page, not a separate mode.
 
 ### SPA fallback
 

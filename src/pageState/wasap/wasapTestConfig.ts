@@ -20,6 +20,8 @@ export const testConfig = {
         dateColumnIsDictionaryEncoded: true,
         samplingDateColumn: 'samplingDate',
         locationNameColumn: 'locationName',
+        sampleIdColumn: 'sampleId',
+        batchIdColumn: 'batchId',
     },
     manualAnalysisModeEnabled: true,
     variantAnalysisModeEnabled: true,

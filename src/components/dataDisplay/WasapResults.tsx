@@ -1,6 +1,5 @@
 import { type ReactNode } from 'react';
 
-import { WasapStats } from './WasapStats';
 import { Loading } from '../../util/Loading';
 import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
@@ -34,10 +33,5 @@ export function WasapResults({
         return <Loading />;
     }
 
-    return (
-        <div className='h-full space-y-4'>
-            {children(page.data)}
-            <WasapStats />
-        </div>
-    );
+    return <div className='h-full space-y-4'>{children(page.data)}</div>;
 }

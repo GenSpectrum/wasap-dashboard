@@ -3,8 +3,8 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { useBatchCount } from './batchCount';
 import { ConnectionProvider } from './connection';
-import { useStringFieldOptions } from './stringFieldOptions';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
@@ -39,27 +39,33 @@ function wrapper(): FC<PropsWithChildren> {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('useStringFieldOptions', () => {
-    it('parses the grouped rows and sorts them by name', async () => {
+describe('useBatchCount', () => {
+    it('counts the rows, one per distinct batch, unfiltered', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { locationName: 'Zürich (ZH)', n: 30 },
-                { locationName: 'Basel (BS)', n: 10 },
-                { locationName: 'Genève (GE)', n: 20 },
+                { batchId: 'B1', n: 100 },
+                { batchId: 'B2', n: 50 },
+                { batchId: 'B3', n: 75 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
 
-        const { result } = renderHook(() => useStringFieldOptions('locationName'), { wrapper: wrapper() });
+        const { result } = renderHook(() => useBatchCount(), { wrapper: wrapper() });
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
-        expect(result.current.data).toEqual([
-            { name: 'Basel (BS)', count: 10 },
-            { name: 'Genève (GE)', count: 20 },
-            { name: 'Zürich (ZH)', count: 30 },
-        ]);
+        expect(result.current.data).toBe(3);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {locationName})');
+        expect(init.body).toBe('default.groupBy({n := count()}, {batchId})');
+    });
+
+    it('no batches means zero', async () => {
+        const fetchMock = vi.fn().mockResolvedValue(ndjson([]));
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { result } = renderHook(() => useBatchCount(), { wrapper: wrapper() });
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+        expect(result.current.data).toBe(0);
     });
 });

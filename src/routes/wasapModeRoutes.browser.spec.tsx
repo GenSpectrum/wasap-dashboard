@@ -2,7 +2,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { DefaultModeRedirect, EnabledModeRoute } from './wasapModeRoutes';
+import { EnabledModeRoute } from './wasapModeRoutes';
 import { it } from '../../test-extend';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
 import { testConfig } from '../pageState/wasap/wasapTestConfig';
@@ -18,7 +18,7 @@ function renderRoutes(entry: string, config: WasapPageConfig = testConfig) {
             <CurrentLocation />
             <Routes>
                 <Route path='/wastewater/covid'>
-                    <Route index element={<DefaultModeRedirect config={config} />} />
+                    <Route index element={<div>The overview page</div>} />
                     <Route path=':mode' element={<ModePage config={config} />} />
                 </Route>
             </Routes>
@@ -50,57 +50,23 @@ describe('the routes of the analysis modes', () => {
         await expect.element(getByText('Page of the variant mode')).toBeVisible();
     });
 
-    it('sends the bare organism URL to the first enabled mode', async () => {
+    it('shows the overview page on the bare organism URL', async () => {
         const { getByText, getByTestId } = renderRoutes('/wastewater/covid');
 
-        await expect.element(getByText('Page of the manual mode')).toBeVisible();
-        await expect.element(getByTestId('location')).toHaveTextContent('/wastewater/covid/manual');
+        await expect.element(getByText('The overview page')).toBeVisible();
+        await expect.element(getByTestId('location')).toHaveTextContent('/wastewater/covid');
     });
 
-    it('sends the bare organism URL to the configured default mode', async () => {
-        const { getByText, getByTestId } = renderRoutes('/wastewater/covid', {
-            ...testConfig,
-            defaultAnalysisMode: 'untracked',
-        });
+    it('shows a 404 for a path that is not a mode segment', async () => {
+        const { getByText } = renderRoutes('/wastewater/covid/nonsense');
 
-        await expect.element(getByText('Page of the untracked mode')).toBeVisible();
-        await expect.element(getByTestId('location')).toHaveTextContent('/wastewater/covid/untracked');
+        await expect.element(getByText('Page not found')).toBeVisible();
     });
 
-    it('keeps the search params when it redirects', async () => {
-        const { getByText, getByTestId } = renderRoutes('/wastewater/covid?locationName=Basel&granularity=week');
+    it('shows a 404 for a mode that is not enabled here', async () => {
+        // 'collection' is a real mode, just not one testConfig enables.
+        const { getByText } = renderRoutes('/wastewater/covid/collection');
 
-        await expect.element(getByText('Page of the manual mode')).toBeVisible();
-        await expect
-            .element(getByTestId('location'))
-            .toHaveTextContent('/wastewater/covid/manual?locationName=Basel&granularity=week');
-    });
-
-    it('sends a path that is not a mode to the default mode', async () => {
-        const { getByText, getByTestId } = renderRoutes('/wastewater/covid/nonsense');
-
-        await expect.element(getByText('Page of the manual mode')).toBeVisible();
-        await expect.element(getByTestId('location')).toHaveTextContent('/wastewater/covid/manual');
-    });
-
-    it('sends the mode that is not enabled to the default mode', async () => {
-        const { getByText, getByTestId } = renderRoutes('/wastewater/covid/covSpectrumCollection');
-
-        await expect.element(getByText('Page of the manual mode')).toBeVisible();
-        await expect.element(getByTestId('location')).toHaveTextContent('/wastewater/covid/manual');
-    });
-
-    it('says so when no mode is enabled at all', async () => {
-        const noModes = {
-            ...testConfig,
-            manualAnalysisModeEnabled: undefined,
-            variantAnalysisModeEnabled: undefined,
-            resistanceAnalysisModeEnabled: undefined,
-            untrackedAnalysisModeEnabled: undefined,
-        } as WasapPageConfig;
-
-        const { getByText } = renderRoutes('/wastewater/covid', noModes);
-
-        await expect.element(getByText("No analysis mode is enabled for 'SARS-CoV-2'.")).toBeVisible();
+        await expect.element(getByText('Page not found')).toBeVisible();
     });
 });

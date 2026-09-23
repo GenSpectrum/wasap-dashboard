@@ -25,16 +25,25 @@ describe('WasapModeTabs', () => {
         setAppConfigForTesting({ organisms: [testConfig] });
     });
 
-    it('has a tab for each enabled mode', async () => {
+    it('has an overview tab, then a tab for each enabled mode', async () => {
         const { getByRole } = renderTabs();
 
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
-        await expect.element(tabs.nth(0)).toHaveTextContent('Manual');
-        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
-        await expect.element(tabs.nth(2)).toHaveTextContent('Resistance Mutations');
-        await expect.element(tabs.nth(3)).toHaveTextContent('Untracked Mutations');
-        expect(tabs.elements()).toHaveLength(4);
+        await expect.element(tabs.nth(0)).toHaveTextContent('Overview');
+        await expect.element(tabs.nth(1)).toHaveTextContent('Manual');
+        await expect.element(tabs.nth(2)).toHaveTextContent('Variant Explorer');
+        await expect.element(tabs.nth(3)).toHaveTextContent('Resistance Mutations');
+        await expect.element(tabs.nth(4)).toHaveTextContent('Untracked Mutations');
+        expect(tabs.elements()).toHaveLength(5);
+    });
+
+    it('links the overview tab to the bare organism URL, with no search params', async () => {
+        const { getByRole } = renderTabs();
+
+        const href = getByRole('link', { name: 'Overview' }).element().getAttribute('href');
+
+        expect(href).toBe('/wastewater/covid');
     });
 
     it('has a tab for a mode that is enabled by the config only', async () => {
@@ -61,6 +70,14 @@ describe('WasapModeTabs', () => {
             .element(getByRole('link', { name: 'Resistance Mutations' }))
             .toHaveAttribute('aria-current', 'page');
         await expect.element(getByRole('link', { name: 'Manual' })).not.toHaveAttribute('aria-current');
+        // Not the overview tab either: it only matches the bare organism URL exactly, not every path below it.
+        await expect.element(getByRole('link', { name: 'Overview' })).not.toHaveAttribute('aria-current');
+    });
+
+    it('marks the overview tab on the bare organism URL', async () => {
+        const { getByRole } = renderTabs('/wastewater/covid');
+
+        await expect.element(getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
     });
 
     it('has no tabs where no organism is open', async () => {

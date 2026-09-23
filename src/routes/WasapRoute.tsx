@@ -2,10 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { getClientLogger } from '../clientLogger';
-import { DefaultModeRedirect, EnabledModeRoute } from './wasapModeRoutes';
+import { EnabledModeRoute } from './wasapModeRoutes';
 import { NoDataDisplay } from '../components/shared/no-data-display';
 import { WasapLayout, useWasapLayoutContext } from '../components/views/wasap/WasapLayout';
 import { WasapModePage } from '../components/views/wasap/WasapModePage';
+import { OverviewPage } from '../components/views/wasap/pages/OverviewPage';
 import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
 import { getAppConfig } from '../config/appConfig';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
@@ -62,11 +63,9 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
     return <WasapLayout config={config} resistanceData={data ?? EMPTY_RESISTANCE_DATA} />;
 }
 
-/** The index route of `/:organismPath`. */
-export function WasapDefaultModeRoute() {
-    const { config } = useWasapLayoutContext();
-
-    return <DefaultModeRedirect config={config} />;
+/** The index route of `/:organismPath`, and the landing page of the organism. */
+export function WasapOverviewRoute() {
+    return <OverviewPage />;
 }
 
 /** The `/:organismPath/:mode` route. */

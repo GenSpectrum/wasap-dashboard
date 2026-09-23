@@ -42,6 +42,8 @@ const unusedBaseConfigFields = {
         dateColumnIsDictionaryEncoded: true,
         samplingDateColumn: 'samplingDate',
         locationNameColumn: 'locationName',
+        sampleIdColumn: 'sampleId',
+        batchIdColumn: 'batchId',
     },
     defaultLocationName: '',
     browseDataUrl: '',

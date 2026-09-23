@@ -1,7 +1,6 @@
 import z from 'zod';
 
 import {
-    wasapAnalysisModeSchema,
     wasapCollectionFilterSchema,
     wasapManualFilterSchema,
     wasapResistanceFilterSchema,
@@ -39,6 +38,10 @@ export const siloInstanceConfigSchema = z.object({
     samplingDateColumn: z.string(),
     /** Dictionary/indexed string column backing the location dropdown. */
     locationNameColumn: z.string(),
+    /** Dictionary-encoded column holding the sample ID every amplicon sequence carries. */
+    sampleIdColumn: z.string(),
+    /** Dictionary-encoded column holding the batch ID every amplicon sequence carries. */
+    batchIdColumn: z.string(),
 });
 export type SiloInstanceConfig = z.infer<typeof siloInstanceConfigSchema>;
 
@@ -102,9 +105,6 @@ export const wasapPageConfigBaseSchema = z.object({
 
     browseDataUrl: z.string(),
     browseDataDescription: z.string(),
-
-    /** The mode that the bare organism URL (like `/covid`) goes to. The first enabled mode if not set. */
-    defaultAnalysisMode: wasapAnalysisModeSchema.optional(),
 });
 export type WasapPageConfigBase = z.infer<typeof wasapPageConfigBaseSchema>;
 
@@ -266,17 +266,6 @@ export function isModeEnabled<Mode extends WasapAnalysisMode>(
     mode: Mode,
 ): config is WasapPageConfigFor<Mode> {
     return config[MODE_ENABLED_FLAGS[mode]] === true;
-}
-
-/**
- * The mode that a bare organism URL shows: the configured default, or else the
- * first enabled mode. `undefined` if no mode is enabled at all.
- */
-export function getDefaultAnalysisMode(config: WasapPageConfig): WasapAnalysisMode | undefined {
-    const enabled = enabledAnalysisModes(config);
-    return config.defaultAnalysisMode !== undefined && enabled.includes(config.defaultAnalysisMode)
-        ? config.defaultAnalysisMode
-        : enabled[0];
 }
 
 /**
