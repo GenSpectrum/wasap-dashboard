@@ -12,11 +12,11 @@ import { getCollection as getGenSpectrumCollection } from '../../../externalData
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
 import { parseQuery } from '../../../externalData/lapis/parseQuery';
+import { COLLECTION_SOURCE } from '../../../pageState/wasap/wasapAnalysisFilter';
 import type {
     VariantTimeFrame,
     WasapAnalysisFilter,
     WasapCollectionFilter,
-    WasapCovSpectrumCollectionFilter,
     WasapManualFilter,
     WasapResistanceFilter,
     WasapUntrackedFilter,
@@ -61,8 +61,6 @@ export async function fetchWasapPageData(
             return fetchResistanceModeData(resistanceMutationsBySet, analysis);
         case 'untracked':
             return fetchUntrackedModeData(config, analysis);
-        case 'covSpectrumCollection':
-            return fetchCovSpectrumCollectionModeData(config, analysis);
         case 'collection':
             return fetchCollectionModeData(config, analysis);
     }
@@ -241,23 +239,58 @@ async function fetchUntrackedModeData(
     };
 }
 
-async function fetchCovSpectrumCollectionModeData(
+async function fetchCollectionModeData(
     config: WasapPageConfig,
-    analysis: WasapCovSpectrumCollectionFilter,
+    analysis: WasapCollectionFilter,
 ): Promise<WasapCollectionData> {
-    if (!config.covSpectrumCollectionAnalysisModeEnabled) {
-        throw Error("Cannot fetch data, 'covSpectrumCollection' mode is not enabled.");
+    if (!config.collectionAnalysisModeEnabled) {
+        throw Error("Cannot fetch data, 'collection' mode is not enabled.");
+    }
+    if (analysis.source === COLLECTION_SOURCE.covSpectrum) {
+        if (!config.covSpectrumCollectionSourceEnabled) {
+            throw Error("Cannot fetch data, the 'covSpectrum' collection source is not enabled.");
+        }
+        if (analysis.collectionId === undefined) {
+            throw Error('No collection selected');
+        }
+        return fetchCovSpectrumCollectionModeData(
+            config.lapisBaseUrl,
+            config.collectionsApiBaseUrl,
+            analysis.collectionId,
+        );
     }
     if (analysis.collectionId === undefined) {
         throw Error('No collection selected');
     }
-    const collection = await getCollection(config.collectionsApiBaseUrl, analysis.collectionId);
+    return fetchGenSpectrumCollectionModeData(config.lapisBaseUrl, analysis.collectionId);
+}
+
+async function fetchGenSpectrumCollectionModeData(
+    lapisBaseUrl: string,
+    collectionId: number,
+): Promise<WasapCollectionData> {
+    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(collectionId));
+
+    const { variantData, invalidVariants } = extractBackendVariantData(collection.variants);
+    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(lapisBaseUrl, variantData);
+    const allInvalidVariants = [...invalidVariants, ...parseInvalidVariants];
+
+    return {
+        type: 'collection',
+        collection: { id: collection.id, title: collection.name, queries: deduplicateLabels(queries) },
+        ...(allInvalidVariants.length > 0 && { invalidVariants: allInvalidVariants }),
+    };
+}
+
+async function fetchCovSpectrumCollectionModeData(
+    lapisBaseUrl: string,
+    collectionsApiBaseUrl: string,
+    collectionId: number,
+): Promise<WasapCollectionData> {
+    const collection = await getCollection(collectionsApiBaseUrl, collectionId);
 
     const { variantData, invalidVariants } = extractCovSpectrumVariantData(collection.variants);
-    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(
-        config.lapisBaseUrl,
-        variantData,
-    );
+    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(lapisBaseUrl, variantData);
     const allInvalidVariants = [...invalidVariants, ...parseInvalidVariants];
 
     return {
@@ -267,32 +300,6 @@ async function fetchCovSpectrumCollectionModeData(
             title: collection.title,
             queries: deduplicateLabels(queries),
         },
-        ...(allInvalidVariants.length > 0 && { invalidVariants: allInvalidVariants }),
-    };
-}
-
-async function fetchCollectionModeData(
-    config: WasapPageConfig,
-    analysis: WasapCollectionFilter,
-): Promise<WasapCollectionData> {
-    if (!config.collectionAnalysisModeEnabled) {
-        throw Error("Cannot fetch data, 'collection' mode is not enabled.");
-    }
-    if (analysis.collectionId === undefined) {
-        throw Error('No collection selected');
-    }
-    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(analysis.collectionId));
-
-    const { variantData, invalidVariants } = extractBackendVariantData(collection.variants);
-    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(
-        config.lapisBaseUrl,
-        variantData,
-    );
-    const allInvalidVariants = [...invalidVariants, ...parseInvalidVariants];
-
-    return {
-        type: 'collection',
-        collection: { id: collection.id, title: collection.name, queries: deduplicateLabels(queries) },
         ...(allInvalidVariants.length > 0 && { invalidVariants: allInvalidVariants }),
     };
 }

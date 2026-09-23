@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { CollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CollectionPageStateHandler';
+import { COLLECTION_SOURCE } from '../../../../pageState/wasap/wasapAnalysisFilter';
 import { CollectionResult } from '../../../dataDisplay/CollectionResult';
 import { NothingSelected } from '../../../dataDisplay/NothingSelected';
 import { WasapResults } from '../../../dataDisplay/WasapResults';
@@ -13,6 +14,7 @@ import { useModePage } from '../useModePage';
 export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);
     const page = useModePage(config, pageStateHandler);
+    const isCovSpectrum = page.analysis.source === COLLECTION_SOURCE.covSpectrum;
 
     return (
         <ModePageLayout
@@ -28,6 +30,14 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
                             pageState={analysis}
                             setPageState={setAnalysis}
                             organism={config.genSpectrumOrganismName}
+                            covSpectrum={
+                                config.covSpectrumCollectionSourceEnabled
+                                    ? {
+                                          collectionsApiBaseUrl: config.collectionsApiBaseUrl,
+                                          collectionTitleFilter: config.collectionTitleFilter,
+                                      }
+                                    : undefined
+                            }
                         />
                     )}
                 </FilterSidebar>
@@ -47,9 +57,11 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
                     <CollectionResult
                         page={page}
                         data={data}
-                        sourceLabel='GenSpectrum collection'
+                        sourceLabel={isCovSpectrum ? 'CoV-Spectrum collection' : 'GenSpectrum collection'}
                         getCollectionUrl={(id) =>
-                            config.genSpectrumCollectionLinkOut.replace('{{id}}', encodeURIComponent(String(id)))
+                            isCovSpectrum
+                                ? `https://cov-spectrum.org/collections/${id}`
+                                : config.genSpectrumCollectionLinkOut.replace('{{id}}', encodeURIComponent(String(id)))
                         }
                     />
                 )}

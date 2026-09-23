@@ -13,7 +13,7 @@ describe('getDefaultAnalysisMode', () => {
     });
 
     it('ignores a configured default mode that is not enabled', () => {
-        expect(getDefaultAnalysisMode({ ...testConfig, defaultAnalysisMode: 'covSpectrumCollection' })).toBe('manual');
+        expect(getDefaultAnalysisMode({ ...testConfig, defaultAnalysisMode: 'collection' })).toBe('manual');
     });
 
     it('is undefined when no mode is enabled', () => {
@@ -32,7 +32,7 @@ describe('getDefaultAnalysisMode', () => {
 describe('isModeEnabled', () => {
     it('tells which modes are enabled', () => {
         expect(isModeEnabled(testConfig, 'manual')).toBe(true);
-        expect(isModeEnabled(testConfig, 'covSpectrumCollection')).toBe(false);
-        expect(isModeEnabled(testConfigWithCollection, 'covSpectrumCollection')).toBe(true);
+        expect(isModeEnabled(testConfig, 'collection')).toBe(false);
+        expect(isModeEnabled(testConfigWithCollection, 'collection')).toBe(true);
     });
 });

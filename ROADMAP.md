@@ -44,9 +44,9 @@ up" below.
    prototypable against a hand-prepared dataset. Also needs COOP/COEP
    cross-origin-isolation headers wired up (the WASM build uses pthreads).
 3. **Offline-mode decisions.** For every mode that still needs clinical LAPIS
-   / `query/parse` / the collections backends (`variant`, `collection`,
-   `covSpectrumCollection`): decide keep-remote vs. disable vs. bundle, per
-   mode, for the in-browser and desktop builds. Nothing decided yet.
+   / `query/parse` / the collections backends (`variant`, `collection`, and
+   the collection mode's CoV-Spectrum source): decide keep-remote vs. disable
+   vs. bundle, per mode, for the in-browser and desktop builds. Nothing decided yet.
 
 ## Not started — step 4: Tauri desktop bundle
 

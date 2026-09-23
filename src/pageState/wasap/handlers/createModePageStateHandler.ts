@@ -1,5 +1,4 @@
 import { CollectionPageStateHandler } from './CollectionPageStateHandler';
-import { CovSpectrumCollectionPageStateHandler } from './CovSpectrumCollectionPageStateHandler';
 import { ManualPageStateHandler } from './ManualPageStateHandler';
 import { ResistancePageStateHandler } from './ResistancePageStateHandler';
 import { UntrackedPageStateHandler } from './UntrackedPageStateHandler';
@@ -25,8 +24,6 @@ export function createModePageStateHandler(
             return new ResistancePageStateHandler(narrowed(config, 'resistance'));
         case 'untracked':
             return new UntrackedPageStateHandler(narrowed(config, 'untracked'));
-        case 'covSpectrumCollection':
-            return new CovSpectrumCollectionPageStateHandler(narrowed(config, 'covSpectrumCollection'));
         case 'collection':
             return new CollectionPageStateHandler(narrowed(config, 'collection'));
     }

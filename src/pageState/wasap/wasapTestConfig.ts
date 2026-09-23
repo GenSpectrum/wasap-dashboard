@@ -87,23 +87,11 @@ export const testConfig = {
     },
 } satisfies WasapPageConfig;
 
-/** Like `testConfig`, with the CovSpectrum collection mode enabled as well. */
+/**
+ * Like `testConfig`, with the collection mode enabled: GenSpectrum collections only, the same
+ * as e.g. RSV, which has no CoV-Spectrum instance to pull collections from.
+ */
 export const testConfigWithCollection = {
-    ...testConfig,
-    covSpectrumCollectionAnalysisModeEnabled: true,
-    collectionsApiBaseUrl: 'https://collections.example.org',
-    collectionTitleFilter: 'test',
-    filterDefaults: {
-        ...testConfig.filterDefaults,
-        covSpectrumCollection: {
-            mode: 'covSpectrumCollection',
-            collectionId: undefined,
-        },
-    },
-} satisfies WasapPageConfig;
-
-/** Like `testConfig`, with the GenSpectrum collection mode enabled as well. */
-export const testConfigWithGenSpectrumCollection = {
     ...testConfig,
     collectionAnalysisModeEnabled: true,
     genSpectrumCollectionLinkOut: 'https://genspectrum.org/collections/covid/{{id}}',
@@ -111,7 +99,16 @@ export const testConfigWithGenSpectrumCollection = {
         ...testConfig.filterDefaults,
         collection: {
             mode: 'collection',
+            source: 'genSpectrum',
             collectionId: undefined,
         },
     },
+} satisfies WasapPageConfig;
+
+/** Like `testConfigWithCollection`, with the CoV-Spectrum collection source enabled too, as covid has. */
+export const testConfigWithCollectionSources = {
+    ...testConfigWithCollection,
+    covSpectrumCollectionSourceEnabled: true,
+    collectionsApiBaseUrl: 'https://collections.example.org',
+    collectionTitleFilter: 'test',
 } satisfies WasapPageConfig;

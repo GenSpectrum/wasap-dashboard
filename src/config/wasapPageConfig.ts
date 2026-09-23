@@ -3,7 +3,6 @@ import z from 'zod';
 import {
     wasapAnalysisModeSchema,
     wasapCollectionFilterSchema,
-    wasapCovSpectrumCollectionFilterSchema,
     wasapManualFilterSchema,
     wasapResistanceFilterSchema,
     wasapUntrackedFilterSchema,
@@ -167,31 +166,42 @@ export const untrackedAnalysisModeConfigSchema = z.union([
     z.object({ untrackedAnalysisModeEnabled: z.undefined().optional() }),
 ]);
 
-export const covSpectrumCollectionAnalysisModeConfigSchema = z.union([
+/**
+ * The CoV-Spectrum collection source, which an organism opts into independently of (and only
+ * together with) the collection mode above.
+ */
+export const covSpectrumCollectionSourceConfigSchema = z.union([
     z.object({
-        covSpectrumCollectionAnalysisModeEnabled: z.literal(true),
+        covSpectrumCollectionSourceEnabled: z.literal(true),
         collectionsApiBaseUrl: z.string(),
         collectionTitleFilter: z.string(),
-        filterDefaults: z.object({ covSpectrumCollection: wasapCovSpectrumCollectionFilterSchema }),
     }),
-    z.object({ covSpectrumCollectionAnalysisModeEnabled: z.undefined().optional() }),
+    z.object({ covSpectrumCollectionSourceEnabled: z.undefined().optional() }),
 ]);
 
-export const collectionAnalysisModeConfigSchema = z.union([
-    z.object({
-        collectionAnalysisModeEnabled: z.literal(true),
-        filterDefaults: z.object({ collection: wasapCollectionFilterSchema }),
-        /**
-         * URL template for linking out to this collection on GenSpectrum, with
-         * the placeholder `{{id}}`, e.g. `https://genspectrum.org/collections/covid/{{id}}`.
-         * GenSpectrum's collections-page URL slug isn't necessarily formatted
-         * the same as `genSpectrumOrganismName` (the API's organism
-         * identifier), so it's baked into the template rather than derived.
-         */
-        genSpectrumCollectionLinkOut: z.string(),
-    }),
-    z.object({ collectionAnalysisModeEnabled: z.undefined().optional() }),
-]);
+/**
+ * The collection mode is enabled iff this is present: GenSpectrum's own collections are always
+ * available then, and CoV-Spectrum's are an independent, optional addition (see
+ * `covSpectrumCollectionSourceConfigSchema` above) — not every organism has a CoV-Spectrum
+ * instance to pull collections from.
+ */
+export const collectionAnalysisModeConfigSchema = z
+    .union([
+        z.object({
+            collectionAnalysisModeEnabled: z.literal(true),
+            filterDefaults: z.object({ collection: wasapCollectionFilterSchema }),
+            /**
+             * URL template for linking out to this collection on GenSpectrum, with
+             * the placeholder `{{id}}`, e.g. `https://genspectrum.org/collections/covid/{{id}}`.
+             * GenSpectrum's collections-page URL slug isn't necessarily formatted
+             * the same as `genSpectrumOrganismName` (the API's organism
+             * identifier), so it's baked into the template rather than derived.
+             */
+            genSpectrumCollectionLinkOut: z.string(),
+        }),
+        z.object({ collectionAnalysisModeEnabled: z.undefined().optional() }),
+    ])
+    .and(covSpectrumCollectionSourceConfigSchema);
 
 /**
  * All config settings for a W-ASAP dashboard page — the external, per-organism
@@ -208,7 +218,6 @@ export const wasapPageConfigSchema = wasapPageConfigBaseSchema
     .and(variantAnalysisModeConfigSchema)
     .and(resistanceAnalysisModeConfigSchema)
     .and(untrackedAnalysisModeConfigSchema)
-    .and(covSpectrumCollectionAnalysisModeConfigSchema)
     .and(collectionAnalysisModeConfigSchema);
 export type WasapPageConfig = z.infer<typeof wasapPageConfigSchema>;
 
@@ -232,9 +241,6 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     if (config.collectionAnalysisModeEnabled) {
         result.push('collection');
     }
-    if (config.covSpectrumCollectionAnalysisModeEnabled) {
-        result.push('covSpectrumCollection');
-    }
     return result;
 }
 
@@ -243,7 +249,6 @@ const MODE_ENABLED_FLAGS = {
     variant: 'variantAnalysisModeEnabled',
     resistance: 'resistanceAnalysisModeEnabled',
     untracked: 'untrackedAnalysisModeEnabled',
-    covSpectrumCollection: 'covSpectrumCollectionAnalysisModeEnabled',
     collection: 'collectionAnalysisModeEnabled',
 } as const satisfies Record<WasapAnalysisMode, string>;
 

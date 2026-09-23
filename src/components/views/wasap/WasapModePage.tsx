@@ -1,5 +1,4 @@
 import { CollectionPage } from './pages/CollectionPage';
-import { CovSpectrumCollectionPage } from './pages/CovSpectrumCollectionPage';
 import { ManualPage } from './pages/ManualPage';
 import { ResistancePage } from './pages/ResistancePage';
 import { UntrackedPage } from './pages/UntrackedPage';
@@ -24,9 +23,6 @@ export function WasapModePage({ config, mode }: { config: WasapPageConfig; mode:
         case 'untracked':
             assertModeEnabled(config, 'untracked');
             return <UntrackedPage config={config} />;
-        case 'covSpectrumCollection':
-            assertModeEnabled(config, 'covSpectrumCollection');
-            return <CovSpectrumCollectionPage config={config} />;
         case 'collection':
             assertModeEnabled(config, 'collection');
             return <CollectionPage config={config} />;
