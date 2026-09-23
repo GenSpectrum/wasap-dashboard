@@ -208,20 +208,24 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                         `feature-bands.tsx` uses, which avoids Firefox giving many
                                         tiny auto-width table columns a sliver each. */}
                                     <div className='flex' style={{ height: HEADER_HEIGHT }}>
+                                        {/* No week-divider line up here - it only marks the grid of
+                                            colour swatches below, not the header text, so it doesn't
+                                            reach any higher than where that grid actually starts. */}
                                         {dates.map((date) => (
                                             <div
                                                 key={date}
-                                                className={`relative shrink-0 ${isMonday(date) ? 'border-l-2 border-stone-400' : ''}`}
+                                                className='relative shrink-0'
                                                 style={{ width: DAY_WIDTH_PX }}
                                             >
                                                 {/* Anchored to its own narrow column but not confined
                                                     to it - a date is wider than one day, so it
                                                     overflows into the six undated columns after it,
                                                     the same way the week that starts here does. Sits
-                                                    on the bottom edge, matching the "Location" header
-                                                    next to it, rather than floating at the top. */}
+                                                    a little off the bottom and left edges, close to
+                                                    "Location"'s own baseline without crowding the
+                                                    divider line just below and to its left. */}
                                                 {isMonday(date) && (
-                                                    <div className='absolute bottom-0 left-0 text-xs text-nowrap text-stone-500'>
+                                                    <div className='absolute bottom-1 left-1 text-xs text-nowrap text-stone-500'>
                                                         {formatDayLabel(date)}
                                                     </div>
                                                 )}
