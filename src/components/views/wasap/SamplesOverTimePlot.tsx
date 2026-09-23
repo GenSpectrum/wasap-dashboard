@@ -68,8 +68,10 @@ function depthOpacity(reads: number): number {
 /** Matches the hatch the app already uses for "nothing here" cells elsewhere, in this app's greys. */
 const ABSENT_FILL = 'repeating-linear-gradient(45deg, var(--color-stone-300) 0 1px, var(--color-stone-100) 1px 4px)';
 
-const ROW_HEIGHT = '1.25rem';
-const HEADER_HEIGHT = '0.9rem';
+// Matches LocationOverviewTable's own row height (p-2 padding around text-sm), so the two tables
+// on this page read as one visual rhythm rather than the plot looking cramped next to it.
+const ROW_HEIGHT = '37px';
+const HEADER_HEIGHT = '37px';
 const LOCATION_COLUMN_WIDTH = '10rem';
 
 /**
@@ -214,7 +216,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                                     overflows into the six undated columns after it,
                                                     the same way the week that starts here does. */}
                                                 {isMonday(date) && (
-                                                    <div className='absolute left-0 text-[10px] text-nowrap text-stone-500'>
+                                                    <div className='absolute left-0 text-sm text-nowrap text-stone-500'>
                                                         {formatDayLabel(date)}
                                                     </div>
                                                 )}
@@ -289,7 +291,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
 
 function SamplesOverTimeLegend() {
     return (
-        <div className='mt-2 flex flex-wrap items-center gap-4 px-2 text-xs text-stone-500'>
+        <div className='mt-2 flex flex-wrap items-center gap-4 px-2 text-sm text-stone-500'>
             <LegendSwatch style={{ background: ABSENT_FILL }}>no sample</LegendSwatch>
             <LegendSwatch style={{ backgroundColor: singleGraphColorRGBAById(0, LOW_OPACITY) }}>
                 &lt; {LOW_READS_THRESHOLD.toLocaleString('en-us')}
