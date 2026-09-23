@@ -4,7 +4,7 @@ import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
-import { useLocationOverview } from './locationOverview';
+import { useSampleOverview } from './sampleOverview';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
@@ -39,26 +39,27 @@ function wrapper(): FC<PropsWithChildren> {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('useLocationOverview', () => {
-    it('folds the one-row-per-sample result into one entry per location, unfiltered', async () => {
+describe('useSampleOverview', () => {
+    it('reads one entry per sample, unfiltered', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', n: 10 },
-                { locationName: 'Basel (BS)', date: '2024-02-05', sampleId: 'A2', n: 8 },
-                { locationName: 'Zürich (ZH)', date: '2024-01-12', sampleId: 'Z1', n: 5 },
+                { locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 },
+                { locationName: 'Basel (BS)', date: '2024-02-05', sampleId: 'A2', batchId: 'B2', n: 8 },
+                { locationName: 'Zürich (ZH)', date: '2024-01-12', sampleId: 'Z1', batchId: 'B1', n: 5 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
 
-        const { result } = renderHook(() => useLocationOverview(), { wrapper: wrapper() });
+        const { result } = renderHook(() => useSampleOverview(), { wrapper: wrapper() });
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toEqual([
-            { name: 'Basel (BS)', sampleCount: 2, mostRecentSampleDate: '2024-02-05' },
-            { name: 'Zürich (ZH)', sampleCount: 1, mostRecentSampleDate: '2024-01-12' },
+            { locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', reads: 10 },
+            { locationName: 'Basel (BS)', date: '2024-02-05', sampleId: 'A2', batchId: 'B2', reads: 8 },
+            { locationName: 'Zürich (ZH)', date: '2024-01-12', sampleId: 'Z1', batchId: 'B1', reads: 5 },
         ]);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {locationName, date, sampleId})');
+        expect(init.body).toBe('default.groupBy({n := count()}, {locationName, date, sampleId, batchId})');
     });
 });

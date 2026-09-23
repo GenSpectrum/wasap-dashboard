@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import {
     batchCountQuery,
-    locationSampleOverviewQuery,
+    sampleOverviewQuery,
     samplingDatesQuery,
     stringFieldValuesQuery,
     totalReadCountQuery,
@@ -46,9 +46,9 @@ describe('the Tier-1 read catalogue', () => {
         );
     });
 
-    test('locationSampleOverviewQuery groups the whole table by location, date and sample, unfiltered', () => {
-        expect(locationSampleOverviewQuery(schema).render()).toBe(
-            'default.groupBy({n := count()}, {locationName, date, sampleId})',
+    test('sampleOverviewQuery groups the whole table by location, date, sample and batch, unfiltered', () => {
+        expect(sampleOverviewQuery(schema).render()).toBe(
+            'default.groupBy({n := count()}, {locationName, date, sampleId, batchId})',
         );
     });
 

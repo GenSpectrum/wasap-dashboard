@@ -38,6 +38,32 @@ export function readValueExtent(rows: readonly RhydbRow[], column: string): { mi
     return { min: readText(rows[0], column), max: readText(rows[rows.length - 1], column) };
 }
 
+export type SampleOverview = {
+    locationName: string;
+    /** The sampling date, from `schema.groupingDate`. */
+    date: string;
+    sampleId: string;
+    batchId: string;
+    reads: number;
+};
+
+/**
+ * `sampleOverviewQuery`'s result, read one entry per sample. Rows with a blank location are
+ * dropped, the same as `readNamedCounts`. The overview page's per-location table folds these
+ * with `readLocationOverview`; its samples-over-time plot uses them as they are.
+ */
+export function readSampleOverview(rows: readonly RhydbRow[], schema: SiloSchema): SampleOverview[] {
+    return rows
+        .map((row) => ({
+            locationName: readText(row, schema.locationName),
+            date: readText(row, schema.groupingDate),
+            sampleId: readText(row, schema.sampleId),
+            batchId: readText(row, schema.batchId),
+            reads: readCount(row, READS),
+        }))
+        .filter((sample) => sample.locationName !== '');
+}
+
 export type LocationOverview = {
     name: string;
     sampleCount: number;
@@ -46,25 +72,19 @@ export type LocationOverview = {
 };
 
 /**
- * `locationSampleOverviewQuery`'s one-row-per-sample result, folded into one entry per
- * location — how many samples it has, and the most recent of their sampling dates. Sorted by
- * location name. Rows with a blank location are dropped, the same as `readNamedCounts`.
+ * `readSampleOverview`'s one-entry-per-sample result, folded into one entry per location — how
+ * many samples it has, and the most recent of their sampling dates. Sorted by location name.
  */
-export function readLocationOverview(rows: readonly RhydbRow[], schema: SiloSchema): LocationOverview[] {
+export function readLocationOverview(samples: readonly SampleOverview[]): LocationOverview[] {
     const byLocation = new Map<string, { sampleCount: number; mostRecentSampleDate: string }>();
-    for (const row of rows) {
-        const name = readText(row, schema.locationName);
-        if (name === '') {
-            continue;
-        }
-        const date = readText(row, schema.groupingDate);
-        const existing = byLocation.get(name);
+    for (const sample of samples) {
+        const existing = byLocation.get(sample.locationName);
         if (existing === undefined) {
-            byLocation.set(name, { sampleCount: 1, mostRecentSampleDate: date });
+            byLocation.set(sample.locationName, { sampleCount: 1, mostRecentSampleDate: sample.date });
         } else {
             existing.sampleCount += 1;
-            if (date > existing.mostRecentSampleDate) {
-                existing.mostRecentSampleDate = date;
+            if (sample.date > existing.mostRecentSampleDate) {
+                existing.mostRecentSampleDate = sample.date;
             }
         }
     }
