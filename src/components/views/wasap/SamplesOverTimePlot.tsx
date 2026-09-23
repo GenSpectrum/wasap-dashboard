@@ -1,20 +1,33 @@
-import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+    type CSSProperties,
+    type ReactNode,
+} from 'react';
 
 import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
 import { type SampleOverview } from '../../../dataLayer/queries';
 import { Loading } from '../../../util/Loading';
-import { MinMaxRangeSlider } from '../../inputs/min-max-range-slider';
 import { singleGraphColorRGBAById } from '../../shared/charts/colors';
 
 /**
  * Which locations were sampled on which dates, and which sequencing batch each sample came
  * from: one row per location, one column per sampling date, coloured by batch and shaded by
- * read depth. Modelled on wastewater-analytics-experiment's own `SamplesOverTime`, reverse
- * engineered from its live preview (its checked-out source only shades by depth, no batch
- * colour — the preview runs code this repo doesn't have) rather than ported from source.
+ * read depth, with a thick line marking the start of each week. Modelled on
+ * wastewater-analytics-experiment's own `SamplesOverTime`, reverse engineered from its live
+ * preview (its checked-out source only shades by depth, no batch colour — the preview runs code
+ * this repo doesn't have) rather than ported from source.
  *
  * A date with no sample is drawn hatched, not left out, so a gap in surveillance reads as a
  * gap. Unfiltered, like the rest of the overview page.
+ *
+ * Every date is loaded and in the DOM - it's the horizontal scrollbar under the grid that keeps
+ * a long history cheap to look at, not a filter - and the grid opens scrolled to the most recent
+ * samples.
  */
 export function SamplesOverTimePlot() {
     const { data, isPending, isError, error } = useSampleOverview();
@@ -56,10 +69,54 @@ function depthOpacity(reads: number): number {
 const ABSENT_FILL = 'repeating-linear-gradient(45deg, var(--color-stone-300) 0 1px, var(--color-stone-100) 1px 4px)';
 
 const ROW_HEIGHT = '1.25rem';
+const HEADER_HEIGHT = '0.9rem';
+const LOCATION_COLUMN_WIDTH = '10rem';
+
+/**
+ * Narrow enough that a typical window shows roughly the most recent 90 days before the
+ * horizontal scrollbar is needed, wide enough that a week - 7 of these - comfortably fits a
+ * Monday's upright date label without crowding the next week's.
+ */
+const DAY_WIDTH_PX = 13;
+
+/** `date` is a `YYYY-MM-DD` string, parsed as UTC so a viewer's own timezone can't shift which
+ * day of the week it falls on. 0 = Sunday, ..., 6 = Saturday. */
+function isMonday(date: string): boolean {
+    return new Date(`${date}T00:00:00Z`).getUTCDay() === 1;
+}
+
+const DAY_LABEL_FORMAT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+
+/** "24. Jan", "8. Sep": day of month, then the month abbreviated - shorter than the ISO form and
+ * closer to how a date gets said out loud. */
+function formatDayLabel(date: string): string {
+    const parts = DAY_LABEL_FORMAT.formatToParts(new Date(`${date}T00:00:00Z`));
+    const day = parts.find((part) => part.type === 'day')?.value ?? '';
+    const month = parts.find((part) => part.type === 'month')?.value ?? '';
+    return `${day}. ${month}`;
+}
+
+/** Every calendar day from `from` to `to`, inclusive, both `YYYY-MM-DD`. */
+function eachDateBetween(from: string, to: string): string[] {
+    const dates: string[] = [];
+    const end = new Date(`${to}T00:00:00Z`).getTime();
+    for (let day = new Date(`${from}T00:00:00Z`).getTime(); day <= end; day += 24 * 60 * 60 * 1000) {
+        dates.push(new Date(day).toISOString().slice(0, 10));
+    }
+    return dates;
+}
 
 export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) {
     const locations = useMemo(() => [...new Set(samples.map((sample) => sample.locationName))].sort(), [samples]);
-    const dates = useMemo(() => [...new Set(samples.map((sample) => sample.date))].sort(), [samples]);
+
+    // Every calendar day in range, not just the days something was sampled on: sampling doesn't
+    // happen daily, so leaving the empty days out would silently compress them away instead of
+    // reading as the gap they are, and would throw off both the week dividers (a dead week would
+    // vanish rather than showing as one) and how many days actually fit in the default view.
+    const dates = useMemo(() => {
+        const sampledDates = samples.map((sample) => sample.date).sort();
+        return sampledDates.length === 0 ? [] : eachDateBetween(sampledDates[0], sampledDates[sampledDates.length - 1]);
+    }, [samples]);
 
     // A batch's colour is fixed (the palette cycles, so two batches can share a hue once there
     // are more than the palette has), by the sorted order of its ID - deterministic, unlike "the
@@ -78,124 +135,154 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
         return map;
     }, [samples]);
 
-    // Undefined until the user moves it; dates accumulate as sampling continues.
-    const [range, setRange] = useState<{ from: number; to: number } | undefined>(undefined);
-    const defaultRange = { from: 0, to: Math.max(0, dates.length - 1) };
-    const window = range ?? defaultRange;
-    const visible = useMemo(() => dates.slice(window.from, window.to + 1), [dates, window.from, window.to]);
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Whether there's more to see left/right of what's currently in view, so the faded edges
+    // below only show on a side that actually scrolls further - not a fixed decoration.
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+    const updateScrollShadows = useCallback(() => {
+        const el = scrollRef.current;
+        if (!el) {
+            return;
+        }
+        setCanScrollLeft(el.scrollLeft > 1);
+        setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    }, []);
+
+    // Scrolled to the most recent dates on first render, before the browser paints, so there's
+    // no flash of the oldest samples first. Only re-scrolls when the number of dates changes
+    // (sampling continues), not on every refetch, so it doesn't yank a viewer back to "now" while
+    // they're looking at history.
+    useLayoutEffect(() => {
+        const el = scrollRef.current;
+        if (el) {
+            el.scrollLeft = el.scrollWidth;
+        }
+        updateScrollShadows();
+    }, [dates.length, updateScrollShadows]);
+
+    // The panel can also change width from under the grid (a sidebar opening, the window
+    // resizing) without the grid itself scrolling, which needs the same recheck.
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (!el) {
+            return;
+        }
+        const observer = new ResizeObserver(updateScrollShadows);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [updateScrollShadows]);
 
     if (dates.length === 0 || locations.length === 0) {
         return null;
     }
 
+    const datesWidth = dates.length * DAY_WIDTH_PX;
+
     return (
         <div className='border border-stone-300 bg-white p-2'>
-            <table className='w-full table-fixed'>
-                <colgroup>
-                    <col style={{ width: '10rem' }} />
-                    <col />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th className='px-2 text-left align-bottom text-sm font-normal text-stone-500'>Location</th>
-                        <th className='p-0 align-bottom'>
-                            {/* One header cell per column, so a date sits over the column it names
-                                however the width is shared out - the same layout `feature-bands.tsx`
-                                uses, which avoids Firefox giving many tiny auto-width table columns
-                                a sliver each. */}
-                            <div className='flex w-full items-end'>
-                                {visible.map((date, index) => (
-                                    <div key={date} className='@container min-w-0 flex-1'>
-                                        <DateHeaderLabel date={date} index={index} numberOfColumns={visible.length} />
+            <div className='relative'>
+                <div ref={scrollRef} className='overflow-x-auto' onScroll={updateScrollShadows}>
+                    <table
+                        className='table-fixed border-collapse'
+                        style={{ width: `calc(${LOCATION_COLUMN_WIDTH} + ${datesWidth}px)` }}
+                    >
+                        <colgroup>
+                            <col style={{ width: LOCATION_COLUMN_WIDTH }} />
+                            <col style={{ width: `${datesWidth}px` }} />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th className='sticky left-0 z-10 bg-white px-2 text-left align-bottom text-sm font-normal text-stone-500'>
+                                    Location
+                                </th>
+                                <th className='p-0 align-bottom'>
+                                    {/* One header cell for every date, so a date sits over the column
+                                        it names however the width is shared out - the same layout
+                                        `feature-bands.tsx` uses, which avoids Firefox giving many
+                                        tiny auto-width table columns a sliver each. */}
+                                    <div className='flex' style={{ height: HEADER_HEIGHT }}>
+                                        {dates.map((date) => (
+                                            <div
+                                                key={date}
+                                                className={`relative shrink-0 ${isMonday(date) ? 'border-l-2 border-stone-400' : ''}`}
+                                                style={{ width: DAY_WIDTH_PX }}
+                                            >
+                                                {/* Anchored to its own narrow column but not confined
+                                                    to it - a date is wider than one day, so it
+                                                    overflows into the six undated columns after it,
+                                                    the same way the week that starts here does. */}
+                                                {isMonday(date) && (
+                                                    <div className='absolute left-0 text-[10px] text-nowrap text-stone-500'>
+                                                        {formatDayLabel(date)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {locations.map((location) => (
-                        <tr key={location}>
-                            <th className='truncate px-2 text-left text-sm font-normal' title={location}>
-                                {location}
-                            </th>
-                            <td className='p-0'>
-                                <div className='flex w-full' style={{ height: ROW_HEIGHT }}>
-                                    {visible.map((date) => {
-                                        const sample = byLocationAndDate.get(`${location}|${date}`);
-                                        return sample === undefined ? (
-                                            <div
-                                                key={date}
-                                                className='h-full min-w-0 flex-1 border-r border-b border-stone-100'
-                                                style={{ background: ABSENT_FILL }}
-                                                title={`${location}, ${date}: no sample`}
-                                            />
-                                        ) : (
-                                            <div
-                                                key={date}
-                                                className='h-full min-w-0 flex-1 border-r border-b border-stone-100'
-                                                style={{
-                                                    backgroundColor: singleGraphColorRGBAById(
-                                                        colorIndexByBatch.get(sample.batchId) ?? 0,
-                                                        depthOpacity(sample.reads),
-                                                    ),
-                                                }}
-                                                title={`${sample.sampleId} — ${date} — batch ${sample.batchId} — ${sample.reads.toLocaleString('en-us')} reads`}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {dates.length > 1 && (
-                <div className='mt-3 px-2'>
-                    <span className='text-xs text-stone-500'>
-                        Visible dates: {dates[window.from]} – {dates[window.to]}
-                    </span>
-                    {/* Functional updates, not `{ ..., to: window.to }`: when a drag crosses the
-                        other thumb, MinMaxRangeSlider fires both setMin and setMax in the same
-                        event, back to back. Closing over `window` would have the second call
-                        overwrite the first's change with a stale value of the field it didn't
-                        touch, snapping the thumbs back apart instead of letting them meet. */}
-                    <MinMaxRangeSlider
-                        min={window.from}
-                        max={window.to}
-                        setMin={(from) => setRange((prev) => ({ from, to: (prev ?? defaultRange).to }))}
-                        setMax={(to) => setRange((prev) => ({ from: (prev ?? defaultRange).from, to }))}
-                        rangeMin={0}
-                        rangeMax={dates.length - 1}
-                        step={1}
-                    />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {locations.map((location) => (
+                                <tr key={location}>
+                                    <th
+                                        className='sticky left-0 z-10 truncate bg-white px-2 text-left text-sm font-normal'
+                                        title={location}
+                                    >
+                                        {location}
+                                    </th>
+                                    <td className='p-0'>
+                                        <div className='flex' style={{ height: ROW_HEIGHT }}>
+                                            {dates.map((date) => {
+                                                const sample = byLocationAndDate.get(`${location}|${date}`);
+                                                const weekBorder = isMonday(date)
+                                                    ? 'border-l-2 border-l-stone-400'
+                                                    : '';
+                                                return sample === undefined ? (
+                                                    <div
+                                                        key={date}
+                                                        className={`h-full shrink-0 border-r border-b border-stone-100 ${weekBorder}`}
+                                                        style={{ width: DAY_WIDTH_PX, background: ABSENT_FILL }}
+                                                        title={`${location}, ${date}: no sample`}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        key={date}
+                                                        className={`h-full shrink-0 border-r border-b border-stone-100 ${weekBorder}`}
+                                                        style={{
+                                                            width: DAY_WIDTH_PX,
+                                                            backgroundColor: singleGraphColorRGBAById(
+                                                                colorIndexByBatch.get(sample.batchId) ?? 0,
+                                                                depthOpacity(sample.reads),
+                                                            ),
+                                                        }}
+                                                        title={`${sample.sampleId} — ${date} — batch ${sample.batchId} — ${sample.reads.toLocaleString('en-us')} reads`}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+
+                {/* Anchored to the panel, not the scrolling table, so they stay put at the visible
+                    edges instead of scrolling away with the content they're fading. Start after the
+                    sticky location column: that column is never faded, it's always fully there. */}
+                <div
+                    className={`pointer-events-none absolute inset-y-0 w-8 bg-gradient-to-r from-white to-transparent transition-opacity duration-150 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`}
+                    style={{ left: LOCATION_COLUMN_WIDTH }}
+                />
+                <div
+                    className={`pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent transition-opacity duration-150 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`}
+                />
+            </div>
 
             <SamplesOverTimeLegend />
-        </div>
-    );
-}
-
-/**
- * The label of one column above the grid, rotated so many narrow date columns still fit one
- * each. The first and last are always shown; the ones between only when their own column is
- * wide enough not to crowd its neighbours - so narrowing the visible-dates window above (which
- * widens every remaining column) reveals more of them, without measuring anything in script.
- */
-function DateHeaderLabel({ date, index, numberOfColumns }: { date: string; index: number; numberOfColumns: number }) {
-    const style = { writingMode: 'vertical-rl', rotate: '180deg' } as const;
-    if (index === 0 || index === numberOfColumns - 1) {
-        return (
-            <div className='mx-auto text-[10px] text-nowrap text-stone-500' style={style}>
-                {date}
-            </div>
-        );
-    }
-    return (
-        <div className='invisible mx-auto text-[10px] text-nowrap text-stone-500 @[1rem]:visible' style={style}>
-            {date}
         </div>
     );
 }
@@ -214,6 +301,7 @@ function SamplesOverTimeLegend() {
                 ≥ {HIGH_READS_THRESHOLD.toLocaleString('en-us')} reads
             </LegendSwatch>
             <span>Samples of the same batch have the same colour.</span>
+            <span>A thick line marks the start of each week.</span>
         </div>
     );
 }
