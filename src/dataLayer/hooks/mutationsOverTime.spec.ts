@@ -9,7 +9,7 @@ import {
     positionTargets,
     toMutationEntries,
 } from './mutationsOverTime';
-import { getProportion } from '../../query/queryMutationsOverTime';
+import { getProportion } from '../../components/dataDisplay/overTime/proportionValue';
 import { type OverallMutationRow, type PositionOverTimeRow } from '../queries';
 
 describe('buildDateAxis', () => {

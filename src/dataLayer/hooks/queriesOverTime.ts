@@ -15,8 +15,8 @@ import { useMemo } from 'react';
 
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
+import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { UserFacingError } from '../../components/shared/error-display';
-import { type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';

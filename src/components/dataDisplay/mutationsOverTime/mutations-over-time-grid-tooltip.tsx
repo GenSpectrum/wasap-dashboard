@@ -1,9 +1,9 @@
 import { type FC } from 'react';
 
-import { type ProportionValue } from '../../../query/queryMutationsOverTime';
 import type { Deletion, Substitution } from '../../../util/mutations';
 import { type Temporal } from '../../../util/temporalClass';
 import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
+import { type ProportionValue } from '../overTime/proportionValue';
 
 export type MutationsOverTimeGridTooltipProps = {
     mutation: Substitution | Deletion;

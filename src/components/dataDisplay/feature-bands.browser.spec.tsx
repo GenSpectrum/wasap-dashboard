@@ -4,9 +4,9 @@ import { render } from 'vitest-browser-react';
 import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
 import { FeatureBands, type FeatureBandsProps } from './feature-bands';
 import { DEFAULT_FEATURE_SORT } from './featureSort';
+import { serializeTemporal, type ProportionValue } from './overTime/proportionValue';
 import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
-import { serializeTemporal, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { Map2dBase } from '../../util/map2d';
 import { type Temporal, TemporalCache } from '../../util/temporalClass';
 

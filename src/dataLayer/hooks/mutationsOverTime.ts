@@ -22,9 +22,9 @@ import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
 } from '../../components/dataDisplay/mutationsOverTime/MutationOverTimeData';
+import { hideGapsInPlace, type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { UserFacingError } from '../../components/shared/error-display';
 import { sortSubstitutionsAndDeletions } from '../../components/shared/sort/sortSubstitutionsAndDeletions';
-import { hideGapsInPlace, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../types/dashboardComponents';
 import { Map2dView, type Map2DContents } from '../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';

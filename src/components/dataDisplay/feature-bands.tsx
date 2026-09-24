@@ -6,12 +6,12 @@ import { getColorWithinScale } from './color-scale-selector';
 import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
+import { getProportion, type ProportionValue } from './overTime/proportionValue';
 import PortalTooltip from './portal-tooltip';
 import { Pagination, type PageSizes } from './tanstackTable/pagination';
 import { usePageSizeContext } from './tanstackTable/pagination-context';
 import { useReactTable } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
-import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
 
 export interface FeatureRenderer<D> {

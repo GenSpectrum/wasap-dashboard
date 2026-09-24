@@ -12,7 +12,6 @@ import {
     type OverTimeMetadata,
 } from '../../../dataLayer/hooks/mutationsOverTime';
 import { siloReadFilterSchema } from '../../../dataLayer/queries/filter';
-import { getProportion, type ProportionValue } from '../../../query/queryMutationsOverTime';
 import { sequenceTypeSchema, temporalGranularitySchema } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
@@ -26,6 +25,7 @@ import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { getProportion, type ProportionValue } from '../overTime/proportionValue';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsDropdown } from '../view-settings-dropdown';

@@ -1,7 +1,7 @@
 import { type FC, type ReactNode } from 'react';
 
 import { formatProportion } from './formatProportion';
-import { type ProportionValue } from '../../query/queryMutationsOverTime';
+import { type ProportionValue } from './overTime/proportionValue';
 import { type Temporal, type TemporalClass, toTemporalClass, YearMonthDayClass } from '../../util/temporalClass';
 
 type OverTimeGridTooltipProps = {
