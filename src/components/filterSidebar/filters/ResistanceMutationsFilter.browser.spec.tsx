@@ -14,10 +14,10 @@ describe('ResistanceMutationsFilter', () => {
 
     const resistanceSetNames = ['3CLpro', 'RdRp', 'Spike'];
 
-    it('renders with initial resistance set', async () => {
+    it('renders an option per resistance set with the current one checked', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
+        const { getByLabelText } = render(
             <ResistanceMutationsFilter
                 pageState={defaultPageState}
                 setPageState={mockSetPageState}
@@ -25,14 +25,15 @@ describe('ResistanceMutationsFilter', () => {
             />,
         );
 
-        const select = getByRole('combobox');
-        await expect.element(select).toHaveValue('3CLpro');
+        await expect.element(getByLabelText('3CLpro')).toBeChecked();
+        await expect.element(getByLabelText('RdRp')).not.toBeChecked();
+        await expect.element(getByLabelText('Spike')).not.toBeChecked();
     });
 
-    it('calls setPageState when selecting a different resistance set', async () => {
+    it('calls setPageState when clicking a different resistance set', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
+        const { getByText } = render(
             <ResistanceMutationsFilter
                 pageState={defaultPageState}
                 setPageState={mockSetPageState}
@@ -40,8 +41,7 @@ describe('ResistanceMutationsFilter', () => {
             />,
         );
 
-        const select = getByRole('combobox');
-        await select.selectOptions('RdRp');
+        await getByText('RdRp').click();
 
         expect(mockSetPageState).toHaveBeenCalledWith({
             ...defaultPageState,
