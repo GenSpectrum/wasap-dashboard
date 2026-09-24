@@ -77,6 +77,31 @@ describe('FeatureBands', () => {
         expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(3);
     });
 
+    it('hatches a bucket with reads but no coverage, and cuts the band off square around it', async () => {
+        const threeDates = [...dates, TemporalCache.getInstance().getYearMonthDay('2024-01-03')];
+        const data = new Map2dBase<string, Temporal, ProportionValue>((key) => key, serializeTemporal);
+        data.set('S:A1T', threeDates[0], valueOf(10));
+        data.set('S:A1T', threeDates[1], { type: 'noCoverage', totalCount: 100 });
+        data.set('S:A1T', threeDates[2], valueOf(30));
+        const { container, getByText } = renderBands({ data, requestedDateRanges: threeDates, totalRows: 1 });
+
+        await expect.element(getByText('S:A1T')).toBeVisible();
+        expect(container.querySelectorAll('[data-no-coverage]')).toHaveLength(1);
+        const outline = container.querySelector('tbody svg path')!.getAttribute('d')!;
+        expect(outline.match(/M/g)).toHaveLength(2); // one stretch of band either side of the gap
+    });
+
+    it('neither hatches nor draws a band in a bucket without any reads', async () => {
+        const data = new Map2dBase<string, Temporal, ProportionValue>((key) => key, serializeTemporal);
+        data.set('S:A1T', dates[0], valueOf(10));
+        data.set('S:A1T', dates[1], null);
+        const { container, getByText } = renderBands({ data, totalRows: 1 });
+
+        await expect.element(getByText('S:A1T')).toBeVisible();
+        expect(container.querySelectorAll('[data-no-coverage]')).toHaveLength(0);
+        expect(container.querySelector('tbody svg path')!.getAttribute('d')!.match(/M/g)).toHaveLength(1);
+    });
+
     it('does not print the percentages by default', async () => {
         const { getByText } = renderBands();
 
