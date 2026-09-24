@@ -18,7 +18,7 @@ export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, 
         <div className='flex items-center gap-1'>
             <button
                 type='button'
-                className={`btn btn-xs ${settings.showPercentages ? 'btn-active' : ''}`}
+                className={`btn btn-xs ${settings.showPercentages ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
                 aria-label='Show percentages'
                 title='Show percentages'
                 aria-pressed={settings.showPercentages}
