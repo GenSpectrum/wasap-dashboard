@@ -89,20 +89,20 @@ describe('FeatureBands', () => {
         await expect.element(getByText('40%')).toBeInTheDocument();
     });
 
-    it('renders custom columns between the row label and the bands, with the value of each row', async () => {
+    it('renders the Jaccard index of each row between the row label and the bands', async () => {
         const { getByRole, getByText } = renderBands({
-            customColumns: [{ header: 'Jaccard index', values: { 'S:A1T': '0.91', 'S:C2G': 0.5 } }],
+            jaccardIndices: { 'S:A1T': 0.912, 'S:C2G': 0.5 },
         });
 
         await expect.element(getByText('Jaccard index')).toBeVisible();
 
         const firstRow = getByRole('row').filter({ hasText: 'S:A1T' });
-        await expect.element(firstRow.getByRole('cell', { name: '0.91' })).toBeVisible();
+        await expect.element(firstRow.getByRole('cell', { name: '.91' })).toBeVisible();
         const secondRow = getByRole('row').filter({ hasText: 'S:C2G' });
-        await expect.element(secondRow.getByRole('cell', { name: '0.5' })).toBeVisible();
+        await expect.element(secondRow.getByRole('cell', { name: '.50' })).toBeVisible();
     });
 
-    it('renders no custom column header when there are none', async () => {
+    it('renders no Jaccard index column without Jaccard indices', async () => {
         const { getByText } = renderBands();
 
         await expect.element(getByText('Jaccard index')).not.toBeInTheDocument();

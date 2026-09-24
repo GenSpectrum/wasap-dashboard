@@ -17,7 +17,7 @@ import { NoDataDisplay } from '../../shared/no-data-display';
 import { ResizeContainer } from '../../shared/resize-container';
 import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
-import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import PortalTooltip from '../portal-tooltip';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
@@ -60,7 +60,6 @@ const queriesOverTimeSchema = z.object({
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
-    customColumns: z.array(customColumnSchema).optional(),
 });
 export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 
@@ -200,7 +199,6 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
                 totalRows={rowKeys.length}
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
-                customColumns={originalComponentProps.customColumns}
             />
         </div>
     );

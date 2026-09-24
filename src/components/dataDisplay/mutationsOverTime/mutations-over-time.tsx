@@ -24,7 +24,7 @@ import { ResizeContainer } from '../../shared/resize-container';
 import { AnnotatedMutation } from '../annotated-mutation';
 import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
-import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsDropdown } from '../view-settings-dropdown';
@@ -48,7 +48,8 @@ const mutationOverTimeSchema = z.object({
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
-    customColumns: z.array(customColumnSchema).optional(),
+    /** The Jaccard index of each mutation, by mutation code. Shown as a column if given. */
+    jaccardIndices: z.record(z.string(), z.number()).optional(),
 });
 export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 
@@ -211,7 +212,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 totalRows={totalFilteredRows}
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
-                customColumns={originalComponentProps.customColumns}
+                jaccardIndices={originalComponentProps.jaccardIndices}
             />
         </div>
     );

@@ -183,8 +183,7 @@ describe('fetchWasapPageData', () => {
             expect(result).toEqual({
                 type: 'mutations',
                 displayMutations: ['A123T'],
-
-                customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
+                jaccardIndices: { A123T: 0.4 },
             });
         });
 
@@ -238,7 +237,7 @@ describe('fetchWasapPageData', () => {
             });
         });
 
-        test('predefined signature: filters mutations by jaccard and returns customColumns', async () => {
+        test('predefined signature: filters mutations by jaccard and returns their jaccard indices', async () => {
             backendRouteMocker.mockGetCollection('1', {
                 id: 1,
                 name: 'XEC',
@@ -302,8 +301,7 @@ describe('fetchWasapPageData', () => {
                 type: 'mutations',
                 displayMutations: ['A123T'],
                 lineageForJaccard: 'XEC*',
-
-                customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
+                jaccardIndices: { A123T: 0.4 },
             });
         });
 

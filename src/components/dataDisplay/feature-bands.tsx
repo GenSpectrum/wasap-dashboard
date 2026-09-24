@@ -1,6 +1,5 @@
 import { getCoreRowModel } from '@tanstack/table-core';
 import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
-import z from 'zod';
 
 import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
@@ -13,13 +12,6 @@ import { useReactTable } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
-
-export const customColumnSchema = z.object({
-    header: z.string(),
-    values: z.record(z.string(), z.union([z.string(), z.number()])),
-});
-/** An extra column of the bands: a header and a value for each row label (see `FeatureRenderer.asString`). */
-export type CustomColumn = z.infer<typeof customColumnSchema>;
 
 export interface FeatureRenderer<D> {
     asString(value: D): string;
@@ -95,11 +87,12 @@ export interface FeatureBandsProps<F> {
     onPageChange: Dispatch<SetStateAction<number>>;
     /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
     paginationEnd?: ReactNode;
-    /** Extra columns between the row label and the bands, with one value per row label. */
-    customColumns?: CustomColumn[];
+    /**
+     * The Jaccard index of each row, by row label (see `FeatureRenderer.asString`). Without it,
+     * there is no Jaccard index column.
+     */
+    jaccardIndices?: Partial<Record<string, number>>;
 }
-
-const NO_CUSTOM_COLUMNS: CustomColumn[] = [];
 
 export function FeatureBands<F>({
     rowLabelHeader,
@@ -115,12 +108,13 @@ export function FeatureBands<F>({
     totalRows,
     onPageChange,
     paginationEnd,
-    customColumns = NO_CUSTOM_COLUMNS,
+    jaccardIndices,
 }: FeatureBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
+    const numberOfValueColumns = jaccardIndices === undefined ? 0 : 1;
 
     // A table instance with no columns of its own: it exists only to drive the
     // shared `Pagination` control the same way the grid tab's table does - the
@@ -162,18 +156,16 @@ export function FeatureBands<F>({
                     header, a band per row), instead of one table column per bucket:
                     browsers disagree on how to size dozens of empty auto-width columns
                     (Firefox gives each one a sliver and leaves the rest of the table
-                    unused). The label and custom columns are as wide as their content
+                    unused). The label and value columns are as wide as their content
                     (`w-px` + no wrapping), and the date column, being `w-full`, gets
                     all the rest. */}
                 <table className='w-full'>
                     <thead>
                         <tr>
                             <th className='w-px px-2 whitespace-nowrap'>{rowLabelHeader}</th>
-                            {customColumns.map((customColumn) => (
-                                <th key={customColumn.header} className='w-px px-2 whitespace-nowrap'>
-                                    {customColumn.header}
-                                </th>
-                            ))}
+                            {jaccardIndices !== undefined && (
+                                <th className='w-px px-2 whitespace-nowrap'>Jaccard index</th>
+                            )}
                             <th className='w-full p-0'>
                                 {/* One equally wide slot per bucket, like the band's own
                                     hover columns, so a label sits above its bucket. */}
@@ -199,7 +191,7 @@ export function FeatureBands<F>({
                                       {rowIndex === 0 && (
                                           <td
                                               rowSpan={loadingRowLabels.length}
-                                              colSpan={customColumns.length + 1}
+                                              colSpan={numberOfValueColumns + 1}
                                               className='text-center'
                                           >
                                               <span className='loading loading-spinner loading-sm' />
@@ -212,11 +204,11 @@ export function FeatureBands<F>({
                                       <th className='px-2 font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
-                                      {customColumns.map((customColumn) => (
-                                          <td key={customColumn.header} className='px-2 text-center whitespace-nowrap'>
-                                              {customColumn.values[featureRenderer.asString(feature)]}
+                                      {jaccardIndices !== undefined && (
+                                          <td className='px-2 text-center whitespace-nowrap'>
+                                              {formatJaccardIndex(jaccardIndices[featureRenderer.asString(feature)])}
                                           </td>
-                                      ))}
+                                      )}
                                       <td className='p-0'>
                                           <BandRow
                                               feature={feature}
@@ -235,7 +227,7 @@ export function FeatureBands<F>({
                               ))}
                         {!isLoading && features.length === 0 && (
                             <tr>
-                                <td colSpan={customColumns.length + 2}>
+                                <td colSpan={numberOfValueColumns + 2}>
                                     <div className='text-center'>No data available for your filters.</div>
                                 </td>
                             </tr>
@@ -253,6 +245,14 @@ export function FeatureBands<F>({
             </div>
         </div>
     );
+}
+
+/** What a value column shows for a row without a value. */
+const NO_VALUE = '–';
+
+/** Like `.95`: the index is never above 1, so the leading zero says nothing and is left off. */
+function formatJaccardIndex(jaccardIndex: number | undefined) {
+    return jaccardIndex === undefined ? NO_VALUE : jaccardIndex.toPrecision(2).replace(/^0\./, '.');
 }
 
 /**
