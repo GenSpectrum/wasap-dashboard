@@ -6,9 +6,6 @@ import type { WasapAnalysisFilter, WasapMeanProportion } from './wasapAnalysisFi
  * are either (nearly) always or (nearly) never present, which isn't interesting.
  */
 export function getDefaultMeanProportion(analysis: WasapAnalysisFilter): WasapMeanProportion {
-    if (analysis.mode === 'resistance') {
-        return { lower: 0.05, upper: 1.0 };
-    }
     if (analysis.mode === 'manual' && analysis.mutations === undefined) {
         return { lower: 0.05, upper: 0.95 };
     }

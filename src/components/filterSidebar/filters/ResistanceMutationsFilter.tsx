@@ -1,5 +1,5 @@
 import type { WasapResistanceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { LabeledField } from '../../inputs/LabeledField';
+import { RadioSelect } from '../../inputs/RadioSelect';
 
 export function ResistanceMutationsFilter({
     pageState,
@@ -15,18 +15,12 @@ export function ResistanceMutationsFilter({
     }
 
     return (
-        <LabeledField label='Resistance mutation set'>
-            <select
-                className='select select-bordered'
-                value={pageState.resistanceSet}
-                onChange={(e) => setPageState({ ...pageState, resistanceSet: e.target.value })}
-            >
-                {resistanceSetNames.map((name) => (
-                    <option key={name} value={name}>
-                        {name}
-                    </option>
-                ))}
-            </select>
-        </LabeledField>
+        <RadioSelect
+            label='Resistance mutation set'
+            value={pageState.resistanceSet}
+            options={resistanceSetNames.map((name) => ({ value: name, label: name }))}
+            onChange={(resistanceSet) => setPageState({ ...pageState, resistanceSet })}
+            direction='vertical'
+        />
     );
 }

@@ -82,11 +82,30 @@ export const wasapVariantFilterSchema = z.object({
 });
 export type WasapVariantFilter = z.infer<typeof wasapVariantFilterSchema>;
 
+/**
+ * Which mutations of a resistance set are shown, by their mean proportion: all of them,
+ * or those that are (nearly) absent, present in part, or (nearly) fixed.
+ */
+export const RESISTANCE_PROPORTION_RANGE = {
+    all: 'all',
+    low: 'low',
+    medium: 'medium',
+    high: 'high',
+} as const;
+export const resistanceProportionRangeSchema = z.enum([
+    RESISTANCE_PROPORTION_RANGE.all,
+    RESISTANCE_PROPORTION_RANGE.low,
+    RESISTANCE_PROPORTION_RANGE.medium,
+    RESISTANCE_PROPORTION_RANGE.high,
+]);
+export type ResistanceProportionRange = z.infer<typeof resistanceProportionRangeSchema>;
+
 export const wasapResistanceFilterSchema = z.object({
     mode: z.literal('resistance'),
     // resistance sets are only defined for amino acid mutations
     sequenceType: z.literal('amino acid'),
     resistanceSet: z.string(),
+    proportionRange: resistanceProportionRangeSchema,
 });
 export type WasapResistanceFilter = z.infer<typeof wasapResistanceFilterSchema>;
 
