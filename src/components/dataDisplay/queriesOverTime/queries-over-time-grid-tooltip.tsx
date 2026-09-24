@@ -27,9 +27,6 @@ const TooltipValueCountsDescription: FC<{
     value: NonNullable<ProportionValue>;
     queryLabel: string;
 }> = ({ value, queryLabel }) => {
-    if (value.type === 'wastewaterValue') {
-        return;
-    }
     return (
         <div className='mt-2'>
             {(() => {
@@ -40,21 +37,6 @@ const TooltipValueCountsDescription: FC<{
                                 None or less than {formatProportion(MUTATIONS_OVER_TIME_MIN_PROPORTION)} match the
                                 query.
                             </p>
-                        );
-
-                    case 'value':
-                        return (
-                            <>
-                                <p>
-                                    {value.count} <span className='text-gray-600'>match the query {queryLabel}.</span>
-                                </p>
-                                {value.proportion > 0 && (
-                                    <p>
-                                        {Math.round(value.count / value.proportion)}{' '}
-                                        <span className='text-gray-600'>total with coverage.</span>
-                                    </p>
-                                )}
-                            </>
                         );
 
                     case 'valueWithCoverage':

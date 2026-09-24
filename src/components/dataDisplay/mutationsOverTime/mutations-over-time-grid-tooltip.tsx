@@ -40,9 +40,6 @@ const TooltipValueCountsDescription: FC<{
     mutationCode: string;
     mutationPosition: number;
 }> = ({ value, mutationCode, mutationPosition }) => {
-    if (value.type === 'wastewaterValue') {
-        return;
-    }
     return (
         <div className='mt-2'>
             {(() => {
@@ -53,24 +50,6 @@ const TooltipValueCountsDescription: FC<{
                                 None or less than {formatProportion(MUTATIONS_OVER_TIME_MIN_PROPORTION)} have the
                                 mutation.
                             </p>
-                        );
-
-                    case 'value':
-                        return (
-                            <>
-                                <p>
-                                    {value.count}{' '}
-                                    <span className='text-gray-600'>have the mutation {mutationCode}.</span>
-                                </p>
-                                {value.proportion > 0 && (
-                                    <p>
-                                        {Math.round(value.count / value.proportion)}{' '}
-                                        <span className='text-gray-600'>
-                                            have coverage at position {mutationPosition}.
-                                        </span>
-                                    </p>
-                                )}
-                            </>
                         );
 
                     case 'valueWithCoverage':

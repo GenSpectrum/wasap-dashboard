@@ -4,20 +4,10 @@ import { type Temporal } from '../util/temporalClass';
 
 export type ProportionValue =
     | {
-          type: 'value';
-          proportion: number;
-          count: number;
-          totalCount: number;
-      }
-    | {
           type: 'valueWithCoverage';
           count: number;
           coverage: number;
           totalCount: number;
-      }
-    | {
-          type: 'wastewaterValue';
-          proportion: number;
       }
     | {
           type: 'belowThreshold';
@@ -27,9 +17,6 @@ export type ProportionValue =
 
 export function getProportion(value: ProportionValue) {
     switch (value?.type) {
-        case 'value':
-        case 'wastewaterValue':
-            return value.proportion;
         case 'valueWithCoverage':
             return value.count / value.coverage;
         case 'belowThreshold':
@@ -48,7 +35,7 @@ export function hideGapsInPlace<Key1 extends object | string>(view: Map2dView<Ke
     view.getSecondAxisKeys()
         .filter((date) => {
             const vals = view.getColumn(date);
-            return !vals.some((v) => (v?.type === 'value' || v?.type === 'valueWithCoverage') && v.totalCount > 0);
+            return !vals.some((v) => v?.type === 'valueWithCoverage' && v.totalCount > 0);
         })
         .forEach((date) => view.deleteColumn(date));
 }

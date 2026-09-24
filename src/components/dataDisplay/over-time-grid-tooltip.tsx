@@ -27,10 +27,6 @@ export const OverTimeGridTooltip: FC<OverTimeGridTooltipProps> = ({
             case 'belowThreshold':
                 proportionText = `<${formatProportion(minProportion)}`;
                 break;
-            case 'value':
-            case 'wastewaterValue':
-                proportionText = formatProportion(value.proportion);
-                break;
             case 'valueWithCoverage':
                 proportionText = formatProportion(value.count / value.coverage);
                 break;
