@@ -180,6 +180,22 @@ describe('Map2dView', () => {
         expect(view.getSecondAxisKeys().length).toBe(2);
     });
 
+    it('should keep only the selected rows, in the order they are given', () => {
+        const container = createBaseContainer();
+        const view = new Map2dView<string, string, number>(container);
+
+        view.selectRows(['c', 'a']);
+        expect(view.getFirstAxisKeys()).toEqual(['c', 'a']);
+        expect(view.getAsArray()).toEqual([
+            [3, 4],
+            [1, undefined],
+        ]);
+
+        view.selectRows(['a', 'x']);
+        expect(view.getFirstAxisKeys()).toEqual(['a']);
+        expect(view.get('c', 'b')).toBeUndefined();
+    });
+
     it('should return the view of the data as an array', () => {
         const container = createBaseContainer();
         const view = new Map2dView<string, string, number>(container);

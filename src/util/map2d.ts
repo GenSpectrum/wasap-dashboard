@@ -175,6 +175,15 @@ export class Map2dView<Key1 extends object | string, Key2 extends object | strin
         this.keysSecondAxis.delete(this.serializeSecondAxis(key));
     }
 
+    /** Keeps only the rows of `keys`, in the order of `keys`. Keys that aren't rows of the view are ignored. */
+    selectRows(keys: Key1[]) {
+        const selected = keys
+            .map((key) => [this.serializeFirstAxis(key), key] as const)
+            .filter(([serializedKey]) => this.keysFirstAxis.has(serializedKey));
+        this.keysFirstAxis.clear();
+        selected.forEach(([serializedKey, key]) => this.keysFirstAxis.set(serializedKey, key));
+    }
+
     get(keyFirstAxis: Key1, keySecondAxis: Key2) {
         const firstAxisKey = this.serializeFirstAxis(keyFirstAxis);
         const secondAxisKey = this.serializeSecondAxis(keySecondAxis);
