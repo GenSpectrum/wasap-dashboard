@@ -10,12 +10,12 @@ describe('ProportionRangeTabs', () => {
     it('shows every range with its count, and marks the selected one', async () => {
         const { getByRole } = render(<ProportionRangeTabs value='medium' counts={counts} onChange={vi.fn()} />);
 
-        await expect.element(getByRole('button', { name: '0% to 1% mean proportion 139' })).toBeVisible();
+        await expect.element(getByRole('button', { name: '< 1% mean proportion 139' })).toBeVisible();
         await expect
             .element(getByRole('button', { name: '1% to 99% mean proportion 14' }))
             .toHaveAttribute('aria-pressed', 'true');
         await expect
-            .element(getByRole('button', { name: '99% to 100% mean proportion 11' }))
+            .element(getByRole('button', { name: '> 99% mean proportion 11' }))
             .toHaveAttribute('aria-pressed', 'false');
         await expect.element(getByRole('button', { name: 'All 164' })).toHaveAttribute('aria-pressed', 'false');
     });

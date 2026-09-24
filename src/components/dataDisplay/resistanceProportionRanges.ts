@@ -4,25 +4,33 @@ import { RESISTANCE_PROPORTION_RANGE, type ResistanceProportionRange } from '../
 /**
  * The ranges of the mean proportion that the resistance page has a tab for, in the order
  * of the tabs. Apart from `all`, they don't overlap, so every mutation is in exactly one.
+ * Both shared bounds belong to the middle range, which the strict `<` and `>` of the
+ * labels of the other two say.
  */
 export const RESISTANCE_PROPORTION_RANGES: {
     range: ResistanceProportionRange;
+    /** Shown in bold. */
     label: string;
+    /** Shown after the label, if there is one. */
+    suffix?: string;
     interval: ProportionInterval;
 }[] = [
     {
         range: RESISTANCE_PROPORTION_RANGE.low,
-        label: '0% to 1% mean proportion',
+        label: '< 1%',
+        suffix: 'mean proportion',
         interval: { min: 0, max: 0.01, maxExclusive: true },
     },
     {
         range: RESISTANCE_PROPORTION_RANGE.medium,
-        label: '1% to 99% mean proportion',
+        label: '1% to 99%',
+        suffix: 'mean proportion',
         interval: { min: 0.01, max: 0.99 },
     },
     {
         range: RESISTANCE_PROPORTION_RANGE.high,
-        label: '99% to 100% mean proportion',
+        label: '> 99%',
+        suffix: 'mean proportion',
         interval: { min: 0.99, max: 1, minExclusive: true },
     },
     { range: RESISTANCE_PROPORTION_RANGE.all, label: 'All', interval: { min: 0, max: 1 } },

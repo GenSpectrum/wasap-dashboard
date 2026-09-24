@@ -17,7 +17,7 @@ export function ProportionRangeTabs({
 }) {
     return (
         <div className='flex gap-1' role='group' aria-label='Mutations by mean proportion'>
-            {RESISTANCE_PROPORTION_RANGES.map(({ range, label }) => {
+            {RESISTANCE_PROPORTION_RANGES.map(({ range, label, suffix }) => {
                 const isSelected = range === value;
                 return (
                     <button
@@ -34,7 +34,10 @@ export function ProportionRangeTabs({
                         }`}
                     >
                         {/* The space keeps screen readers from running the label and the count together. */}
-                        <span className='text-xs sm:text-sm'>{label}</span>{' '}
+                        <span className='text-xs sm:text-sm'>
+                            <span className='font-semibold'>{label}</span>
+                            {suffix !== undefined && ` ${suffix}`}
+                        </span>{' '}
                         <span className={`text-2xl font-semibold ${isSelected ? '' : 'text-gray-600'}`}>
                             {counts?.[range] ?? '…'}
                         </span>
