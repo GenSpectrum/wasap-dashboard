@@ -17,11 +17,19 @@ export const RESISTANCE_PROPORTION_RANGES: {
     interval: ProportionInterval;
 }[] = [
     { range: RESISTANCE_PROPORTION_RANGE.all, label: 'All', interval: { min: 0, max: 1 } },
-    { range: RESISTANCE_PROPORTION_RANGE.low, label: '0 – 0.01', interval: { min: 0, max: 0.01, maxExclusive: true } },
-    { range: RESISTANCE_PROPORTION_RANGE.medium, label: '0.01 – 0.99', interval: { min: 0.01, max: 0.99 } },
+    {
+        range: RESISTANCE_PROPORTION_RANGE.low,
+        label: '0% to 1% mean proportion',
+        interval: { min: 0, max: 0.01, maxExclusive: true },
+    },
+    {
+        range: RESISTANCE_PROPORTION_RANGE.medium,
+        label: '1% to 99% mean proportion',
+        interval: { min: 0.01, max: 0.99 },
+    },
     {
         range: RESISTANCE_PROPORTION_RANGE.high,
-        label: '0.99 – 1',
+        label: '99% to 100% mean proportion',
         interval: { min: 0.99, max: 1, minExclusive: true },
     },
 ];
