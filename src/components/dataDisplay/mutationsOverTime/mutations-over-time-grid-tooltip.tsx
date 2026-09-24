@@ -1,9 +1,8 @@
 import { type FC } from 'react';
 
-import { type ProportionValue, MUTATIONS_OVER_TIME_MIN_PROPORTION } from '../../../query/queryMutationsOverTime';
+import { type ProportionValue } from '../../../query/queryMutationsOverTime';
 import type { Deletion, Substitution } from '../../../util/mutations';
 import { type Temporal } from '../../../util/temporalClass';
-import { formatProportion } from '../formatProportion';
 import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 
 export type MutationsOverTimeGridTooltipProps = {
@@ -18,12 +17,7 @@ export const MutationsOverTimeGridTooltip: FC<MutationsOverTimeGridTooltipProps>
     value,
 }: MutationsOverTimeGridTooltipProps) => {
     return (
-        <OverTimeGridTooltip
-            label={<span className='font-bold'>{mutation.code}</span>}
-            date={date}
-            value={value}
-            minProportion={MUTATIONS_OVER_TIME_MIN_PROPORTION}
-        >
+        <OverTimeGridTooltip label={<span className='font-bold'>{mutation.code}</span>} date={date} value={value}>
             {value !== null && (
                 <TooltipValueCountsDescription
                     value={value}
@@ -44,15 +38,10 @@ const TooltipValueCountsDescription: FC<{
         <div className='mt-2'>
             {(() => {
                 switch (value.type) {
-                    case 'belowThreshold':
-                        return (
-                            <p className='text-gray-600'>
-                                None or less than {formatProportion(MUTATIONS_OVER_TIME_MIN_PROPORTION)} have the
-                                mutation.
-                            </p>
-                        );
+                    case 'noCoverage':
+                        return <p className='text-gray-600'>No reads cover position {mutationPosition}.</p>;
 
-                    case 'valueWithCoverage':
+                    case 'value':
                         return (
                             <>
                                 <p>

@@ -38,7 +38,7 @@ export function getMeanProportions(
 
             dates.forEach((date) => {
                 const value = dataMap.get(query, date);
-                if (value?.type === 'valueWithCoverage') {
+                if (value?.type === 'value') {
                     totalCount += value.count;
                     totalCoverage += value.coverage;
                 }

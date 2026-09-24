@@ -16,7 +16,7 @@ const dates: Temporal[] = [
 ];
 
 function valueOf(count: number): ProportionValue {
-    return { type: 'valueWithCoverage', count, coverage: 100, totalCount: 100 };
+    return { type: 'value', count, coverage: 100, totalCount: 100 };
 }
 
 function someData() {

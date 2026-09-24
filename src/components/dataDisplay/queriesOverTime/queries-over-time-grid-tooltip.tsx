@@ -1,8 +1,7 @@
 import { type FC } from 'react';
 
-import { MUTATIONS_OVER_TIME_MIN_PROPORTION, type ProportionValue } from '../../../query/queryMutationsOverTime';
+import { type ProportionValue } from '../../../query/queryMutationsOverTime';
 import { type Temporal } from '../../../util/temporalClass';
-import { formatProportion } from '../formatProportion';
 import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 
 export type QueriesOverTimeGridTooltipProps = {
@@ -31,15 +30,10 @@ const TooltipValueCountsDescription: FC<{
         <div className='mt-2'>
             {(() => {
                 switch (value.type) {
-                    case 'belowThreshold':
-                        return (
-                            <p className='text-gray-600'>
-                                None or less than {formatProportion(MUTATIONS_OVER_TIME_MIN_PROPORTION)} match the
-                                query.
-                            </p>
-                        );
+                    case 'noCoverage':
+                        return <p className='text-gray-600'>No reads cover the query.</p>;
 
-                    case 'valueWithCoverage':
+                    case 'value':
                         return (
                             <>
                                 <p>

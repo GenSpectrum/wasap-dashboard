@@ -42,9 +42,9 @@ describe('buildQueriesMatrix', () => {
         expect(matrix.data.get(row)!.get(w2.dateString)).toBeNull();
     });
 
-    test('a bucket with reads but no coverage for the query is belowThreshold', () => {
+    test('a bucket with reads but no coverage for the query is noCoverage', () => {
         const matrix = buildQueriesMatrix([{ displayLabel: 'BA.5' }], 'week', [w1], [1000], daily([], []));
-        expect(matrix.data.get('BA.5')!.get(w1.dateString)).toEqual({ type: 'belowThreshold', totalCount: 1000 });
+        expect(matrix.data.get('BA.5')!.get(w1.dateString)).toEqual({ type: 'noCoverage', totalCount: 1000 });
     });
 
     test('count above the query coverage is still reported (proportion can exceed the alt count)', () => {
@@ -56,7 +56,7 @@ describe('buildQueriesMatrix', () => {
             daily([{ name: '2026-06-01', count: 8 }], [{ name: '2026-06-01', count: 10 }]),
         );
         expect(matrix.data.get('BA.5')!.get(w1.dateString)).toEqual({
-            type: 'valueWithCoverage',
+            type: 'value',
             count: 8,
             coverage: 10,
             totalCount: 1000,

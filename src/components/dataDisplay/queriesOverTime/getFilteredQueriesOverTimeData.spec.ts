@@ -11,7 +11,7 @@ const dates = [
 ];
 
 function valueOf(count: number, coverage: number): ProportionValue {
-    return { type: 'valueWithCoverage', count, coverage, totalCount: 1000 };
+    return { type: 'value', count, coverage, totalCount: 1000 };
 }
 
 describe('getMeanProportions', () => {

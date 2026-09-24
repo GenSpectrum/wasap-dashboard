@@ -158,12 +158,12 @@ describe('buildMatrix', () => {
         expect(matrix.get(row, w2)).toBeNull();
     });
 
-    test('a bucket with reads but no coverage at the position is belowThreshold', () => {
+    test('a bucket with reads but no coverage at the position is noCoverage', () => {
         const byPosition = new Map<string, PositionOverTimeRow[]>([
             ['main:241', [{ date: '2026-06-01', sym: 'N', count: 950 }]],
         ]);
         const matrix = buildMatrix(['C241T'], 'week', 'nucleotide', 'main', [w1], [950], byPosition);
-        expect(matrix.get(matrix.getFirstAxisKeys()[0], w1)).toEqual({ type: 'belowThreshold', totalCount: 950 });
+        expect(matrix.get(matrix.getFirstAxisKeys()[0], w1)).toEqual({ type: 'noCoverage', totalCount: 950 });
     });
 
     test('amino acid: X and null are excluded from coverage', () => {

@@ -152,8 +152,8 @@ export function useQueriesOverTime(
 /**
  * Queries × date buckets → `ProportionValue`, folding each query's raw daily
  * counts into the buckets. A cell is `null` where the bucket has no reads at
- * all, `belowThreshold` where it has reads but the query's coverage there is
- * zero, and `valueWithCoverage` otherwise — matching the old LAPIS path.
+ * all, `noCoverage` where it has reads but the query's coverage there is
+ * zero, and `value` otherwise — matching the old LAPIS path.
  */
 export function buildQueriesMatrix(
     queries: readonly { displayLabel: string }[],
@@ -198,11 +198,11 @@ export function buildQueriesMatrix(
                             }
                             const coverage = coverages[index] ?? 0;
                             if (coverage === 0) {
-                                return [bucket.dateString, { type: 'belowThreshold', totalCount }];
+                                return [bucket.dateString, { type: 'noCoverage', totalCount }];
                             }
                             return [
                                 bucket.dateString,
-                                { type: 'valueWithCoverage', count: counts[index] ?? 0, coverage, totalCount },
+                                { type: 'value', count: counts[index] ?? 0, coverage, totalCount },
                             ];
                         }),
                     ),

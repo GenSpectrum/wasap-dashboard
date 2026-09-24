@@ -68,7 +68,7 @@ function coverageHalfThickness(coverage: number, maxCoverage: number): number {
 }
 
 function coverageOf(value: ProportionValue): number {
-    return value?.type === 'valueWithCoverage' ? value.coverage : 0;
+    return value?.type === 'value' ? value.coverage : 0;
 }
 
 export interface FeatureBandsProps<F> {

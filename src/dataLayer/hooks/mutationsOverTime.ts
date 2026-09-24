@@ -453,10 +453,10 @@ export function buildMatrix(
                             }
                             const coverage = target?.coverage[bucketIndex] ?? 0;
                             if (coverage === 0) {
-                                return [bucket.dateString, { type: 'belowThreshold', totalCount }];
+                                return [bucket.dateString, { type: 'noCoverage', totalCount }];
                             }
                             const count = target?.bySymbol.get(alt)?.[bucketIndex] ?? 0;
-                            return [bucket.dateString, { type: 'valueWithCoverage', count, coverage, totalCount }];
+                            return [bucket.dateString, { type: 'value', count, coverage, totalCount }];
                         }),
                     ),
                 ];
