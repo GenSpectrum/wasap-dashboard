@@ -88,6 +88,8 @@ export interface FeatureBandsProps<F> {
     /** Total number of rows across all pages. */
     totalRows: number;
     onPageChange: Dispatch<SetStateAction<number>>;
+    /** Shown at the very left of the pagination row below the bands, e.g. view settings. */
+    paginationStart?: ReactNode;
     /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
     paginationEnd?: ReactNode;
     /**
@@ -119,6 +121,7 @@ export function FeatureBands<F>({
     pageIndex,
     totalRows,
     onPageChange,
+    paginationStart,
     paginationEnd,
     meanProportions,
     jaccardIndices,
@@ -270,6 +273,7 @@ export function FeatureBands<F>({
                     table={paginationTable}
                     pageSizes={pageSizes}
                     totalRows={totalRows}
+                    startContent={paginationStart}
                     endContent={paginationEnd}
                 />
             </div>

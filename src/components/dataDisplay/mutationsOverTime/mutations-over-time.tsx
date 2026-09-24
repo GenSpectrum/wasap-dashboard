@@ -28,7 +28,7 @@ import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featur
 import { getProportion, type ProportionValue } from '../overTime/proportionValue';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
-import { ViewSettingsDropdown } from '../view-settings-dropdown';
+import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
@@ -221,9 +221,10 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
         pageData === null ? [] : getDownloadData(pageData);
 
+    const paginationStart = <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />;
+
     const paginationEnd = (
         <div className='flex items-center gap-1'>
-            <ViewSettingsDropdown settings={viewSettings} onChange={setViewSettings} />
             <CsvDownloadButton
                 className='btn btn-xs'
                 label='Download CSV'
@@ -248,6 +249,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 pageIndex={pageIndex}
                 totalRows={totalFilteredRows}
                 onPageChange={setPageIndex}
+                paginationStart={paginationStart}
                 paginationEnd={paginationEnd}
                 meanProportions={meanProportions}
                 jaccardIndices={jaccardIndices}

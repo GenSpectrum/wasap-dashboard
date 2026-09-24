@@ -15,20 +15,27 @@ export function Pagination({
     table,
     pageSizes,
     totalRows,
+    startContent,
     endContent,
 }: PaginationProps & {
     pageSizes: PageSizes;
     /** Override the total row count (for server-driven pagination). */
     totalRows: number;
+    /** Shown at the very left of the pagination row, e.g. view settings. */
+    startContent?: ReactNode;
     /** Shown at the very right of the pagination row, e.g. a download button. */
     endContent?: ReactNode;
 }) {
-    // The controls stay centered whether or not there is end content: on wide containers
-    // the outer columns are equally sized, on narrow ones the end content wraps below.
+    // The controls stay centered whether or not there is start or end content: on wide containers
+    // the outer columns are equally sized, on narrow ones the start content wraps above and the
+    // end content below.
     return (
         <div className='@container'>
             <div className='flex flex-col items-center gap-y-2 @xl:grid @xl:grid-cols-[1fr_auto_1fr]'>
-                <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 @xl:col-start-2'>
+                {startContent !== undefined && (
+                    <div className='@xl:col-start-1 @xl:row-start-1 @xl:justify-self-start'>{startContent}</div>
+                )}
+                <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 @xl:col-start-2 @xl:row-start-1'>
                     <PageSizeSelector table={table} pageSizes={pageSizes} />
                     <PageIndicator table={table} totalRows={totalRows} />
                     <div className='hidden @xl:block'>
@@ -36,7 +43,9 @@ export function Pagination({
                     </div>
                     <SelectPageButtons table={table} />
                 </div>
-                {endContent !== undefined && <div className='@xl:col-start-3 @xl:justify-self-end'>{endContent}</div>}
+                {endContent !== undefined && (
+                    <div className='@xl:col-start-3 @xl:row-start-1 @xl:justify-self-end'>{endContent}</div>
+                )}
             </div>
         </div>
     );
