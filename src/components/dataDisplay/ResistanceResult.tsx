@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 
 import { MutationsResult } from './MutationsResult';
-import {
-    countByProportionRange,
-    getProportionInterval,
-    RESISTANCE_PROPORTION_RANGES,
-} from './resistanceProportionRanges';
+import { ProportionRangeTabs } from './ProportionRangeTabs';
+import { countByProportionRange, getProportionInterval } from './resistanceProportionRanges';
 import { genesOf, useOverTimeMetadata } from '../../dataLayer/hooks/mutationsOverTime';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import {
@@ -70,45 +67,6 @@ export function ResistanceResult({
                 />
             )}
             <MutationsResult page={{ ...page, meanProportionInterval }} data={data} sequenceType={sequenceType} />
-        </div>
-    );
-}
-
-function ProportionRangeTabs({
-    value,
-    counts,
-    onChange,
-}: {
-    value: ResistanceProportionRange;
-    /** `undefined` while they are loading. */
-    counts: Record<ResistanceProportionRange, number> | undefined;
-    onChange: (proportionRange: ResistanceProportionRange) => void;
-}) {
-    return (
-        <div className='flex gap-1' role='group' aria-label='Mutations by mean proportion'>
-            {RESISTANCE_PROPORTION_RANGES.map(({ range, label }) => {
-                const isSelected = range === value;
-                return (
-                    <button
-                        key={range}
-                        type='button'
-                        aria-pressed={isSelected}
-                        onClick={() => onChange(range)}
-                        // The tabs overlap the top border of the box below by a pixel: the selected
-                        // one covers it (white bottom border, above the box), so it merges with the box.
-                        className={`relative -mb-px flex min-w-0 flex-1 cursor-pointer flex-col items-start justify-between border border-stone-300 px-2 py-2 text-left sm:px-4 ${
-                            isSelected
-                                ? 'border-t-primary z-10 border-t-2 border-b-white bg-white'
-                                : 'bg-stone-100 text-gray-500 hover:bg-stone-50'
-                        }`}
-                    >
-                        <span className='text-xs sm:text-sm'>{label}</span>
-                        <span className={`text-2xl font-semibold ${isSelected ? '' : 'text-gray-600'}`}>
-                            {counts?.[range] ?? '…'}
-                        </span>
-                    </button>
-                );
-            })}
         </div>
     );
 }
