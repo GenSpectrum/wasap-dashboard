@@ -1,8 +1,9 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
 import { FeatureBands, type FeatureBandsProps } from './feature-bands';
+import { DEFAULT_FEATURE_SORT } from './featureSort';
 import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
 import { serializeTemporal, type ProportionValue } from '../../query/queryMutationsOverTime';
@@ -48,6 +49,8 @@ function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
                 totalRows={2}
                 onPageChange={() => undefined}
                 meanProportions={{ 'S:A1T': 0.15, 'S:C2G': 0.35 }}
+                sort={DEFAULT_FEATURE_SORT}
+                onSortChange={() => undefined}
                 {...props}
             />
         </PageSizeContextProvider>,
@@ -125,5 +128,34 @@ describe('FeatureBands', () => {
         const { getByText } = renderBands();
 
         await expect.element(getByText('Jaccard index')).not.toBeInTheDocument();
+    });
+
+    it('marks the column the rows are sorted by', async () => {
+        const { getByRole } = renderBands({
+            jaccardIndices: { 'S:A1T': 0.9 },
+            sort: { column: 'meanProportion', direction: 'descending' },
+        });
+
+        const headerOf = (name: string) => getByRole('button', { name }).element().closest('th');
+
+        await expect.element(getByRole('button', { name: 'Mean proportion' })).toBeVisible();
+        expect(headerOf('Mean proportion')).toHaveAttribute('aria-sort', 'descending');
+        expect(headerOf('Mutation')).toHaveAttribute('aria-sort', 'none');
+        expect(headerOf('Jaccard index')).toHaveAttribute('aria-sort', 'none');
+    });
+
+    it('sorts by a column when its header is clicked, and reverses the order when clicked again', async () => {
+        const onSortChange = vi.fn();
+        const { getByRole } = renderBands({
+            jaccardIndices: { 'S:A1T': 0.9 },
+            sort: { column: 'jaccardIndex', direction: 'descending' },
+            onSortChange,
+        });
+
+        await getByRole('button', { name: 'Mean proportion' }).click();
+        expect(onSortChange).toHaveBeenLastCalledWith({ column: 'meanProportion', direction: 'descending' });
+
+        await getByRole('button', { name: 'Jaccard index' }).click();
+        expect(onSortChange).toHaveBeenLastCalledWith({ column: 'jaccardIndex', direction: 'ascending' });
     });
 });

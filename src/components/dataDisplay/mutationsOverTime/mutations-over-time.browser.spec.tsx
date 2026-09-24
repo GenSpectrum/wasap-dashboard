@@ -176,6 +176,31 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await expect.element(secondRow.getByRole('cell', { name: '10.0%' })).toBeInTheDocument();
     });
 
+    it('sorts all the mutations, not just those of the page, by the column whose header is clicked', async () => {
+        stubSilo();
+        // One mutation per page, so the one shown is the first in the order.
+        const screen = renderOverTime({ pageSizes: [1], jaccardIndices: { C241T: 0.1, C3037T: 0.7 } });
+
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+        await expect.element(screen.getByText('C3037T').first()).not.toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Mutation' }).click();
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+        await expect.element(screen.getByText('C241T').first()).not.toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Mean proportion' }).click();
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Mean proportion' }).click();
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Jaccard index' }).click();
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Jaccard index' }).click();
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+    });
+
     it('shows a dash for a display mutation without a measured mean proportion', async () => {
         stubSilo();
         // C5T isn't returned by the metadata query: below its proportion floor, or not covered.

@@ -25,6 +25,7 @@ import { AnnotatedMutation } from '../annotated-mutation';
 import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsDropdown } from '../view-settings-dropdown';
@@ -78,6 +79,8 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
 
     const [pageIndex, setPageIndex] = useState(0);
     useEffect(() => setPageIndex(0), [filter, granularity, sequenceType, displayMutations]);
+    // Up here rather than next to the rows, so it survives the reloading when the filters change.
+    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
 
     if (metadataLoading) {
         return <LoadingDisplay />;
@@ -98,6 +101,8 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
                 originalComponentProps={componentProps}
                 pageIndex={pageIndex}
                 setPageIndex={setPageIndex}
+                sort={sort}
+                setSort={setSort}
             />
         </PageSizeContextProvider>
     );
@@ -108,6 +113,8 @@ type MutationsOverTimeWithMetadataProps = {
     originalComponentProps: MutationsOverTimeProps;
     pageIndex: number;
     setPageIndex: Dispatch<SetStateAction<number>>;
+    sort: FeatureSort;
+    setSort: (sort: FeatureSort) => void;
 };
 
 const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
@@ -115,8 +122,10 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     originalComponentProps,
     pageIndex,
     setPageIndex,
+    sort,
+    setSort,
 }) => {
-    const { filter, sequenceType, granularity } = originalComponentProps;
+    const { filter, sequenceType, granularity, jaccardIndices } = originalComponentProps;
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
     const { nucleotideSequence } = useSiloSchema();
     const { pageSize } = usePageSizeContext();
@@ -156,14 +165,28 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
         [overallMutations],
     );
 
+    // A sort by a Jaccard index that the mutations no longer have (e.g. another mode) falls back.
+    const effectiveSort = sort.column === 'jaccardIndex' && jaccardIndices === undefined ? DEFAULT_FEATURE_SORT : sort;
+    const sortedMutationCodes = useMemo(
+        () => sortRowLabels(filteredMutationCodes, effectiveSort, { meanProportions, jaccardIndices }),
+        [filteredMutationCodes, effectiveSort, meanProportions, jaccardIndices],
+    );
+
     useEffect(() => {
         setPageIndex(0);
     }, [filteredMutationCodes, setPageIndex]);
 
-    const totalFilteredRows = filteredMutationCodes.length;
+    // Back to the first page in the same render as the new order, so the queries of whatever
+    // page was open are never sent for the reordered rows.
+    const changeSort = (newSort: FeatureSort) => {
+        setSort(newSort);
+        setPageIndex(0);
+    };
+
+    const totalFilteredRows = sortedMutationCodes.length;
     const pageMutationCodes = useMemo(
-        () => filteredMutationCodes.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-        [filteredMutationCodes, pageIndex, pageSize],
+        () => sortedMutationCodes.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+        [sortedMutationCodes, pageIndex, pageSize],
     );
 
     const { data: pageData, isLoading: isPageLoading } = useMutationsOverTimePage(
@@ -227,7 +250,9 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
                 meanProportions={meanProportions}
-                jaccardIndices={originalComponentProps.jaccardIndices}
+                jaccardIndices={jaccardIndices}
+                sort={effectiveSort}
+                onSortChange={changeSort}
             />
         </div>
     );

@@ -3,6 +3,7 @@ import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactN
 
 import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
+import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import PortalTooltip from './portal-tooltip';
@@ -97,6 +98,10 @@ export interface FeatureBandsProps<F> {
      * there is no Jaccard index column.
      */
     jaccardIndices?: Partial<Record<string, number>>;
+    /** How the rows are sorted, shown in the headers. The rows have to be given in this order already. */
+    sort: FeatureSort;
+    /** Called with the new sort when a header is clicked. */
+    onSortChange: (sort: FeatureSort) => void;
 }
 
 export function FeatureBands<F>({
@@ -115,6 +120,8 @@ export function FeatureBands<F>({
     paginationEnd,
     meanProportions,
     jaccardIndices,
+    sort,
+    onSortChange,
 }: FeatureBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
@@ -168,10 +175,16 @@ export function FeatureBands<F>({
                 <table className='w-full'>
                     <thead>
                         <tr>
-                            <th className='w-px px-2 whitespace-nowrap'>{rowLabelHeader}</th>
-                            <th className='w-px px-2 whitespace-nowrap'>Mean proportion</th>
+                            <SortableHeader column='rowLabel' sort={sort} onSortChange={onSortChange}>
+                                {rowLabelHeader}
+                            </SortableHeader>
+                            <SortableHeader column='meanProportion' sort={sort} onSortChange={onSortChange}>
+                                Mean proportion
+                            </SortableHeader>
                             {jaccardIndices !== undefined && (
-                                <th className='w-px px-2 whitespace-nowrap'>Jaccard index</th>
+                                <SortableHeader column='jaccardIndex' sort={sort} onSortChange={onSortChange}>
+                                    Jaccard index
+                                </SortableHeader>
                             )}
                             <th className='w-full p-0'>
                                 {/* One equally wide slot per bucket, like the band's own
@@ -254,6 +267,40 @@ export function FeatureBands<F>({
                 />
             </div>
         </div>
+    );
+}
+
+/**
+ * The header of a column the rows can be sorted by: clicking it sorts by the column, or reverses
+ * the order if they already are. The arrow shows the direction they are sorted in, or, faded, the
+ * one a click would sort them in.
+ */
+function SortableHeader({
+    column,
+    sort,
+    onSortChange,
+    children,
+}: {
+    column: SortColumn;
+    sort: FeatureSort;
+    onSortChange: (sort: FeatureSort) => void;
+    children: ReactNode;
+}) {
+    const isSorted = sort.column === column;
+    const shownDirection = isSorted ? sort.direction : nextSort(sort, column).direction;
+    return (
+        <th className='w-px px-2 whitespace-nowrap' aria-sort={isSorted ? sort.direction : 'none'}>
+            <button
+                type='button'
+                className='inline-flex cursor-pointer items-center gap-1 font-bold'
+                onClick={() => onSortChange(nextSort(sort, column))}
+            >
+                {children}
+                <span aria-hidden='true' className={isSorted ? '' : 'opacity-25'}>
+                    {shownDirection === 'ascending' ? '▲' : '▼'}
+                </span>
+            </button>
+        </th>
     );
 }
 
