@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { ResistancePageStateHandler } from '../../../../pageState/wasap/handlers/ResistancePageStateHandler';
-import { MutationsResult } from '../../../dataDisplay/MutationsResult';
+import { ResistanceResult } from '../../../dataDisplay/ResistanceResult';
 import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { ResistanceMutationsFilter } from '../../../filterSidebar/filters/ResistanceMutationsFilter';
 import { ModePageLayout } from '../ModePageLayout';
@@ -24,7 +24,18 @@ export function ResistancePage({ config }: { config: WasapPageConfigFor<'resista
             }
         >
             <WasapResults page={page}>
-                {(data) => <MutationsResult page={page} data={data} sequenceType={page.analysis.sequenceType} />}
+                {(data) => (
+                    <ResistanceResult
+                        page={page}
+                        data={data}
+                        onProportionRangeChange={(proportionRange) =>
+                            page.setPageState((pageState) => ({
+                                ...pageState,
+                                analysis: { ...pageState.analysis, proportionRange },
+                            }))
+                        }
+                    />
+                )}
             </WasapResults>
         </ModePageLayout>
     );
