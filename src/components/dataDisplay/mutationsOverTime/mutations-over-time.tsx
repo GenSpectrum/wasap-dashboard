@@ -32,6 +32,8 @@ import { ViewSettingsDropdown } from '../view-settings-dropdown';
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
     max: z.number().min(0).max(1),
+    minExclusive: z.boolean().optional(),
+    maxExclusive: z.boolean().optional(),
 });
 export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema>;
 
