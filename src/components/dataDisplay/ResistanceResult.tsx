@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 
 import { MutationsResult } from './MutationsResult';
+import {
+    countByProportionRange,
+    getProportionInterval,
+    RESISTANCE_PROPORTION_RANGES,
+} from './resistanceProportionRanges';
 import { genesOf, useOverTimeMetadata } from '../../dataLayer/hooks/mutationsOverTime';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import {
@@ -8,11 +13,6 @@ import {
     type WasapBaseFilter,
     type WasapResistanceFilter,
 } from '../../pageState/wasap/wasapAnalysisFilter';
-import {
-    countByProportionRange,
-    getProportionInterval,
-    RESISTANCE_PROPORTION_RANGES,
-} from '../views/wasap/resistanceProportionRanges';
 import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**

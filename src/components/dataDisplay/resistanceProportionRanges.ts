@@ -1,11 +1,5 @@
-import {
-    RESISTANCE_PROPORTION_RANGE,
-    type ResistanceProportionRange,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
-import {
-    type ProportionInterval,
-    isInProportionInterval,
-} from '../../dataDisplay/mutationsOverTime/getFilteredMutationCodes';
+import { type ProportionInterval, isInProportionInterval } from './mutationsOverTime/getFilteredMutationCodes';
+import { RESISTANCE_PROPORTION_RANGE, type ResistanceProportionRange } from '../../pageState/wasap/wasapAnalysisFilter';
 
 /**
  * The ranges of the mean proportion that the resistance page has a tab for, in the order
