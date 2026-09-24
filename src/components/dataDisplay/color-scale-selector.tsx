@@ -18,13 +18,6 @@ export const COLOR_SCALE_ROOT_RANGE = { min: 1, max: 4, step: 0.5 };
 /** Proportions shown as swatches next to the root slider, so the effect of the root can be seen. */
 const ROOT_EXAMPLE_PROPORTIONS = [0.001, 0.01, 0.1];
 
-const ROOT_NAMES: Partial<Record<number, string>> = {
-    1: 'Linear',
-    2: 'Square root',
-    3: 'Cube root',
-    4: 'Fourth root',
-};
-
 export interface ColorScaleSelectorProps {
     colorScale: ColorScale;
     setColorScale: (colorScale: ColorScale) => void;
@@ -35,7 +28,7 @@ export const ColorScaleRootSelector: FC<ColorScaleSelectorProps> = ({ colorScale
         <div className='flex items-center gap-3'>
             <input
                 type='range'
-                className='range range-xs w-40'
+                className='w-40 accent-neutral-600'
                 aria-label='Color scale root'
                 min={COLOR_SCALE_ROOT_RANGE.min}
                 max={COLOR_SCALE_ROOT_RANGE.max}
@@ -43,7 +36,7 @@ export const ColorScaleRootSelector: FC<ColorScaleSelectorProps> = ({ colorScale
                 value={colorScale.root}
                 onChange={(e) => setColorScale({ ...colorScale, root: Number(e.target.value) })}
             />
-            <span className='w-24 text-xs'>{ROOT_NAMES[colorScale.root] ?? `Root ${colorScale.root}`}</span>
+            <span className='w-6 text-sm tabular-nums'>{colorScale.root}</span>
             <div className='flex gap-1'>
                 {ROOT_EXAMPLE_PROPORTIONS.map((proportion) => (
                     <div

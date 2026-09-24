@@ -46,13 +46,12 @@ describe('ViewSettingsControls', () => {
 
     it('offers a slider for the root of the color scale, at the square root by default', async () => {
         const onChange = vi.fn();
-        const { getByRole, getByText } = render(
+        const { getByRole } = render(
             <ViewSettingsControls settings={DEFAULT_BAND_VIEW_SETTINGS} onChange={onChange} />,
         );
 
         const slider = getByRole('slider', { name: 'Color scale root' });
         await expect.element(slider).toHaveValue('2');
-        await expect.element(getByText('Square root')).toBeInTheDocument();
 
         await slider.fill('4');
 
