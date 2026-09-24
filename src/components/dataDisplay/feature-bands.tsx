@@ -6,12 +6,12 @@ import { getColorWithinScale } from './color-scale-selector';
 import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
+import { getProportion, type ProportionValue } from './overTime/proportionValue';
 import PortalTooltip from './portal-tooltip';
 import { Pagination, type PageSizes } from './tanstackTable/pagination';
 import { usePageSizeContext } from './tanstackTable/pagination-context';
 import { useReactTable } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
-import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
 
 export interface FeatureRenderer<D> {
@@ -58,6 +58,8 @@ const PERCENTAGE_OUTLINE = ['-1px 0', '1px 0', '0 -1px', '0 1px', '-1px -1px', '
     .join(', ');
 /** Width, in screen pixels, of the white gap that separates two buckets. */
 const BUCKET_GAP = 1;
+/** Behind a bucket with reads but none covering the feature: nothing could be measured there. */
+const NO_COVERAGE_HATCHING = 'repeating-linear-gradient(135deg, rgb(0 0 0 / 0.15) 0 1px, transparent 1px 6px)';
 
 function coverageHalfThickness(coverage: number, maxCoverage: number): number {
     if (coverage <= 0 || maxCoverage <= 0) {
@@ -68,7 +70,7 @@ function coverageHalfThickness(coverage: number, maxCoverage: number): number {
 }
 
 function coverageOf(value: ProportionValue): number {
-    return value?.type === 'valueWithCoverage' ? value.coverage : 0;
+    return value?.type === 'value' ? value.coverage : 0;
 }
 
 export interface FeatureBandsProps<F> {
@@ -86,6 +88,8 @@ export interface FeatureBandsProps<F> {
     /** Total number of rows across all pages. */
     totalRows: number;
     onPageChange: Dispatch<SetStateAction<number>>;
+    /** Shown at the very left of the pagination row below the bands, e.g. view settings. */
+    paginationStart?: ReactNode;
     /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
     paginationEnd?: ReactNode;
     /**
@@ -117,6 +121,7 @@ export function FeatureBands<F>({
     pageIndex,
     totalRows,
     onPageChange,
+    paginationStart,
     paginationEnd,
     meanProportions,
     jaccardIndices,
@@ -268,6 +273,7 @@ export function FeatureBands<F>({
                     table={paginationTable}
                     pageSizes={pageSizes}
                     totalRows={totalRows}
+                    startContent={paginationStart}
                     endContent={paginationEnd}
                 />
             </div>
@@ -369,17 +375,7 @@ function BandRow<F>({
 }) {
     const width = SPAN / columns.length;
     const centre = ROW_HEIGHT / 2;
-
-    // A bucket is measured at the middle of its column, and the band is drawn
-    // from nothing at either edge of the row, as a violin tapers.
-    const knots = [
-        { x: 0, half: 0 },
-        ...columns.map((_, index) => ({
-            x: (index + 0.5) * width,
-            half: coverageHalfThickness(coverageOf(values[index] ?? null), maxCoverage),
-        })),
-        { x: SPAN, half: 0 },
-    ];
+    const halves = columns.map((_, index) => coverageHalfThickness(coverageOf(values[index] ?? null), maxCoverage));
 
     return (
         <div className='relative' style={{ height: `${ROW_HEIGHT}px` }}>
@@ -407,7 +403,9 @@ function BandRow<F>({
                     </linearGradient>
                 </defs>
                 <path
-                    d={bandPath(knots, centre)}
+                    d={bandSegments(halves, width)
+                        .map((knots) => bandPath(knots, centre))
+                        .join(' ')}
                     fill={`url(#${gradientId})`}
                     stroke='rgba(0, 0, 0, 0.3)'
                     strokeWidth={1}
@@ -431,6 +429,7 @@ function BandRow<F>({
                 {columns.map((column, index) => {
                     const value = values[index] ?? null;
                     const proportion = getProportion(value);
+                    const isUncovered = value?.type === 'noCoverage';
                     const tooltip = featureRenderer.renderTooltip(feature, column, value);
                     return (
                         // PortalTooltip's own wrapper div isn't a flex item itself, so
@@ -444,7 +443,11 @@ function BandRow<F>({
                             >
                                 <div
                                     className='@container flex cursor-default items-center justify-center'
-                                    style={{ height: `${ROW_HEIGHT}px` }}
+                                    style={{
+                                        height: `${ROW_HEIGHT}px`,
+                                        backgroundImage: isUncovered ? NO_COVERAGE_HATCHING : undefined,
+                                    }}
+                                    data-no-coverage={isUncovered || undefined}
                                 >
                                     {viewSettings.showPercentages && proportion !== undefined && (
                                         <span
@@ -462,6 +465,35 @@ function BandRow<F>({
             </div>
         </div>
     );
+}
+
+/**
+ * The knots of each stretch of the band, i.e. of each run of buckets that some reads cover
+ * (`half > 0`). A bucket is measured at the middle of its column. At either end of the row
+ * the band is drawn from nothing, as a violin tapers; next to a bucket without coverage it is
+ * cut off square at the edge of the column, so it doesn't reach into a bucket where nothing
+ * was measured.
+ */
+export function bandSegments(halves: number[], width: number): { x: number; half: number }[][] {
+    const segments: { x: number; half: number }[][] = [];
+    let current: { x: number; half: number }[] | undefined;
+    halves.forEach((half, index) => {
+        if (half <= 0) {
+            if (current) {
+                current.push({ x: index * width, half: current[current.length - 1].half });
+                segments.push(current);
+                current = undefined;
+            }
+            return;
+        }
+        current ??= [index === 0 ? { x: 0, half: 0 } : { x: index * width, half }];
+        current.push({ x: (index + 0.5) * width, half });
+    });
+    if (current) {
+        current.push({ x: halves.length * width, half: 0 });
+        segments.push(current);
+    }
+    return segments;
 }
 
 /**

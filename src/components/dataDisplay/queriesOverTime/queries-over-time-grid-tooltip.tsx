@@ -1,9 +1,8 @@
 import { type FC } from 'react';
 
-import { MUTATIONS_OVER_TIME_MIN_PROPORTION, type ProportionValue } from '../../../query/queryMutationsOverTime';
 import { type Temporal } from '../../../util/temporalClass';
-import { formatProportion } from '../formatProportion';
 import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
+import { type ProportionValue } from '../overTime/proportionValue';
 
 export type QueriesOverTimeGridTooltipProps = {
     query: string; // displayLabel
@@ -27,37 +26,14 @@ const TooltipValueCountsDescription: FC<{
     value: NonNullable<ProportionValue>;
     queryLabel: string;
 }> = ({ value, queryLabel }) => {
-    if (value.type === 'wastewaterValue') {
-        return;
-    }
     return (
         <div className='mt-2'>
             {(() => {
                 switch (value.type) {
-                    case 'belowThreshold':
-                        return (
-                            <p className='text-gray-600'>
-                                None or less than {formatProportion(MUTATIONS_OVER_TIME_MIN_PROPORTION)} match the
-                                query.
-                            </p>
-                        );
+                    case 'noCoverage':
+                        return <p className='text-gray-600'>No reads cover the query.</p>;
 
                     case 'value':
-                        return (
-                            <>
-                                <p>
-                                    {value.count} <span className='text-gray-600'>match the query {queryLabel}.</span>
-                                </p>
-                                {value.proportion > 0 && (
-                                    <p>
-                                        {Math.round(value.count / value.proportion)}{' '}
-                                        <span className='text-gray-600'>total with coverage.</span>
-                                    </p>
-                                )}
-                            </>
-                        );
-
-                    case 'valueWithCoverage':
                         return (
                             <>
                                 <p>

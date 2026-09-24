@@ -15,8 +15,8 @@ import { useMemo } from 'react';
 
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
+import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { UserFacingError } from '../../components/shared/error-display';
-import { type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';
@@ -152,8 +152,8 @@ export function useQueriesOverTime(
 /**
  * Queries × date buckets → `ProportionValue`, folding each query's raw daily
  * counts into the buckets. A cell is `null` where the bucket has no reads at
- * all, `belowThreshold` where it has reads but the query's coverage there is
- * zero, and `valueWithCoverage` otherwise — matching the old LAPIS path.
+ * all, `noCoverage` where it has reads but the query's coverage there is
+ * zero, and `value` otherwise — matching the old LAPIS path.
  */
 export function buildQueriesMatrix(
     queries: readonly { displayLabel: string }[],
@@ -198,11 +198,11 @@ export function buildQueriesMatrix(
                             }
                             const coverage = coverages[index] ?? 0;
                             if (coverage === 0) {
-                                return [bucket.dateString, { type: 'belowThreshold', totalCount }];
+                                return [bucket.dateString, { type: 'noCoverage', totalCount }];
                             }
                             return [
                                 bucket.dateString,
-                                { type: 'valueWithCoverage', count: counts[index] ?? 0, coverage, totalCount },
+                                { type: 'value', count: counts[index] ?? 0, coverage, totalCount },
                             ];
                         }),
                     ),
