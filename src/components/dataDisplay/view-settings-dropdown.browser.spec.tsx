@@ -27,6 +27,24 @@ describe('ViewSettingsDropdown', () => {
         expect(isHidden()).toBe(false);
     });
 
+    it('offers a slider for the root of the color scale, at the square root by default', async () => {
+        const onChange = vi.fn();
+        const { getByRole, getByText } = render(
+            <ViewSettingsDropdown settings={DEFAULT_BAND_VIEW_SETTINGS} onChange={onChange} />,
+        );
+
+        const slider = getByRole('slider', { name: 'Color scale root' });
+        await expect.element(slider).toHaveValue('2');
+        await expect.element(getByText('Square root')).toBeInTheDocument();
+
+        await slider.fill('4');
+
+        expect(onChange).toHaveBeenCalledWith({
+            ...DEFAULT_BAND_VIEW_SETTINGS,
+            colorScale: { ...DEFAULT_BAND_VIEW_SETTINGS.colorScale, root: 4 },
+        });
+    });
+
     it('offers a toggle for the percentages, off by default', async () => {
         const onChange = vi.fn();
         const { getByRole } = render(
