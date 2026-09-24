@@ -68,7 +68,7 @@ export function setBaseFilterSearchParams(
     }
 }
 
-function setDatasetFilterSearchParams(
+export function setDatasetFilterSearchParams(
     search: URLSearchParams,
     dataset: WasapDatasetFilter,
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,

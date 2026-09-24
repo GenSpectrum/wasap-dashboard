@@ -98,7 +98,12 @@ describe('fetchWasapPageData', () => {
                 baseConfigFields,
 
                 { Spike: ['S:E484K', 'S:N501Y'] },
-                { mode: WASAP_ANALYSIS_MODE.resistance, sequenceType: SEQUENCE_TYPE.aminoAcid, resistanceSet: 'Spike' },
+                {
+                    mode: WASAP_ANALYSIS_MODE.resistance,
+                    sequenceType: SEQUENCE_TYPE.aminoAcid,
+                    resistanceSet: 'Spike',
+                    proportionRange: 'medium',
+                },
             );
 
             expect(result).toEqual({ type: 'mutations', displayMutations: ['S:E484K', 'S:N501Y'] });
@@ -112,6 +117,7 @@ describe('fetchWasapPageData', () => {
                     mode: WASAP_ANALYSIS_MODE.resistance,
                     sequenceType: SEQUENCE_TYPE.aminoAcid,
                     resistanceSet: 'Unknown',
+                    proportionRange: 'medium',
                 },
             );
 

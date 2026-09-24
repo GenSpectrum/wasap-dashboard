@@ -10,6 +10,7 @@ describe('ResistanceMutationsFilter', () => {
         mode: 'resistance',
         sequenceType: 'amino acid',
         resistanceSet: '3CLpro',
+        proportionRange: 'medium',
     };
 
     const resistanceSetNames = ['3CLpro', 'RdRp', 'Spike'];

@@ -4,7 +4,6 @@ import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { ResistancePageStateHandler } from '../../../../pageState/wasap/handlers/ResistancePageStateHandler';
 import { MutationsResult } from '../../../dataDisplay/MutationsResult';
 import { WasapResults } from '../../../dataDisplay/WasapResults';
-import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { ResistanceMutationsFilter } from '../../../filterSidebar/filters/ResistanceMutationsFilter';
 import { ModePageLayout } from '../ModePageLayout';
 import { useModePage } from '../useModePage';
@@ -16,20 +15,12 @@ export function ResistancePage({ config }: { config: WasapPageConfigFor<'resista
     return (
         <ModePageLayout
             sidebar={
-                <FilterSidebar
-                    pageStateHandler={pageStateHandler}
-                    base={page.base}
-                    analysis={page.analysis}
-                    setPageState={page.setPageState}
-                >
-                    {(analysis, setAnalysis) => (
-                        <ResistanceMutationsFilter
-                            pageState={analysis}
-                            setPageState={setAnalysis}
-                            resistanceSetNames={page.resistanceSetNames}
-                        />
-                    )}
-                </FilterSidebar>
+                // The only setting is the resistance set, so it is applied right away, without a button.
+                <ResistanceMutationsFilter
+                    pageState={page.analysis}
+                    setPageState={(analysis) => page.setPageState((pageState) => ({ ...pageState, analysis }))}
+                    resistanceSetNames={page.resistanceSetNames}
+                />
             }
         >
             <WasapResults page={page}>

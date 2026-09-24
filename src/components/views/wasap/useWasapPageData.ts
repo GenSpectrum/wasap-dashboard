@@ -42,9 +42,26 @@ export function useWasapPageData(
     // switch, so it has to be in the key too.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
-        queryKey: ['wasap', analysis, resistanceMutationsBySet, config.genSpectrumOrganismName],
+        queryKey: [
+            'wasap',
+            withoutDisplayOnlySettings(analysis),
+            resistanceMutationsBySet,
+            config.genSpectrumOrganismName,
+        ],
         queryFn: () => fetchWasapPageData(config, resistanceMutationsBySet, analysis),
     });
+}
+
+/**
+ * The analysis without the settings that only change which of the fetched data is shown, so
+ * that changing them doesn't fetch again (and doesn't show the loading state in between).
+ */
+function withoutDisplayOnlySettings(analysis: WasapAnalysisFilter) {
+    if (analysis.mode === 'resistance') {
+        const { proportionRange: _, ...rest } = analysis;
+        return rest;
+    }
+    return analysis;
 }
 
 export async function fetchWasapPageData(
