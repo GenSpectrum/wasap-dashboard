@@ -66,6 +66,19 @@ describe('getFilteredMutationCodes', () => {
         expect(result).to.deep.equal([someSubstitution.code, anotherSubstitution.code, someDeletion.code]);
     });
 
+    it('should remove mutations at a bound of the filter that is exclusive', () => {
+        const result = getFilteredMutationCodes({
+            overallMutationData: [
+                { ...someSubstitutionEntry, proportion: atFilterMin },
+                { ...anotherSubstitutionEntry, proportion: inFilter },
+                { ...someDeletionEntry, proportion: atFilterMax },
+            ],
+            proportionInterval: { ...proportionInterval, minExclusive: true, maxExclusive: true },
+        });
+
+        expect(result).to.deep.equal([anotherSubstitution.code]);
+    });
+
     const belowFilter = 0.1;
     const atFilterMin = 0.2;
     const inFilter = 0.5;

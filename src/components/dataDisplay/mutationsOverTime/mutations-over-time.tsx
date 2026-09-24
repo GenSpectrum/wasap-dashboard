@@ -24,7 +24,8 @@ import { ResizeContainer } from '../../shared/resize-container';
 import { AnnotatedMutation } from '../annotated-mutation';
 import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
-import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsDropdown } from '../view-settings-dropdown';
@@ -32,6 +33,8 @@ import { ViewSettingsDropdown } from '../view-settings-dropdown';
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
     max: z.number().min(0).max(1),
+    minExclusive: z.boolean().optional(),
+    maxExclusive: z.boolean().optional(),
 });
 export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema>;
 
@@ -46,7 +49,8 @@ const mutationOverTimeSchema = z.object({
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
-    customColumns: z.array(customColumnSchema).optional(),
+    /** The Jaccard index of each mutation, by mutation code. Shown as a column if given. */
+    jaccardIndices: z.record(z.string(), z.number()).optional(),
 });
 export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 
@@ -75,6 +79,8 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
 
     const [pageIndex, setPageIndex] = useState(0);
     useEffect(() => setPageIndex(0), [filter, granularity, sequenceType, displayMutations]);
+    // Up here rather than next to the rows, so it survives the reloading when the filters change.
+    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
 
     if (metadataLoading) {
         return <LoadingDisplay />;
@@ -95,6 +101,8 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
                 originalComponentProps={componentProps}
                 pageIndex={pageIndex}
                 setPageIndex={setPageIndex}
+                sort={sort}
+                setSort={setSort}
             />
         </PageSizeContextProvider>
     );
@@ -105,6 +113,8 @@ type MutationsOverTimeWithMetadataProps = {
     originalComponentProps: MutationsOverTimeProps;
     pageIndex: number;
     setPageIndex: Dispatch<SetStateAction<number>>;
+    sort: FeatureSort;
+    setSort: (sort: FeatureSort) => void;
 };
 
 const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
@@ -112,8 +122,10 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     originalComponentProps,
     pageIndex,
     setPageIndex,
+    sort,
+    setSort,
 }) => {
-    const { filter, sequenceType, granularity } = originalComponentProps;
+    const { filter, sequenceType, granularity, jaccardIndices } = originalComponentProps;
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
     const { nucleotideSequence } = useSiloSchema();
     const { pageSize } = usePageSizeContext();
@@ -139,14 +151,42 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
         [overallMutations, proportionInterval],
     );
 
+    // A display mutation that the metadata query didn't return is in `overallMutations` with a
+    // count and proportion of 0 (see `applyDisplayMutations`), but that isn't a measurement: it is
+    // below the query's proportion floor, or no read covered it. Every mutation the query did
+    // return has a count, being above the floor. The filter above still takes the 0.
+    const meanProportions = useMemo(
+        () =>
+            Object.fromEntries(
+                overallMutations
+                    .filter((entry) => entry.count > 0)
+                    .map((entry) => [entry.mutation.code, entry.proportion]),
+            ),
+        [overallMutations],
+    );
+
+    // A sort by a Jaccard index that the mutations no longer have (e.g. another mode) falls back.
+    const effectiveSort = sort.column === 'jaccardIndex' && jaccardIndices === undefined ? DEFAULT_FEATURE_SORT : sort;
+    const sortedMutationCodes = useMemo(
+        () => sortRowLabels(filteredMutationCodes, effectiveSort, { meanProportions, jaccardIndices }),
+        [filteredMutationCodes, effectiveSort, meanProportions, jaccardIndices],
+    );
+
     useEffect(() => {
         setPageIndex(0);
     }, [filteredMutationCodes, setPageIndex]);
 
-    const totalFilteredRows = filteredMutationCodes.length;
+    // Back to the first page in the same render as the new order, so the queries of whatever
+    // page was open are never sent for the reordered rows.
+    const changeSort = (newSort: FeatureSort) => {
+        setSort(newSort);
+        setPageIndex(0);
+    };
+
+    const totalFilteredRows = sortedMutationCodes.length;
     const pageMutationCodes = useMemo(
-        () => filteredMutationCodes.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-        [filteredMutationCodes, pageIndex, pageSize],
+        () => sortedMutationCodes.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+        [sortedMutationCodes, pageIndex, pageSize],
     );
 
     const { data: pageData, isLoading: isPageLoading } = useMutationsOverTimePage(
@@ -194,7 +234,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     );
 
     return (
-        <div ref={wrapperRef} className='border border-stone-300 bg-white p-2'>
+        <div ref={wrapperRef} className='border border-stone-300 bg-white'>
             <FeatureBands
                 rowLabelHeader='Mutation'
                 data={pageData}
@@ -209,7 +249,10 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 totalRows={totalFilteredRows}
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
-                customColumns={originalComponentProps.customColumns}
+                meanProportions={meanProportions}
+                jaccardIndices={jaccardIndices}
+                sort={effectiveSort}
+                onSortChange={changeSort}
             />
         </div>
     );

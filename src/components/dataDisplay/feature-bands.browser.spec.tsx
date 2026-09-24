@@ -1,8 +1,9 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
 import { FeatureBands, type FeatureBandsProps } from './feature-bands';
+import { DEFAULT_FEATURE_SORT } from './featureSort';
 import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
 import { serializeTemporal, type ProportionValue } from '../../query/queryMutationsOverTime';
@@ -47,6 +48,9 @@ function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
                 pageIndex={0}
                 totalRows={2}
                 onPageChange={() => undefined}
+                meanProportions={{ 'S:A1T': 0.15, 'S:C2G': 0.35 }}
+                sort={DEFAULT_FEATURE_SORT}
+                onSortChange={() => undefined}
                 {...props}
             />
         </PageSizeContextProvider>,
@@ -69,8 +73,8 @@ describe('FeatureBands', () => {
         const { container } = renderBands();
 
         await expect.element(container.querySelector('table')!).toBeInTheDocument();
-        expect(container.querySelectorAll('thead th')).toHaveLength(2); // row label + all dates
-        expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(2);
+        expect(container.querySelectorAll('thead th')).toHaveLength(3); // row label + mean proportion + all dates
+        expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(3);
     });
 
     it('does not print the percentages by default', async () => {
@@ -89,22 +93,69 @@ describe('FeatureBands', () => {
         await expect.element(getByText('40%')).toBeInTheDocument();
     });
 
-    it('renders custom columns between the row label and the bands, with the value of each row', async () => {
+    it('renders the mean proportion of each row between the row label and the bands', async () => {
+        const { getByRole, getByText } = renderBands();
+
+        await expect.element(getByText('Mean proportion')).toBeVisible();
+
+        const firstRow = getByRole('row').filter({ hasText: 'S:A1T' });
+        await expect.element(firstRow.getByRole('cell', { name: '15.0%' })).toBeVisible();
+        const secondRow = getByRole('row').filter({ hasText: 'S:C2G' });
+        await expect.element(secondRow.getByRole('cell', { name: '35.0%' })).toBeVisible();
+    });
+
+    it('renders a dash for a row without a mean proportion or Jaccard index', async () => {
+        const { getByRole } = renderBands({ meanProportions: { 'S:A1T': 0.15 }, jaccardIndices: { 'S:A1T': 0.9 } });
+
+        const rowWithout = getByRole('row').filter({ hasText: 'S:C2G' });
+        await expect.poll(() => rowWithout.getByRole('cell', { name: '–', exact: true }).elements()).toHaveLength(2);
+    });
+
+    it('renders the Jaccard index of each row between the row label and the bands', async () => {
         const { getByRole, getByText } = renderBands({
-            customColumns: [{ header: 'Jaccard index', values: { 'S:A1T': '0.91', 'S:C2G': 0.5 } }],
+            jaccardIndices: { 'S:A1T': 0.912, 'S:C2G': 0.5 },
         });
 
         await expect.element(getByText('Jaccard index')).toBeVisible();
 
         const firstRow = getByRole('row').filter({ hasText: 'S:A1T' });
-        await expect.element(firstRow.getByRole('cell', { name: '0.91' })).toBeVisible();
+        await expect.element(firstRow.getByRole('cell', { name: '.91' })).toBeVisible();
         const secondRow = getByRole('row').filter({ hasText: 'S:C2G' });
-        await expect.element(secondRow.getByRole('cell', { name: '0.5' })).toBeVisible();
+        await expect.element(secondRow.getByRole('cell', { name: '.50' })).toBeVisible();
     });
 
-    it('renders no custom column header when there are none', async () => {
+    it('renders no Jaccard index column without Jaccard indices', async () => {
         const { getByText } = renderBands();
 
         await expect.element(getByText('Jaccard index')).not.toBeInTheDocument();
+    });
+
+    it('marks the column the rows are sorted by', async () => {
+        const { getByRole } = renderBands({
+            jaccardIndices: { 'S:A1T': 0.9 },
+            sort: { column: 'meanProportion', direction: 'descending' },
+        });
+
+        const headerOf = (name: string) => getByRole('button', { name }).element().closest('th');
+
+        await expect.element(getByRole('button', { name: 'Mean proportion' })).toBeVisible();
+        expect(headerOf('Mean proportion')).toHaveAttribute('aria-sort', 'descending');
+        expect(headerOf('Mutation')).toHaveAttribute('aria-sort', 'none');
+        expect(headerOf('Jaccard index')).toHaveAttribute('aria-sort', 'none');
+    });
+
+    it('sorts by a column when its header is clicked, and reverses the order when clicked again', async () => {
+        const onSortChange = vi.fn();
+        const { getByRole } = renderBands({
+            jaccardIndices: { 'S:A1T': 0.9 },
+            sort: { column: 'jaccardIndex', direction: 'descending' },
+            onSortChange,
+        });
+
+        await getByRole('button', { name: 'Mean proportion' }).click();
+        expect(onSortChange).toHaveBeenLastCalledWith({ column: 'meanProportion', direction: 'descending' });
+
+        await getByRole('button', { name: 'Jaccard index' }).click();
+        expect(onSortChange).toHaveBeenLastCalledWith({ column: 'jaccardIndex', direction: 'ascending' });
     });
 });

@@ -148,7 +148,7 @@ export const resistanceAnalysisModeConfigSchema = z.union([
     z.object({
         resistanceAnalysisModeEnabled: z.literal(true),
         resistanceMutationCollections: z.array(resistanceMutationCollectionConfigSchema),
-        filterDefaults: z.object({ resistance: wasapResistanceFilterSchema }),
+        filterDefaults: z.object({ resistance: wasapResistanceFilterSchema.omit({ proportionRange: true }) }),
     }),
     z.object({ resistanceAnalysisModeEnabled: z.undefined().optional() }),
 ]);

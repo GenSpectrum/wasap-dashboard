@@ -1,9 +1,9 @@
 import { getCoreRowModel } from '@tanstack/table-core';
 import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
-import z from 'zod';
 
 import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
+import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import PortalTooltip from './portal-tooltip';
@@ -13,13 +13,6 @@ import { useReactTable } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
 import { getProportion, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { type Temporal } from '../../util/temporalClass';
-
-export const customColumnSchema = z.object({
-    header: z.string(),
-    values: z.record(z.string(), z.union([z.string(), z.number()])),
-});
-/** An extra column of the bands: a header and a value for each row label (see `FeatureRenderer.asString`). */
-export type CustomColumn = z.infer<typeof customColumnSchema>;
 
 export interface FeatureRenderer<D> {
     asString(value: D): string;
@@ -95,11 +88,21 @@ export interface FeatureBandsProps<F> {
     onPageChange: Dispatch<SetStateAction<number>>;
     /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
     paginationEnd?: ReactNode;
-    /** Extra columns between the row label and the bands, with one value per row label. */
-    customColumns?: CustomColumn[];
+    /**
+     * The proportion of each row over the whole time range, by row label (see `FeatureRenderer.asString`).
+     * A row without one (nothing measured it) shows a dash.
+     */
+    meanProportions: Partial<Record<string, number>>;
+    /**
+     * The Jaccard index of each row, by row label (see `FeatureRenderer.asString`). Without it,
+     * there is no Jaccard index column.
+     */
+    jaccardIndices?: Partial<Record<string, number>>;
+    /** How the rows are sorted, shown in the headers. The rows have to be given in this order already. */
+    sort: FeatureSort;
+    /** Called with the new sort when a header is clicked. */
+    onSortChange: (sort: FeatureSort) => void;
 }
-
-const NO_CUSTOM_COLUMNS: CustomColumn[] = [];
 
 export function FeatureBands<F>({
     rowLabelHeader,
@@ -115,12 +118,16 @@ export function FeatureBands<F>({
     totalRows,
     onPageChange,
     paginationEnd,
-    customColumns = NO_CUSTOM_COLUMNS,
+    meanProportions,
+    jaccardIndices,
+    sort,
+    onSortChange,
 }: FeatureBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
+    const numberOfValueColumns = jaccardIndices === undefined ? 1 : 2;
 
     // A table instance with no columns of its own: it exists only to drive the
     // shared `Pagination` control the same way the grid tab's table does - the
@@ -162,18 +169,27 @@ export function FeatureBands<F>({
                     header, a band per row), instead of one table column per bucket:
                     browsers disagree on how to size dozens of empty auto-width columns
                     (Firefox gives each one a sliver and leaves the rest of the table
-                    unused). The label and custom columns are as wide as their content
-                    (`w-px` + no wrapping), and the date column, being `w-full`, gets
-                    all the rest. */}
+                    unused). The label and value columns are as narrow as their content
+                    allows (`w-px`, the value headers wrapping), and the date column,
+                    being `w-full`, gets all the rest. */}
                 <table className='w-full'>
                     <thead>
-                        <tr>
-                            <th className='w-px px-2 whitespace-nowrap'>{rowLabelHeader}</th>
-                            {customColumns.map((customColumn) => (
-                                <th key={customColumn.header} className='w-px px-2 whitespace-nowrap'>
-                                    {customColumn.header}
-                                </th>
-                            ))}
+                        {/* As high as a row of bands (with its line), which the two-line headers fit into. */}
+                        <tr
+                            className='divide-x divide-stone-200 border-b border-stone-200 text-xs'
+                            style={{ height: `${ROW_HEIGHT + 1}px` }}
+                        >
+                            <SortableHeader column='rowLabel' sort={sort} onSortChange={onSortChange}>
+                                {rowLabelHeader}
+                            </SortableHeader>
+                            <SortableHeader column='meanProportion' sort={sort} onSortChange={onSortChange}>
+                                Mean proportion
+                            </SortableHeader>
+                            {jaccardIndices !== undefined && (
+                                <SortableHeader column='jaccardIndex' sort={sort} onSortChange={onSortChange}>
+                                    Jaccard index
+                                </SortableHeader>
+                            )}
                             <th className='w-full p-0'>
                                 {/* One equally wide slot per bucket, like the band's own
                                     hover columns, so a label sits above its bucket. */}
@@ -191,15 +207,15 @@ export function FeatureBands<F>({
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='divide-y divide-stone-200'>
                         {isLoading
                             ? loadingRowLabels.map((label, rowIndex) => (
-                                  <tr key={label}>
+                                  <tr key={label} className='divide-x divide-stone-200'>
                                       <td className='text-center'>{label}</td>
                                       {rowIndex === 0 && (
                                           <td
                                               rowSpan={loadingRowLabels.length}
-                                              colSpan={customColumns.length + 1}
+                                              colSpan={numberOfValueColumns + 1}
                                               className='text-center'
                                           >
                                               <span className='loading loading-spinner loading-sm' />
@@ -208,15 +224,18 @@ export function FeatureBands<F>({
                                   </tr>
                               ))
                             : features.map((feature, rowIndex) => (
-                                  <tr key={featureRenderer.asString(feature)}>
+                                  <tr key={featureRenderer.asString(feature)} className='divide-x divide-stone-200'>
                                       <th className='px-2 font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
-                                      {customColumns.map((customColumn) => (
-                                          <td key={customColumn.header} className='px-2 text-center whitespace-nowrap'>
-                                              {customColumn.values[featureRenderer.asString(feature)]}
+                                      <td className='px-2 text-center whitespace-nowrap'>
+                                          {formatMeanProportion(meanProportions[featureRenderer.asString(feature)])}
+                                      </td>
+                                      {jaccardIndices !== undefined && (
+                                          <td className='px-2 text-center whitespace-nowrap'>
+                                              {formatJaccardIndex(jaccardIndices[featureRenderer.asString(feature)])}
                                           </td>
-                                      ))}
+                                      )}
                                       <td className='p-0'>
                                           <BandRow
                                               feature={feature}
@@ -235,7 +254,7 @@ export function FeatureBands<F>({
                               ))}
                         {!isLoading && features.length === 0 && (
                             <tr>
-                                <td colSpan={customColumns.length + 2}>
+                                <td colSpan={numberOfValueColumns + 2}>
                                     <div className='text-center'>No data available for your filters.</div>
                                 </td>
                             </tr>
@@ -243,7 +262,8 @@ export function FeatureBands<F>({
                     </tbody>
                 </table>
             </div>
-            <div className='mt-2'>
+            {/* The table reaches the edges of the component, so its lines do; only this is padded. */}
+            <div className='border-t border-stone-200 p-2'>
                 <Pagination
                     table={paginationTable}
                     pageSizes={pageSizes}
@@ -256,6 +276,53 @@ export function FeatureBands<F>({
 }
 
 /**
+ * The header of a column the rows can be sorted by: clicking it sorts by the column, or reverses
+ * the order if they already are. The arrow shows the direction they are sorted in, or, faded, the
+ * one a click would sort them in.
+ */
+function SortableHeader({
+    column,
+    sort,
+    onSortChange,
+    children,
+}: {
+    column: SortColumn;
+    sort: FeatureSort;
+    onSortChange: (sort: FeatureSort) => void;
+    children: ReactNode;
+}) {
+    const isSorted = sort.column === column;
+    const shownDirection = isSorted ? sort.direction : nextSort(sort, column).direction;
+    return (
+        <th className='w-px px-2' aria-sort={isSorted ? sort.direction : 'none'}>
+            <button
+                type='button'
+                className='inline-flex cursor-pointer items-center gap-1 font-bold'
+                onClick={() => onSortChange(nextSort(sort, column))}
+            >
+                {/* As narrow as the longest word: a header of two words takes two lines. */}
+                <span className='w-min'>{children}</span>
+                <span aria-hidden='true' className={isSorted ? '' : 'opacity-25'}>
+                    {shownDirection === 'ascending' ? '▲' : '▼'}
+                </span>
+            </button>
+        </th>
+    );
+}
+
+/** What a value column shows for a row without a value. */
+const NO_VALUE = '–';
+
+function formatMeanProportion(meanProportion: number | undefined) {
+    return meanProportion === undefined ? NO_VALUE : formatProportion(meanProportion, 1);
+}
+
+/** Like `.95`: the index is never above 1, so the leading zero says nothing and is left off. */
+function formatJaccardIndex(jaccardIndex: number | undefined) {
+    return jaccardIndex === undefined ? NO_VALUE : jaccardIndex.toPrecision(2).replace(/^0\./, '.');
+}
+
+/**
  * The label of one bucket above the bands. Only the first and last are always shown,
  * the ones in between only when their slot is wide enough for the date, so the
  * labels never run into each other. They are centred over their bucket, except when
@@ -264,12 +331,12 @@ export function FeatureBands<F>({
  */
 function DateHeaderLabel({ label, index, numberOfColumns }: { label: string; index: number; numberOfColumns: number }) {
     if (index === 0) {
-        return <p className='overflow-visible text-nowrap'>{label}</p>;
+        return <p className='overflow-visible pl-2 text-nowrap'>{label}</p>;
     }
     if (index === numberOfColumns - 1) {
         return (
             <div className='flex justify-end @[6rem]:justify-center'>
-                <p className='shrink-0 text-nowrap'>{label}</p>
+                <p className='shrink-0 pr-2 text-nowrap'>{label}</p>
             </div>
         );
     }
@@ -315,7 +382,7 @@ function BandRow<F>({
     ];
 
     return (
-        <div className='border-base-200 relative border-b' style={{ height: `${ROW_HEIGHT}px` }}>
+        <div className='relative' style={{ height: `${ROW_HEIGHT}px` }}>
             <svg
                 className='absolute inset-0 h-full w-full'
                 viewBox={`0 0 ${SPAN} ${ROW_HEIGHT}`}

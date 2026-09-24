@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 
 import { NoDataHelperText } from './NoDataHelperText';
-import { MutationsOverTime } from './mutationsOverTime/mutations-over-time';
+import { type MeanProportionInterval, MutationsOverTime } from './mutationsOverTime/mutations-over-time';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type WasapAnalysisFilter, type WasapBaseFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { type SequenceType } from '../../types/dashboardComponents';
@@ -21,7 +21,7 @@ export function MutationsResult({
         base: WasapBaseFilter;
         analysis: WasapAnalysisFilter;
         filter: SiloReadFilter;
-        meanProportionInterval: { min: number; max: number };
+        meanProportionInterval: MeanProportionInterval;
     };
     data: WasapPageData;
     sequenceType: SequenceType;
@@ -45,7 +45,7 @@ export function MutationsResult({
                     hideGaps={page.base.excludeEmpty ? true : undefined}
                     pageSizes={[20, 50, 100, 250]}
                     meanProportionInterval={page.meanProportionInterval}
-                    customColumns={data.customColumns}
+                    jaccardIndices={data.jaccardIndices}
                 />
             )}
             {children}

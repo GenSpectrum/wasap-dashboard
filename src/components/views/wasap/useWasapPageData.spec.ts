@@ -98,7 +98,12 @@ describe('fetchWasapPageData', () => {
                 baseConfigFields,
 
                 { Spike: ['S:E484K', 'S:N501Y'] },
-                { mode: WASAP_ANALYSIS_MODE.resistance, sequenceType: SEQUENCE_TYPE.aminoAcid, resistanceSet: 'Spike' },
+                {
+                    mode: WASAP_ANALYSIS_MODE.resistance,
+                    sequenceType: SEQUENCE_TYPE.aminoAcid,
+                    resistanceSet: 'Spike',
+                    proportionRange: 'medium',
+                },
             );
 
             expect(result).toEqual({ type: 'mutations', displayMutations: ['S:E484K', 'S:N501Y'] });
@@ -112,6 +117,7 @@ describe('fetchWasapPageData', () => {
                     mode: WASAP_ANALYSIS_MODE.resistance,
                     sequenceType: SEQUENCE_TYPE.aminoAcid,
                     resistanceSet: 'Unknown',
+                    proportionRange: 'medium',
                 },
             );
 
@@ -177,8 +183,7 @@ describe('fetchWasapPageData', () => {
             expect(result).toEqual({
                 type: 'mutations',
                 displayMutations: ['A123T'],
-
-                customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
+                jaccardIndices: { A123T: 0.4 },
             });
         });
 
@@ -232,7 +237,7 @@ describe('fetchWasapPageData', () => {
             });
         });
 
-        test('predefined signature: filters mutations by jaccard and returns customColumns', async () => {
+        test('predefined signature: filters mutations by jaccard and returns their jaccard indices', async () => {
             backendRouteMocker.mockGetCollection('1', {
                 id: 1,
                 name: 'XEC',
@@ -296,8 +301,7 @@ describe('fetchWasapPageData', () => {
                 type: 'mutations',
                 displayMutations: ['A123T'],
                 lineageForJaccard: 'XEC*',
-
-                customColumns: [{ header: 'Jaccard index', values: { A123T: (0.4).toPrecision(2) } }],
+                jaccardIndices: { A123T: 0.4 },
             });
         });
 

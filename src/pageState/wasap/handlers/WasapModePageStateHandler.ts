@@ -1,7 +1,12 @@
 import { type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { formatUrl } from '../../../util/formatUrl';
 import { type PageStateHandler } from '../../PageStateHandler';
-import { parseBaseFilter, setBaseFilterSearchParams } from '../baseFilter';
+import {
+    parseBaseFilter,
+    parseDatasetFilter,
+    setBaseFilterSearchParams,
+    setDatasetFilterSearchParams,
+} from '../baseFilter';
 import { getDefaultMeanProportion } from '../defaultMeanProportion';
 import { type WasapAnalysisFilter, type WasapModeFilter } from '../wasapAnalysisFilter';
 import { modePath } from '../wasapModes';
@@ -19,15 +24,27 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
         readonly mode: Analysis['mode'],
     ) {}
 
+    /**
+     * Whether the mean proportion can be set on the page of the mode. If not, it is
+     * always the default of the mode, and not in the URL.
+     */
+    protected readonly hasMeanProportion: boolean = true;
+
     parsePageStateFromUrl(searchParams: URLSearchParams): WasapModeFilter<Analysis> {
         const analysis = this.parseAnalysis(searchParams);
-        const base = parseBaseFilter(searchParams, this.config, getDefaultMeanProportion(analysis));
+        const base = this.hasMeanProportion
+            ? parseBaseFilter(searchParams, this.config, getDefaultMeanProportion(analysis))
+            : { ...parseDatasetFilter(searchParams, this.config), meanProportion: getDefaultMeanProportion(analysis) };
         return { base, analysis };
     }
 
     toSearchParams({ base, analysis }: WasapModeFilter<Analysis>): URLSearchParams {
         const search = new URLSearchParams();
-        setBaseFilterSearchParams(search, base, this.config, getDefaultMeanProportion(analysis));
+        if (this.hasMeanProportion) {
+            setBaseFilterSearchParams(search, base, this.config, getDefaultMeanProportion(analysis));
+        } else {
+            setDatasetFilterSearchParams(search, base, this.config);
+        }
         this.setAnalysisSearchParams(search, analysis);
         return search;
     }

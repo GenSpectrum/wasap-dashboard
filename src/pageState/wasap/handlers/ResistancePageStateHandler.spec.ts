@@ -12,12 +12,14 @@ describe('ResistancePageStateHandler', () => {
             'locationName=Z%C3%BCrich+%28ZH%29&' +
             'samplingDate=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'resistanceSet=3CLpro&';
+            'resistanceSet=3CLpro&' +
+            'proportionRange=high&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('resistance');
         const analysis = filter.analysis;
         expect(analysis.resistanceSet).toBe('3CLpro');
+        expect(analysis.proportionRange).toBe('high');
 
         const newUrl = handler.toUrl(filter);
         expect(newUrl).toBe(url);
@@ -42,20 +44,24 @@ describe('ResistancePageStateHandler', () => {
         expect(filter.analysis.resistanceSet).toBe('3CLpro');
     });
 
-    it('defaults the mean proportion to 5% to 100%', () => {
+    it('defaults the proportion range to the mutations that are present in part', () => {
         const filter = handler.parsePageStateFromUrl(new URLSearchParams(''));
 
-        expect(filter.base.meanProportion).toEqual({ lower: 0.05, upper: 1 });
+        expect(filter.analysis.proportionRange).toBe('medium');
     });
 
-    it('omits a mean proportion from the URL when it is the default of the mode', () => {
+    it('falls back to the default proportion range for an unknown one in the URL', () => {
+        const filter = handler.parsePageStateFromUrl(new URLSearchParams('proportionRange=nonsense'));
+
+        expect(filter.analysis.proportionRange).toBe('medium');
+    });
+
+    it('ignores a mean proportion in the URL and leaves it out when writing the URL', () => {
         const filter = handler.parsePageStateFromUrl(
-            new URLSearchParams('meanProportionLower=0.05&meanProportionUpper=0.5'),
+            new URLSearchParams('meanProportionLower=0.2&meanProportionUpper=0.5'),
         );
 
-        const url = handler.toUrl(filter);
-
-        expect(url).not.toContain('meanProportionLower');
-        expect(url).toContain('meanProportionUpper=0.5');
+        expect(filter.base.meanProportion).toEqual({ lower: 0, upper: 1 });
+        expect(handler.toUrl(filter)).not.toContain('meanProportion');
     });
 });

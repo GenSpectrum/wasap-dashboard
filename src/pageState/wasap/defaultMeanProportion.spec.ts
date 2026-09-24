@@ -4,16 +4,6 @@ import { getDefaultMeanProportion } from './defaultMeanProportion';
 import type { WasapAnalysisFilter } from './wasapAnalysisFilter';
 
 describe('getDefaultMeanProportion', () => {
-    test('resistance mutations default to a mean proportion from 5 to 100 percent', () => {
-        const analysis: WasapAnalysisFilter = {
-            mode: 'resistance',
-            sequenceType: 'amino acid',
-            resistanceSet: 'Spike',
-        };
-
-        expect(getDefaultMeanProportion(analysis)).toEqual({ lower: 0.05, upper: 1.0 });
-    });
-
     test('manual mode without mutations keeps the previous 5 to 95 percent default', () => {
         const analysis: WasapAnalysisFilter = {
             mode: 'manual',

@@ -23,7 +23,6 @@ import type {
     WasapVariantFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type LapisFilter } from '../../../types/dashboardComponents';
-import { type CustomColumn } from '../../dataDisplay/feature-bands';
 import { type QueriesOverTimeQuery } from '../../dataDisplay/queriesOverTime/queries-over-time';
 
 /**
@@ -42,9 +41,26 @@ export function useWasapPageData(
     // switch, so it has to be in the key too.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
-        queryKey: ['wasap', analysis, resistanceMutationsBySet, config.genSpectrumOrganismName],
+        queryKey: [
+            'wasap',
+            withoutDisplayOnlySettings(analysis),
+            resistanceMutationsBySet,
+            config.genSpectrumOrganismName,
+        ],
         queryFn: () => fetchWasapPageData(config, resistanceMutationsBySet, analysis),
     });
+}
+
+/**
+ * The analysis without the settings that only change which of the fetched data is shown, so
+ * that changing them doesn't fetch again (and doesn't show the loading state in between).
+ */
+function withoutDisplayOnlySettings(analysis: WasapAnalysisFilter) {
+    if (analysis.mode === 'resistance') {
+        const { proportionRange: _, ...rest } = analysis;
+        return rest;
+    }
+    return analysis;
 }
 
 export async function fetchWasapPageData(
@@ -112,14 +128,9 @@ async function fetchVariantComputedModeData(
     return {
         type: 'mutations',
         displayMutations: mutationsWithScore.map(({ mutation }) => mutation),
-        customColumns: [
-            {
-                header: 'Jaccard index',
-                values: Object.fromEntries(
-                    mutationsWithScore.map(({ mutation, jaccardIndex }) => [mutation, jaccardIndex.toPrecision(2)]),
-                ),
-            },
-        ],
+        jaccardIndices: Object.fromEntries(
+            mutationsWithScore.map(({ mutation, jaccardIndex }) => [mutation, jaccardIndex]),
+        ),
     };
 }
 
@@ -168,23 +179,17 @@ async function fetchVariantPredefinedModeData(
         return { type: 'mutations', displayMutations: mutations, lineageForJaccard };
     }
 
+    const displayMutations = mutations.filter((m) => (jaccardByMutation.get(m) ?? 0) >= analysis.minJaccard);
     return {
         type: 'mutations',
         lineageForJaccard,
-        displayMutations: mutations.filter((m) => (jaccardByMutation.get(m) ?? 0) >= analysis.minJaccard),
-        customColumns: [
-            {
-                header: 'Jaccard index',
-                values: Object.fromEntries(
-                    mutations
-                        .filter(
-                            (m) => jaccardByMutation.has(m) && (jaccardByMutation.get(m) ?? 0) >= analysis.minJaccard,
-                        )
-
-                        .map((m) => [m, jaccardByMutation.get(m)!.toPrecision(2)]),
-                ),
-            },
-        ],
+        displayMutations,
+        jaccardIndices: Object.fromEntries(
+            displayMutations.flatMap((m) => {
+                const jaccardIndex = jaccardByMutation.get(m);
+                return jaccardIndex === undefined ? [] : [[m, jaccardIndex]];
+            }),
+        ),
     };
 }
 
@@ -449,7 +454,7 @@ export type WasapPageData = WasapMutationsData | WasapCollectionData;
 
 /**
  * Mutations data consists of the mutations to display in the mutations-over-time component,
- * and the additional custom columns that might optionally be displayed.
+ * and, for the modes that compute one, the Jaccard index of each mutation (by mutation code).
  *
  * If displayMutations is undefined, that means that all mutations should be displayed
  * (That is the default behaviour of the mutations-over-time component).
@@ -457,7 +462,7 @@ export type WasapPageData = WasapMutationsData | WasapCollectionData;
 export type WasapMutationsData = {
     type: 'mutations';
     displayMutations?: string[];
-    customColumns?: CustomColumn[];
+    jaccardIndices?: Record<string, number>;
     lineageForJaccard?: string;
 };
 
