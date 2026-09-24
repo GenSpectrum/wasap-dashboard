@@ -134,9 +134,10 @@ function GotoPageSelector({ table, totalRows }: PaginationProps & { totalRows: n
 
 function SelectPageButtons({ table }: PaginationProps) {
     return (
-        <div className={'join'} role='group' aria-label='Pagination controls'>
+        <div className='flex items-center gap-1' role='group' aria-label='Pagination controls'>
             <button
-                className='btn btn-outline join-item btn-sm'
+                type='button'
+                className='btn btn-xs'
                 onClick={() => table.firstPage()}
                 disabled={!table.getCanPreviousPage()}
                 aria-label='First page'
@@ -144,7 +145,8 @@ function SelectPageButtons({ table }: PaginationProps) {
                 <div className='iconify mdi--chevron-left-first' />
             </button>
             <button
-                className='btn btn-outline join-item btn-sm'
+                type='button'
+                className='btn btn-xs'
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
                 aria-label='Previous page'
@@ -152,7 +154,8 @@ function SelectPageButtons({ table }: PaginationProps) {
                 <div className='iconify mdi--chevron-left' />
             </button>
             <button
-                className='btn btn-outline join-item btn-sm'
+                type='button'
+                className='btn btn-xs'
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
                 aria-label='Next page'
@@ -160,7 +163,8 @@ function SelectPageButtons({ table }: PaginationProps) {
                 <div className='iconify mdi--chevron-right' />
             </button>
             <button
-                className='btn btn-outline join-item btn-sm'
+                type='button'
+                className='btn btn-xs'
                 onClick={() => table.lastPage()}
                 disabled={!table.getCanNextPage()}
                 aria-label='Last page'
