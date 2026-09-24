@@ -42,6 +42,10 @@ export function useModePage<Analysis extends WasapAnalysisFilter>(
         }
     }, [error]);
 
+    // TODO: this does nothing on the resistance page, which has no mean proportion setting (it
+    // always gets the full 0 to 1 here) and filters by its proportion range tabs instead. The mean
+    // proportion should probably move out of the base filter into the page state handlers of the
+    // modes that have it.
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
