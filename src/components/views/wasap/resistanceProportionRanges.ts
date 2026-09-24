@@ -16,7 +16,6 @@ export const RESISTANCE_PROPORTION_RANGES: {
     label: string;
     interval: ProportionInterval;
 }[] = [
-    { range: RESISTANCE_PROPORTION_RANGE.all, label: 'All', interval: { min: 0, max: 1 } },
     {
         range: RESISTANCE_PROPORTION_RANGE.low,
         label: '0% to 1% mean proportion',
@@ -32,6 +31,7 @@ export const RESISTANCE_PROPORTION_RANGES: {
         label: '99% to 100% mean proportion',
         interval: { min: 0.99, max: 1, minExclusive: true },
     },
+    { range: RESISTANCE_PROPORTION_RANGE.all, label: 'All', interval: { min: 0, max: 1 } },
 ];
 
 export function getProportionInterval(range: ResistanceProportionRange): ProportionInterval {
