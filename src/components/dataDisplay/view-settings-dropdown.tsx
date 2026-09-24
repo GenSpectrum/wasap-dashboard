@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
 import { type BandViewSettings } from './band-view-settings';
-import { ColorScaleRootSelector, ColorScaleSelector } from './color-scale-selector';
+import { ColorScaleRootSelector } from './color-scale-selector';
 import { Dropdown } from './dropdown';
 
 export interface ViewSettingsDropdownProps {
@@ -17,13 +17,6 @@ export const ViewSettingsDropdown: FC<ViewSettingsDropdownProps> = ({ settings, 
         <div className='inline-flex'>
             <Dropdown buttonTitle='View settings' icon={<span className='iconify mdi--eye' />} placement='top-end'>
                 <div className='flex flex-col gap-4'>
-                    <div className='flex flex-col gap-2'>
-                        <div className='text-sm font-semibold'>Color scale</div>
-                        <ColorScaleSelector
-                            colorScale={settings.colorScale}
-                            setColorScale={(colorScale) => onChange({ ...settings, colorScale })}
-                        />
-                    </div>
                     <div className='flex flex-col gap-2'>
                         <div className='text-sm font-semibold'>Contrast for small proportions</div>
                         <ColorScaleRootSelector

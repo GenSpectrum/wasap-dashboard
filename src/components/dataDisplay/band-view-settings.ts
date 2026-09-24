@@ -8,6 +8,6 @@ export type BandViewSettings = {
 };
 
 export const DEFAULT_BAND_VIEW_SETTINGS: BandViewSettings = {
-    colorScale: { min: 0, max: 1, color: 'indigo', root: 2 },
+    colorScale: { color: 'indigo', root: 2 },
     showPercentages: false,
 };

@@ -12,13 +12,13 @@ describe('ViewSettingsDropdown', () => {
         await expect.element(getByRole('button', { name: 'View settings' })).toBeVisible();
     });
 
-    it('shows the color scale settings once opened', async () => {
+    it('shows the settings once opened', async () => {
         const { getByRole, getByText } = render(
             <ViewSettingsDropdown settings={DEFAULT_BAND_VIEW_SETTINGS} onChange={vi.fn()} />,
         );
 
         // The stylesheet isn't loaded in tests, so check for the class that hides the panel.
-        const isHidden = () => getByText('Color scale').element().closest('.hidden') !== null;
+        const isHidden = () => getByText('Contrast for small proportions').element().closest('.hidden') !== null;
 
         expect(isHidden()).toBe(true);
 
