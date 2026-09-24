@@ -71,7 +71,7 @@ const queries = [
     },
 ];
 
-function renderOverTime() {
+function renderOverTime(pageSizes = [10, 20]) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
         <QueryClientProvider client={queryClient}>
@@ -82,7 +82,7 @@ function renderOverTime() {
                     granularity='day'
                     queries={queries}
                     meanProportionInterval={{ min: 0, max: 1 }}
-                    pageSizes={[10, 20]}
+                    pageSizes={pageSizes}
                 />
             </ConnectionProvider>
         </QueryClientProvider>,
@@ -122,5 +122,34 @@ describe('QueriesOverTime (SILO)', () => {
             expect(bodies()).toContain(countQuery);
             expect(bodies()).toContain(coverageQuery);
         });
+    });
+
+    it('shows the mean proportion of each query', async () => {
+        stubSilo();
+        const screen = renderOverTime();
+
+        const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
+        await expect.element(firstRow.getByRole('cell', { name: '90.0%' })).toBeInTheDocument();
+        const secondRow = screen.getByRole('row').filter({ hasText: 'C3037T' });
+        await expect.element(secondRow.getByRole('cell', { name: '10.0%' })).toBeInTheDocument();
+    });
+
+    it('sorts all the queries, not just those of the page, by the column whose header is clicked', async () => {
+        stubSilo();
+        // One query per page, so the one shown is the first in the order.
+        const screen = renderOverTime([1]);
+
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+        await expect.element(screen.getByText('C3037T').first()).not.toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Query' }).click();
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+        await expect.element(screen.getByText('C241T').first()).not.toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Mean proportion' }).click();
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Mean proportion' }).click();
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
     });
 });

@@ -1,7 +1,7 @@
 import { type FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
-import { getFilteredQueryOverTimeData } from './getFilteredQueriesOverTimeData';
+import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
@@ -17,7 +17,8 @@ import { NoDataDisplay } from '../../shared/no-data-display';
 import { ResizeContainer } from '../../shared/resize-container';
 import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
-import { customColumnSchema, FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { FeatureBands, type FeatureRenderer } from '../feature-bands';
+import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import PortalTooltip from '../portal-tooltip';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
@@ -60,7 +61,6 @@ const queriesOverTimeSchema = z.object({
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
-    customColumns: z.array(customColumnSchema).optional(),
 });
 export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 
@@ -81,6 +81,8 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
     const { filter, queries, granularity } = componentProps;
 
     const { data: queryOverTimeData, isLoading } = useQueriesOverTime(filter, granularity, queries);
+    // Up here rather than next to the rows, so it survives the reloading when the filters change.
+    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
 
     if (isLoading) {
         return <LoadingDisplay />;
@@ -92,7 +94,12 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
 
     return (
         <PageSizeContextProvider pageSizes={componentProps.pageSizes}>
-            <QueriesOverTimeWithData queryOverTimeData={queryOverTimeData} originalComponentProps={componentProps} />
+            <QueriesOverTimeWithData
+                queryOverTimeData={queryOverTimeData}
+                originalComponentProps={componentProps}
+                sort={sort}
+                setSort={setSort}
+            />
         </PageSizeContextProvider>
     );
 };
@@ -100,9 +107,16 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
 type QueriesOverTimeWithDataProps = {
     queryOverTimeData: Map2DContents<string, Temporal, ProportionValue>;
     originalComponentProps: QueriesOverTimeProps;
+    sort: FeatureSort;
+    setSort: (sort: FeatureSort) => void;
 };
 
-const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTimeData, originalComponentProps }) => {
+const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
+    queryOverTimeData,
+    originalComponentProps,
+    sort,
+    setSort,
+}) => {
     const wrapperRef = useDispatchFinishedLoadingEvent();
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
 
@@ -117,15 +131,28 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
     const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
     const hideGaps = originalComponentProps.hideGaps ?? false;
 
+    const meanProportions = useMemo(() => getMeanProportions(queryOverTimeData), [queryOverTimeData]);
+
     const filteredData = useMemo(() => {
         return getFilteredQueryOverTimeData({
             data: queryOverTimeData,
+            meanProportions,
             proportionInterval,
             hideGaps,
         });
-    }, [queryOverTimeData, proportionInterval, hideGaps]);
+    }, [queryOverTimeData, meanProportions, proportionInterval, hideGaps]);
+
+    const sortedQueries = useMemo(
+        () => sortRowLabels(filteredData.getFirstAxisKeys(), sort, { meanProportions }),
+        [filteredData, sort, meanProportions],
+    );
 
     useEffect(() => setPageIndex(0), [filteredData]);
+
+    const changeSort = (newSort: FeatureSort) => {
+        setSort(newSort);
+        setPageIndex(0);
+    };
 
     const queryLookupMap = useMemo(
         () => new Map(originalComponentProps.queries.map((query) => [query.displayLabel, query])),
@@ -173,19 +200,14 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
         </div>
     );
 
-    const rowKeys = filteredData.getFirstAxisKeys();
     const pageData = useMemo(() => {
         const page = new Map2dView(filteredData);
-        filteredData.getFirstAxisKeys().forEach((query, index) => {
-            if (index < pageIndex * pageSize || index >= (pageIndex + 1) * pageSize) {
-                page.deleteRow(query);
-            }
-        });
+        page.selectRows(sortedQueries.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize));
         return page;
-    }, [filteredData, pageIndex, pageSize]);
+    }, [filteredData, sortedQueries, pageIndex, pageSize]);
 
     return (
-        <div ref={wrapperRef} className='border border-stone-300 bg-white p-2'>
+        <div ref={wrapperRef} className='border border-stone-300 bg-white'>
             <FeatureBands
                 rowLabelHeader='Query'
                 data={pageData}
@@ -197,10 +219,12 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
                 tooltipPortalTarget={tooltipPortalTarget}
                 pageSizes={originalComponentProps.pageSizes}
                 pageIndex={pageIndex}
-                totalRows={rowKeys.length}
+                totalRows={sortedQueries.length}
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
-                customColumns={originalComponentProps.customColumns}
+                meanProportions={meanProportions}
+                sort={sort}
+                onSortChange={changeSort}
             />
         </div>
     );

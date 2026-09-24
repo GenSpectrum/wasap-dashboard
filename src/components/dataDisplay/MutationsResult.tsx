@@ -45,7 +45,7 @@ export function MutationsResult({
                     hideGaps={page.base.excludeEmpty ? true : undefined}
                     pageSizes={[20, 50, 100, 250]}
                     meanProportionInterval={page.meanProportionInterval}
-                    customColumns={data.customColumns}
+                    jaccardIndices={data.jaccardIndices}
                 />
             )}
             {children}
