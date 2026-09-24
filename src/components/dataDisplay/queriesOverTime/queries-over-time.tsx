@@ -6,7 +6,6 @@ import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
 import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../../dataLayer/queries';
-import { type ProportionValue, getProportion } from '../../../query/queryMutationsOverTime';
 import { temporalGranularitySchema } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
@@ -19,10 +18,11 @@ import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { type ProportionValue, getProportion } from '../overTime/proportionValue';
 import PortalTooltip from '../portal-tooltip';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
-import { ViewSettingsDropdown } from '../view-settings-dropdown';
+import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
@@ -188,9 +188,10 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
         [tooltipPortalTarget, queryLookupMap],
     );
 
+    const paginationStart = <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />;
+
     const paginationEnd = (
         <div className='flex items-center gap-1'>
-            <ViewSettingsDropdown settings={viewSettings} onChange={setViewSettings} />
             <CsvDownloadButton
                 className='btn btn-xs'
                 label='Download CSV'
@@ -221,6 +222,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
                 pageIndex={pageIndex}
                 totalRows={sortedQueries.length}
                 onPageChange={setPageIndex}
+                paginationStart={paginationStart}
                 paginationEnd={paginationEnd}
                 meanProportions={meanProportions}
                 sort={sort}

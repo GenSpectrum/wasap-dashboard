@@ -12,7 +12,6 @@ import {
     type OverTimeMetadata,
 } from '../../../dataLayer/hooks/mutationsOverTime';
 import { siloReadFilterSchema } from '../../../dataLayer/queries/filter';
-import { getProportion, type ProportionValue } from '../../../query/queryMutationsOverTime';
 import { sequenceTypeSchema, temporalGranularitySchema } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
@@ -26,9 +25,10 @@ import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { getProportion, type ProportionValue } from '../overTime/proportionValue';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
-import { ViewSettingsDropdown } from '../view-settings-dropdown';
+import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
     min: z.number().min(0).max(1),
@@ -221,9 +221,10 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     const getDownloadDataAsync = async (): Promise<Record<string, string | number>[]> =>
         pageData === null ? [] : getDownloadData(pageData);
 
+    const paginationStart = <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />;
+
     const paginationEnd = (
         <div className='flex items-center gap-1'>
-            <ViewSettingsDropdown settings={viewSettings} onChange={setViewSettings} />
             <CsvDownloadButton
                 className='btn btn-xs'
                 label='Download CSV'
@@ -248,6 +249,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 pageIndex={pageIndex}
                 totalRows={totalFilteredRows}
                 onPageChange={setPageIndex}
+                paginationStart={paginationStart}
                 paginationEnd={paginationEnd}
                 meanProportions={meanProportions}
                 jaccardIndices={jaccardIndices}

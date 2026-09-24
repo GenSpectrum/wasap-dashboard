@@ -4,9 +4,9 @@ import { render } from 'vitest-browser-react';
 import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
 import { FeatureBands, type FeatureBandsProps } from './feature-bands';
 import { DEFAULT_FEATURE_SORT } from './featureSort';
+import { serializeTemporal, type ProportionValue } from './overTime/proportionValue';
 import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
-import { serializeTemporal, type ProportionValue } from '../../query/queryMutationsOverTime';
 import { Map2dBase } from '../../util/map2d';
 import { type Temporal, TemporalCache } from '../../util/temporalClass';
 
@@ -16,7 +16,7 @@ const dates: Temporal[] = [
 ];
 
 function valueOf(count: number): ProportionValue {
-    return { type: 'valueWithCoverage', count, coverage: 100, totalCount: 100 };
+    return { type: 'value', count, coverage: 100, totalCount: 100 };
 }
 
 function someData() {
@@ -75,6 +75,31 @@ describe('FeatureBands', () => {
         await expect.element(container.querySelector('table')!).toBeInTheDocument();
         expect(container.querySelectorAll('thead th')).toHaveLength(3); // row label + mean proportion + all dates
         expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(3);
+    });
+
+    it('hatches a bucket with reads but no coverage, and cuts the band off square around it', async () => {
+        const threeDates = [...dates, TemporalCache.getInstance().getYearMonthDay('2024-01-03')];
+        const data = new Map2dBase<string, Temporal, ProportionValue>((key) => key, serializeTemporal);
+        data.set('S:A1T', threeDates[0], valueOf(10));
+        data.set('S:A1T', threeDates[1], { type: 'noCoverage', totalCount: 100 });
+        data.set('S:A1T', threeDates[2], valueOf(30));
+        const { container, getByText } = renderBands({ data, requestedDateRanges: threeDates, totalRows: 1 });
+
+        await expect.element(getByText('S:A1T')).toBeVisible();
+        expect(container.querySelectorAll('[data-no-coverage]')).toHaveLength(1);
+        const outline = container.querySelector('tbody svg path')!.getAttribute('d')!;
+        expect(outline.match(/M/g)).toHaveLength(2); // one stretch of band either side of the gap
+    });
+
+    it('neither hatches nor draws a band in a bucket without any reads', async () => {
+        const data = new Map2dBase<string, Temporal, ProportionValue>((key) => key, serializeTemporal);
+        data.set('S:A1T', dates[0], valueOf(10));
+        data.set('S:A1T', dates[1], null);
+        const { container, getByText } = renderBands({ data, totalRows: 1 });
+
+        await expect.element(getByText('S:A1T')).toBeVisible();
+        expect(container.querySelectorAll('[data-no-coverage]')).toHaveLength(0);
+        expect(container.querySelector('tbody svg path')!.getAttribute('d')!.match(/M/g)).toHaveLength(1);
     });
 
     it('does not print the percentages by default', async () => {

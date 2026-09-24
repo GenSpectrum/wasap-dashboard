@@ -1,26 +1,23 @@
-import { type Map2dView } from '../util/map2d';
-import { type Deletion, type Substitution } from '../util/mutations';
-import { type Temporal } from '../util/temporalClass';
+import { type Map2dView } from '../../../util/map2d';
+import { type Deletion, type Substitution } from '../../../util/mutations';
+import { type Temporal } from '../../../util/temporalClass';
 
+/**
+ * One cell of an over-time grid: a feature (mutation or query) in one date bucket.
+ *
+ * - `value`: some reads in the bucket cover the feature; `count` of the `coverage` reads carry it.
+ * - `noCoverage`: the bucket has reads (`totalCount`), but none of them cover the feature.
+ * - `null`: the bucket has no reads at all.
+ */
 export type ProportionValue =
     | {
           type: 'value';
-          proportion: number;
-          count: number;
-          totalCount: number;
-      }
-    | {
-          type: 'valueWithCoverage';
           count: number;
           coverage: number;
           totalCount: number;
       }
     | {
-          type: 'wastewaterValue';
-          proportion: number;
-      }
-    | {
-          type: 'belowThreshold';
+          type: 'noCoverage';
           totalCount: number | null;
       }
     | null;
@@ -28,17 +25,12 @@ export type ProportionValue =
 export function getProportion(value: ProportionValue) {
     switch (value?.type) {
         case 'value':
-        case 'wastewaterValue':
-            return value.proportion;
-        case 'valueWithCoverage':
             return value.count / value.coverage;
-        case 'belowThreshold':
+        case 'noCoverage':
             return undefined;
     }
     return undefined;
 }
-
-export const MUTATIONS_OVER_TIME_MIN_PROPORTION = 0.001;
 
 /**
  * Deletes columns (second axis keys, typically dates) from `view` that have no value with
@@ -48,7 +40,7 @@ export function hideGapsInPlace<Key1 extends object | string>(view: Map2dView<Ke
     view.getSecondAxisKeys()
         .filter((date) => {
             const vals = view.getColumn(date);
-            return !vals.some((v) => (v?.type === 'value' || v?.type === 'valueWithCoverage') && v.totalCount > 0);
+            return !vals.some((v) => v?.type === 'value' && v.totalCount > 0);
         })
         .forEach((date) => view.deleteColumn(date));
 }

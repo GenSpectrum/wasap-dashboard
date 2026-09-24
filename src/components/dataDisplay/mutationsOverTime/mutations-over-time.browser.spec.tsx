@@ -133,15 +133,14 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
     });
 
-    it('prints the proportions, alt / coverage, over the bands once asked to in the view settings', async () => {
+    it('prints the proportions, alt / coverage, over the bands once the percentage toggle is pressed', async () => {
         stubSilo();
         const screen = renderOverTime();
 
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
         await expect.element(screen.getByText('90%').first()).not.toBeInTheDocument();
 
-        await screen.getByRole('button', { name: 'View settings' }).click();
-        await screen.getByRole('checkbox', { name: 'Show percentages' }).click();
+        await screen.getByRole('button', { name: 'Show percentages' }).click();
 
         // C241T: 900/1000 in every bucket; C3037T: 100/1000.
         await expect.element(screen.getByText('90%').first()).toBeInTheDocument();
