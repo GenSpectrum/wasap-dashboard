@@ -142,6 +142,20 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
         [overallMutations, proportionInterval],
     );
 
+    // A display mutation that the metadata query didn't return is in `overallMutations` with a
+    // count and proportion of 0 (see `applyDisplayMutations`), but that isn't a measurement: it is
+    // below the query's proportion floor, or no read covered it. Every mutation the query did
+    // return has a count, being above the floor. The filter above still takes the 0.
+    const meanProportions = useMemo(
+        () =>
+            Object.fromEntries(
+                overallMutations
+                    .filter((entry) => entry.count > 0)
+                    .map((entry) => [entry.mutation.code, entry.proportion]),
+            ),
+        [overallMutations],
+    );
+
     useEffect(() => {
         setPageIndex(0);
     }, [filteredMutationCodes, setPageIndex]);
@@ -212,6 +226,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 totalRows={totalFilteredRows}
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
+                meanProportions={meanProportions}
                 jaccardIndices={originalComponentProps.jaccardIndices}
             />
         </div>

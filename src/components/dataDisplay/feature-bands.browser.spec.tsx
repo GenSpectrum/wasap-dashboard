@@ -47,6 +47,7 @@ function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
                 pageIndex={0}
                 totalRows={2}
                 onPageChange={() => undefined}
+                meanProportions={{ 'S:A1T': 0.15, 'S:C2G': 0.35 }}
                 {...props}
             />
         </PageSizeContextProvider>,
@@ -69,8 +70,8 @@ describe('FeatureBands', () => {
         const { container } = renderBands();
 
         await expect.element(container.querySelector('table')!).toBeInTheDocument();
-        expect(container.querySelectorAll('thead th')).toHaveLength(2); // row label + all dates
-        expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(2);
+        expect(container.querySelectorAll('thead th')).toHaveLength(3); // row label + mean proportion + all dates
+        expect(container.querySelectorAll('tbody tr:first-child > *')).toHaveLength(3);
     });
 
     it('does not print the percentages by default', async () => {
@@ -87,6 +88,24 @@ describe('FeatureBands', () => {
         await expect.element(getByText('20%')).toBeInTheDocument();
         await expect.element(getByText('30%')).toBeInTheDocument();
         await expect.element(getByText('40%')).toBeInTheDocument();
+    });
+
+    it('renders the mean proportion of each row between the row label and the bands', async () => {
+        const { getByRole, getByText } = renderBands();
+
+        await expect.element(getByText('Mean proportion')).toBeVisible();
+
+        const firstRow = getByRole('row').filter({ hasText: 'S:A1T' });
+        await expect.element(firstRow.getByRole('cell', { name: '15.0%' })).toBeVisible();
+        const secondRow = getByRole('row').filter({ hasText: 'S:C2G' });
+        await expect.element(secondRow.getByRole('cell', { name: '35.0%' })).toBeVisible();
+    });
+
+    it('renders a dash for a row without a mean proportion or Jaccard index', async () => {
+        const { getByRole } = renderBands({ meanProportions: { 'S:A1T': 0.15 }, jaccardIndices: { 'S:A1T': 0.9 } });
+
+        const rowWithout = getByRole('row').filter({ hasText: 'S:C2G' });
+        await expect.poll(() => rowWithout.getByRole('cell', { name: '–', exact: true }).elements()).toHaveLength(2);
     });
 
     it('renders the Jaccard index of each row between the row label and the bands', async () => {

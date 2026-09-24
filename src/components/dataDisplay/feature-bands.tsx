@@ -88,6 +88,11 @@ export interface FeatureBandsProps<F> {
     /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
     paginationEnd?: ReactNode;
     /**
+     * The proportion of each row over the whole time range, by row label (see `FeatureRenderer.asString`).
+     * A row without one (nothing measured it) shows a dash.
+     */
+    meanProportions: Partial<Record<string, number>>;
+    /**
      * The Jaccard index of each row, by row label (see `FeatureRenderer.asString`). Without it,
      * there is no Jaccard index column.
      */
@@ -108,13 +113,14 @@ export function FeatureBands<F>({
     totalRows,
     onPageChange,
     paginationEnd,
+    meanProportions,
     jaccardIndices,
 }: FeatureBandsProps<F>) {
     const columns = data?.getSecondAxisKeys() ?? requestedDateRanges;
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
-    const numberOfValueColumns = jaccardIndices === undefined ? 0 : 1;
+    const numberOfValueColumns = jaccardIndices === undefined ? 1 : 2;
 
     // A table instance with no columns of its own: it exists only to drive the
     // shared `Pagination` control the same way the grid tab's table does - the
@@ -163,6 +169,7 @@ export function FeatureBands<F>({
                     <thead>
                         <tr>
                             <th className='w-px px-2 whitespace-nowrap'>{rowLabelHeader}</th>
+                            <th className='w-px px-2 whitespace-nowrap'>Mean proportion</th>
                             {jaccardIndices !== undefined && (
                                 <th className='w-px px-2 whitespace-nowrap'>Jaccard index</th>
                             )}
@@ -204,6 +211,9 @@ export function FeatureBands<F>({
                                       <th className='px-2 font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
+                                      <td className='px-2 text-center whitespace-nowrap'>
+                                          {formatMeanProportion(meanProportions[featureRenderer.asString(feature)])}
+                                      </td>
                                       {jaccardIndices !== undefined && (
                                           <td className='px-2 text-center whitespace-nowrap'>
                                               {formatJaccardIndex(jaccardIndices[featureRenderer.asString(feature)])}
@@ -249,6 +259,10 @@ export function FeatureBands<F>({
 
 /** What a value column shows for a row without a value. */
 const NO_VALUE = '–';
+
+function formatMeanProportion(meanProportion: number | undefined) {
+    return meanProportion === undefined ? NO_VALUE : formatProportion(meanProportion, 1);
+}
 
 /** Like `.95`: the index is never above 1, so the leading zero says nothing and is left off. */
 function formatJaccardIndex(jaccardIndex: number | undefined) {

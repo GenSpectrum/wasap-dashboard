@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { MutationsOverTime } from './mutations-over-time';
+import { MutationsOverTime, type MutationsOverTimeProps } from './mutations-over-time';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { SiloSchema } from '../../../dataLayer/queries/schema';
 import { MutationAnnotationsContextProvider } from '../../MutationAnnotationsContext';
@@ -50,6 +50,9 @@ function stubSilo() {
                 ]),
             );
         }
+        if (q.includes('main.at(5)')) {
+            return Promise.resolve(ndjson([])); // not covered by any read
+        }
         if (q.includes('main.at(3037)')) {
             return Promise.resolve(
                 ndjson([
@@ -94,7 +97,7 @@ function stubSilo() {
     return fetchMock;
 }
 
-function renderOverTime() {
+function renderOverTime(props: Partial<MutationsOverTimeProps> = {}) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
         <QueryClientProvider client={queryClient}>
@@ -108,6 +111,7 @@ function renderOverTime() {
                         displayMutations={['C241T', 'C3037T']}
                         meanProportionInterval={{ min: 0, max: 1 }}
                         pageSizes={[10, 20]}
+                        {...props}
                     />
                 </MutationAnnotationsContextProvider>
             </ConnectionProvider>
@@ -159,5 +163,25 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
             'default.map({sym := main.at(241)}).groupBy({count := count()}, {date, sym})',
             'default.map({sym := main.at(3037)}).groupBy({count := count()}, {date, sym})',
         ]);
+    });
+
+    it('shows the mean proportion of each mutation', async () => {
+        stubSilo();
+        const screen = renderOverTime();
+
+        // From the metadata: C241T 900/1000, C3037T 100/1000.
+        const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
+        await expect.element(firstRow.getByRole('cell', { name: '90.0%' })).toBeInTheDocument();
+        const secondRow = screen.getByRole('row').filter({ hasText: 'C3037T' });
+        await expect.element(secondRow.getByRole('cell', { name: '10.0%' })).toBeInTheDocument();
+    });
+
+    it('shows a dash for a display mutation without a measured mean proportion', async () => {
+        stubSilo();
+        // C5T isn't returned by the metadata query: below its proportion floor, or not covered.
+        const screen = renderOverTime({ displayMutations: ['C5T', 'C241T', 'C3037T'] });
+
+        const row = screen.getByRole('row').filter({ hasText: 'C5T' });
+        await expect.element(row.getByRole('cell', { name: '–', exact: true })).toBeInTheDocument();
     });
 });

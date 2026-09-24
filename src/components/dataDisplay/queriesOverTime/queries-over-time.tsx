@@ -1,7 +1,7 @@
 import { type FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
-import { getFilteredQueryOverTimeData } from './getFilteredQueriesOverTimeData';
+import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
@@ -116,13 +116,16 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
     const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
     const hideGaps = originalComponentProps.hideGaps ?? false;
 
+    const meanProportions = useMemo(() => getMeanProportions(queryOverTimeData), [queryOverTimeData]);
+
     const filteredData = useMemo(() => {
         return getFilteredQueryOverTimeData({
             data: queryOverTimeData,
+            meanProportions,
             proportionInterval,
             hideGaps,
         });
-    }, [queryOverTimeData, proportionInterval, hideGaps]);
+    }, [queryOverTimeData, meanProportions, proportionInterval, hideGaps]);
 
     useEffect(() => setPageIndex(0), [filteredData]);
 
@@ -199,6 +202,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({ queryOverTi
                 totalRows={rowKeys.length}
                 onPageChange={setPageIndex}
                 paginationEnd={paginationEnd}
+                meanProportions={meanProportions}
             />
         </div>
     );

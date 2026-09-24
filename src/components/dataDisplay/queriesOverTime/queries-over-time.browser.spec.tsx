@@ -123,4 +123,14 @@ describe('QueriesOverTime (SILO)', () => {
             expect(bodies()).toContain(coverageQuery);
         });
     });
+
+    it('shows the mean proportion of each query', async () => {
+        stubSilo();
+        const screen = renderOverTime();
+
+        const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
+        await expect.element(firstRow.getByRole('cell', { name: '90.0%' })).toBeInTheDocument();
+        const secondRow = screen.getByRole('row').filter({ hasText: 'C3037T' });
+        await expect.element(secondRow.getByRole('cell', { name: '10.0%' })).toBeInTheDocument();
+    });
 });
