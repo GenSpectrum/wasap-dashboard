@@ -59,7 +59,9 @@ export function ResistanceResult({
     const meanProportionInterval = getProportionInterval(page.analysis.proportionRange);
 
     return (
-        <>
+        // One block, so the tabs sit right on top of the mutations over time, without the gap
+        // that the results have between them otherwise.
+        <div>
             {displayMutations?.length !== 0 && (
                 <ProportionRangeTabs
                     value={page.analysis.proportionRange}
@@ -68,7 +70,7 @@ export function ResistanceResult({
                 />
             )}
             <MutationsResult page={{ ...page, meanProportionInterval }} data={data} sequenceType={sequenceType} />
-        </>
+        </div>
     );
 }
 
@@ -85,7 +87,7 @@ function ProportionRangeTabs({
     return (
         <div>
             <div className='mb-2 text-sm text-gray-600'>Mutations by mean proportion</div>
-            <div className='flex flex-wrap gap-2' role='group' aria-label='Mutations by mean proportion'>
+            <div className='flex gap-1' role='group' aria-label='Mutations by mean proportion'>
                 {RESISTANCE_PROPORTION_RANGES.map(({ range, label }) => {
                     const isSelected = range === value;
                     return (
@@ -94,12 +96,18 @@ function ProportionRangeTabs({
                             type='button'
                             aria-pressed={isSelected}
                             onClick={() => onChange(range)}
-                            className={`flex min-w-32 cursor-pointer flex-col items-start border bg-white px-4 py-2 text-left ${
-                                isSelected ? 'border-primary' : 'border-gray-300 hover:border-gray-400'
+                            // The tabs overlap the top border of the box below by a pixel: the selected
+                            // one covers it (white bottom border, above the box), so it merges with the box.
+                            className={`relative -mb-px flex min-w-0 flex-1 cursor-pointer flex-col items-start border border-stone-300 px-2 py-2 text-left sm:px-4 ${
+                                isSelected
+                                    ? 'border-t-primary z-10 border-t-2 border-b-white bg-white'
+                                    : 'bg-stone-100 text-gray-500 hover:bg-stone-50'
                             }`}
                         >
-                            <span className='text-sm text-gray-600'>{label}</span>
-                            <span className='text-2xl font-semibold'>{counts?.[range] ?? '…'}</span>
+                            <span className='text-xs whitespace-nowrap sm:text-sm'>{label}</span>
+                            <span className={`text-2xl font-semibold ${isSelected ? '' : 'text-gray-600'}`}>
+                                {counts?.[range] ?? '…'}
+                            </span>
                         </button>
                     );
                 })}
