@@ -169,12 +169,16 @@ export function FeatureBands<F>({
                     header, a band per row), instead of one table column per bucket:
                     browsers disagree on how to size dozens of empty auto-width columns
                     (Firefox gives each one a sliver and leaves the rest of the table
-                    unused). The label and value columns are as wide as their content
-                    (`w-px` + no wrapping), and the date column, being `w-full`, gets
-                    all the rest. */}
+                    unused). The label and value columns are as narrow as their content
+                    allows (`w-px`, the value headers wrapping), and the date column,
+                    being `w-full`, gets all the rest. */}
                 <table className='w-full'>
                     <thead>
-                        <tr>
+                        {/* As high as a row of bands (with its line), which the two-line headers fit into. */}
+                        <tr
+                            className='divide-x divide-stone-200 border-b border-stone-200 text-xs'
+                            style={{ height: `${ROW_HEIGHT + 1}px` }}
+                        >
                             <SortableHeader column='rowLabel' sort={sort} onSortChange={onSortChange}>
                                 {rowLabelHeader}
                             </SortableHeader>
@@ -203,10 +207,10 @@ export function FeatureBands<F>({
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='divide-y divide-stone-200'>
                         {isLoading
                             ? loadingRowLabels.map((label, rowIndex) => (
-                                  <tr key={label}>
+                                  <tr key={label} className='divide-x divide-stone-200'>
                                       <td className='text-center'>{label}</td>
                                       {rowIndex === 0 && (
                                           <td
@@ -220,7 +224,7 @@ export function FeatureBands<F>({
                                   </tr>
                               ))
                             : features.map((feature, rowIndex) => (
-                                  <tr key={featureRenderer.asString(feature)}>
+                                  <tr key={featureRenderer.asString(feature)} className='divide-x divide-stone-200'>
                                       <th className='px-2 font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
@@ -258,7 +262,8 @@ export function FeatureBands<F>({
                     </tbody>
                 </table>
             </div>
-            <div className='mt-2'>
+            {/* The table reaches the edges of the component, so its lines do; only this is padded. */}
+            <div className='border-t border-stone-200 p-2'>
                 <Pagination
                     table={paginationTable}
                     pageSizes={pageSizes}
@@ -289,13 +294,14 @@ function SortableHeader({
     const isSorted = sort.column === column;
     const shownDirection = isSorted ? sort.direction : nextSort(sort, column).direction;
     return (
-        <th className='w-px px-2 whitespace-nowrap' aria-sort={isSorted ? sort.direction : 'none'}>
+        <th className='w-px px-2' aria-sort={isSorted ? sort.direction : 'none'}>
             <button
                 type='button'
                 className='inline-flex cursor-pointer items-center gap-1 font-bold'
                 onClick={() => onSortChange(nextSort(sort, column))}
             >
-                {children}
+                {/* As narrow as the longest word: a header of two words takes two lines. */}
+                <span className='w-min'>{children}</span>
                 <span aria-hidden='true' className={isSorted ? '' : 'opacity-25'}>
                     {shownDirection === 'ascending' ? '▲' : '▼'}
                 </span>
@@ -325,12 +331,12 @@ function formatJaccardIndex(jaccardIndex: number | undefined) {
  */
 function DateHeaderLabel({ label, index, numberOfColumns }: { label: string; index: number; numberOfColumns: number }) {
     if (index === 0) {
-        return <p className='overflow-visible text-nowrap'>{label}</p>;
+        return <p className='overflow-visible pl-2 text-nowrap'>{label}</p>;
     }
     if (index === numberOfColumns - 1) {
         return (
             <div className='flex justify-end @[6rem]:justify-center'>
-                <p className='shrink-0 text-nowrap'>{label}</p>
+                <p className='shrink-0 pr-2 text-nowrap'>{label}</p>
             </div>
         );
     }
@@ -376,7 +382,7 @@ function BandRow<F>({
     ];
 
     return (
-        <div className='border-base-200 relative border-b' style={{ height: `${ROW_HEIGHT}px` }}>
+        <div className='relative' style={{ height: `${ROW_HEIGHT}px` }}>
             <svg
                 className='absolute inset-0 h-full w-full'
                 viewBox={`0 0 ${SPAN} ${ROW_HEIGHT}`}
