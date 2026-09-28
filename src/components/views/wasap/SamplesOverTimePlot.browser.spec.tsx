@@ -121,9 +121,13 @@ describe('SamplesOverTimeGrid', () => {
     });
 
     it('shows the legend, including the batch-colour and week-line explanations', async () => {
-        const { getByText } = render(<SamplesOverTimeGrid samples={[sample({})]} />);
+        const { getByText, getByTestId } = render(<SamplesOverTimeGrid samples={[sample({})]} />);
 
         await expect.element(getByText('Samples of the same batch have the same colour.')).toBeVisible();
+        // Tests run without Tailwind, so the swatches have no height here - check what they show
+        // rather than whether they're visible.
+        const swatches = [...getByTestId('batch-colour-swatches').element().children] as HTMLElement[];
+        expect(new Set(swatches.map((swatch) => swatch.style.backgroundColor)).size).toBe(3);
         await expect.element(getByText('A thick line marks the start of each week.')).toBeVisible();
         await expect.element(getByText('no sample')).toBeVisible();
     });
