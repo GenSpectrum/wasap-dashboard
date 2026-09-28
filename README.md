@@ -46,6 +46,11 @@ zod-validated (`src/config/`). `public/config.example.json` documents the
 shape; the real file is gitignored. No config present ⇒ the app renders with
 no organisms (fail loud, not a hardcoded default).
 
+An organism can name the primer scheme its data was sequenced with, under
+`amplicons`: either a vendored scheme (`{ "scheme": "artic-sars-cov-2/400/v5.3.2" }`,
+see `public/primers/`) or a primer BED file of its own (`{ "bedFile": "…" }`).
+Without it, the amplicon features are off for that organism.
+
 ### Deploying to a sub-path
 
 `vite build` reads `BASE_PATH` (e.g. `/wasap-dashboard/`) for static hosts
@@ -122,6 +127,7 @@ src/
                              GenSpectrum collections backend, cov-spectrum
                              collections
   config/                   config.json loading + schema, per-organism types
+  amplicons/                primer schemes: the `amplicons` config, BED parsing
   clientLogger.ts, types/, util/, styles/
 ```
 
