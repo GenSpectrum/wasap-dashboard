@@ -67,22 +67,30 @@ export function readSampleOverview(rows: readonly RhydbRow[], schema: SiloSchema
 export type LocationOverview = {
     name: string;
     sampleCount: number;
+    /** The reads (amplicon sequences) of all its samples together. */
+    totalReads: number;
     /** The sampling date of the most recently collected sample at this location. */
     mostRecentSampleDate: string;
 };
 
 /**
  * `readSampleOverview`'s one-entry-per-sample result, folded into one entry per location — how
- * many samples it has, and the most recent of their sampling dates. Sorted by location name.
+ * many samples it has, how many reads they have together, and the most recent of their sampling
+ * dates. Sorted by location name.
  */
 export function readLocationOverview(samples: readonly SampleOverview[]): LocationOverview[] {
-    const byLocation = new Map<string, { sampleCount: number; mostRecentSampleDate: string }>();
+    const byLocation = new Map<string, { sampleCount: number; totalReads: number; mostRecentSampleDate: string }>();
     for (const sample of samples) {
         const existing = byLocation.get(sample.locationName);
         if (existing === undefined) {
-            byLocation.set(sample.locationName, { sampleCount: 1, mostRecentSampleDate: sample.date });
+            byLocation.set(sample.locationName, {
+                sampleCount: 1,
+                totalReads: sample.reads,
+                mostRecentSampleDate: sample.date,
+            });
         } else {
             existing.sampleCount += 1;
+            existing.totalReads += sample.reads;
             if (sample.date > existing.mostRecentSampleDate) {
                 existing.mostRecentSampleDate = sample.date;
             }

@@ -305,7 +305,24 @@ function SamplesOverTimeLegend() {
                 nothing sitting under "Location" the way there would be if this started at the left
                 edge like the grid's own header does. */}
             <div className='flex flex-wrap items-center gap-4' style={{ marginLeft: LOCATION_COLUMN_WIDTH }}>
-                <span>Samples of the same batch have the same colour.</span>
+                <span className='flex items-center gap-1'>
+                    {/* Three batches' colours side by side, like three neighbouring cells of the
+                        grid, so this reads as the key to the grid's hues the way the swatches on
+                        the right are the key to its shades. */}
+                    <span className='flex' data-testid='batch-colour-swatches'>
+                        {[0, 1, 2].map((colorIndex) => (
+                            <span
+                                key={colorIndex}
+                                className='inline-block h-3 border border-stone-300 not-first:border-l-0'
+                                style={{
+                                    width: DAY_WIDTH_PX,
+                                    backgroundColor: singleGraphColorRGBAById(colorIndex, 1),
+                                }}
+                            />
+                        ))}
+                    </span>
+                    <span>Samples of the same batch have the same colour.</span>
+                </span>
                 <span>A thick line marks the start of each week.</span>
             </div>
             <div className='ml-auto flex flex-wrap items-center gap-4'>
