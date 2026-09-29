@@ -1,5 +1,6 @@
 import z from 'zod';
 
+import { ampliconsConfigSchema } from '../amplicons/ampliconsConfig';
 import {
     wasapCollectionFilterSchema,
     wasapManualFilterSchema,
@@ -105,6 +106,12 @@ export const wasapPageConfigBaseSchema = z.object({
 
     browseDataUrl: z.string(),
     browseDataDescription: z.string(),
+
+    /**
+     * The primer scheme the organism's data was sequenced with, which says where the amplicons are.
+     * Optional: without it, the amplicon features are off. See `ampliconsConfigSchema`.
+     */
+    amplicons: ampliconsConfigSchema.optional(),
 });
 export type WasapPageConfigBase = z.infer<typeof wasapPageConfigBaseSchema>;
 
