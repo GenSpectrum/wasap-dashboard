@@ -1,4 +1,6 @@
+import { type AmpliconsConfig } from '../../../../amplicons/ampliconsConfig';
 import { LocationOverviewTable } from '../LocationOverviewTable';
+import { MedianAmpliconCoverageHeatmap } from '../MedianAmpliconCoverageHeatmap';
 import { OverviewStats } from '../OverviewStats';
 import { SamplesOverTimePlot } from '../SamplesOverTimePlot';
 
@@ -8,13 +10,23 @@ import { SamplesOverTimePlot } from '../SamplesOverTimePlot';
  * is no dataset filter (location/date/granularity) here, unlike the analysis mode pages, since
  * scoping to one location would defeat a page whose point is to list every location. It doesn't
  * use `ModePageLayout` for the same reason: there is no sidebar filter to lay out next to.
+ *
+ * With a primer scheme (`amplicons`), also the median amplicon coverage per location and week, a proxy of the viral load.
  */
-export function OverviewPage() {
+export function OverviewPage({ amplicons }: { amplicons?: AmpliconsConfig }) {
     return (
         <div className='flex-1 space-y-6 bg-stone-50 p-6'>
             <OverviewStats />
             <SamplesOverTimePlot />
-            <LocationOverviewTable />
+            {amplicons === undefined ? (
+                <LocationOverviewTable />
+            ) : (
+                // Side by side where there is room for both, the table first.
+                <div className='grid items-start gap-6 xl:grid-cols-2'>
+                    <LocationOverviewTable />
+                    <MedianAmpliconCoverageHeatmap amplicons={amplicons} />
+                </div>
+            )}
         </div>
     );
 }
