@@ -65,7 +65,8 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
 
 /** The index route of `/:organismPath`, and the landing page of the organism. */
 export function WasapOverviewRoute() {
-    return <OverviewPage />;
+    const { config } = useWasapLayoutContext();
+    return <OverviewPage amplicons={config.amplicons} />;
 }
 
 /** The `/:organismPath/:mode` route. */

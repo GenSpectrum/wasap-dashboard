@@ -9,6 +9,7 @@ import {
     type ReactNode,
 } from 'react';
 
+import { OverviewPanel } from './OverviewPanel';
 import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
 import { type SampleOverview } from '../../../dataLayer/queries';
 import { Loading } from '../../../util/Loading';
@@ -32,15 +33,11 @@ import { singleGraphColorRGBAById } from '../../shared/charts/colors';
 export function SamplesOverTimePlot() {
     const { data, isPending, isError, error } = useSampleOverview();
 
-    if (isPending) {
-        return <Loading />;
-    }
-
-    if (isError) {
-        return <span>{error.message}</span>;
-    }
-
-    return <SamplesOverTimeGrid samples={data} />;
+    return (
+        <OverviewPanel title='Sampling timeline'>
+            {isPending ? <Loading /> : isError ? <span>{error.message}</span> : <SamplesOverTimeGrid samples={data} />}
+        </OverviewPanel>
+    );
 }
 
 /**
@@ -183,7 +180,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
     const datesWidth = dates.length * DAY_WIDTH_PX;
 
     return (
-        <div className='border border-stone-300 bg-white p-2'>
+        <div>
             <div className='relative'>
                 <div ref={scrollRef} className='overflow-x-auto' onScroll={updateScrollShadows}>
                     <table
@@ -199,7 +196,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                 {/* No explicit weight/colour - matches LocationOverviewTable's own
                                     unstyled "Location" header below, which is bold and dark by
                                     default rather than the muted style most of this page's labels use. */}
-                                <th className='sticky left-0 z-10 bg-white px-2 text-left align-bottom text-sm'>
+                                <th className='sticky left-0 z-10 bg-white pr-2 text-left align-bottom text-sm'>
                                     Location
                                 </th>
                                 <th className='p-0 align-bottom'>
@@ -239,7 +236,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                             {locations.map((location) => (
                                 <tr key={location}>
                                     <th
-                                        className='sticky left-0 z-10 truncate bg-white px-2 text-left text-sm font-normal'
+                                        className='sticky left-0 z-10 truncate bg-white pr-2 text-left text-sm font-normal'
                                         title={location}
                                     >
                                         {location}
@@ -300,7 +297,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
 
 function SamplesOverTimeLegend() {
     return (
-        <div className='mt-2 flex flex-wrap items-center gap-4 text-sm text-stone-500'>
+        <div className='mt-2 flex flex-wrap items-center gap-4 text-xs text-stone-600'>
             {/* Lines up with the grid's date columns, not the location names above it - so there's
                 nothing sitting under "Location" the way there would be if this started at the left
                 edge like the grid's own header does. */}
