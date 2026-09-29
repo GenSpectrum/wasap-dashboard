@@ -54,7 +54,7 @@ import { readNamedCounts } from '../queries/rows';
 const MAX_GRID_COLUMNS = 200;
 
 /** The symbol that means "the read did not call anything here". */
-function unknownSymbol(sequenceType: OverTimeSequenceType): string {
+export function unknownSymbol(sequenceType: OverTimeSequenceType): string {
     return sequenceType === 'nucleotide' ? 'N' : 'X';
 }
 
