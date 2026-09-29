@@ -1,5 +1,6 @@
 import { useMemo, useState, type FC, type ReactNode } from 'react';
 
+import { OverviewPanel } from './OverviewPanel';
 import {
     DEFAULT_LOCATION_SORT,
     nextLocationSort,
@@ -24,12 +25,20 @@ export const LocationOverviewTable: FC = () => {
         [data, sort],
     );
 
-    if (isPending || locations === undefined) {
-        return <Loading />;
+    if (isError) {
+        return (
+            <OverviewPanel title='Sampling locations'>
+                <span>{error.message}</span>
+            </OverviewPanel>
+        );
     }
 
-    if (isError) {
-        return <span>{error.message}</span>;
+    if (isPending || locations === undefined) {
+        return (
+            <OverviewPanel title='Sampling locations'>
+                <Loading />
+            </OverviewPanel>
+        );
     }
 
     const header = (column: LocationSortColumn, label: string) => (
@@ -39,26 +48,31 @@ export const LocationOverviewTable: FC = () => {
     );
 
     return (
-        <table className='w-full border border-stone-300 bg-white text-sm'>
-            <thead>
-                <tr className='border-b border-stone-300 text-left'>
-                    {header('name', 'Location')}
-                    {header('sampleCount', 'Samples')}
-                    {header('totalReads', 'Amplicon sequences')}
-                    {header('mostRecentSampleDate', 'Most recent sample')}
-                </tr>
-            </thead>
-            <tbody>
-                {locations.map((location) => (
-                    <tr key={location.name} className='border-b border-stone-200 last:border-b-0'>
-                        <td className='p-2'>{location.name}</td>
-                        <td className='p-2'>{location.sampleCount.toLocaleString('en-us')}</td>
-                        <td className='p-2'>{location.totalReads.toLocaleString('en-us')}</td>
-                        <td className='p-2'>{location.mostRecentSampleDate}</td>
+        <OverviewPanel title='Sampling locations'>
+            {/* Out to the panel's sides and bottom, so the row lines reach its border and the last row
+                is as tall as the others. The outer cells take over the panel's padding, which keeps the
+                text in line with the title. */}
+            <table className='-mx-4 -mb-4 w-[calc(100%+2rem)] text-sm [&_td:first-child]:pl-4 [&_td:last-child]:pr-4 [&_th:first-child]:pl-4 [&_th:last-child]:pr-4'>
+                <thead>
+                    <tr className='border-b border-stone-300 text-left'>
+                        {header('name', 'Location')}
+                        {header('sampleCount', 'Samples')}
+                        {header('totalReads', 'Amplicon sequences')}
+                        {header('mostRecentSampleDate', 'Most recent sample')}
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {locations.map((location) => (
+                        <tr key={location.name} className='border-b border-stone-200 last:border-b-0'>
+                            <td className='p-2'>{location.name}</td>
+                            <td className='p-2'>{location.sampleCount.toLocaleString('en-us')}</td>
+                            <td className='p-2'>{location.totalReads.toLocaleString('en-us')}</td>
+                            <td className='p-2'>{location.mostRecentSampleDate}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </OverviewPanel>
     );
 };
 
