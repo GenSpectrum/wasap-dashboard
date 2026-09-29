@@ -52,17 +52,12 @@ function CoverageInfo() {
     return (
         <div className='w-96 space-y-2 text-sm font-normal text-gray-700'>
             <p>
-                The median reads per amplicon of each sample, per location and week (the median over the week&apos;s
-                samples). A proxy for how much virus a sample had.
+                For each location and week, how many reads a typical amplicon got: the median number of reads per
+                amplicon in each sample, and the median of that over the week&apos;s samples.
             </p>
             <p>
-                With little viral RNA, most amplicons don&apos;t amplify, and those that do come from a few genomes
-                however many reads they have, so the sample&apos;s mutation proportions are unreliable. A low value can
-                also be a failed batch or a shallow sequencing run; the tooltip of a cell lists the samples and their
-                batches.
-            </p>
-            <p>
-                An amplicon&apos;s reads are counted at the middle of the part of its insert no other amplicon covers.
+                The less virus a sample has, the more amplicons fail to amplify, so a low value points to a low viral
+                load. The mutation proportions of such a sample rest on only a few virus genomes.
             </p>
         </div>
     );
