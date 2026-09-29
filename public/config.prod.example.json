@@ -50,6 +50,9 @@
                 "sampleIdColumn": "sampleId",
                 "batchIdColumn": "batchId"
             },
+            "amplicons": {
+                "scheme": "artic-sars-cov-2/400/v5.3.2"
+            },
             "predefinedVariantsSource": {
                 "collectionsUserId": 3,
                 "collectionsTag": "pango-lineage",
