@@ -121,6 +121,10 @@
             "resistanceAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-a/{{id}}",
+            "lineageTree": {
+                "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/tree.json",
+                "lineageAttribute": "clade_membership"
+            },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
             "samplingDateField": "samplingDate",
             "locationNameField": "locationName",
@@ -203,6 +207,10 @@
             "resistanceAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-b/{{id}}",
+            "lineageTree": {
+                "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/tree.json",
+                "lineageAttribute": "clade_membership"
+            },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
             "samplingDateField": "samplingDate",
             "locationNameField": "locationName",
