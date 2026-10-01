@@ -57,11 +57,6 @@
             "amplicons": {
                 "scheme": "artic-sars-cov-2/400/v5.3.2"
             },
-            "predefinedVariantsSource": {
-                "collectionsUserId": 3,
-                "collectionsTag": "pango-lineage",
-                "variantSourceLabel": "Nextclade"
-            },
             "clinicalLapis": {
                 "lapisBaseUrl": "https://lapis.cov-spectrum.org/open/v2",
                 "dateField": "date",
@@ -140,11 +135,6 @@
                 "locationNameColumn": "locationName",
                 "sampleIdColumn": "sampleId",
                 "batchIdColumn": "batchId"
-            },
-            "predefinedVariantsSource": {
-                "collectionsUserId": 3,
-                "collectionsTag": "nextclade-lineage",
-                "variantSourceLabel": "Nextclade"
             },
             "clinicalLapis": {
                 "lapisBaseUrl": "https://lapis.pathoplexus.org/rsv-a",
@@ -226,11 +216,6 @@
                 "locationNameColumn": "locationName",
                 "sampleIdColumn": "sampleId",
                 "batchIdColumn": "batchId"
-            },
-            "predefinedVariantsSource": {
-                "collectionsUserId": 3,
-                "collectionsTag": "nextclade-lineage",
-                "variantSourceLabel": "Nextclade"
             },
             "clinicalLapis": {
                 "lapisBaseUrl": "https://lapis.pathoplexus.org/rsv-b",
