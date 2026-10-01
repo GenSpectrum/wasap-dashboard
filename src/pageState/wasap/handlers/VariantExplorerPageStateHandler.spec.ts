@@ -67,7 +67,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(analysis.signatureType).toBe('computed');
     });
 
-    it('parses and encodes predefined variant filter with collectionId (round-trip)', () => {
+    it('parses and encodes predefined variant filter with lineage (round-trip)', () => {
         const url =
             '/wastewater/covid/variantExplorer?' +
             'locationName=Z%C3%BCrich+%28ZH%29&' +
@@ -75,7 +75,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'granularity=day&' +
             'sequenceType=nucleotide&' +
             'signatureType=predefined&' +
-            'collectionId=42&' +
+            'lineage=XEC&' +
             'minJaccard=0.75&' +
             'timeFrame=all&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
@@ -83,7 +83,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(filter.analysis.mode).toBe('variant');
         const { analysis } = filter;
         expect(analysis.signatureType).toBe('predefined');
-        expect(analysis.collectionId).toBe(42);
+        expect(analysis.lineage).toBe('XEC');
         expect(analysis.newMutationsOnly).toBe(false);
 
         const newUrl = handler.toUrl(filter);
@@ -98,7 +98,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'granularity=day&' +
             'sequenceType=nucleotide&' +
             'signatureType=predefined&' +
-            'collectionId=42&' +
+            'lineage=XEC&' +
             'newMutationsOnly=true&' +
             'minJaccard=0.75&' +
             'timeFrame=all&';
@@ -121,7 +121,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'granularity=day&' +
             'sequenceType=nucleotide&' +
             'signatureType=predefined&' +
-            'collectionId=42&' +
+            'lineage=XEC&' +
             'includeSublineagesForJaccard=false&' +
             'minJaccard=0.75&' +
             'timeFrame=all&';

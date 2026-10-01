@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider, type UseQueryResult } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type ReactElement } from 'react';
 import { describe, expect, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
@@ -7,7 +7,7 @@ import { render } from 'vitest-browser-react';
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
-import type { CollectionSummary } from '../../../externalData/genSpectrum/Collection';
+import { buildLineageTree } from '../../../lineageTree/lineageTree';
 import type { WasapVariantFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { GsApp } from '../../GsApp';
 
@@ -17,11 +17,19 @@ const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
 const renderWithQueryClient = (ui: ReactElement) =>
     render(<QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>);
 
-const DUMMY_COLLECTIONS: CollectionSummary[] = [
-    { id: 1, name: 'XBB.1.5', ownedBy: 1, organism: 'SARS-CoV-2', description: null, variantCount: 5, tags: [] },
-    { id: 2, name: 'JN.1', ownedBy: 1, organism: 'SARS-CoV-2', description: null, variantCount: 3, tags: [] },
-];
-const mockPredefinedQueryResult = { data: DUMMY_COLLECTIONS } as unknown as UseQueryResult<CollectionSummary[]>;
+/* eslint-disable @typescript-eslint/naming-convention -- the field names of the Auspice JSON format */
+const lineageTree = buildLineageTree(
+    {
+        name: 'NODE_0',
+        node_attrs: { lineage: { value: 'B' } },
+        children: [
+            { name: 'NODE_1', node_attrs: { lineage: { value: 'XBB.1.5' } } },
+            { name: 'NODE_2', node_attrs: { lineage: { value: 'JN.1' } } },
+        ],
+    },
+    'lineage',
+);
+/* eslint-enable @typescript-eslint/naming-convention */
 
 describe('VariantExplorerFilter', () => {
     const defaultPageState: WasapVariantFilter = {
@@ -51,6 +59,7 @@ describe('VariantExplorerFilter', () => {
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
+                    lineageTree={undefined}
                 />
             </GsApp>,
         );
@@ -75,6 +84,7 @@ describe('VariantExplorerFilter', () => {
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
+                    lineageTree={undefined}
                 />
             </GsApp>,
         );
@@ -106,6 +116,7 @@ describe('VariantExplorerFilter', () => {
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
+                    lineageTree={undefined}
                 />
             </GsApp>,
         );
@@ -130,7 +141,7 @@ describe('VariantExplorerFilter', () => {
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
-                    predefinedVariantsQueryResult={mockPredefinedQueryResult}
+                    lineageTree={lineageTree}
                 />
             </GsApp>,
         );
@@ -144,7 +155,7 @@ describe('VariantExplorerFilter', () => {
         });
     });
 
-    it('calls setPageState when selecting a predefined collection', async ({ routeMockers: { lapis } }) => {
+    it('calls setPageState when selecting a predefined lineage', async ({ routeMockers: { lapis } }) => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
@@ -155,14 +166,14 @@ describe('VariantExplorerFilter', () => {
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
-                    predefinedVariantsQueryResult={mockPredefinedQueryResult}
+                    lineageTree={lineageTree}
                 />
             </GsApp>,
         );
 
-        const collectionInput = page.getByPlaceholder('Select variant');
-        await collectionInput.click();
-        await userEvent.type(collectionInput, 'XBB');
+        const lineageInput = page.getByPlaceholder('Select variant');
+        await lineageInput.click();
+        await userEvent.type(lineageInput, 'XBB');
 
         const option = await vi.waitFor(() => getByRole('option', { name: 'XBB.1.5', exact: true }));
         await option.click();
@@ -170,7 +181,7 @@ describe('VariantExplorerFilter', () => {
         await vi.waitFor(() => {
             expect(mockSetPageState).toHaveBeenCalledWith({
                 ...predefinedPageState,
-                collectionId: 1,
+                lineage: 'XBB.1.5',
             });
         });
     });
@@ -186,7 +197,7 @@ describe('VariantExplorerFilter', () => {
                     setPageState={mockSetPageState}
                     clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
                     clinicalSequenceLapisLineageField='pangoLineage'
-                    predefinedVariantsQueryResult={mockPredefinedQueryResult}
+                    lineageTree={lineageTree}
                 />
             </GsApp>,
         );

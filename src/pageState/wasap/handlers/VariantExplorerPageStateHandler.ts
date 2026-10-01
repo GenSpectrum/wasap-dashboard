@@ -11,7 +11,6 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
 
     protected parseAnalysis(search: URLSearchParams): WasapVariantFilter {
         const defaults = this.config.filterDefaults.variant;
-        const collectionId = getStringFromSearch(search, 'collectionId');
         const includeSublineagesForJaccard = getStringFromSearch(search, 'includeSublineagesForJaccard');
 
         return {
@@ -25,7 +24,7 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
             minCount: Number(getStringFromSearch(search, 'minCount') ?? defaults.minCount),
             minJaccard: Number(getStringFromSearch(search, 'minJaccard') ?? defaults.minJaccard),
             timeFrame: (getStringFromSearch(search, 'timeFrame') as VariantTimeFrame | undefined) ?? defaults.timeFrame,
-            collectionId: collectionId !== undefined ? Number(collectionId) : defaults.collectionId,
+            lineage: getStringFromSearch(search, 'lineage') ?? defaults.lineage,
             newMutationsOnly: getStringFromSearch(search, 'newMutationsOnly') === 'true',
             includeSublineagesForJaccard:
                 includeSublineagesForJaccard !== undefined
@@ -38,11 +37,7 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
         setSearchFromString(search, 'sequenceType', analysis.sequenceType);
         setSearchFromString(search, 'signatureType', analysis.signatureType);
         if (analysis.signatureType === 'predefined') {
-            setSearchFromString(
-                search,
-                'collectionId',
-                analysis.collectionId !== undefined ? String(analysis.collectionId) : undefined,
-            );
+            setSearchFromString(search, 'lineage', analysis.lineage);
             if (analysis.newMutationsOnly) {
                 setSearchFromString(search, 'newMutationsOnly', 'true');
             }

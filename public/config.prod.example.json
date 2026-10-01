@@ -88,7 +88,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 4943
+                    "lineage": "XFG"
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -183,7 +183,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 5000
+                    "lineage": "A.D.1"
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -269,7 +269,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 5053
+                    "lineage": "B.D.E.1"
                 },
                 "resistance": {
                     "mode": "resistance",

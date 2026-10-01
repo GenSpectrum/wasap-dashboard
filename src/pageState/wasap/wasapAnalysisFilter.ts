@@ -76,7 +76,7 @@ export const wasapVariantFilterSchema = z.object({
     minJaccard: z.number(),
     timeFrame: variantTimeFrameSchema,
     // predefined signature fields
-    collectionId: z.number().optional(),
+    lineage: z.string().optional(),
     newMutationsOnly: z.boolean().optional(),
     includeSublineagesForJaccard: z.boolean().optional(),
 });
