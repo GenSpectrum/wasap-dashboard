@@ -18,13 +18,13 @@ export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, 
         <div className='flex items-center gap-1'>
             <button
                 type='button'
-                className={`btn btn-xs ${settings.hideEmptyDates ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
-                aria-label='Hide empty dates'
-                title='Hide empty dates'
-                aria-pressed={settings.hideEmptyDates}
-                onClick={() => onChange({ ...settings, hideEmptyDates: !settings.hideEmptyDates })}
+                className={`btn btn-xs ${settings.showEmptyDates ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
+                aria-label='Show empty dates'
+                title='Show empty dates'
+                aria-pressed={settings.showEmptyDates}
+                onClick={() => onChange({ ...settings, showEmptyDates: !settings.showEmptyDates })}
             >
-                <span className='iconify mdi--calendar-remove' />
+                <span className='iconify mdi--calendar-blank-outline' />
             </button>
             <button
                 type='button'

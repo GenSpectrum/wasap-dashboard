@@ -6,18 +6,18 @@ import { ViewSettingsControls } from './view-settings-controls';
 import { it } from '../../../test-extend';
 
 describe('ViewSettingsControls', () => {
-    it('toggles the empty dates with a button, hidden by default', async () => {
+    it('toggles the empty dates with a button, off by default', async () => {
         const onChange = vi.fn();
         const { getByRole } = render(
             <ViewSettingsControls settings={DEFAULT_BAND_VIEW_SETTINGS} onChange={onChange} />,
         );
 
-        const toggle = getByRole('button', { name: 'Hide empty dates' });
-        await expect.element(toggle).toHaveAttribute('aria-pressed', 'true');
+        const toggle = getByRole('button', { name: 'Show empty dates' });
+        await expect.element(toggle).toHaveAttribute('aria-pressed', 'false');
 
         await toggle.click();
 
-        expect(onChange).toHaveBeenCalledWith({ ...DEFAULT_BAND_VIEW_SETTINGS, hideEmptyDates: false });
+        expect(onChange).toHaveBeenCalledWith({ ...DEFAULT_BAND_VIEW_SETTINGS, showEmptyDates: true });
     });
 
     it('toggles the percentages with a button, off by default', async () => {

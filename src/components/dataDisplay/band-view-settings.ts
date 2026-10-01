@@ -11,14 +11,14 @@ export type BandViewSettings = {
     colorScale: ColorScale;
     /** Print the proportion of each bucket over the band. */
     showPercentages: boolean;
-    /** Leave out the dates without any samples, rather than showing them as empty columns. */
-    hideEmptyDates: boolean;
+    /** Show the dates without any samples as empty columns, rather than leaving them out. */
+    showEmptyDates: boolean;
 };
 
 export const DEFAULT_BAND_VIEW_SETTINGS: BandViewSettings = {
     colorScale: { color: 'indigo', root: 2 },
     showPercentages: false,
-    hideEmptyDates: true,
+    showEmptyDates: false,
 };
 
 const STORAGE_KEY = 'wasap.bandViewSettings';
@@ -27,7 +27,7 @@ const STORAGE_KEY = 'wasap.bandViewSettings';
 const storedSettingsSchema = z.object({
     colorScaleRoot: z.number().catch(DEFAULT_BAND_VIEW_SETTINGS.colorScale.root),
     showPercentages: z.boolean().catch(DEFAULT_BAND_VIEW_SETTINGS.showPercentages),
-    hideEmptyDates: z.boolean().catch(DEFAULT_BAND_VIEW_SETTINGS.hideEmptyDates),
+    showEmptyDates: z.boolean().catch(DEFAULT_BAND_VIEW_SETTINGS.showEmptyDates),
 });
 
 export function readStoredBandViewSettings(): BandViewSettings {
@@ -40,7 +40,7 @@ export function readStoredBandViewSettings(): BandViewSettings {
         return {
             colorScale: { ...DEFAULT_BAND_VIEW_SETTINGS.colorScale, root: parsed.colorScaleRoot },
             showPercentages: parsed.showPercentages,
-            hideEmptyDates: parsed.hideEmptyDates,
+            showEmptyDates: parsed.showEmptyDates,
         };
     } catch {
         // Storage can be unavailable (e.g. blocked by the browser), or hold something that isn't JSON.
@@ -52,7 +52,7 @@ function writeStoredSettings(settings: BandViewSettings) {
     const toStore: z.infer<typeof storedSettingsSchema> = {
         colorScaleRoot: settings.colorScale.root,
         showPercentages: settings.showPercentages,
-        hideEmptyDates: settings.hideEmptyDates,
+        showEmptyDates: settings.showEmptyDates,
     };
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));

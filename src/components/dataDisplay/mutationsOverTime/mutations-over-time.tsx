@@ -139,7 +139,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [viewSettings, setViewSettings] = useBandViewSettings();
 
-    const hideGaps = viewSettings.hideEmptyDates;
+    const hideGaps = !viewSettings.showEmptyDates;
 
     const filteredMutationCodes = useMemo(
         () =>
