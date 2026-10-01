@@ -44,7 +44,6 @@ export function parseDatasetFilter(
         locationName: getStringFromSearch(search, config.locationNameField) ?? config.defaultLocationName,
         samplingDate: samplingDate ?? defaultSamplingDate,
         granularity: (getStringFromSearch(search, 'granularity') as TemporalGranularity | undefined) ?? 'day',
-        excludeEmpty: getStringFromSearch(search, 'excludeEmpty') !== 'false',
     };
 }
 
@@ -81,9 +80,6 @@ export function setDatasetFilterSearchParams(
     // on the label.
     setSearchFromDateRange(search, config.samplingDateField, dataset.samplingDate);
     setSearchFromString(search, 'granularity', dataset.granularity);
-    if (!dataset.excludeEmpty) {
-        setSearchFromString(search, 'excludeEmpty', 'false');
-    }
 }
 
 /**
@@ -109,7 +105,7 @@ export function withDatasetFilter(
     dataset: WasapDatasetFilter,
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
 ): URLSearchParams {
-    const datasetParams = [config.locationNameField, config.samplingDateField, 'granularity', 'excludeEmpty'];
+    const datasetParams = [config.locationNameField, config.samplingDateField, 'granularity'];
 
     const result = datasetFilterSearchParams(dataset, config);
     for (const [name, value] of search) {

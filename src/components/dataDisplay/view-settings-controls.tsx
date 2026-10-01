@@ -3,6 +3,7 @@ import { type FC } from 'react';
 import { type BandViewSettings } from './band-view-settings';
 import { ColorScaleRootSelector } from './color-scale-selector';
 import { Dropdown } from './dropdown';
+import { ToggleIconButton } from './toggle-icon-button';
 
 export interface ViewSettingsControlsProps {
     settings: BandViewSettings;
@@ -10,22 +11,12 @@ export interface ViewSettingsControlsProps {
 }
 
 /**
- * The icon buttons for how the over-time data is displayed: one that toggles the percentages
- * printed over the bands, and one that opens the contrast of the color scale.
+ * The icon buttons for how the over-time data is displayed: one that opens the contrast of the color
+ * scale, and ones that toggle the percentages printed over the bands and the empty dates.
  */
 export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, onChange }) => {
     return (
         <div className='flex items-center gap-1'>
-            <button
-                type='button'
-                className={`btn btn-xs ${settings.showPercentages ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
-                aria-label='Show percentages'
-                title='Show percentages'
-                aria-pressed={settings.showPercentages}
-                onClick={() => onChange({ ...settings, showPercentages: !settings.showPercentages })}
-            >
-                <span className='iconify mdi--percent' />
-            </button>
             <Dropdown
                 buttonTitle='Contrast for small proportions'
                 icon={<span className='iconify mdi--gradient-horizontal' />}
@@ -39,6 +30,18 @@ export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, 
                     />
                 </div>
             </Dropdown>
+            <ToggleIconButton
+                title='Show percentages'
+                icon='mdi--percent'
+                pressed={settings.showPercentages}
+                onChange={(showPercentages) => onChange({ ...settings, showPercentages })}
+            />
+            <ToggleIconButton
+                title='Show empty dates'
+                icon='mdi--table-column-plus-after'
+                pressed={settings.showEmptyDates}
+                onChange={(showEmptyDates) => onChange({ ...settings, showEmptyDates })}
+            />
         </div>
     );
 };

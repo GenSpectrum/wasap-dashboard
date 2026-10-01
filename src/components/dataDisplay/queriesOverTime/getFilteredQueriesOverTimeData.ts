@@ -1,13 +1,13 @@
 import { Map2dBase, Map2dView, type Map2DContents } from '../../../util/map2d';
 import { type Temporal } from '../../../util/temporalClass';
-import { hideGapsInPlace, type ProportionValue, serializeTemporal } from '../overTime/proportionValue';
+import { removeEmptyDatesInPlace, type ProportionValue, serializeTemporal } from '../overTime/proportionValue';
 
 export type GetFilteredQueryOverTimeDataArgs = {
     data: Map2DContents<string, Temporal, ProportionValue>;
     /** See `getMeanProportions`. */
     meanProportions: Partial<Record<string, number>>;
     proportionInterval: { min: number; max: number };
-    hideGaps: boolean;
+    showEmptyDates: boolean;
 };
 
 /**
@@ -52,7 +52,7 @@ export function getFilteredQueryOverTimeData({
     data,
     meanProportions,
     proportionInterval,
-    hideGaps,
+    showEmptyDates,
 }: GetFilteredQueryOverTimeDataArgs) {
     const dataMap = new QueryOverTimeDataMap(data);
     const filteredData = new Map2dView(dataMap);
@@ -68,9 +68,9 @@ export function getFilteredQueryOverTimeData({
         filteredData.deleteRow(query);
     });
 
-    // Hide gaps (columns with no data)
-    if (hideGaps) {
-        hideGapsInPlace(filteredData);
+    // Remove the dates without any data, unless they are to be shown
+    if (!showEmptyDates) {
+        removeEmptyDatesInPlace(filteredData);
     }
 
     return filteredData;
