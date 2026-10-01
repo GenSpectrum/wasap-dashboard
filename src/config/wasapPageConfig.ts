@@ -140,13 +140,6 @@ export const manualAnalysisModeConfigSchema = z.union([
 export const variantAnalysisModeConfigSchema = z.union([
     z.object({
         variantAnalysisModeEnabled: z.literal(true),
-        predefinedVariantsSource: z
-            .object({
-                collectionsUserId: z.number(),
-                collectionsTag: z.string(),
-                variantSourceLabel: z.string().optional(),
-            })
-            .optional(),
         clinicalLapis: z.object({
             lapisBaseUrl: z.string(),
             dateField: z.string(),

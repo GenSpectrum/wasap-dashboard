@@ -12,6 +12,7 @@ import { getCollection as getGenSpectrumCollection } from '../../../externalData
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { getJaccardForMutations, getMutations, getMutationsForVariant } from '../../../externalData/lapis/getMutations';
 import { parseQuery } from '../../../externalData/lapis/parseQuery';
+import { getLineageSignature, type LineageTree } from '../../../lineageTree/lineageTree';
 import { COLLECTION_SOURCE } from '../../../pageState/wasap/wasapAnalysisFilter';
 import type {
     VariantTimeFrame,
@@ -29,16 +30,18 @@ import { type QueriesOverTimeQuery } from '../../dataDisplay/queriesOverTime/que
  * Hook that fetches and returns `WasapPageData` for the W-ASAP page,
  * depending on the analysis mode and analysis mode settings.
  * The `resistanceMutationsBySet` data, derived from server-fetched collections,
- * is needed because resistance is also a possible analysis mode.
+ * is needed because resistance is also a possible analysis mode, and the lineage tree
+ * because the predefined signatures of the variant mode come from it.
  */
 export function useWasapPageData(
     config: WasapPageConfig,
     resistanceMutationsBySet: Record<string, string[]>,
     analysis: WasapAnalysisFilter,
+    lineageTree?: LineageTree,
 ) {
-    // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it (one
-    // static config per organism), and this hook doesn't remount on organism
-    // switch, so it has to be in the key too.
+    // `config.genSpectrumOrganismName` stands in for `config` and `lineageTree` — they're
+    // 1:1 with it (one static config and one lineage tree per organism), and this hook
+    // doesn't remount on organism switch, so it has to be in the key too.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
         queryKey: [
@@ -47,7 +50,7 @@ export function useWasapPageData(
             resistanceMutationsBySet,
             config.genSpectrumOrganismName,
         ],
-        queryFn: () => fetchWasapPageData(config, resistanceMutationsBySet, analysis),
+        queryFn: () => fetchWasapPageData(config, resistanceMutationsBySet, analysis, lineageTree),
     });
 }
 
@@ -67,12 +70,13 @@ export async function fetchWasapPageData(
     config: WasapPageConfig,
     resistanceMutationsBySet: Record<string, string[]>,
     analysis: WasapAnalysisFilter,
+    lineageTree?: LineageTree,
 ): Promise<WasapPageData> {
     switch (analysis.mode) {
         case 'manual':
             return fetchManualModeData(config, analysis);
         case 'variant':
-            return fetchVariantModeData(config, analysis);
+            return fetchVariantModeData(config, analysis, lineageTree);
         case 'resistance':
             return fetchResistanceModeData(resistanceMutationsBySet, analysis);
         case 'untracked':
@@ -95,6 +99,7 @@ function fetchManualModeData(config: WasapPageConfig, analysis: WasapManualFilte
 async function fetchVariantModeData(
     config: WasapPageConfig,
     analysis: WasapVariantFilter,
+    lineageTree: LineageTree | undefined,
 ): Promise<WasapMutationsData> {
     if (!config.variantAnalysisModeEnabled) {
         throw Error("Cannot fetch data, 'variant' mode is not enabled.");
@@ -103,7 +108,7 @@ async function fetchVariantModeData(
         case 'computed':
             return fetchVariantComputedModeData(config, analysis);
         case 'predefined':
-            return fetchVariantPredefinedModeData(config, analysis);
+            return fetchVariantPredefinedModeData(config, analysis, lineageTree);
     }
 }
 
@@ -137,37 +142,26 @@ async function fetchVariantComputedModeData(
 async function fetchVariantPredefinedModeData(
     config: WasapPageConfig,
     analysis: WasapVariantFilter,
+    lineageTree: LineageTree | undefined,
 ): Promise<WasapMutationsData> {
     if (!config.variantAnalysisModeEnabled) {
         throw Error("Cannot fetch data, 'variant' mode is not enabled.");
     }
-    if (analysis.collectionId === undefined) {
-        throw new Error('No collection selected for predefined variant mode.');
+    if (analysis.lineage === undefined) {
+        throw new Error('No lineage selected for predefined variant mode.');
     }
-    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(analysis.collectionId));
-
-    // These names match the variant names hardcoded in the collection seeder.
-    let variantName: string;
-    if (analysis.sequenceType === 'nucleotide') {
-        variantName = analysis.newMutationsOnly ? 'New nucleotide substitutions' : 'Nucleotide substitutions';
-    } else {
-        variantName = analysis.newMutationsOnly ? 'New amino acid substitutions' : 'Amino acid substitutions';
+    if (lineageTree === undefined) {
+        throw new Error('There is no lineage tree to take the predefined variant from.');
+    }
+    const lineage = lineageTree.lineages.get(analysis.lineage);
+    if (lineage === undefined) {
+        throw new Error(`Lineage "${analysis.lineage}" is not in the lineage tree.`);
     }
 
-    const variant = collection.variants.find((v) => v.name === variantName);
-    if (!variant) {
-        throw new Error(`Variant "${variantName}" not found in collection ${collection.id}.`);
-    }
-    if (variant.type !== 'filterObject') {
-        throw new Error(`Variant "${variantName}" in collection ${collection.id} is not a filterObject variant.`);
-    }
+    const signature = analysis.newMutationsOnly ? lineage.definingMutations : getLineageSignature(lineage);
+    const mutations = analysis.sequenceType === 'nucleotide' ? signature.nucleotide : signature.aminoAcid;
 
-    const mutations =
-        analysis.sequenceType === 'nucleotide'
-            ? (variant.filterObject.nucleotideMutations ?? [])
-            : (variant.filterObject.aminoAcidMutations ?? []);
-
-    const lineageForJaccard = analysis.includeSublineagesForJaccard !== false ? `${collection.name}*` : collection.name;
+    const lineageForJaccard = analysis.includeSublineagesForJaccard !== false ? `${lineage.name}*` : lineage.name;
     const jaccardByMutation = await getJaccardForMutations(
         config.clinicalLapis.lapisBaseUrl,
         analysis.sequenceType,

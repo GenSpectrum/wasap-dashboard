@@ -54,11 +54,6 @@
                 "sampleIdColumn": "sampleId",
                 "batchIdColumn": "batchId"
             },
-            "predefinedVariantsSource": {
-                "collectionsUserId": 1,
-                "collectionsTag": "pango-lineage",
-                "variantSourceLabel": "Nextclade"
-            },
             "clinicalLapis": {
                 "lapisBaseUrl": "https://lapis.cov-spectrum.org/open/v2",
                 "dateField": "date",
@@ -85,7 +80,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 4944
+                    "lineage": "XFG"
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -121,6 +116,10 @@
             "resistanceAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-a/{{id}}",
+            "lineageTree": {
+                "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/tree.json",
+                "lineageAttribute": "clade_membership"
+            },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
             "samplingDateField": "samplingDate",
             "locationNameField": "locationName",
@@ -133,11 +132,6 @@
                 "locationNameColumn": "locationName",
                 "sampleIdColumn": "sampleId",
                 "batchIdColumn": "batchId"
-            },
-            "predefinedVariantsSource": {
-                "collectionsUserId": 1,
-                "collectionsTag": "nextclade-lineage",
-                "variantSourceLabel": "Nextclade"
             },
             "clinicalLapis": {
                 "lapisBaseUrl": "https://lapis.pathoplexus.org/rsv-a",
@@ -176,7 +170,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 4997
+                    "lineage": "A.D.1"
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -203,6 +197,10 @@
             "resistanceAnalysisModeEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-b/{{id}}",
+            "lineageTree": {
+                "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/tree.json",
+                "lineageAttribute": "clade_membership"
+            },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
             "samplingDateField": "samplingDate",
             "locationNameField": "locationName",
@@ -215,11 +213,6 @@
                 "locationNameColumn": "locationName",
                 "sampleIdColumn": "sampleId",
                 "batchIdColumn": "batchId"
-            },
-            "predefinedVariantsSource": {
-                "collectionsUserId": 1,
-                "collectionsTag": "nextclade-lineage",
-                "variantSourceLabel": "Nextclade"
             },
             "clinicalLapis": {
                 "lapisBaseUrl": "https://lapis.pathoplexus.org/rsv-b",
@@ -258,7 +251,7 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "collectionId": 5050
+                    "lineage": "B.D.E.1"
                 },
                 "resistance": {
                     "mode": "resistance",
