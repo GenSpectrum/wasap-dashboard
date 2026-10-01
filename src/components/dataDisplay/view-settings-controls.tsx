@@ -10,32 +10,12 @@ export interface ViewSettingsControlsProps {
 }
 
 /**
- * The icon buttons for how the over-time data is displayed: ones that toggle the empty dates and the
- * percentages printed over the bands, and one that opens the contrast of the color scale.
+ * The icon buttons for how the over-time data is displayed: one that opens the contrast of the color
+ * scale, and ones that toggle the percentages printed over the bands and the empty dates.
  */
 export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, onChange }) => {
     return (
         <div className='flex items-center gap-1'>
-            <button
-                type='button'
-                className={`btn btn-xs ${settings.showEmptyDates ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
-                aria-label='Show empty dates'
-                title='Show empty dates'
-                aria-pressed={settings.showEmptyDates}
-                onClick={() => onChange({ ...settings, showEmptyDates: !settings.showEmptyDates })}
-            >
-                <span className='iconify mdi--table-column-plus-after' />
-            </button>
-            <button
-                type='button'
-                className={`btn btn-xs ${settings.showPercentages ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
-                aria-label='Show percentages'
-                title='Show percentages'
-                aria-pressed={settings.showPercentages}
-                onClick={() => onChange({ ...settings, showPercentages: !settings.showPercentages })}
-            >
-                <span className='iconify mdi--percent' />
-            </button>
             <Dropdown
                 buttonTitle='Contrast for small proportions'
                 icon={<span className='iconify mdi--gradient-horizontal' />}
@@ -49,6 +29,26 @@ export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, 
                     />
                 </div>
             </Dropdown>
+            <button
+                type='button'
+                className={`btn btn-xs ${settings.showPercentages ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
+                aria-label='Show percentages'
+                title='Show percentages'
+                aria-pressed={settings.showPercentages}
+                onClick={() => onChange({ ...settings, showPercentages: !settings.showPercentages })}
+            >
+                <span className='iconify mdi--percent' />
+            </button>
+            <button
+                type='button'
+                className={`btn btn-xs ${settings.showEmptyDates ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
+                aria-label='Show empty dates'
+                title='Show empty dates'
+                aria-pressed={settings.showEmptyDates}
+                onClick={() => onChange({ ...settings, showEmptyDates: !settings.showEmptyDates })}
+            >
+                <span className='iconify mdi--table-column-plus-after' />
+            </button>
         </div>
     );
 };
