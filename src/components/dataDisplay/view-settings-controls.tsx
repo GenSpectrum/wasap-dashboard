@@ -3,6 +3,7 @@ import { type FC } from 'react';
 import { type BandViewSettings } from './band-view-settings';
 import { ColorScaleRootSelector } from './color-scale-selector';
 import { Dropdown } from './dropdown';
+import { ToggleIconButton } from './toggle-icon-button';
 
 export interface ViewSettingsControlsProps {
     settings: BandViewSettings;
@@ -29,26 +30,18 @@ export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, 
                     />
                 </div>
             </Dropdown>
-            <button
-                type='button'
-                className={`btn btn-xs ${settings.showPercentages ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
-                aria-label='Show percentages'
+            <ToggleIconButton
                 title='Show percentages'
-                aria-pressed={settings.showPercentages}
-                onClick={() => onChange({ ...settings, showPercentages: !settings.showPercentages })}
-            >
-                <span className='iconify mdi--percent' />
-            </button>
-            <button
-                type='button'
-                className={`btn btn-xs ${settings.showEmptyDates ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
-                aria-label='Show empty dates'
+                icon='mdi--percent'
+                pressed={settings.showPercentages}
+                onChange={(showPercentages) => onChange({ ...settings, showPercentages })}
+            />
+            <ToggleIconButton
                 title='Show empty dates'
-                aria-pressed={settings.showEmptyDates}
-                onClick={() => onChange({ ...settings, showEmptyDates: !settings.showEmptyDates })}
-            >
-                <span className='iconify mdi--table-column-plus-after' />
-            </button>
+                icon='mdi--table-column-plus-after'
+                pressed={settings.showEmptyDates}
+                onChange={(showEmptyDates) => onChange({ ...settings, showEmptyDates })}
+            />
         </div>
     );
 };
