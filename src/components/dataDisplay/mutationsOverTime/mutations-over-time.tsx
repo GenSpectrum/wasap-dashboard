@@ -21,7 +21,7 @@ import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
 import { ResizeContainer } from '../../shared/resize-container';
 import { AnnotatedMutation } from '../annotated-mutation';
-import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
+import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
@@ -138,7 +138,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     }, [wrapperRef]);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
-    const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
+    const [viewSettings, setViewSettings] = useBandViewSettings();
 
     const hideGaps = originalComponentProps.hideGaps ?? false;
 
