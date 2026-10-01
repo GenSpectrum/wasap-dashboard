@@ -36,7 +36,9 @@ export function getProportion(value: ProportionValue) {
  * Deletes columns (second axis keys, typically dates) from `view` that have no value with
  * `totalCount > 0`, i.e. time periods with no data at all.
  */
-export function hideGapsInPlace<Key1 extends object | string>(view: Map2dView<Key1, Temporal, ProportionValue>) {
+export function removeEmptyDatesInPlace<Key1 extends object | string>(
+    view: Map2dView<Key1, Temporal, ProportionValue>,
+) {
     view.getSecondAxisKeys()
         .filter((date) => {
             const vals = view.getColumn(date);

@@ -12,6 +12,7 @@ import { getAppConfig } from '../config/appConfig';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
+import { fetchLineageTree } from '../lineageTree/fetchLineageTree';
 import { Loading } from '../util/Loading';
 import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
@@ -22,7 +23,7 @@ const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], display
 /**
  * The `/:organismPath` route. Replaces `Wasap.astro`: resolves
  * the per-organism config from the URL and fetches resistance-mutation data on the
- * client (Astro did this in page frontmatter). The page of the analysis mode
+ * client (Astro did this in page frontmatter), as well as the lineage tree. The page of the analysis mode
  * (see `WasapModeRoute`) is rendered inside the `WasapLayout`.
  */
 export function WasapRoute() {
@@ -56,11 +57,39 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
         },
     });
 
-    if (isPending) {
+    const lineageTreeConfig = config.lineageTree;
+    const lineageTreeQuery = useQuery({
+        queryKey: ['lineageTree', config.genSpectrumOrganismName, lineageTreeConfig],
+        queryFn: async () => {
+            if (lineageTreeConfig === undefined) {
+                return null;
+            }
+            try {
+                return await fetchLineageTree(lineageTreeConfig);
+            } catch (error) {
+                // like the resistance data: the pages work without it, just with less to offer
+                logger.error(
+                    `Failed to fetch the lineage tree for WASAP page (organism: ${config.genSpectrumOrganismName}): ${getErrorLogMessage(error)}`,
+                );
+                return null;
+            }
+        },
+        // the tree only changes when Nextclade publishes a new dataset, and it's costly to parse
+        staleTime: Infinity,
+        gcTime: Infinity,
+    });
+
+    if (isPending || lineageTreeQuery.isPending) {
         return <Loading />;
     }
 
-    return <WasapLayout config={config} resistanceData={data ?? EMPTY_RESISTANCE_DATA} />;
+    return (
+        <WasapLayout
+            config={config}
+            resistanceData={data ?? EMPTY_RESISTANCE_DATA}
+            lineageTree={lineageTreeQuery.data ?? undefined}
+        />
+    );
 }
 
 /** The index route of `/:organismPath`, and the landing page of the organism. */

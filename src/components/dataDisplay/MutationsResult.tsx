@@ -42,7 +42,6 @@ export function MutationsResult({
                     sequenceType={sequenceType}
                     granularity={page.base.granularity}
                     displayMutations={data.displayMutations}
-                    hideGaps={page.base.excludeEmpty ? true : undefined}
                     pageSizes={[20, 50, 100, 250]}
                     meanProportionInterval={page.meanProportionInterval}
                     jaccardIndices={data.jaccardIndices}

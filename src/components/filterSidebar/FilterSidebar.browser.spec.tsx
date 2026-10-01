@@ -13,7 +13,6 @@ const base: WasapBaseFilter = {
     locationName: 'Basel',
     samplingDate: { label: 'Most recent 90 days' },
     granularity: 'day',
-    excludeEmpty: true,
     meanProportion: { lower: 0.05, upper: 0.95 },
 };
 

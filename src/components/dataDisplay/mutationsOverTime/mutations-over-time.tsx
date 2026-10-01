@@ -21,7 +21,7 @@ import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
 import { ResizeContainer } from '../../shared/resize-container';
 import { AnnotatedMutation } from '../annotated-mutation';
-import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
+import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
@@ -45,7 +45,6 @@ const mutationOverTimeSchema = z.object({
     displayMutations: displayMutationsSchema.optional(),
     /** Only mutations whose mean proportion over the time range lies within this interval are shown. */
     meanProportionInterval: meanProportionIntervalSchema,
-    hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
@@ -138,9 +137,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     }, [wrapperRef]);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
-    const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
-
-    const hideGaps = originalComponentProps.hideGaps ?? false;
+    const [viewSettings, setViewSettings] = useBandViewSettings();
 
     const filteredMutationCodes = useMemo(
         () =>
@@ -197,7 +194,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
         requestedDateRanges,
         totalCountsByBucket,
         pageMutationCodes,
-        hideGaps,
+        viewSettings.showEmptyDates,
     );
 
     const mutationRenderer: FeatureRenderer<Substitution | Deletion> = useMemo(

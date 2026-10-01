@@ -14,7 +14,7 @@ import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
 import { ResizeContainer } from '../../shared/resize-container';
-import { DEFAULT_BAND_VIEW_SETTINGS } from '../band-view-settings';
+import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
@@ -57,7 +57,6 @@ const queriesOverTimeSchema = z.object({
     granularity: temporalGranularitySchema,
     /** Only queries whose mean proportion over the time range lies within this interval are shown. */
     meanProportionInterval: meanProportionIntervalSchema,
-    hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
@@ -128,8 +127,8 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
     const [pageIndex, setPageIndex] = useState(0);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
-    const [viewSettings, setViewSettings] = useState(DEFAULT_BAND_VIEW_SETTINGS);
-    const hideGaps = originalComponentProps.hideGaps ?? false;
+    const [viewSettings, setViewSettings] = useBandViewSettings();
+    const { showEmptyDates } = viewSettings;
 
     const meanProportions = useMemo(() => getMeanProportions(queryOverTimeData), [queryOverTimeData]);
 
@@ -138,9 +137,9 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
             data: queryOverTimeData,
             meanProportions,
             proportionInterval,
-            hideGaps,
+            showEmptyDates,
         });
-    }, [queryOverTimeData, meanProportions, proportionInterval, hideGaps]);
+    }, [queryOverTimeData, meanProportions, proportionInterval, showEmptyDates]);
 
     const sortedQueries = useMemo(
         () => sortRowLabels(filteredData.getFirstAxisKeys(), sort, { meanProportions }),

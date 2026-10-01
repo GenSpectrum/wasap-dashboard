@@ -22,7 +22,7 @@ import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
 } from '../../components/dataDisplay/mutationsOverTime/MutationOverTimeData';
-import { hideGapsInPlace, type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
+import { removeEmptyDatesInPlace, type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { UserFacingError } from '../../components/shared/error-display';
 import { sortSubstitutionsAndDeletions } from '../../components/shared/sort/sortSubstitutionsAndDeletions';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../types/dashboardComponents';
@@ -167,7 +167,7 @@ export function useMutationsOverTimePage(
     requestedDateRanges: TemporalClass[],
     totalCountsByBucket: number[],
     visibleMutationCodes: string[],
-    hideGaps: boolean,
+    showEmptyDates: boolean,
 ): MutationsOverTimePage {
     const connection = useConnection();
     const schema = useSiloSchema();
@@ -237,7 +237,7 @@ export function useMutationsOverTimePage(
               )
             : null;
         return {
-            data: matrix === null ? null : applyHideGaps(matrix, hideGaps),
+            data: matrix === null ? null : removeEmptyDatesUnlessShown(matrix, showEmptyDates),
             isLoading: !allAnswered,
             error: undefined,
             progress: { counted, total: targets.length },
@@ -251,7 +251,7 @@ export function useMutationsOverTimePage(
         schemaNucleotideSequence,
         requestedDateRanges,
         totalCountsByBucket,
-        hideGaps,
+        showEmptyDates,
         counted,
         targets.length,
     ]);
@@ -467,13 +467,16 @@ export function buildMatrix(
     return new BaseMutationOverTimeDataMap(contents);
 }
 
-/** A view with empty date columns removed, or the matrix unchanged when `hideGaps` is off. */
-export function applyHideGaps(data: MutationOverTimeDataMap, hideGaps: boolean): MutationOverTimeDataMap {
-    if (!hideGaps) {
+/** A view with empty date columns removed, or the matrix unchanged when `showEmptyDates` is on. */
+export function removeEmptyDatesUnlessShown(
+    data: MutationOverTimeDataMap,
+    showEmptyDates: boolean,
+): MutationOverTimeDataMap {
+    if (showEmptyDates) {
         return data;
     }
     const view = new Map2dView(data);
-    hideGapsInPlace(view);
+    removeEmptyDatesInPlace(view);
     return view;
 }
 
