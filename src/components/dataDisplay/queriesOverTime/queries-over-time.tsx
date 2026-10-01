@@ -128,7 +128,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [viewSettings, setViewSettings] = useBandViewSettings();
-    const hideGaps = !viewSettings.showEmptyDates;
+    const { showEmptyDates } = viewSettings;
 
     const meanProportions = useMemo(() => getMeanProportions(queryOverTimeData), [queryOverTimeData]);
 
@@ -137,9 +137,9 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
             data: queryOverTimeData,
             meanProportions,
             proportionInterval,
-            hideGaps,
+            showEmptyDates,
         });
-    }, [queryOverTimeData, meanProportions, proportionInterval, hideGaps]);
+    }, [queryOverTimeData, meanProportions, proportionInterval, showEmptyDates]);
 
     const sortedQueries = useMemo(
         () => sortRowLabels(filteredData.getFirstAxisKeys(), sort, { meanProportions }),

@@ -139,8 +139,6 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [viewSettings, setViewSettings] = useBandViewSettings();
 
-    const hideGaps = !viewSettings.showEmptyDates;
-
     const filteredMutationCodes = useMemo(
         () =>
             getFilteredMutationCodes({
@@ -196,7 +194,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
         requestedDateRanges,
         totalCountsByBucket,
         pageMutationCodes,
-        hideGaps,
+        viewSettings.showEmptyDates,
     );
 
     const mutationRenderer: FeatureRenderer<Substitution | Deletion> = useMemo(

@@ -121,7 +121,7 @@ src/
     hooks/                   the Tier-1 + over-time React Query hooks
   query/                    legacy LAPIS-era serializer helpers, slimmed down
                              but still shared by the over-time views
-                             (ProportionValue, getProportion, hideGapsInPlace)
+                             (ProportionValue, getProportion, removeEmptyDatesInPlace)
   externalData/             everything that talks to a remote HTTP API: clinical
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
