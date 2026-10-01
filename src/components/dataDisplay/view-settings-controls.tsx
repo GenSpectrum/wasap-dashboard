@@ -24,7 +24,7 @@ export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, 
                 aria-pressed={settings.showEmptyDates}
                 onClick={() => onChange({ ...settings, showEmptyDates: !settings.showEmptyDates })}
             >
-                <span className='iconify mdi--calendar-blank-outline' />
+                <span className='iconify mdi--table-column-plus-after' />
             </button>
             <button
                 type='button'
