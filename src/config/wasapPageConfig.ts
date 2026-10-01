@@ -1,6 +1,7 @@
 import z from 'zod';
 
 import { ampliconsConfigSchema } from '../amplicons/ampliconsConfig';
+import { lineageTreeConfigSchema } from '../lineageTree/lineageTreeConfig';
 import {
     wasapCollectionFilterSchema,
     wasapManualFilterSchema,
@@ -112,6 +113,12 @@ export const wasapPageConfigBaseSchema = z.object({
      * Optional: without it, the amplicon features are off. See `ampliconsConfigSchema`.
      */
     amplicons: ampliconsConfigSchema.optional(),
+
+    /**
+     * The Nextclade reference tree to take the lineage tree of the organism from, which the app loads
+     * before showing a page. Optional: without it, there is no lineage tree.
+     */
+    lineageTree: lineageTreeConfigSchema.optional(),
 });
 export type WasapPageConfigBase = z.infer<typeof wasapPageConfigBaseSchema>;
 
