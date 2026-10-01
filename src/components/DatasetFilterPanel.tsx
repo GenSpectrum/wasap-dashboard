@@ -29,8 +29,7 @@ export function DatasetFilterPanel({
 
     return (
         // The date column is the widest: the select and the two dates of the date filter are in one row, which
-        // needs about 24rem. The flex bases are what the columns wrap at on a narrow page. The checkbox is
-        // aligned to the bottom, so that it sits next to the inputs, also when it wraps onto a row of its own.
+        // needs about 24rem. The flex bases are what the columns wrap at on a narrow page.
         <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-4 p-6'>
             <div className='min-w-0 flex-[1_1_11rem]'>
                 <LabeledField label='Sampling location'>
@@ -69,19 +68,6 @@ export function DatasetFilterPanel({
                     ]}
                     onChange={(granularity) => onChange({ ...value, granularity })}
                 />
-            </div>
-
-            <div className='self-end pb-2.5 text-sm whitespace-nowrap'>
-                <input
-                    className='accent-primary'
-                    type='checkbox'
-                    id='excludeEmpty'
-                    checked={value.excludeEmpty}
-                    onChange={(e) => onChange({ ...value, excludeEmpty: e.target.checked })}
-                />
-                <label htmlFor='excludeEmpty' className='pl-2'>
-                    Hide empty dates
-                </label>
             </div>
         </section>
     );

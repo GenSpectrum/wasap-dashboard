@@ -57,7 +57,6 @@ const queriesOverTimeSchema = z.object({
     granularity: temporalGranularitySchema,
     /** Only queries whose mean proportion over the time range lies within this interval are shown. */
     meanProportionInterval: meanProportionIntervalSchema,
-    hideGaps: z.boolean().optional(),
     width: z.string(),
     height: z.string().optional(),
     pageSizes: pageSizesSchema,
@@ -129,7 +128,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [viewSettings, setViewSettings] = useBandViewSettings();
-    const hideGaps = originalComponentProps.hideGaps ?? false;
+    const hideGaps = viewSettings.hideEmptyDates;
 
     const meanProportions = useMemo(() => getMeanProportions(queryOverTimeData), [queryOverTimeData]);
 

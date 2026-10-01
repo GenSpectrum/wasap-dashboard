@@ -173,7 +173,6 @@ export type WasapBaseFilter = {
     locationName?: string;
     samplingDate?: DateRangeOption;
     granularity: TemporalGranularity;
-    excludeEmpty: boolean;
     meanProportion: WasapMeanProportion;
 };
 

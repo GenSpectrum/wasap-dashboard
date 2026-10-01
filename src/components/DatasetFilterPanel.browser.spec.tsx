@@ -26,7 +26,6 @@ const dataset: WasapDatasetFilter = {
     locationName: DEFAULT_LOCATION,
     samplingDate: { label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' },
     granularity: 'day',
-    excludeEmpty: true,
 };
 
 /** Stands in for the URL: a filter without a location comes back with the default one, like when it is parsed. */

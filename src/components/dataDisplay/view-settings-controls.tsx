@@ -10,12 +10,22 @@ export interface ViewSettingsControlsProps {
 }
 
 /**
- * The icon buttons for how the over-time data is displayed: one that toggles the percentages
- * printed over the bands, and one that opens the contrast of the color scale.
+ * The icon buttons for how the over-time data is displayed: ones that toggle the empty dates and the
+ * percentages printed over the bands, and one that opens the contrast of the color scale.
  */
 export const ViewSettingsControls: FC<ViewSettingsControlsProps> = ({ settings, onChange }) => {
     return (
         <div className='flex items-center gap-1'>
+            <button
+                type='button'
+                className={`btn btn-xs ${settings.hideEmptyDates ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}
+                aria-label='Hide empty dates'
+                title='Hide empty dates'
+                aria-pressed={settings.hideEmptyDates}
+                onClick={() => onChange({ ...settings, hideEmptyDates: !settings.hideEmptyDates })}
+            >
+                <span className='iconify mdi--calendar-remove' />
+            </button>
             <button
                 type='button'
                 className={`btn btn-xs ${settings.showPercentages ? 'border-neutral-600 bg-neutral-600 text-white' : ''}`}

@@ -30,14 +30,11 @@ const serialize = (base: WasapBaseFilter) => {
 describe('baseFilter', () => {
     describe('parseBaseFilter', () => {
         it('parses all fields', () => {
-            const base = parse(
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false',
-            );
+            const base = parse('locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week');
 
             expect(base.locationName).toBe('Berlin');
             expect(base.samplingDate).toEqual({ label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' });
             expect(base.granularity).toBe('week');
-            expect(base.excludeEmpty).toBe(false);
         });
 
         it('defaults the fields that are missing from the URL', () => {
@@ -46,7 +43,6 @@ describe('baseFilter', () => {
             expect(base.locationName).toBe('Zürich (ZH)');
             expect(base.samplingDate).toEqual({ label: DEFAULT_RECENT_DAYS_LABEL });
             expect(base.granularity).toBe('day');
-            expect(base.excludeEmpty).toBe(true);
         });
 
         it('reads the location from the configured field', () => {
@@ -57,11 +53,6 @@ describe('baseFilter', () => {
             );
 
             expect(base.locationName).toBe('Basel');
-        });
-
-        it('parses excludeEmpty=false as the boolean false', () => {
-            expect(parse('excludeEmpty=false').excludeEmpty).toBe(false);
-            expect(parse('excludeEmpty=true').excludeEmpty).toBe(true);
         });
     });
 
@@ -128,14 +119,9 @@ describe('baseFilter', () => {
     });
 
     describe('setBaseFilterSearchParams', () => {
-        it('encodes excludeEmpty=false but omits it when true', () => {
-            expect(serialize(parse('excludeEmpty=false'))).toContain('excludeEmpty=false');
-            expect(serialize(parse(''))).not.toContain('excludeEmpty');
-        });
-
         it('round-trips a fully specified base filter', () => {
             const query =
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false&meanProportionLower=0.2&meanProportionUpper=0.7';
+                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7';
 
             expect(serialize(parse(query))).toBe(new URLSearchParams(query).toString());
         });
@@ -144,11 +130,11 @@ describe('baseFilter', () => {
     describe('datasetFilterSearchParams', () => {
         it('has the dataset filter but not the mean proportion', () => {
             const base = parse(
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false&meanProportionLower=0.2&meanProportionUpper=0.7',
+                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7',
             );
 
             expect(datasetFilterSearchParams(base, config).toString()).toBe(
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false',
+                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week',
             );
         });
 
@@ -167,7 +153,7 @@ describe('baseFilter', () => {
             const search = new URLSearchParams(
                 'locationName=Berlin&granularity=week&resistanceSet=Spike&meanProportionLower=0.2',
             );
-            const dataset = { ...parse('locationName=Basel&excludeEmpty=false') };
+            const dataset = { ...parse('locationName=Basel') };
 
             const result = withDatasetFilter(search, dataset, config);
 
@@ -175,19 +161,9 @@ describe('baseFilter', () => {
                 locationName: 'Basel',
                 samplingDate: 'Most recent 90 days',
                 granularity: 'day',
-                excludeEmpty: 'false',
                 resistanceSet: 'Spike',
                 meanProportionLower: '0.2',
             });
-        });
-
-        it('drops a setting that the new dataset filter does not have any more', () => {
-            const search = new URLSearchParams('excludeEmpty=false&mutations=A1T');
-
-            const result = withDatasetFilter(search, parse(''), config);
-
-            expect(result.has('excludeEmpty')).toBe(false);
-            expect(result.get('mutations')).toBe('A1T');
         });
     });
 });
