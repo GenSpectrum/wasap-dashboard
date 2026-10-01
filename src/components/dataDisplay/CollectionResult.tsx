@@ -44,7 +44,6 @@ export function CollectionResult({
                 filter={page.filter}
                 queries={data.collection.queries}
                 granularity={page.base.granularity}
-                hideGaps={page.base.excludeEmpty ? true : undefined}
                 pageSizes={[20, 50, 100, 250]}
                 meanProportionInterval={page.meanProportionInterval}
             />

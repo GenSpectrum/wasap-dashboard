@@ -7,7 +7,7 @@ import { it } from '../../../test-extend';
 import { setAppConfigForTesting } from '../../config/appConfig';
 import { testConfig, testConfigWithCollection } from '../../pageState/wasap/wasapTestConfig';
 
-const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week&excludeEmpty=false';
+const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
 
 function renderTabs(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
     return render(

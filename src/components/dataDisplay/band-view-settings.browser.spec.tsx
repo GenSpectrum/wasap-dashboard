@@ -20,11 +20,13 @@ describe('band view settings', () => {
             first.result.current[1]({
                 colorScale: { ...DEFAULT_BAND_VIEW_SETTINGS.colorScale, root: 3.5 },
                 showPercentages: true,
+                showEmptyDates: true,
             }),
         );
 
         expect(second.result.current[0].showPercentages).toBe(true);
         expect(second.result.current[0].colorScale.root).toBe(3.5);
+        expect(second.result.current[0].showEmptyDates).toBe(true);
         expect(readStoredBandViewSettings()).toEqual(second.result.current[0]);
     });
 
