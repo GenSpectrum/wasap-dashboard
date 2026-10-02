@@ -9,10 +9,10 @@ import {
     type ReactNode,
 } from 'react';
 
-import { OverviewPanel } from './OverviewPanel';
 import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
 import { type SampleOverview } from '../../../dataLayer/queries';
 import { Loading } from '../../../util/Loading';
+import { TitledPanel } from '../../shared/TitledPanel';
 import { singleGraphColorRGBAById } from '../../shared/charts/colors';
 
 /**
@@ -34,9 +34,9 @@ export function SamplesOverTimePlot() {
     const { data, isPending, isError, error } = useSampleOverview();
 
     return (
-        <OverviewPanel title='Sampling timeline'>
+        <TitledPanel title='Sampling timeline'>
             {isPending ? <Loading /> : isError ? <span>{error.message}</span> : <SamplesOverTimeGrid samples={data} />}
-        </OverviewPanel>
+        </TitledPanel>
     );
 }
 
