@@ -10,9 +10,8 @@ import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { UntrackedFilter } from '../../../filterSidebar/filters/UntrackedFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { useWasapLayoutContext } from '../WasapLayout';
+import { useUntrackedMutations } from './untrackedMutations';
 import { useSiloReadFilter } from '../useSiloReadFilter';
-import { useWasapPageData } from '../useWasapPageData';
 
 export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracked'> }) {
     const pageStateHandler = useMemo(() => new UntrackedPageStateHandler(config), [config]);
@@ -20,14 +19,8 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { resistanceData, lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
-    const { data, isPending, isError } = useWasapPageData(
-        config,
-        resistanceData.displayMutationsBySet,
-        analysis,
-        lineageTree,
-    );
+    const { data, isPending, isError } = useUntrackedMutations(config, analysis);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
@@ -62,9 +55,9 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
             }
         >
             <WasapResults data={data} isError={isError} isPending={isPending || isFilterPending}>
-                {(data) => (
+                {(displayMutations) => (
                     <MutationsResult
-                        data={data}
+                        displayMutations={displayMutations}
                         analysis={analysis}
                         filter={filter}
                         granularity={base.granularity}

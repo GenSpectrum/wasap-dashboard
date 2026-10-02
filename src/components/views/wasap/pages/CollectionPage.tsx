@@ -10,9 +10,8 @@ import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { CollectionAnalysisFilter } from '../../../filterSidebar/filters/CollectionAnalysisFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { useWasapLayoutContext } from '../WasapLayout';
+import { useCollectionQueries } from './collectionQueries';
 import { useSiloReadFilter } from '../useSiloReadFilter';
-import { useWasapPageData } from '../useWasapPageData';
 
 export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);
@@ -20,14 +19,8 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { resistanceData, lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
-    const { data, isPending, isError } = useWasapPageData(
-        config,
-        resistanceData.displayMutationsBySet,
-        analysis,
-        lineageTree,
-    );
+    const { data, isPending, isError } = useCollectionQueries(config, analysis.source, analysis.collectionId);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
@@ -61,33 +54,31 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
                 </FilterSidebar>
             }
         >
-            <WasapResults
-                data={data}
-                isError={isError}
-                isPending={isPending || isFilterPending}
-                placeholder={
-                    analysis.collectionId === undefined ? (
-                        <NothingSelected title='No collection selected'>
-                            Please select a collection from the filter panel.
-                        </NothingSelected>
-                    ) : undefined
-                }
-            >
-                {(data) => (
-                    <CollectionResult
-                        data={data}
-                        filter={filter}
-                        granularity={base.granularity}
-                        meanProportionInterval={meanProportionInterval}
-                        sourceLabel={isCovSpectrum ? 'CoV-Spectrum collection' : 'GenSpectrum collection'}
-                        getCollectionUrl={(id) =>
-                            isCovSpectrum
-                                ? `https://cov-spectrum.org/collections/${id}`
-                                : config.genSpectrumCollectionLinkOut.replace('{{id}}', encodeURIComponent(String(id)))
-                        }
-                    />
-                )}
-            </WasapResults>
+            {analysis.collectionId === undefined ? (
+                <NothingSelected title='No collection selected'>
+                    Please select a collection from the filter panel.
+                </NothingSelected>
+            ) : (
+                <WasapResults data={data} isError={isError} isPending={isPending || isFilterPending}>
+                    {(data) => (
+                        <CollectionResult
+                            data={data}
+                            filter={filter}
+                            granularity={base.granularity}
+                            meanProportionInterval={meanProportionInterval}
+                            sourceLabel={isCovSpectrum ? 'CoV-Spectrum collection' : 'GenSpectrum collection'}
+                            getCollectionUrl={(id) =>
+                                isCovSpectrum
+                                    ? `https://cov-spectrum.org/collections/${id}`
+                                    : config.genSpectrumCollectionLinkOut.replace(
+                                          '{{id}}',
+                                          encodeURIComponent(String(id)),
+                                      )
+                            }
+                        />
+                    )}
+                </WasapResults>
+            )}
         </ModePageLayout>
     );
 }

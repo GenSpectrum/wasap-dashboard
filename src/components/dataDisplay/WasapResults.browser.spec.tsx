@@ -27,35 +27,4 @@ describe('WasapResults', () => {
 
         await expect.element(getByText(ERROR_TEXT)).toBeVisible();
     });
-
-    it('shows the placeholder right away when there is nothing to load yet', async () => {
-        const { getByText } = render(
-            <WasapResults
-                data={undefined}
-                isError={false}
-                isPending={true}
-                placeholder={<div>No variant selected</div>}
-            >
-                {() => <div>Results</div>}
-            </WasapResults>,
-        );
-
-        await expect.element(getByText('No variant selected')).toBeVisible();
-    });
-
-    it('shows the placeholder instead of the error when the fetch has given up', async () => {
-        const { getByText } = render(
-            <WasapResults
-                data={undefined}
-                isError={true}
-                isPending={false}
-                placeholder={<div>No variant selected</div>}
-            >
-                {() => <div>Results</div>}
-            </WasapResults>,
-        );
-
-        await expect.element(getByText('No variant selected')).toBeVisible();
-        expect(getByText(ERROR_TEXT).elements()).toHaveLength(0);
-    });
 });

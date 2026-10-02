@@ -3,7 +3,7 @@ import { NothingSelected } from './NothingSelected';
 import { type MeanProportionInterval, QueriesOverTime } from './queriesOverTime/queries-over-time';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
-import { type WasapPageData } from '../views/wasap/useWasapPageData';
+import { type CollectionQueries } from '../views/wasap/pages/collectionQueries';
 
 /**
  * The queries of a collection over time, and what there is to know about the collection.
@@ -16,7 +16,7 @@ export function CollectionResult({
     sourceLabel,
     getCollectionUrl,
 }: {
-    data: WasapPageData;
+    data: CollectionQueries;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
     meanProportionInterval: MeanProportionInterval;
@@ -25,10 +25,6 @@ export function CollectionResult({
     /** The link to the collection on its own site. */
     getCollectionUrl: (collectionId: number) => string;
 }) {
-    if (data.type !== 'collection') {
-        throw Error(`Expected a collection, but the data is of type '${data.type}'.`);
-    }
-
     if (data.collection.queries.length === 0) {
         return (
             <NothingSelected title='No valid variants'>

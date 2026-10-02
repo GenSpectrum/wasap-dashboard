@@ -7,30 +7,24 @@ import { genesOf, useOverTimeMetadata } from '../../dataLayer/hooks/mutationsOve
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type ResistanceProportionRange, type WasapResistanceFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
-import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**
  * The mutations of a resistance set over time, with tabs above to only show those in a range
  * of the mean proportion. Every tab says how many mutations of the set are in its range.
  */
 export function ResistanceResult({
-    data,
+    displayMutations,
     analysis,
     filter,
     granularity,
     onProportionRangeChange,
 }: {
-    data: WasapPageData;
+    displayMutations: string[];
     analysis: WasapResistanceFilter;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
     onProportionRangeChange: (proportionRange: ResistanceProportionRange) => void;
 }) {
-    if (data.type !== 'mutations') {
-        throw Error(`Expected mutations, but the data is of type '${data.type}'.`);
-    }
-
-    const { displayMutations } = data;
     const sequenceType = analysis.sequenceType;
     const sequenceNames = useMemo(() => genesOf(displayMutations, sequenceType), [displayMutations, sequenceType]);
 
@@ -50,7 +44,7 @@ export function ResistanceResult({
         // One block, so the tabs sit right on top of the mutations over time, without the gap
         // that the results have between them otherwise.
         <div>
-            {displayMutations?.length !== 0 && (
+            {displayMutations.length !== 0 && (
                 <ProportionRangeTabs
                     value={analysis.proportionRange}
                     counts={counts}
@@ -58,7 +52,7 @@ export function ResistanceResult({
                 />
             )}
             <MutationsResult
-                data={data}
+                displayMutations={displayMutations}
                 analysis={analysis}
                 filter={filter}
                 granularity={granularity}

@@ -3,13 +3,12 @@ import { useMemo } from 'react';
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
 import { usePageState } from '../../../../pageState/usePageState';
 import { ResistancePageStateHandler } from '../../../../pageState/wasap/handlers/ResistancePageStateHandler';
+import { Loading } from '../../../../util/Loading';
 import { ResistanceResult } from '../../../dataDisplay/ResistanceResult';
-import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { ResistanceMutationsFilter } from '../../../filterSidebar/filters/ResistanceMutationsFilter';
 import { ModePageLayout } from '../ModePageLayout';
 import { useWasapLayoutContext } from '../WasapLayout';
 import { useSiloReadFilter } from '../useSiloReadFilter';
-import { useWasapPageData } from '../useWasapPageData';
 
 export function ResistancePage({ config }: { config: WasapPageConfigFor<'resistance'> }) {
     const pageStateHandler = useMemo(() => new ResistancePageStateHandler(config), [config]);
@@ -17,13 +16,11 @@ export function ResistancePage({ config }: { config: WasapPageConfigFor<'resista
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { resistanceData, lineageTree } = useWasapLayoutContext();
+    const { resistanceData } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
-    const { data, isPending, isError } = useWasapPageData(
-        config,
-        resistanceData.displayMutationsBySet,
-        analysis,
-        lineageTree,
+    const displayMutations = useMemo(
+        () => resistanceData.displayMutationsBySet[analysis.resistanceSet] ?? [],
+        [resistanceData, analysis.resistanceSet],
     );
 
     return (
@@ -39,22 +36,22 @@ export function ResistancePage({ config }: { config: WasapPageConfigFor<'resista
                 />
             }
         >
-            <WasapResults data={data} isError={isError} isPending={isPending || isFilterPending}>
-                {(data) => (
-                    <ResistanceResult
-                        data={data}
-                        analysis={analysis}
-                        filter={filter}
-                        granularity={base.granularity}
-                        onProportionRangeChange={(proportionRange) =>
-                            setPageState((pageState) => ({
-                                ...pageState,
-                                analysis: { ...pageState.analysis, proportionRange },
-                            }))
-                        }
-                    />
-                )}
-            </WasapResults>
+            {isFilterPending ? (
+                <Loading />
+            ) : (
+                <ResistanceResult
+                    displayMutations={displayMutations}
+                    analysis={analysis}
+                    filter={filter}
+                    granularity={base.granularity}
+                    onProportionRangeChange={(proportionRange) =>
+                        setPageState((pageState) => ({
+                            ...pageState,
+                            analysis: { ...pageState.analysis, proportionRange },
+                        }))
+                    }
+                />
+            )}
         </ModePageLayout>
     );
 }

@@ -5,14 +5,14 @@ import { type MeanProportionInterval, MutationsOverTime } from './mutationsOverT
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type WasapAnalysisFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
-import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**
  * The mutations over time of a mode that selects mutations, or a note that
  * none were selected. What the mode has to say about them besides goes below (`children`).
  */
 export function MutationsResult({
-    data,
+    displayMutations,
+    jaccardIndices,
     analysis,
     filter,
     granularity,
@@ -20,7 +20,9 @@ export function MutationsResult({
     meanProportionInterval,
     children,
 }: {
-    data: WasapPageData;
+    /** All mutations if `undefined`. */
+    displayMutations: string[] | undefined;
+    jaccardIndices?: Record<string, number>;
     /** For the note when there are no mutations, which says what to change to get some. */
     analysis: WasapAnalysisFilter;
     filter: SiloReadFilter;
@@ -29,13 +31,9 @@ export function MutationsResult({
     meanProportionInterval: MeanProportionInterval;
     children?: ReactNode;
 }) {
-    if (data.type !== 'mutations') {
-        throw Error(`Expected mutations, but the data is of type '${data.type}'.`);
-    }
-
     return (
         <>
-            {data.displayMutations?.length === 0 ? (
+            {displayMutations?.length === 0 ? (
                 <NoDataHelperText analysisFilter={analysis} />
             ) : (
                 <MutationsOverTime
@@ -43,10 +41,10 @@ export function MutationsResult({
                     filter={filter}
                     sequenceType={sequenceType}
                     granularity={granularity}
-                    displayMutations={data.displayMutations}
+                    displayMutations={displayMutations}
                     pageSizes={[20, 50, 100, 250]}
                     meanProportionInterval={meanProportionInterval}
-                    jaccardIndices={data.jaccardIndices}
+                    jaccardIndices={jaccardIndices}
                 />
             )}
             {children}
