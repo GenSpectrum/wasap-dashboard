@@ -1,8 +1,8 @@
-import { type AmpliconsConfig } from '../../../../amplicons/ampliconsConfig';
-import { LocationOverviewTable } from '../LocationOverviewTable';
-import { MedianAmpliconCoverageHeatmap } from '../MedianAmpliconCoverageHeatmap';
-import { OverviewStats } from '../OverviewStats';
-import { SamplesOverTimePlot } from '../SamplesOverTimePlot';
+import { type AmpliconsConfig } from '../../amplicons/ampliconsConfig';
+import { LocationOverviewTable } from '../dataDisplay/LocationOverviewTable';
+import { MedianAmpliconCoverageHeatmap } from '../dataDisplay/MedianAmpliconCoverageHeatmap';
+import { OverviewStats } from '../dataDisplay/OverviewStats';
+import { SamplesOverTimePlot } from '../dataDisplay/SamplesOverTimePlot';
 
 /**
  * The landing page of an organism: whole-instance stats, which location was sampled on which

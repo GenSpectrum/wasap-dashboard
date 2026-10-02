@@ -7,10 +7,10 @@ import {
     type LocationSort,
     type LocationSortColumn,
 } from './locationSort';
-import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
-import { readLocationOverview } from '../../../dataLayer/queries';
-import { Loading } from '../../../util/Loading';
-import { TitledPanel } from '../../shared/TitledPanel';
+import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
+import { readLocationOverview } from '../../dataLayer/queries';
+import { Loading } from '../../util/Loading';
+import { TitledPanel } from '../shared/TitledPanel';
 
 /**
  * One row per location: its name, how many samples were collected there, how many amplicon

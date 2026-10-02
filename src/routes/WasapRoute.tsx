@@ -2,17 +2,23 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { getClientLogger } from '../clientLogger';
-import { EnabledModeRoute } from './wasapModeRoutes';
+import { NotFoundPage } from './NotFoundPage';
+import { CollectionPage } from '../components/pages/CollectionPage';
+import { DeconvolutionPage } from '../components/pages/DeconvolutionPage';
+import { ManualPage } from '../components/pages/ManualPage';
+import { OverviewPage } from '../components/pages/OverviewPage';
+import { ResistancePage } from '../components/pages/ResistancePage';
+import { UntrackedPage } from '../components/pages/UntrackedPage';
+import { VariantExplorerPage } from '../components/pages/VariantExplorerPage';
+import { WasapLayout, useWasapLayoutContext } from '../components/pages/WasapLayout';
 import { NoDataDisplay } from '../components/shared/no-data-display';
-import { WasapLayout, useWasapLayoutContext } from '../components/views/wasap/WasapLayout';
-import { WasapModePage } from '../components/views/wasap/WasapModePage';
-import { OverviewPage } from '../components/views/wasap/pages/OverviewPage';
-import { fetchResistanceData, type ResistanceData } from '../components/views/wasap/resistanceData';
 import { getAppConfig } from '../config/appConfig';
-import type { WasapPageConfig } from '../config/wasapPageConfig';
+import { isModeEnabled, type WasapPageConfig } from '../config/wasapPageConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
+import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
 import { fetchLineageTree } from '../lineageTree/fetchLineageTree';
+import { segmentToMode } from '../pageState/wasap/wasapModes';
 import { Loading } from '../util/Loading';
 import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
@@ -98,14 +104,28 @@ export function WasapOverviewRoute() {
     return <OverviewPage amplicons={config.amplicons} />;
 }
 
-/** The `/:organismPath/:mode` route. */
+/**
+ * The `/:organismPath/:mode` route: the page of the mode in the URL, or a 404 where the
+ * segment isn't that of a mode this organism has enabled.
+ */
 export function WasapModeRoute() {
     const { config } = useWasapLayoutContext();
     const { mode: segment } = useParams();
 
-    return (
-        <EnabledModeRoute config={config} segment={segment}>
-            {(mode) => <WasapModePage config={config} mode={mode} />}
-        </EnabledModeRoute>
-    );
+    switch (segmentToMode(segment)) {
+        case 'manual':
+            return isModeEnabled(config, 'manual') ? <ManualPage config={config} /> : <NotFoundPage />;
+        case 'variant':
+            return isModeEnabled(config, 'variant') ? <VariantExplorerPage config={config} /> : <NotFoundPage />;
+        case 'resistance':
+            return isModeEnabled(config, 'resistance') ? <ResistancePage config={config} /> : <NotFoundPage />;
+        case 'untracked':
+            return isModeEnabled(config, 'untracked') ? <UntrackedPage config={config} /> : <NotFoundPage />;
+        case 'collection':
+            return isModeEnabled(config, 'collection') ? <CollectionPage config={config} /> : <NotFoundPage />;
+        case 'deconvolution':
+            return isModeEnabled(config, 'deconvolution') ? <DeconvolutionPage config={config} /> : <NotFoundPage />;
+        case undefined:
+            return <NotFoundPage />;
+    }
 }

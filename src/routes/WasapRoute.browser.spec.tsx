@@ -1,11 +1,35 @@
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { describe, expect } from 'vitest';
+import { MemoryRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { EnabledModeRoute } from './wasapModeRoutes';
+import { WasapModeRoute } from './WasapRoute';
 import { it } from '../../test-extend';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
 import { testConfig } from '../pageState/wasap/wasapTestConfig';
+
+// the real pages need SILO; stand-ins that say which page it is are enough here
+/* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */
+vi.mock('../components/pages/ManualPage', () => ({ ManualPage: () => <ModePage mode='manual' /> }));
+vi.mock('../components/pages/VariantExplorerPage', () => ({
+    VariantExplorerPage: () => <ModePage mode='variant' />,
+}));
+vi.mock('../components/pages/ResistancePage', () => ({
+    ResistancePage: () => <ModePage mode='resistance' />,
+}));
+vi.mock('../components/pages/UntrackedPage', () => ({
+    UntrackedPage: () => <ModePage mode='untracked' />,
+}));
+vi.mock('../components/pages/CollectionPage', () => ({
+    CollectionPage: () => <ModePage mode='collection' />,
+}));
+vi.mock('../components/pages/DeconvolutionPage', () => ({
+    DeconvolutionPage: () => <ModePage mode='deconvolution' />,
+}));
+/* eslint-enable @typescript-eslint/naming-convention */
+
+function ModePage({ mode }: { mode: string }) {
+    return <div>{`Page of the ${mode} mode`}</div>;
+}
 
 function CurrentLocation() {
     const { pathname, search } = useLocation();
@@ -17,22 +41,12 @@ function renderRoutes(entry: string, config: WasapPageConfig = testConfig) {
         <MemoryRouter initialEntries={[entry]}>
             <CurrentLocation />
             <Routes>
-                <Route path='/wastewater/covid'>
+                <Route path='/wastewater/covid' element={<Outlet context={{ config }} />}>
                     <Route index element={<div>The overview page</div>} />
-                    <Route path=':mode' element={<ModePage config={config} />} />
+                    <Route path=':mode' element={<WasapModeRoute />} />
                 </Route>
             </Routes>
         </MemoryRouter>,
-    );
-}
-
-function ModePage({ config }: { config: WasapPageConfig }) {
-    const segment = useLocation().pathname.split('/').pop();
-
-    return (
-        <EnabledModeRoute config={config} segment={segment}>
-            {(mode) => <div>{`Page of the ${mode} mode`}</div>}
-        </EnabledModeRoute>
     );
 }
 

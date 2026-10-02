@@ -1,24 +1,25 @@
 import { useMemo, type ReactNode } from 'react';
 
-import { informativeMutations, type DeconvolutionOptions } from '../../../../../lollipop';
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { MIN_COVERAGE, useMutationFrequencies } from '../../../../dataLayer/hooks/mutationFrequencies';
-import { type SiloReadFilter } from '../../../../dataLayer/queries';
-import { deconvolutionOptions } from '../../../../deconvolution/granularityOptions';
-import { lineageSignatures } from '../../../../deconvolution/lineageSignatures';
-import { poolFrequencies } from '../../../../deconvolution/poolFrequencies';
-import { useDeconvolution } from '../../../../deconvolution/useDeconvolution';
-import { type LineageTree } from '../../../../lineageTree/lineageTree';
-import { usePageState } from '../../../../pageState/usePageState';
-import { DeconvolutionPageStateHandler } from '../../../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
-import { type TemporalGranularity } from '../../../../types/dashboardComponents';
-import { Loading } from '../../../../util/Loading';
-import { DeconvolutionPlot } from '../../../dataDisplay/DeconvolutionPlot';
-import { NothingSelected } from '../../../dataDisplay/NothingSelected';
-import { DeconvolutionFilter } from '../../../filterSidebar/filters/DeconvolutionFilter';
-import { TitledPanel } from '../../../shared/TitledPanel';
-import { ModePageLayout } from '../ModePageLayout';
-import { useWasapLayoutContext } from '../WasapLayout';
+import { ModePageLayout } from './ModePageLayout';
+import { useWasapLayoutContext } from './WasapLayout';
+import { informativeMutations, type DeconvolutionOptions } from '../../../lollipop';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { MIN_COVERAGE, useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
+import { type SiloReadFilter } from '../../dataLayer/queries';
+import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
+import { lineageSignatures } from '../../deconvolution/lineageSignatures';
+import { poolFrequencies } from '../../deconvolution/poolFrequencies';
+import { useDeconvolution } from '../../deconvolution/useDeconvolution';
+import { type LineageTree } from '../../lineageTree/lineageTree';
+import { usePageState } from '../../pageState/usePageState';
+import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
+import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { type TemporalGranularity } from '../../types/dashboardComponents';
+import { Loading } from '../../util/Loading';
+import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
+import { NothingSelected } from '../dataDisplay/NothingSelected';
+import { DeconvolutionFilter } from '../filterSidebar/filters/DeconvolutionFilter';
+import { TitledPanel } from '../shared/TitledPanel';
 
 export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deconvolution'> }) {
     const pageStateHandler = useMemo(() => new DeconvolutionPageStateHandler(config), [config]);
@@ -26,13 +27,8 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { samplingDate, isSamplingDatePending, lineageTree } = useWasapLayoutContext();
-
-    const filter: SiloReadFilter = {
-        ...(base.locationName && { locationName: base.locationName }),
-        ...(samplingDate.dateFrom && { samplingDateFrom: samplingDate.dateFrom }),
-        ...(samplingDate.dateTo && { samplingDateTo: samplingDate.dateTo }),
-    };
+    const { lineageTree } = useWasapLayoutContext();
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
 
     return (
         <ModePageLayout
@@ -63,7 +59,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 <NothingSelected title='Not enough lineages'>
                     Please select at least two lineages for the panel in the filter panel.
                 </NothingSelected>
-            ) : isSamplingDatePending ? (
+            ) : isFilterPending ? (
                 <Loading />
             ) : (
                 <DeconvolutionResults

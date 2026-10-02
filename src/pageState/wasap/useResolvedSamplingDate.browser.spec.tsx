@@ -4,8 +4,8 @@ import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { useResolvedSamplingDate } from './useResolvedSamplingDate';
-import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../../dataLayer/queries/schema';
+import { ConnectionProvider } from '../../dataLayer/hooks/connection';
+import type { SiloSchema } from '../../dataLayer/queries/schema';
 
 const schema: SiloSchema = {
     table: 'default',

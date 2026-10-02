@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 
-import { type ResistanceData } from './resistanceData';
-import { useResolvedSamplingDate } from './useResolvedSamplingDate';
-import { siloSchema } from '../../../config/siloSchema';
-import type { WasapPageConfig } from '../../../config/wasapPageConfig';
-import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
-import { type LineageTree } from '../../../lineageTree/lineageTree';
-import { parseDatasetFilter, withDatasetFilter } from '../../../pageState/wasap/baseFilter';
-import { type WasapDatasetFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { GsApp } from '../../GsApp';
-import { SiloUnreachableWrapper } from '../../SiloUnreachableWrapper';
-import { type DateRangeOption } from '../../inputs/dateRangeFilter/dateRangeOption';
+import { siloSchema } from '../../config/siloSchema';
+import type { WasapPageConfig } from '../../config/wasapPageConfig';
+import { ConnectionProvider } from '../../dataLayer/hooks/connection';
+import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
+import { type LineageTree } from '../../lineageTree/lineageTree';
+import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
+import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
+import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { GsApp } from '../GsApp';
+import { SiloUnreachableWrapper } from '../SiloUnreachableWrapper';
+import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 
 /** What the layout hands down to the page of an analysis mode. */
 export type WasapLayoutContext = {

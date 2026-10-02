@@ -9,11 +9,11 @@ import {
     type ReactNode,
 } from 'react';
 
-import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
-import { type SampleOverview } from '../../../dataLayer/queries';
-import { Loading } from '../../../util/Loading';
-import { TitledPanel } from '../../shared/TitledPanel';
-import { singleGraphColorRGBAById } from '../../shared/charts/colors';
+import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
+import { type SampleOverview } from '../../dataLayer/queries';
+import { Loading } from '../../util/Loading';
+import { TitledPanel } from '../shared/TitledPanel';
+import { singleGraphColorRGBAById } from '../shared/charts/colors';
 
 /**
  * Which locations were sampled on which dates, and which sequencing batch each sample came

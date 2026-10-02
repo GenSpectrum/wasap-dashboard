@@ -1,11 +1,11 @@
 import type { FC, ReactNode } from 'react';
 
-import { useBatchCount } from '../../../dataLayer/hooks/batchCount';
-import { useSiloSchema } from '../../../dataLayer/hooks/connection';
-import { useDateExtent } from '../../../dataLayer/hooks/dateExtent';
-import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
-import { useStringFieldOptions } from '../../../dataLayer/hooks/stringFieldOptions';
-import { useTotalReadCount } from '../../../dataLayer/hooks/totalReadCount';
+import { useBatchCount } from '../../dataLayer/hooks/batchCount';
+import { useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
+import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
+import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
+import { useTotalReadCount } from '../../dataLayer/hooks/totalReadCount';
 
 /**
  * Whole-instance numbers for the organism: how much data there is, and where and when it was
