@@ -296,7 +296,7 @@ export function isModeEnabled<Mode extends WasapAnalysisMode>(
 
 /**
  * For code that has been given the config of a page whose mode is known to be enabled
- * (see `EnabledModeRoute`), but has to get the type to say so.
+ * (see `WasapModeRoute`), but has to get the type to say so.
  */
 export function assertModeEnabled<Mode extends WasapAnalysisMode>(
     config: WasapPageConfig,
