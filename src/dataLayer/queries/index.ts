@@ -12,3 +12,4 @@ export * from './siloFilterExpression';
 export * from './mutationsOverTime';
 export * from './queriesOverTime';
 export * from './positionBySample';
+export * from './symbolsBySample';

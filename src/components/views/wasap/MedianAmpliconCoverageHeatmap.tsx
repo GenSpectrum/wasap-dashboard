@@ -1,6 +1,5 @@
 import { useState, type CSSProperties, type MouseEvent } from 'react';
 
-import { OverviewPanel } from './OverviewPanel';
 import { type AmpliconsConfig } from '../../../amplicons/ampliconsConfig';
 import { type Amplicon } from '../../../amplicons/primerBed';
 import { useAmplicons } from '../../../amplicons/useAmplicons';
@@ -11,6 +10,7 @@ import {
 } from '../../../dataLayer/hooks/medianAmpliconCoverage';
 import { Loading } from '../../../util/Loading';
 import { type TemporalClass } from '../../../util/temporalClass';
+import { TitledPanel } from '../../shared/TitledPanel';
 import { singleGraphColorRGBByName } from '../../shared/charts/colors';
 import { ErrorDisplay } from '../../shared/error-display';
 
@@ -36,7 +36,7 @@ export function MedianAmpliconCoverageHeatmap({ amplicons: ampliconsConfig }: { 
     const amplicons = useAmplicons(ampliconsConfig);
 
     return (
-        <OverviewPanel title='Median amplicon coverage' info={<CoverageInfo />}>
+        <TitledPanel title='Median amplicon coverage' info={<CoverageInfo />}>
             {amplicons.isError ? (
                 <ErrorDisplay error={amplicons.error} />
             ) : amplicons.data === undefined ? (
@@ -44,7 +44,7 @@ export function MedianAmpliconCoverageHeatmap({ amplicons: ampliconsConfig }: { 
             ) : (
                 <Grid amplicons={amplicons.data} />
             )}
-        </OverviewPanel>
+        </TitledPanel>
     );
 }
 

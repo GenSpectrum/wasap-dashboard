@@ -136,8 +136,24 @@ export const wasapCollectionFilterSchema = z.object({
 });
 export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
 
+/**
+ * A panel of lineages, whose prevalences are estimated from the mutation frequencies by kernel
+ * deconvolution (see `lollipop/`): the "Lineage Prevalence" page. The lineages are named like
+ * in the lineage tree, where their signatures come from.
+ */
+export const wasapDeconvolutionFilterSchema = z.object({
+    mode: z.literal('deconvolution'),
+    panel: z.array(z.string()),
+});
+export type WasapDeconvolutionFilter = z.infer<typeof wasapDeconvolutionFilterSchema>;
+
 export type WasapAnalysisFilter =
-    WasapManualFilter | WasapVariantFilter | WasapResistanceFilter | WasapUntrackedFilter | WasapCollectionFilter;
+    | WasapManualFilter
+    | WasapVariantFilter
+    | WasapResistanceFilter
+    | WasapUntrackedFilter
+    | WasapCollectionFilter
+    | WasapDeconvolutionFilter;
 
 export const WASAP_ANALYSIS_MODE = {
     manual: 'manual',
@@ -145,6 +161,7 @@ export const WASAP_ANALYSIS_MODE = {
     resistance: 'resistance',
     untracked: 'untracked',
     collection: 'collection',
+    deconvolution: 'deconvolution',
 } as const;
 export const wasapAnalysisModeSchema = z.enum([
     WASAP_ANALYSIS_MODE.manual,
@@ -152,6 +169,7 @@ export const wasapAnalysisModeSchema = z.enum([
     WASAP_ANALYSIS_MODE.resistance,
     WASAP_ANALYSIS_MODE.untracked,
     WASAP_ANALYSIS_MODE.collection,
+    WASAP_ANALYSIS_MODE.deconvolution,
 ]);
 export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
 

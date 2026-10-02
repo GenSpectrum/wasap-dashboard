@@ -1,6 +1,5 @@
 import { useMemo, useState, type FC, type ReactNode } from 'react';
 
-import { OverviewPanel } from './OverviewPanel';
 import {
     DEFAULT_LOCATION_SORT,
     nextLocationSort,
@@ -11,6 +10,7 @@ import {
 import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
 import { readLocationOverview } from '../../../dataLayer/queries';
 import { Loading } from '../../../util/Loading';
+import { TitledPanel } from '../../shared/TitledPanel';
 
 /**
  * One row per location: its name, how many samples were collected there, how many amplicon
@@ -27,17 +27,17 @@ export const LocationOverviewTable: FC = () => {
 
     if (isError) {
         return (
-            <OverviewPanel title='Sampling locations'>
+            <TitledPanel title='Sampling locations'>
                 <span>{error.message}</span>
-            </OverviewPanel>
+            </TitledPanel>
         );
     }
 
     if (isPending || locations === undefined) {
         return (
-            <OverviewPanel title='Sampling locations'>
+            <TitledPanel title='Sampling locations'>
                 <Loading />
-            </OverviewPanel>
+            </TitledPanel>
         );
     }
 
@@ -48,7 +48,7 @@ export const LocationOverviewTable: FC = () => {
     );
 
     return (
-        <OverviewPanel title='Sampling locations'>
+        <TitledPanel title='Sampling locations'>
             {/* Out to the panel's sides and bottom, so the row lines reach its border and the last row
                 is as tall as the others. The outer cells take over the panel's padding, which keeps the
                 text in line with the title. */}
@@ -72,7 +72,7 @@ export const LocationOverviewTable: FC = () => {
                     ))}
                 </tbody>
             </table>
-        </OverviewPanel>
+        </TitledPanel>
     );
 };
 
