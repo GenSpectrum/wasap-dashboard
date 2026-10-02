@@ -251,14 +251,14 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     if (config.deconvolutionAnalysisModeEnabled) {
         result.push('deconvolution');
     }
-    if (config.manualAnalysisModeEnabled) {
-        result.push('manual');
-    }
     if (config.variantAnalysisModeEnabled) {
         result.push('variant');
     }
     if (config.resistanceAnalysisModeEnabled) {
         result.push('resistance');
+    }
+    if (config.manualAnalysisModeEnabled) {
+        result.push('manual');
     }
     if (config.untrackedAnalysisModeEnabled) {
         result.push('untracked');

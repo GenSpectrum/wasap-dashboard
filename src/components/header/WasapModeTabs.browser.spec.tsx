@@ -35,9 +35,9 @@ describe('WasapModeTabs', () => {
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
         await expect.element(tabs.nth(0)).toHaveTextContent('Overview');
-        await expect.element(tabs.nth(1)).toHaveTextContent('Manual');
-        await expect.element(tabs.nth(2)).toHaveTextContent('Variant Explorer');
-        await expect.element(tabs.nth(3)).toHaveTextContent('Resistance Mutations');
+        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
+        await expect.element(tabs.nth(2)).toHaveTextContent('Resistance Mutations');
+        await expect.element(tabs.nth(3)).toHaveTextContent('Manual');
         await expect.element(tabs.nth(4)).toHaveTextContent('Untracked Mutations');
         expect(tabs.elements()).toHaveLength(5);
     });
