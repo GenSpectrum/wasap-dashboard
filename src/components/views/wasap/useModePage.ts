@@ -20,7 +20,7 @@ export function useModePage<Analysis extends WasapAnalysisFilter>(
     config: WasapPageConfig,
     pageStateHandler: PageStateHandler<WasapModeFilter<Analysis>>,
 ) {
-    const { resistanceData, samplingDate, isSamplingDatePending } = useWasapLayoutContext();
+    const { resistanceData, lineageTree, samplingDate, isSamplingDatePending } = useWasapLayoutContext();
     const { displayMutationsBySet } = resistanceData;
 
     const {
@@ -34,7 +34,7 @@ export function useModePage<Analysis extends WasapAnalysisFilter>(
         isPending: isDataPending,
         isError,
         error,
-    } = useWasapPageData(config, displayMutationsBySet, analysis);
+    } = useWasapPageData(config, displayMutationsBySet, analysis, lineageTree);
 
     useEffect(() => {
         if (error) {

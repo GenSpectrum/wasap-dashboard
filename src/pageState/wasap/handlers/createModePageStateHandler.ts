@@ -1,4 +1,5 @@
 import { CollectionPageStateHandler } from './CollectionPageStateHandler';
+import { DeconvolutionPageStateHandler } from './DeconvolutionPageStateHandler';
 import { ManualPageStateHandler } from './ManualPageStateHandler';
 import { ResistancePageStateHandler } from './ResistancePageStateHandler';
 import { UntrackedPageStateHandler } from './UntrackedPageStateHandler';
@@ -26,6 +27,8 @@ export function createModePageStateHandler(
             return new UntrackedPageStateHandler(narrowed(config, 'untracked'));
         case 'collection':
             return new CollectionPageStateHandler(narrowed(config, 'collection'));
+        case 'deconvolution':
+            return new DeconvolutionPageStateHandler(narrowed(config, 'deconvolution'));
     }
 }
 

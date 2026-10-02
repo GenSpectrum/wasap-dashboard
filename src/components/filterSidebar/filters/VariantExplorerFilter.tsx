@@ -1,8 +1,7 @@
-import { type UseQueryResult } from '@tanstack/react-query';
 import { useId } from 'react';
 
-import { type CollectionSummary } from '../../../externalData/genSpectrum/Collection';
 import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
+import { type LineageTree } from '../../../lineageTree/lineageTree';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
@@ -11,8 +10,8 @@ import {
     type WasapVariantFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { DefineClinicalSignatureInfo } from '../../InfoBlocks';
-import { CollectionCombobox } from '../../inputs/CollectionCombobox';
 import { LabeledField } from '../../inputs/LabeledField';
+import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
@@ -28,8 +27,8 @@ interface VariantExplorerFilterProps {
      */
     clinicalSequenceLapisBaseUrl: string;
     clinicalSequenceLapisLineageField: string;
-    predefinedVariantsQueryResult?: UseQueryResult<CollectionSummary[]>;
-    predefinedVariantsLabel?: string;
+    /** The predefined signatures come from it; without it, there are only the computed ones. */
+    lineageTree: LineageTree | undefined;
 }
 
 export function VariantExplorerFilter({
@@ -37,8 +36,7 @@ export function VariantExplorerFilter({
     setPageState,
     clinicalSequenceLapisBaseUrl,
     clinicalSequenceLapisLineageField,
-    predefinedVariantsQueryResult,
-    predefinedVariantsLabel = 'Predefined',
+    lineageTree,
 }: VariantExplorerFilterProps) {
     const handleSignatureTypeChange = (newType: SignatureType) => {
         setPageState({ ...pageState, signatureType: newType });
@@ -50,7 +48,7 @@ export function VariantExplorerFilter({
                 value={pageState.sequenceType}
                 onChange={(sequenceType) => setPageState({ ...pageState, sequenceType })}
             />
-            {predefinedVariantsQueryResult !== undefined && (
+            {lineageTree !== undefined && (
                 <LabeledField label='Variant definition source'>
                     <select
                         className='select select-bordered'
@@ -58,16 +56,12 @@ export function VariantExplorerFilter({
                         onChange={(e) => handleSignatureTypeChange(e.target.value as SignatureType)}
                     >
                         <option value='computed'>Extracted from clinical sequences</option>
-                        <option value='predefined'>{predefinedVariantsLabel}</option>
+                        <option value='predefined'>Nextclade</option>
                     </select>
                 </LabeledField>
             )}
-            {pageState.signatureType === 'predefined' && (
-                <PredefinedSignature
-                    pageState={pageState}
-                    setPageState={setPageState}
-                    predefinedVariantsQueryResult={predefinedVariantsQueryResult}
-                />
+            {pageState.signatureType === 'predefined' && lineageTree !== undefined && (
+                <PredefinedSignature pageState={pageState} setPageState={setPageState} lineageTree={lineageTree} />
             )}
             {pageState.signatureType === 'computed' && (
                 <Inset className='p-2'>
@@ -148,22 +142,19 @@ export function VariantExplorerFilter({
 function PredefinedSignature({
     pageState,
     setPageState,
-    predefinedVariantsQueryResult,
+    lineageTree,
 }: {
     pageState: WasapVariantFilter;
     setPageState: (newState: WasapVariantFilter) => void;
-    predefinedVariantsQueryResult: UseQueryResult<CollectionSummary[]> | undefined;
+    lineageTree: LineageTree;
 }) {
-    const collections = predefinedVariantsQueryResult?.data ?? [];
-    const selectedCollection = collections.find((c) => c.id === pageState.collectionId) ?? null;
-
     return (
         <Inset className='p-2'>
             <LabeledField label='Variant'>
-                <CollectionCombobox
-                    collections={collections}
-                    value={selectedCollection}
-                    onChange={(c) => setPageState({ ...pageState, collectionId: c?.id })}
+                <LineageTreeCombobox
+                    lineageTree={lineageTree}
+                    value={pageState.lineage}
+                    onChange={(lineage) => setPageState({ ...pageState, lineage })}
                 />
             </LabeledField>
             <CheckboxWithTooltip

@@ -8,6 +8,7 @@ import { backendRouteMocker, lapisRouteMocker, testServer } from '../../../../vi
 import type { WasapPageConfig } from '../../../config/wasapPageConfig';
 import type { Collection } from '../../../externalData/genSpectrum/Collection';
 import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
+import { buildLineageTree } from '../../../lineageTree/lineageTree';
 import {
     EXCLUDE_SET_NAME,
     SEQUENCE_TYPE,
@@ -149,6 +150,30 @@ describe('fetchWasapPageData', () => {
             clinicalSequenceCountWarningThreshold: 100,
         };
 
+        /* eslint-disable @typescript-eslint/naming-convention -- the field names of the Auspice JSON format */
+        const lineageTree = buildLineageTree(
+            {
+                name: 'NODE_0',
+                node_attrs: { lineage: { value: 'B' } },
+                children: [
+                    {
+                        name: 'NODE_1',
+                        node_attrs: { lineage: { value: 'XE' } },
+                        branch_attrs: { mutations: { nuc: ['A123T'] } },
+                        children: [
+                            {
+                                name: 'NODE_2',
+                                node_attrs: { lineage: { value: 'XEC' } },
+                                branch_attrs: { mutations: { nuc: ['G456C'], S: ['F59S'] } },
+                            },
+                        ],
+                    },
+                ],
+            },
+            'lineage',
+        );
+        /* eslint-enable @typescript-eslint/naming-convention */
+
         test('computed signature: fetches mutations from clinical LAPIS and annotates with jaccard scores', async () => {
             // getMutationsForVariant makes 3 concurrent requests:
             // (1) mutations with lineage filter, (2) all mutations, (3) total count for the lineage
@@ -187,26 +212,7 @@ describe('fetchWasapPageData', () => {
             });
         });
 
-        test('predefined signature: fetches collection from backend and returns mutations with empty jaccard', async () => {
-            backendRouteMocker.mockGetCollection('1', {
-                id: 1,
-                name: 'XEC',
-                ownedBy: 1,
-                organism: 'sc2',
-                description: null,
-                variantCount: 1,
-                tags: [],
-                variants: [
-                    {
-                        type: 'filterObject',
-                        id: 1,
-                        collectionId: 1,
-                        name: 'Nucleotide substitutions',
-                        description: null,
-                        filterObject: { nucleotideMutations: ['A123T', 'G456C'] },
-                    },
-                ],
-            } as unknown as Collection);
+        test('predefined signature: takes the mutations from the lineage tree and returns them with empty jaccard', async () => {
             // Empty clinical LAPIS data → jaccard map is empty → mutations returned unfiltered
             lapisRouteMocker.mockPostNucleotideMutationsMulti([
                 { body: { pangoLineage: 'XEC*', minProportion: 0 }, response: { data: [] } },
@@ -225,9 +231,10 @@ describe('fetchWasapPageData', () => {
                     minCount: -1,
                     minJaccard: -1,
                     timeFrame: VARIANT_TIME_FRAME.all,
-                    collectionId: 1,
+                    lineage: 'XEC',
                     includeSublineagesForJaccard: true,
                 },
+                lineageTree,
             );
 
             expect(result).toEqual({
@@ -238,25 +245,6 @@ describe('fetchWasapPageData', () => {
         });
 
         test('predefined signature: filters mutations by jaccard and returns their jaccard indices', async () => {
-            backendRouteMocker.mockGetCollection('1', {
-                id: 1,
-                name: 'XEC',
-                ownedBy: 1,
-                organism: 'sc2',
-                description: null,
-                variantCount: 1,
-                tags: [],
-                variants: [
-                    {
-                        type: 'filterObject',
-                        id: 1,
-                        collectionId: 1,
-                        name: 'Nucleotide substitutions',
-                        description: null,
-                        filterObject: { nucleotideMutations: ['A123T', 'G456C'] },
-                    },
-                ],
-            } as unknown as Collection);
             lapisRouteMocker.mockPostNucleotideMutationsMulti([
                 {
                     body: { pangoLineage: 'XEC*', minProportion: 0 },
@@ -290,9 +278,10 @@ describe('fetchWasapPageData', () => {
                     minCount: -1,
                     minJaccard: 0.3,
                     timeFrame: VARIANT_TIME_FRAME.all,
-                    collectionId: 1,
+                    lineage: 'XEC',
                     includeSublineagesForJaccard: true,
                 },
+                lineageTree,
             );
 
             // Jaccard for A123T: 100 / (150 + 200 - 100) = 0.4, passes minJaccard=0.3
@@ -303,6 +292,58 @@ describe('fetchWasapPageData', () => {
                 lineageForJaccard: 'XEC*',
                 jaccardIndices: { A123T: 0.4 },
             });
+        });
+
+        test('predefined signature: takes only the new mutations of the lineage with newMutationsOnly', async () => {
+            lapisRouteMocker.mockPostAminoAcidMutationsMulti([
+                { body: { pangoLineage: 'XEC', minProportion: 0 }, response: { data: [] } },
+                { body: { minProportion: 0 }, response: { data: [] } },
+            ]);
+            lapisRouteMocker.mockPostAggregated({ pangoLineage: 'XEC' }, { data: [{ count: 0 }] });
+
+            const result = await fetchWasapPageData(
+                config,
+                {},
+                {
+                    mode: WASAP_ANALYSIS_MODE.variant,
+                    signatureType: SIGNATURE_TYPE.predefined,
+                    sequenceType: SEQUENCE_TYPE.aminoAcid,
+                    minProportion: -1,
+                    minCount: -1,
+                    minJaccard: -1,
+                    timeFrame: VARIANT_TIME_FRAME.all,
+                    lineage: 'XEC',
+                    newMutationsOnly: true,
+                    includeSublineagesForJaccard: false,
+                },
+                lineageTree,
+            );
+
+            expect(result).toEqual({
+                type: 'mutations',
+                displayMutations: ['S:F59S'],
+                lineageForJaccard: 'XEC',
+            });
+        });
+
+        test('predefined signature: throws when the lineage is not in the lineage tree', async () => {
+            await expect(
+                fetchWasapPageData(
+                    config,
+                    {},
+                    {
+                        mode: WASAP_ANALYSIS_MODE.variant,
+                        signatureType: SIGNATURE_TYPE.predefined,
+                        sequenceType: SEQUENCE_TYPE.nucleotide,
+                        minProportion: -1,
+                        minCount: -1,
+                        minJaccard: -1,
+                        timeFrame: VARIANT_TIME_FRAME.all,
+                        lineage: 'XFG',
+                    },
+                    lineageTree,
+                ),
+            ).rejects.toThrow('Lineage "XFG" is not in the lineage tree.');
         });
 
         test('throws when mode is not enabled', async () => {

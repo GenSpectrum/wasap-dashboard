@@ -4,6 +4,7 @@ import { ampliconsConfigSchema } from '../amplicons/ampliconsConfig';
 import { lineageTreeConfigSchema } from '../lineageTree/lineageTreeConfig';
 import {
     wasapCollectionFilterSchema,
+    wasapDeconvolutionFilterSchema,
     wasapManualFilterSchema,
     wasapResistanceFilterSchema,
     wasapUntrackedFilterSchema,
@@ -140,13 +141,6 @@ export const manualAnalysisModeConfigSchema = z.union([
 export const variantAnalysisModeConfigSchema = z.union([
     z.object({
         variantAnalysisModeEnabled: z.literal(true),
-        predefinedVariantsSource: z
-            .object({
-                collectionsUserId: z.number(),
-                collectionsTag: z.string(),
-                variantSourceLabel: z.string().optional(),
-            })
-            .optional(),
         clinicalLapis: z.object({
             lapisBaseUrl: z.string(),
             dateField: z.string(),
@@ -218,6 +212,19 @@ export const collectionAnalysisModeConfigSchema = z
     .and(covSpectrumCollectionSourceConfigSchema);
 
 /**
+ * The deconvolution mode estimates the prevalences of a panel of lineages. Their signatures come
+ * from the lineage tree, so the organism needs one.
+ */
+export const deconvolutionAnalysisModeConfigSchema = z.union([
+    z.object({
+        deconvolutionAnalysisModeEnabled: z.literal(true),
+        lineageTree: lineageTreeConfigSchema,
+        filterDefaults: z.object({ deconvolution: wasapDeconvolutionFilterSchema }),
+    }),
+    z.object({ deconvolutionAnalysisModeEnabled: z.undefined().optional() }),
+]);
+
+/**
  * All config settings for a W-ASAP dashboard page — the external, per-organism
  * unit of `config.json`'s `organisms` array (`src/config/appConfig.ts`).
  *
@@ -232,22 +239,26 @@ export const wasapPageConfigSchema = wasapPageConfigBaseSchema
     .and(variantAnalysisModeConfigSchema)
     .and(resistanceAnalysisModeConfigSchema)
     .and(untrackedAnalysisModeConfigSchema)
-    .and(collectionAnalysisModeConfigSchema);
+    .and(collectionAnalysisModeConfigSchema)
+    .and(deconvolutionAnalysisModeConfigSchema);
 export type WasapPageConfig = z.infer<typeof wasapPageConfigSchema>;
 
 /**
- * Convenience function to get the list of enabled modes.
+ * Convenience function to get the list of enabled modes, in the order of their tabs.
  */
 export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode[] {
     const result: WasapAnalysisMode[] = [];
-    if (config.manualAnalysisModeEnabled) {
-        result.push('manual');
+    if (config.deconvolutionAnalysisModeEnabled) {
+        result.push('deconvolution');
     }
     if (config.variantAnalysisModeEnabled) {
         result.push('variant');
     }
     if (config.resistanceAnalysisModeEnabled) {
         result.push('resistance');
+    }
+    if (config.manualAnalysisModeEnabled) {
+        result.push('manual');
     }
     if (config.untrackedAnalysisModeEnabled) {
         result.push('untracked');
@@ -264,6 +275,7 @@ const MODE_ENABLED_FLAGS = {
     resistance: 'resistanceAnalysisModeEnabled',
     untracked: 'untrackedAnalysisModeEnabled',
     collection: 'collectionAnalysisModeEnabled',
+    deconvolution: 'deconvolutionAnalysisModeEnabled',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
 /**

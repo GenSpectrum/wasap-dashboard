@@ -114,3 +114,14 @@ export const testConfigWithCollectionSources = {
     collectionsApiBaseUrl: 'https://collections.example.org',
     collectionTitleFilter: 'test',
 } satisfies WasapPageConfig;
+
+/** Like `testConfig`, with the deconvolution mode enabled. */
+export const testConfigWithDeconvolution = {
+    ...testConfig,
+    deconvolutionAnalysisModeEnabled: true,
+    lineageTree: { url: 'https://example.org/tree.json', lineageAttribute: 'Nextclade_pango' },
+    filterDefaults: {
+        ...testConfig.filterDefaults,
+        deconvolution: { mode: 'deconvolution', panel: ['XFG', 'NB.1.8.1'] },
+    },
+} satisfies WasapPageConfig;

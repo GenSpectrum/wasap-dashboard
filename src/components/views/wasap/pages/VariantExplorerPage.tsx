@@ -1,9 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
-import { getCollections } from '../../../../externalData/genSpectrum/getCollections';
 import { VariantExplorerPageStateHandler } from '../../../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
 import { ClinicalSequenceCountStat } from '../../../dataDisplay/ClinicalSequenceCountStat';
 import { MutationsResult } from '../../../dataDisplay/MutationsResult';
@@ -12,6 +9,7 @@ import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../../../filterSidebar/filters/VariantExplorerFilter';
 import { ModePageLayout } from '../ModePageLayout';
+import { useWasapLayoutContext } from '../WasapLayout';
 import { useModePage } from '../useModePage';
 
 export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
@@ -19,24 +17,8 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     const page = useModePage(config, pageStateHandler);
     const { analysis } = page;
 
-    const { predefinedVariantsSource, clinicalLapis } = config;
-    const predefinedVariantsQueryResult = useQuery({
-        enabled: predefinedVariantsSource !== undefined,
-        queryKey: ['predefinedVariants', predefinedVariantsSource, config.genSpectrumOrganismName],
-        queryFn: async () => {
-            if (predefinedVariantsSource === undefined) {
-                throw Error(
-                    'This predefined variants query was called despite it being disabled. This should not happen.',
-                );
-            }
-            const { collectionsUserId, collectionsTag } = predefinedVariantsSource;
-            return getCollections(getApiServiceForClientside(), {
-                userId: collectionsUserId,
-                organism: config.genSpectrumOrganismName,
-                tags: collectionsTag,
-            });
-        },
-    });
+    const { lineageTree } = useWasapLayoutContext();
+    const { clinicalLapis } = config;
 
     const clinicalLapisProps = {
         analysis,
@@ -61,10 +43,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                             setPageState={setDraft}
                             clinicalSequenceLapisBaseUrl={clinicalLapis.lapisBaseUrl}
                             clinicalSequenceLapisLineageField={clinicalLapis.lineageField}
-                            predefinedVariantsQueryResult={
-                                predefinedVariantsSource !== undefined ? predefinedVariantsQueryResult : undefined
-                            }
-                            predefinedVariantsLabel={predefinedVariantsSource?.variantSourceLabel}
+                            lineageTree={lineageTree}
                         />
                     )}
                 </FilterSidebar>
@@ -73,7 +52,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
             <WasapResults
                 page={page}
                 placeholder={
-                    analysis.signatureType === 'predefined' && analysis.collectionId === undefined ? (
+                    analysis.signatureType === 'predefined' && analysis.lineage === undefined ? (
                         <NothingSelected title='No variant selected'>
                             Please select a variant from the filter panel.
                         </NothingSelected>

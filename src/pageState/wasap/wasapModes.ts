@@ -10,6 +10,7 @@ const MODE_SEGMENTS = {
     resistance: 'resistance',
     untracked: 'untracked',
     collection: 'collection',
+    deconvolution: 'lineagePrevalence',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
 const MODE_LABELS = {
@@ -18,6 +19,7 @@ const MODE_LABELS = {
     resistance: 'Resistance Mutations',
     untracked: 'Untracked Mutations',
     collection: 'Collection',
+    deconvolution: 'Lineage Prevalence',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
 export function modeToSegment(mode: WasapAnalysisMode): string {
