@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { usePageState } from '../../../../pageState/usePageState';
-import { CollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CollectionPageStateHandler';
-import { COLLECTION_SOURCE } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { CollectionResult } from '../../../dataDisplay/CollectionResult';
-import { NothingSelected } from '../../../dataDisplay/NothingSelected';
-import { WasapResults } from '../../../dataDisplay/WasapResults';
-import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
-import { CollectionAnalysisFilter } from '../../../filterSidebar/filters/CollectionAnalysisFilter';
-import { ModePageLayout } from '../ModePageLayout';
-import { useCollectionQueries } from './collectionQueries';
-import { useSiloReadFilter } from '../useSiloReadFilter';
+import { ModePageLayout } from './ModePageLayout';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { useCollectionQueries } from '../../externalData/useCollectionQueries';
+import { usePageState } from '../../pageState/usePageState';
+import { CollectionPageStateHandler } from '../../pageState/wasap/handlers/CollectionPageStateHandler';
+import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { COLLECTION_SOURCE } from '../../pageState/wasap/wasapAnalysisFilter';
+import { CollectionResult } from '../dataDisplay/CollectionResult';
+import { NothingSelected } from '../dataDisplay/NothingSelected';
+import { WasapResults } from '../dataDisplay/WasapResults';
+import { FilterSidebar } from '../filterSidebar/FilterSidebar';
+import { CollectionAnalysisFilter } from '../filterSidebar/filters/CollectionAnalysisFilter';
 
 export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);

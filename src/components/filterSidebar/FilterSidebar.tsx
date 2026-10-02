@@ -1,8 +1,8 @@
 import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { ApplyFilterButton } from './ApplyFilterButton';
-import { useDraftFilter } from './useDraftFilter';
 import { type PageStateHandler } from '../../pageState/PageStateHandler';
+import { useDraftFilter } from '../../pageState/wasap/useDraftFilter';
 import {
     type WasapAnalysisFilter,
     type WasapBaseFilter,

@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { usePageState } from '../../../../pageState/usePageState';
-import { ResistancePageStateHandler } from '../../../../pageState/wasap/handlers/ResistancePageStateHandler';
-import { Loading } from '../../../../util/Loading';
-import { ResistanceResult } from '../../../dataDisplay/ResistanceResult';
-import { ResistanceMutationsFilter } from '../../../filterSidebar/filters/ResistanceMutationsFilter';
-import { ModePageLayout } from '../ModePageLayout';
-import { useWasapLayoutContext } from '../WasapLayout';
-import { useSiloReadFilter } from '../useSiloReadFilter';
+import { ModePageLayout } from './ModePageLayout';
+import { useWasapLayoutContext } from './WasapLayout';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { usePageState } from '../../pageState/usePageState';
+import { ResistancePageStateHandler } from '../../pageState/wasap/handlers/ResistancePageStateHandler';
+import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { Loading } from '../../util/Loading';
+import { ResistanceResult } from '../dataDisplay/ResistanceResult';
+import { ResistanceMutationsFilter } from '../filterSidebar/filters/ResistanceMutationsFilter';
 
 export function ResistancePage({ config }: { config: WasapPageConfigFor<'resistance'> }) {
     const pageStateHandler = useMemo(() => new ResistancePageStateHandler(config), [config]);

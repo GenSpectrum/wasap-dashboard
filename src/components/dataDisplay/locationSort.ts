@@ -1,4 +1,4 @@
-import { type LocationOverview } from '../../../dataLayer/queries';
+import { type LocationOverview } from '../../dataLayer/queries';
 
 /** The columns of the overview page's location table that its rows can be sorted by. */
 export type LocationSortColumn = 'name' | 'sampleCount' | 'totalReads' | 'mostRecentSampleDate';

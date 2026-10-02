@@ -1,18 +1,18 @@
 import { useState, type CSSProperties, type MouseEvent } from 'react';
 
-import { type AmpliconsConfig } from '../../../amplicons/ampliconsConfig';
-import { type Amplicon } from '../../../amplicons/primerBed';
-import { useAmplicons } from '../../../amplicons/useAmplicons';
+import { type AmpliconsConfig } from '../../amplicons/ampliconsConfig';
+import { type Amplicon } from '../../amplicons/primerBed';
+import { useAmplicons } from '../../amplicons/useAmplicons';
 import {
     useMedianAmpliconCoverage,
     type MedianAmpliconCoverageGrid,
     type SampleAmpliconCoverage,
-} from '../../../dataLayer/hooks/medianAmpliconCoverage';
-import { Loading } from '../../../util/Loading';
-import { type TemporalClass } from '../../../util/temporalClass';
-import { TitledPanel } from '../../shared/TitledPanel';
-import { singleGraphColorRGBByName } from '../../shared/charts/colors';
-import { ErrorDisplay } from '../../shared/error-display';
+} from '../../dataLayer/hooks/medianAmpliconCoverage';
+import { Loading } from '../../util/Loading';
+import { type TemporalClass } from '../../util/temporalClass';
+import { TitledPanel } from '../shared/TitledPanel';
+import { singleGraphColorRGBByName } from '../shared/charts/colors';
+import { ErrorDisplay } from '../shared/error-display';
 
 const COLOR = 'indigo';
 const ROW_HEIGHT = 28;

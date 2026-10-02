@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
-import { getClientLogger } from '../../../../clientLogger';
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { getJaccardForMutations, getMutationsForVariant } from '../../../../externalData/lapis/getMutations';
-import { getLineageSignature, type LineageTree } from '../../../../lineageTree/lineageTree';
-import type { VariantTimeFrame, WasapVariantFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { type LapisFilter } from '../../../../types/dashboardComponents';
-import { getErrorLogMessage } from '../../../../util/getErrorLogMessage';
+import { getJaccardForMutations, getMutationsForVariant } from './getMutations';
+import { getClientLogger } from '../../clientLogger';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { getLineageSignature, type LineageTree } from '../../lineageTree/lineageTree';
+import type { VariantTimeFrame, WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { type LapisFilter } from '../../types/dashboardComponents';
+import { getErrorLogMessage } from '../../util/getErrorLogMessage';
 
-const logger = getClientLogger('variantSignature');
+const logger = getClientLogger('useVariantSignature');
 
 /**
  * The mutations of a variant to show, and, where there is one, the Jaccard index of each

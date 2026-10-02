@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { SamplesOverTimeGrid } from './SamplesOverTimePlot';
-import type { SampleOverview } from '../../../dataLayer/queries';
+import type { SampleOverview } from '../../dataLayer/queries';
 
 // 2024-01-08 and 2024-01-15 are Mondays; 2024-01-10 (Wed) and 2024-01-12 (Fri) are not.
 function sample(overrides: Partial<SampleOverview>): SampleOverview {

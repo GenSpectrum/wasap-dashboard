@@ -2,8 +2,8 @@ import { CollectionInfo } from './CollectionInfo';
 import { NothingSelected } from './NothingSelected';
 import { type MeanProportionInterval, QueriesOverTime } from './queriesOverTime/queries-over-time';
 import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type CollectionQueries } from '../../externalData/useCollectionQueries';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
-import { type CollectionQueries } from '../views/wasap/pages/collectionQueries';
 
 /**
  * The queries of a collection over time, and what there is to know about the collection.

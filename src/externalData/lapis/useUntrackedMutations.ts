@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getClientLogger } from '../../../../clientLogger';
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { getCladeLineages } from '../../../../externalData/lapis/getCladeLineages';
-import { getMutations } from '../../../../externalData/lapis/getMutations';
-import type { WasapUntrackedFilter } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { getErrorLogMessage } from '../../../../util/getErrorLogMessage';
+import { getCladeLineages } from './getCladeLineages';
+import { getMutations } from './getMutations';
+import { getClientLogger } from '../../clientLogger';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import type { WasapUntrackedFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { getErrorLogMessage } from '../../util/getErrorLogMessage';
 
-const logger = getClientLogger('untrackedMutations');
+const logger = getClientLogger('useUntrackedMutations');
 
 /** The mutations of the untracked page: those in the wastewater, but not in the variants to exclude. */
 export function useUntrackedMutations(config: WasapPageConfigFor<'untracked'>, analysis: WasapUntrackedFilter) {

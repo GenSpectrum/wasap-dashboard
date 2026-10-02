@@ -1,20 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getClientLogger } from '../../../../clientLogger';
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { validateGenomeOnly } from '../../../../dataLayer/queries';
-import { getCollection } from '../../../../externalData/covSpectrum/getCollection';
-import type { CollectionVariant } from '../../../../externalData/covSpectrum/types';
-import { detailedMutationsToQuery } from '../../../../externalData/covSpectrum/variantConversionUtil';
-import { getLineageFields, type FilterObject, type Variant } from '../../../../externalData/genSpectrum/Collection';
-import { getApiServiceForClientside } from '../../../../externalData/genSpectrum/apiService';
-import { getCollection as getGenSpectrumCollection } from '../../../../externalData/genSpectrum/getCollection';
-import { parseQuery } from '../../../../externalData/lapis/parseQuery';
-import { COLLECTION_SOURCE, type CollectionSource } from '../../../../pageState/wasap/wasapAnalysisFilter';
-import { getErrorLogMessage } from '../../../../util/getErrorLogMessage';
-import { type QueriesOverTimeQuery } from '../../../dataDisplay/queriesOverTime/queries-over-time';
+import { getClientLogger } from '../clientLogger';
+import { type QueriesOverTimeQuery } from '../components/dataDisplay/queriesOverTime/queries-over-time';
+import { type WasapPageConfigFor } from '../config/wasapPageConfig';
+import { validateGenomeOnly } from '../dataLayer/queries';
+import { getCollection } from './covSpectrum/getCollection';
+import type { CollectionVariant } from './covSpectrum/types';
+import { detailedMutationsToQuery } from './covSpectrum/variantConversionUtil';
+import { getLineageFields, type FilterObject, type Variant } from './genSpectrum/Collection';
+import { getApiServiceForClientside } from './genSpectrum/apiService';
+import { getCollection as getGenSpectrumCollection } from './genSpectrum/getCollection';
+import { parseQuery } from './lapis/parseQuery';
+import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/wasap/wasapAnalysisFilter';
+import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
-const logger = getClientLogger('collectionQueries');
+const logger = getClientLogger('useCollectionQueries');
 
 /** The queries of the collection of the collection page. Not fetched while no collection is selected. */
 export function useCollectionQueries(

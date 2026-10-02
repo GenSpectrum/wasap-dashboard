@@ -1,5 +1,5 @@
-import { useWasapLayoutContext } from './WasapLayout';
-import { type SiloReadFilter } from '../../../dataLayer/queries';
+import { useWasapLayoutContext } from '../../components/pages/WasapLayout';
+import { type SiloReadFilter } from '../../dataLayer/queries';
 
 /**
  * The filter to read the dataset of the page from SILO with: the location, and the sampling

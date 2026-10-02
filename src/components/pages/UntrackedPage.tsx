@@ -1,17 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { getCladeLineages } from '../../../../externalData/lapis/getCladeLineages';
-import { usePageState } from '../../../../pageState/usePageState';
-import { UntrackedPageStateHandler } from '../../../../pageState/wasap/handlers/UntrackedPageStateHandler';
-import { MutationsResult } from '../../../dataDisplay/MutationsResult';
-import { WasapResults } from '../../../dataDisplay/WasapResults';
-import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
-import { UntrackedFilter } from '../../../filterSidebar/filters/UntrackedFilter';
-import { ModePageLayout } from '../ModePageLayout';
-import { useUntrackedMutations } from './untrackedMutations';
-import { useSiloReadFilter } from '../useSiloReadFilter';
+import { ModePageLayout } from './ModePageLayout';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { getCladeLineages } from '../../externalData/lapis/getCladeLineages';
+import { useUntrackedMutations } from '../../externalData/lapis/useUntrackedMutations';
+import { usePageState } from '../../pageState/usePageState';
+import { UntrackedPageStateHandler } from '../../pageState/wasap/handlers/UntrackedPageStateHandler';
+import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { MutationsResult } from '../dataDisplay/MutationsResult';
+import { WasapResults } from '../dataDisplay/WasapResults';
+import { FilterSidebar } from '../filterSidebar/FilterSidebar';
+import { UntrackedFilter } from '../filterSidebar/filters/UntrackedFilter';
 
 export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracked'> }) {
     const pageStateHandler = useMemo(() => new UntrackedPageStateHandler(config), [config]);

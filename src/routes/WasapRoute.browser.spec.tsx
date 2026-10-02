@@ -9,20 +9,20 @@ import { testConfig } from '../pageState/wasap/wasapTestConfig';
 
 // the real pages need SILO; stand-ins that say which page it is are enough here
 /* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */
-vi.mock('../components/views/wasap/pages/ManualPage', () => ({ ManualPage: () => <ModePage mode='manual' /> }));
-vi.mock('../components/views/wasap/pages/VariantExplorerPage', () => ({
+vi.mock('../components/pages/ManualPage', () => ({ ManualPage: () => <ModePage mode='manual' /> }));
+vi.mock('../components/pages/VariantExplorerPage', () => ({
     VariantExplorerPage: () => <ModePage mode='variant' />,
 }));
-vi.mock('../components/views/wasap/pages/ResistancePage', () => ({
+vi.mock('../components/pages/ResistancePage', () => ({
     ResistancePage: () => <ModePage mode='resistance' />,
 }));
-vi.mock('../components/views/wasap/pages/UntrackedPage', () => ({
+vi.mock('../components/pages/UntrackedPage', () => ({
     UntrackedPage: () => <ModePage mode='untracked' />,
 }));
-vi.mock('../components/views/wasap/pages/CollectionPage', () => ({
+vi.mock('../components/pages/CollectionPage', () => ({
     CollectionPage: () => <ModePage mode='collection' />,
 }));
-vi.mock('../components/views/wasap/pages/DeconvolutionPage', () => ({
+vi.mock('../components/pages/DeconvolutionPage', () => ({
     DeconvolutionPage: () => <ModePage mode='deconvolution' />,
 }));
 /* eslint-enable @typescript-eslint/naming-convention */

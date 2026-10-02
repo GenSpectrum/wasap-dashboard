@@ -1,18 +1,18 @@
 import { useMemo } from 'react';
 
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
-import { usePageState } from '../../../../pageState/usePageState';
-import { VariantExplorerPageStateHandler } from '../../../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
-import { ClinicalSequenceCountStat } from '../../../dataDisplay/ClinicalSequenceCountStat';
-import { MutationsResult } from '../../../dataDisplay/MutationsResult';
-import { NothingSelected } from '../../../dataDisplay/NothingSelected';
-import { WasapResults } from '../../../dataDisplay/WasapResults';
-import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
-import { VariantExplorerFilter } from '../../../filterSidebar/filters/VariantExplorerFilter';
-import { ModePageLayout } from '../ModePageLayout';
-import { useVariantSignature } from './variantSignature';
-import { useWasapLayoutContext } from '../WasapLayout';
-import { useSiloReadFilter } from '../useSiloReadFilter';
+import { ModePageLayout } from './ModePageLayout';
+import { useWasapLayoutContext } from './WasapLayout';
+import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { useVariantSignature } from '../../externalData/lapis/useVariantSignature';
+import { usePageState } from '../../pageState/usePageState';
+import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
+import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { ClinicalSequenceCountStat } from '../dataDisplay/ClinicalSequenceCountStat';
+import { MutationsResult } from '../dataDisplay/MutationsResult';
+import { NothingSelected } from '../dataDisplay/NothingSelected';
+import { WasapResults } from '../dataDisplay/WasapResults';
+import { FilterSidebar } from '../filterSidebar/FilterSidebar';
+import { VariantExplorerFilter } from '../filterSidebar/filters/VariantExplorerFilter';
 
 export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
     const pageStateHandler = useMemo(() => new VariantExplorerPageStateHandler(config), [config]);
