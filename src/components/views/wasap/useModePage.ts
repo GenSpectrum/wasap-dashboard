@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react';
 
 import { useWasapLayoutContext } from './WasapLayout';
+import { useSiloReadFilter } from './useSiloReadFilter';
 import { useWasapPageData } from './useWasapPageData';
 import { getClientLogger } from '../../../clientLogger';
 import type { WasapPageConfig } from '../../../config/wasapPageConfig';
-import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { type PageStateHandler } from '../../../pageState/PageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
 import { type WasapAnalysisFilter, type WasapModeFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
@@ -20,7 +20,7 @@ export function useModePage<Analysis extends WasapAnalysisFilter>(
     config: WasapPageConfig,
     pageStateHandler: PageStateHandler<WasapModeFilter<Analysis>>,
 ) {
-    const { resistanceData, lineageTree, samplingDate, isSamplingDatePending } = useWasapLayoutContext();
+    const { resistanceData, lineageTree } = useWasapLayoutContext();
     const { displayMutationsBySet } = resistanceData;
 
     const {
@@ -51,11 +51,7 @@ export function useModePage<Analysis extends WasapAnalysisFilter>(
         [base.meanProportion.lower, base.meanProportion.upper],
     );
 
-    const filter: SiloReadFilter = {
-        ...(base.locationName && { locationName: base.locationName }),
-        ...(samplingDate.dateFrom && { samplingDateFrom: samplingDate.dateFrom }),
-        ...(samplingDate.dateTo && { samplingDateTo: samplingDate.dateTo }),
-    };
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
 
     return {
         config,
@@ -65,7 +61,7 @@ export function useModePage<Analysis extends WasapAnalysisFilter>(
         setPageState,
         data,
         isError,
-        isPending: isDataPending || isSamplingDatePending,
+        isPending: isDataPending || isFilterPending,
         filter,
         meanProportionInterval,
         resistanceSetNames: Object.keys(displayMutationsBySet),

@@ -19,6 +19,7 @@ import { DeconvolutionFilter } from '../../../filterSidebar/filters/Deconvolutio
 import { TitledPanel } from '../../../shared/TitledPanel';
 import { ModePageLayout } from '../ModePageLayout';
 import { useWasapLayoutContext } from '../WasapLayout';
+import { useSiloReadFilter } from '../useSiloReadFilter';
 
 export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deconvolution'> }) {
     const pageStateHandler = useMemo(() => new DeconvolutionPageStateHandler(config), [config]);
@@ -26,13 +27,8 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { samplingDate, isSamplingDatePending, lineageTree } = useWasapLayoutContext();
-
-    const filter: SiloReadFilter = {
-        ...(base.locationName && { locationName: base.locationName }),
-        ...(samplingDate.dateFrom && { samplingDateFrom: samplingDate.dateFrom }),
-        ...(samplingDate.dateTo && { samplingDateTo: samplingDate.dateTo }),
-    };
+    const { lineageTree } = useWasapLayoutContext();
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
 
     return (
         <ModePageLayout
@@ -63,7 +59,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 <NothingSelected title='Not enough lineages'>
                     Please select at least two lineages for the panel in the filter panel.
                 </NothingSelected>
-            ) : isSamplingDatePending ? (
+            ) : isFilterPending ? (
                 <Loading />
             ) : (
                 <DeconvolutionResults
