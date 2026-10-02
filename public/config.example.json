@@ -16,6 +16,7 @@
             "untrackedAnalysisModeEnabled": true,
             "covSpectrumCollectionSourceEnabled": true,
             "collectionAnalysisModeEnabled": true,
+            "deconvolutionAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/covid/{{id}}",
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/tree.json",
@@ -102,6 +103,10 @@
                 "collection": {
                     "mode": "collection",
                     "source": "genSpectrum"
+                },
+                "deconvolution": {
+                    "mode": "deconvolution",
+                    "panel": ["XFG", "NB.1.8.1", "LP.8.1", "XEC"]
                 }
             }
         },

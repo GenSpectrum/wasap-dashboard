@@ -5,7 +5,11 @@ import { render } from 'vitest-browser-react';
 import { WasapModeTabs } from './WasapModeTabs';
 import { it } from '../../../test-extend';
 import { setAppConfigForTesting } from '../../config/appConfig';
-import { testConfig, testConfigWithCollection } from '../../pageState/wasap/wasapTestConfig';
+import {
+    testConfig,
+    testConfigWithCollection,
+    testConfigWithDeconvolution,
+} from '../../pageState/wasap/wasapTestConfig';
 
 const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
 
@@ -36,6 +40,16 @@ describe('WasapModeTabs', () => {
         await expect.element(tabs.nth(3)).toHaveTextContent('Resistance Mutations');
         await expect.element(tabs.nth(4)).toHaveTextContent('Untracked Mutations');
         expect(tabs.elements()).toHaveLength(5);
+    });
+
+    it('has the Lineage Prevalence tab right after the overview', async () => {
+        setAppConfigForTesting({ organisms: [testConfigWithDeconvolution] });
+        const { getByRole } = renderTabs();
+
+        const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
+
+        await expect.element(tabs.nth(1)).toHaveTextContent('Lineage Prevalence');
+        expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/lineagePrevalence\?/);
     });
 
     it('links the overview tab to the bare organism URL, with no search params', async () => {

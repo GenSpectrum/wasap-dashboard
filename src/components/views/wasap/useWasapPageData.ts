@@ -83,6 +83,8 @@ export async function fetchWasapPageData(
             return fetchUntrackedModeData(config, analysis);
         case 'collection':
             return fetchCollectionModeData(config, analysis);
+        case 'deconvolution':
+            throw Error('The deconvolution page fetches its data itself, see useDeconvolution.');
     }
 }
 
