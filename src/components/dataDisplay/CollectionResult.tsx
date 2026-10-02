@@ -1,25 +1,25 @@
 import { CollectionInfo } from './CollectionInfo';
 import { NothingSelected } from './NothingSelected';
-import { QueriesOverTime } from './queriesOverTime/queries-over-time';
+import { type MeanProportionInterval, QueriesOverTime } from './queriesOverTime/queries-over-time';
 import { type SiloReadFilter } from '../../dataLayer/queries';
-import { type WasapBaseFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type WasapPageData } from '../views/wasap/useWasapPageData';
 
 /**
  * The queries of a collection over time, and what there is to know about the collection.
  */
 export function CollectionResult({
-    page,
     data,
+    filter,
+    granularity,
+    meanProportionInterval,
     sourceLabel,
     getCollectionUrl,
 }: {
-    page: {
-        base: WasapBaseFilter;
-        filter: SiloReadFilter;
-        meanProportionInterval: { min: number; max: number };
-    };
     data: WasapPageData;
+    filter: SiloReadFilter;
+    granularity: TemporalGranularity;
+    meanProportionInterval: MeanProportionInterval;
     /** Where the collection comes from, like "GenSpectrum collection". */
     sourceLabel: string;
     /** The link to the collection on its own site. */
@@ -41,11 +41,11 @@ export function CollectionResult({
         <>
             <QueriesOverTime
                 width='100%'
-                filter={page.filter}
+                filter={filter}
                 queries={data.collection.queries}
-                granularity={page.base.granularity}
+                granularity={granularity}
                 pageSizes={[20, 50, 100, 250]}
-                meanProportionInterval={page.meanProportionInterval}
+                meanProportionInterval={meanProportionInterval}
             />
             <CollectionInfo
                 collectionId={data.collection.id}

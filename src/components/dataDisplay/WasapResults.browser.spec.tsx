@@ -9,7 +9,7 @@ const ERROR_TEXT = 'There was an error fetching the data to display.';
 describe('WasapResults', () => {
     it('shows that it is loading, not an error, while the data is not there yet', async () => {
         const { getByLabelText, getByText } = render(
-            <WasapResults page={{ data: undefined, isError: false, isPending: true }}>
+            <WasapResults data={undefined} isError={false} isPending={true}>
                 {() => <div>Results</div>}
             </WasapResults>,
         );
@@ -20,7 +20,7 @@ describe('WasapResults', () => {
 
     it('shows the error once fetching the data has failed', async () => {
         const { getByText } = render(
-            <WasapResults page={{ data: undefined, isError: true, isPending: false }}>
+            <WasapResults data={undefined} isError={true} isPending={false}>
                 {() => <div>Results</div>}
             </WasapResults>,
         );
@@ -31,7 +31,9 @@ describe('WasapResults', () => {
     it('shows the placeholder right away when there is nothing to load yet', async () => {
         const { getByText } = render(
             <WasapResults
-                page={{ data: undefined, isError: false, isPending: true }}
+                data={undefined}
+                isError={false}
+                isPending={true}
                 placeholder={<div>No variant selected</div>}
             >
                 {() => <div>Results</div>}
@@ -44,7 +46,9 @@ describe('WasapResults', () => {
     it('shows the placeholder instead of the error when the fetch has given up', async () => {
         const { getByText } = render(
             <WasapResults
-                page={{ data: undefined, isError: true, isPending: false }}
+                data={undefined}
+                isError={true}
+                isPending={false}
                 placeholder={<div>No variant selected</div>}
             >
                 {() => <div>Results</div>}

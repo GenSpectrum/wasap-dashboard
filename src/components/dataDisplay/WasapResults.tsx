@@ -9,11 +9,15 @@ import { type WasapPageData } from '../views/wasap/useWasapPageData';
  * nothing to load yet, or the error if the data could not be fetched.
  */
 export function WasapResults({
-    page,
+    data,
+    isError,
+    isPending,
     placeholder,
     children,
 }: {
-    page: { data: WasapPageData | undefined; isError: boolean; isPending: boolean };
+    data: WasapPageData | undefined;
+    isError: boolean;
+    isPending: boolean;
     /**
      * Shown instead of the results when there is nothing to fetch yet, because something has to be
      * selected first. It is shown right away, not only once the fetch that can't work has given up.
@@ -21,17 +25,17 @@ export function WasapResults({
     placeholder?: ReactNode;
     children: (data: WasapPageData) => ReactNode;
 }) {
-    if (placeholder !== undefined && (page.isError || page.data === undefined)) {
+    if (placeholder !== undefined && (isError || data === undefined)) {
         return placeholder;
     }
 
-    if (page.isError) {
+    if (isError) {
         return <span>There was an error fetching the data to display.</span>;
     }
 
-    if (page.isPending || page.data === undefined) {
+    if (isPending || data === undefined) {
         return <Loading />;
     }
 
-    return <div className='h-full space-y-4'>{children(page.data)}</div>;
+    return <div className='h-full space-y-4'>{children(data)}</div>;
 }

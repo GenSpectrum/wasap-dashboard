@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
+import { usePageState } from '../../../../pageState/usePageState';
 import { VariantExplorerPageStateHandler } from '../../../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
 import { ClinicalSequenceCountStat } from '../../../dataDisplay/ClinicalSequenceCountStat';
 import { MutationsResult } from '../../../dataDisplay/MutationsResult';
@@ -10,14 +11,27 @@ import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../../../filterSidebar/filters/VariantExplorerFilter';
 import { ModePageLayout } from '../ModePageLayout';
 import { useWasapLayoutContext } from '../WasapLayout';
-import { useModePage } from '../useModePage';
+import { useSiloReadFilter } from '../useSiloReadFilter';
+import { useWasapPageData } from '../useWasapPageData';
 
 export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
     const pageStateHandler = useMemo(() => new VariantExplorerPageStateHandler(config), [config]);
-    const page = useModePage(config, pageStateHandler);
-    const { analysis } = page;
-
-    const { lineageTree } = useWasapLayoutContext();
+    const {
+        pageState: { base, analysis },
+        setPageState,
+    } = usePageState(pageStateHandler);
+    const { resistanceData, lineageTree } = useWasapLayoutContext();
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { data, isPending, isError } = useWasapPageData(
+        config,
+        resistanceData.displayMutationsBySet,
+        analysis,
+        lineageTree,
+    );
+    const meanProportionInterval = useMemo(
+        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
+        [base.meanProportion.lower, base.meanProportion.upper],
+    );
     const { clinicalLapis } = config;
 
     const clinicalLapisProps = {
@@ -33,9 +47,9 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
             sidebar={
                 <FilterSidebar
                     pageStateHandler={pageStateHandler}
-                    base={page.base}
+                    base={base}
                     analysis={analysis}
-                    setPageState={page.setPageState}
+                    setPageState={setPageState}
                 >
                     {(draft, setDraft) => (
                         <VariantExplorerFilter
@@ -50,7 +64,9 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
             }
         >
             <WasapResults
-                page={page}
+                data={data}
+                isError={isError}
+                isPending={isPending || isFilterPending}
                 placeholder={
                     analysis.signatureType === 'predefined' && analysis.lineage === undefined ? (
                         <NothingSelected title='No variant selected'>
@@ -63,7 +79,14 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                     const lineageForJaccard = data.type === 'mutations' ? data.lineageForJaccard : undefined;
 
                     return (
-                        <MutationsResult page={page} data={data} sequenceType={analysis.sequenceType}>
+                        <MutationsResult
+                            data={data}
+                            analysis={analysis}
+                            filter={filter}
+                            granularity={base.granularity}
+                            sequenceType={analysis.sequenceType}
+                            meanProportionInterval={meanProportionInterval}
+                        >
                             {analysis.signatureType === 'computed' && analysis.variant !== undefined && (
                                 <ClinicalSequenceCountStat
                                     {...clinicalLapisProps}

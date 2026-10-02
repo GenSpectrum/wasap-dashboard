@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
+import { getClientLogger } from '../../../clientLogger';
 import type { WasapPageConfig } from '../../../config/wasapPageConfig';
 import { validateGenomeOnly } from '../../../dataLayer/queries';
 import { getCollection } from '../../../externalData/covSpectrum/getCollection';
@@ -24,7 +25,10 @@ import type {
     WasapVariantFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type LapisFilter } from '../../../types/dashboardComponents';
+import { getErrorLogMessage } from '../../../util/getErrorLogMessage';
 import { type QueriesOverTimeQuery } from '../../dataDisplay/queriesOverTime/queries-over-time';
+
+const logger = getClientLogger('useWasapPageData');
 
 /**
  * Hook that fetches and returns `WasapPageData` for the W-ASAP page,
@@ -50,7 +54,11 @@ export function useWasapPageData(
             resistanceMutationsBySet,
             config.genSpectrumOrganismName,
         ],
-        queryFn: () => fetchWasapPageData(config, resistanceMutationsBySet, analysis, lineageTree),
+        queryFn: () =>
+            fetchWasapPageData(config, resistanceMutationsBySet, analysis, lineageTree).catch((error: unknown) => {
+                logger.error(`Failed to fetch wasap page data: ${getErrorLogMessage(error)}`);
+                throw error;
+            }),
     });
 }
 

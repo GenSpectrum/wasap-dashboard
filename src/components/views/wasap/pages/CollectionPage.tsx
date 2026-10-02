@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
+import { usePageState } from '../../../../pageState/usePageState';
 import { CollectionPageStateHandler } from '../../../../pageState/wasap/handlers/CollectionPageStateHandler';
 import { COLLECTION_SOURCE } from '../../../../pageState/wasap/wasapAnalysisFilter';
 import { CollectionResult } from '../../../dataDisplay/CollectionResult';
@@ -9,21 +10,38 @@ import { WasapResults } from '../../../dataDisplay/WasapResults';
 import { FilterSidebar } from '../../../filterSidebar/FilterSidebar';
 import { CollectionAnalysisFilter } from '../../../filterSidebar/filters/CollectionAnalysisFilter';
 import { ModePageLayout } from '../ModePageLayout';
-import { useModePage } from '../useModePage';
+import { useWasapLayoutContext } from '../WasapLayout';
+import { useSiloReadFilter } from '../useSiloReadFilter';
+import { useWasapPageData } from '../useWasapPageData';
 
 export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);
-    const page = useModePage(config, pageStateHandler);
-    const isCovSpectrum = page.analysis.source === COLLECTION_SOURCE.covSpectrum;
+    const {
+        pageState: { base, analysis },
+        setPageState,
+    } = usePageState(pageStateHandler);
+    const { resistanceData, lineageTree } = useWasapLayoutContext();
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { data, isPending, isError } = useWasapPageData(
+        config,
+        resistanceData.displayMutationsBySet,
+        analysis,
+        lineageTree,
+    );
+    const meanProportionInterval = useMemo(
+        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
+        [base.meanProportion.lower, base.meanProportion.upper],
+    );
+    const isCovSpectrum = analysis.source === COLLECTION_SOURCE.covSpectrum;
 
     return (
         <ModePageLayout
             sidebar={
                 <FilterSidebar
                     pageStateHandler={pageStateHandler}
-                    base={page.base}
-                    analysis={page.analysis}
-                    setPageState={page.setPageState}
+                    base={base}
+                    analysis={analysis}
+                    setPageState={setPageState}
                 >
                     {(analysis, setAnalysis) => (
                         <CollectionAnalysisFilter
@@ -44,9 +62,11 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
             }
         >
             <WasapResults
-                page={page}
+                data={data}
+                isError={isError}
+                isPending={isPending || isFilterPending}
                 placeholder={
-                    page.analysis.collectionId === undefined ? (
+                    analysis.collectionId === undefined ? (
                         <NothingSelected title='No collection selected'>
                             Please select a collection from the filter panel.
                         </NothingSelected>
@@ -55,8 +75,10 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
             >
                 {(data) => (
                     <CollectionResult
-                        page={page}
                         data={data}
+                        filter={filter}
+                        granularity={base.granularity}
+                        meanProportionInterval={meanProportionInterval}
                         sourceLabel={isCovSpectrum ? 'CoV-Spectrum collection' : 'GenSpectrum collection'}
                         getCollectionUrl={(id) =>
                             isCovSpectrum
