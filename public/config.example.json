@@ -106,7 +106,7 @@
                 },
                 "deconvolution": {
                     "mode": "deconvolution",
-                    "panel": ["XFG", "NB.1.8.1", "LP.8.1", "XEC"]
+                    "panel": ["NB.1.8.1", "XFG", "XFG.1", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"]
                 }
             }
         },
