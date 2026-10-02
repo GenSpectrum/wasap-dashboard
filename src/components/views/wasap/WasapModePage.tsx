@@ -1,4 +1,5 @@
 import { CollectionPage } from './pages/CollectionPage';
+import { DeconvolutionPage } from './pages/DeconvolutionPage';
 import { ManualPage } from './pages/ManualPage';
 import { ResistancePage } from './pages/ResistancePage';
 import { UntrackedPage } from './pages/UntrackedPage';
@@ -26,5 +27,8 @@ export function WasapModePage({ config, mode }: { config: WasapPageConfig; mode:
         case 'collection':
             assertModeEnabled(config, 'collection');
             return <CollectionPage config={config} />;
+        case 'deconvolution':
+            assertModeEnabled(config, 'deconvolution');
+            return <DeconvolutionPage config={config} />;
     }
 }
