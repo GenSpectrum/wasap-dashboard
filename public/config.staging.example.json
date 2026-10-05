@@ -20,6 +20,7 @@
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/tree.json",
                 "lineageAttribute": "Nextclade_pango",
+                "cladeAttribute": "clade_nextstrain",
                 "aliasKeyUrl": "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json"
             },
             "resistanceMutationCollections": [
