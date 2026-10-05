@@ -55,8 +55,8 @@ export function VariantExplorerFilter({
                         value={pageState.signatureType}
                         onChange={(e) => handleSignatureTypeChange(e.target.value as SignatureType)}
                     >
-                        <option value='computed'>Extracted from clinical sequences</option>
                         <option value='predefined'>Nextclade</option>
+                        <option value='computed'>Extracted from clinical sequences</option>
                     </select>
                 </LabeledField>
             )}
