@@ -75,7 +75,7 @@
                 },
                 "variant": {
                     "mode": "variant",
-                    "signatureType": "computed",
+                    "signatureType": "predefined",
                     "sequenceType": "nucleotide",
                     "variant": "XFG*",
                     "minProportion": 0.8,
@@ -165,7 +165,7 @@
                 },
                 "variant": {
                     "mode": "variant",
-                    "signatureType": "computed",
+                    "signatureType": "predefined",
                     "sequenceType": "nucleotide",
                     "variant": "A.D.1*",
                     "minProportion": 0.8,
@@ -246,7 +246,7 @@
                 },
                 "variant": {
                     "mode": "variant",
-                    "signatureType": "computed",
+                    "signatureType": "predefined",
                     "sequenceType": "nucleotide",
                     "variant": "B.D.E.1*",
                     "minProportion": 0.8,
