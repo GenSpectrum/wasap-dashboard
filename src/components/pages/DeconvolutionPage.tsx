@@ -18,6 +18,7 @@ import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { Loading } from '../../util/Loading';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
+import { lineageColors } from '../dataDisplay/lineageColors';
 import { DeconvolutionFilter } from '../filterSidebar/filters/DeconvolutionFilter';
 import { TitledPanel } from '../shared/TitledPanel';
 
@@ -29,6 +30,11 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    // of the lineages that are in the tree, as only those get into the deconvolution
+    const colors = useMemo(
+        () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
+        [lineageTree, analysis.panel],
+    );
 
     return (
         <ModePageLayout
@@ -65,6 +71,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 <DeconvolutionResults
                     lineageTree={lineageTree}
                     panel={analysis.panel}
+                    colors={colors}
                     filter={filter}
                     granularity={base.granularity}
                 />
@@ -76,11 +83,13 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
 function DeconvolutionResults({
     lineageTree,
     panel,
+    colors,
     filter,
     granularity,
 }: {
     lineageTree: LineageTree;
     panel: string[];
+    colors: Map<string, string>;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
 }) {
@@ -154,7 +163,7 @@ function DeconvolutionResults({
                     />
                 }
             >
-                <DeconvolutionPlot result={deconvolution.result} granularity={granularity} />
+                <DeconvolutionPlot result={deconvolution.result} colors={colors} granularity={granularity} />
             </TitledPanel>
         </>
     );

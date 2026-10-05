@@ -1,15 +1,9 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
+import { UNDETERMINED_COLOR } from './lineageColors';
 import { UNDETERMINED, type DeconvolutionResult } from '../../../lollipop';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { parseDateStringToTemporal } from '../../util/temporalClass';
-
-/**
- * Categorical colours of the lineages, in panel order: a lineage keeps its colour when another
- * one is added after it. A panel has more lineages than this only rarely; they then repeat.
- */
-const LINEAGE_COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'];
-const UNDETERMINED_COLOR = '#8a8a85';
 
 const HEIGHT = 380;
 const MARGIN = { top: 8, right: 12, bottom: 22, left: 40 };
@@ -18,10 +12,6 @@ const Y_TICKS = [0, 0.25, 0.5, 0.75, 1];
 const BAND_OPACITY = 0.1;
 const HIGHLIGHTED_BAND_OPACITY = 0.25;
 
-export function lineageColor(index: number, variant: string): string {
-    return variant === UNDETERMINED ? UNDETERMINED_COLOR : LINEAGE_COLORS[index % LINEAGE_COLORS.length];
-}
-
 /**
  * The estimated prevalence of each lineage over time, all in one chart: a point per sampling date
  * and a line through the points, over a translucent band of the confidence interval. Hovering a
@@ -29,13 +19,17 @@ export function lineageColor(index: number, variant: string): string {
  */
 export function DeconvolutionPlot({
     result,
+    colors,
     granularity,
 }: {
     result: DeconvolutionResult;
+    /** The colour of each lineage of the panel (see `lineageColors`). */
+    colors: Map<string, string>;
     /** What a date stands for: by week, it is the week's first day. */
     granularity: TemporalGranularity;
 }) {
     const [container, width] = useWidth();
+    const colorOf = (variant: string) => colors.get(variant) ?? UNDETERMINED_COLOR;
     const [hovered, setHovered] = useState<number | undefined>(undefined);
     const [highlighted, setHighlighted] = useState<number | undefined>(undefined);
 
@@ -51,7 +45,7 @@ export function DeconvolutionPlot({
     const series = result.variants.map((variant, variantIndex) => ({
         variant,
         variantIndex,
-        color: lineageColor(variantIndex, variant),
+        color: colorOf(variant),
         points: result.dates.map(({ date, estimates }, i) => ({
             date,
             px: x(days[i]),
@@ -190,13 +184,13 @@ export function DeconvolutionPlot({
                         <div className='mb-1 text-gray-600'>{dateLabel(hoveredDate.date, granularity)}</div>
                         <table>
                             <tbody>
-                                {hoveredDate.estimates.map((estimate, variantIndex) => (
+                                {hoveredDate.estimates.map((estimate) => (
                                     <tr key={estimate.variant}>
                                         <td className='pr-1.5'>
                                             <span
                                                 className='inline-block h-2 w-2 rounded-full'
                                                 style={{
-                                                    backgroundColor: lineageColor(variantIndex, estimate.variant),
+                                                    backgroundColor: colorOf(estimate.variant),
                                                 }}
                                             />
                                         </td>
