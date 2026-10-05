@@ -3,13 +3,13 @@ import { type ReactElement, type ReactNode } from 'react';
 import Tooltip from '../dataDisplay/tooltip';
 
 /**
- * A titled box around a plot or table, so that they look alike across the pages. With `info`, a
- * help button next to the title shows it on hover.
+ * A box around a plot or table with its title above it, so that they look alike across the pages.
+ * With `info`, a help button next to the title shows it on hover.
  */
 export function TitledPanel({ title, info, children }: { title: string; info?: ReactElement; children: ReactNode }) {
     return (
-        <div className='border border-stone-300 bg-white p-4'>
-            <div className='mb-3 flex items-center gap-2'>
+        <section>
+            <div className='mb-2 flex items-center gap-2'>
                 <h2 className='text-lg font-semibold'>{title}</h2>
                 {info !== undefined && (
                     <Tooltip content={info} position='bottom-start'>
@@ -23,7 +23,7 @@ export function TitledPanel({ title, info, children }: { title: string; info?: R
                     </Tooltip>
                 )}
             </div>
-            {children}
-        </div>
+            <div className='border border-stone-300 bg-white p-4'>{children}</div>
+        </section>
     );
 }
