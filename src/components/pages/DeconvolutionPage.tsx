@@ -17,6 +17,7 @@ import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { Loading } from '../../util/Loading';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
+import { LineagePanelTree } from '../dataDisplay/LineagePanelTree';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
 import { lineageColors } from '../dataDisplay/lineageColors';
 import { DeconvolutionFilter } from '../filterSidebar/filters/DeconvolutionFilter';
@@ -75,6 +76,11 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                     filter={filter}
                     granularity={base.granularity}
                 />
+            )}
+            {lineageTree !== undefined && analysis.panel.length > 0 && (
+                <TitledPanel title='Lineage tree'>
+                    <LineagePanelTree lineageTree={lineageTree} panel={analysis.panel} colors={colors} />
+                </TitledPanel>
             )}
         </ModePageLayout>
     );
