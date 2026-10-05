@@ -18,7 +18,6 @@ import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/De
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
-import { Loading } from '../../util/Loading';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
 import { LineagePanelTree } from '../dataDisplay/LineagePanelTree';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
@@ -78,7 +77,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                     Please select at least two lineages for the panel in the filter panel.
                 </NothingSelected>
             ) : isFilterPending ? (
-                <Loading />
+                <PrevalenceLoading />
             ) : (
                 <DeconvolutionResults
                     lineageTree={lineageTree}
@@ -154,7 +153,7 @@ function DeconvolutionResults({
         return <Message>The deconvolution failed: {deconvolution.error}</Message>;
     }
     if (frequencies.data === undefined || deconvolution.status !== 'done') {
-        return <Loading />;
+        return <PrevalenceLoading />;
     }
     if (deconvolution.result.dates.length === 0) {
         return (
@@ -191,6 +190,20 @@ function DeconvolutionResults({
                 />
             </TitledPanel>
         </>
+    );
+}
+
+/**
+ * The panel of the plot while it is computed, as high as the plot with its legend, so that the
+ * page doesn't jump when the plot comes in.
+ */
+function PrevalenceLoading() {
+    return (
+        <TitledPanel title='Estimated prevalence'>
+            <div aria-label='Loading' className='flex h-80 items-center justify-center'>
+                <div className='loading loading-spinner loading-md text-neutral-500' />
+            </div>
+        </TitledPanel>
     );
 }
 
