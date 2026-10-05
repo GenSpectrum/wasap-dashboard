@@ -1,9 +1,10 @@
 import { useMemo, type ReactNode } from 'react';
+import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
 import { informativeMutations, type DeconvolutionOptions } from '../../../lollipop';
-import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { MIN_COVERAGE, useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
@@ -12,10 +13,11 @@ import { poolFrequencies } from '../../deconvolution/poolFrequencies';
 import { useDeconvolution } from '../../deconvolution/useDeconvolution';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
+import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { modePath } from '../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
-import { Loading } from '../../util/Loading';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
 import { LineagePanelTree } from '../dataDisplay/LineagePanelTree';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
@@ -36,6 +38,14 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
         [lineageTree, analysis.panel],
     );
+    const lineageLink = isModeEnabled(config, 'variant')
+        ? (lineage: string): To => {
+              const search = datasetFilterSearchParams(base, config);
+              search.set('signatureType', 'predefined');
+              search.set('lineage', lineage);
+              return { pathname: modePath(config.path, 'variant'), search: `?${search.toString()}` };
+          }
+        : undefined;
 
     return (
         <ModePageLayout
@@ -67,7 +77,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                     Please select at least two lineages for the panel in the filter panel.
                 </NothingSelected>
             ) : isFilterPending ? (
-                <Loading />
+                <PrevalenceLoading />
             ) : (
                 <DeconvolutionResults
                     lineageTree={lineageTree}
@@ -75,11 +85,17 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                     colors={colors}
                     filter={filter}
                     granularity={base.granularity}
+                    lineageLink={lineageLink}
                 />
             )}
             {lineageTree !== undefined && analysis.panel.length > 0 && (
                 <TitledPanel title='Lineage tree'>
-                    <LineagePanelTree lineageTree={lineageTree} panel={analysis.panel} colors={colors} />
+                    <LineagePanelTree
+                        lineageTree={lineageTree}
+                        panel={analysis.panel}
+                        colors={colors}
+                        lineageLink={lineageLink}
+                    />
                 </TitledPanel>
             )}
         </ModePageLayout>
@@ -92,12 +108,14 @@ function DeconvolutionResults({
     colors,
     filter,
     granularity,
+    lineageLink,
 }: {
     lineageTree: LineageTree;
     panel: string[];
     colors: Map<string, string>;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
+    lineageLink: ((lineage: string) => To) | undefined;
 }) {
     const signatures = useMemo(() => lineageSignatures(lineageTree, panel), [lineageTree, panel]);
     const mutations = useMemo(() => informativeMutations(signatures.signatures), [signatures]);
@@ -140,7 +158,7 @@ function DeconvolutionResults({
         return <Message>The deconvolution failed: {deconvolution.error}</Message>;
     }
     if (frequencies.data === undefined || deconvolution.status !== 'done') {
-        return <Loading />;
+        return <PrevalenceLoading />;
     }
     if (deconvolution.result.dates.length === 0) {
         return (
@@ -169,9 +187,28 @@ function DeconvolutionResults({
                     />
                 }
             >
-                <DeconvolutionPlot result={deconvolution.result} colors={colors} granularity={granularity} />
+                <DeconvolutionPlot
+                    result={deconvolution.result}
+                    colors={colors}
+                    granularity={granularity}
+                    lineageLink={lineageLink}
+                />
             </TitledPanel>
         </>
+    );
+}
+
+/**
+ * The panel of the plot while it is computed, as high as the plot with its legend, so that the
+ * page doesn't jump when the plot comes in.
+ */
+function PrevalenceLoading() {
+    return (
+        <TitledPanel title='Estimated prevalence'>
+            <div aria-label='Loading' className='flex h-80 items-center justify-center'>
+                <div className='loading loading-spinner loading-md text-neutral-500' />
+            </div>
+        </TitledPanel>
     );
 }
 

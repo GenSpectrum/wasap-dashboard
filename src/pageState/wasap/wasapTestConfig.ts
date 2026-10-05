@@ -68,13 +68,14 @@ export const testConfig = {
         },
         variant: {
             mode: 'variant',
-            signatureType: 'computed',
+            signatureType: 'predefined',
             sequenceType: 'nucleotide',
             variant: 'XFG*',
             minProportion: 0.8,
             minCount: 15,
             minJaccard: 0.75,
             timeFrame: VARIANT_TIME_FRAME.all,
+            lineage: 'XFG',
         },
         resistance: {
             mode: 'resistance',
