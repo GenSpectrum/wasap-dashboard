@@ -210,12 +210,12 @@ export function DeconvolutionPlot({
                 {series.map(({ variant, variantIndex, color }) => (
                     <span
                         key={variant}
-                        className='flex cursor-default items-center gap-1.5'
+                        className='flex cursor-default items-center gap-1.5 text-sm'
                         onPointerEnter={() => setHighlighted(variantIndex)}
                         onPointerLeave={() => setHighlighted(undefined)}
                     >
                         <span className='inline-block h-2.5 w-2.5 rounded-full' style={{ backgroundColor: color }} />
-                        <span className='font-semibold'>{variantLabel(variant)}</span>
+                        <span>{variantLabel(variant)}</span>
                     </span>
                 ))}
             </figcaption>
