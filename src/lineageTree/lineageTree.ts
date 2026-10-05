@@ -22,6 +22,15 @@ export type Lineage = {
     /** `undefined` only for the root lineage. */
     parent: string | undefined;
     children: string[];
+    /**
+     * For a recombinant (like `XFG`, but not its sublineages like `XFG.1`), the lineages it's a
+     * recombinant of; `undefined` for any other lineage. The Nextclade tree puts recombinants below
+     * the root lineage (`B`), so `parent` doesn't say where they come from. A parent can be missing
+     * from the tree, if pango-designation is ahead of the Nextclade dataset.
+     */
+    recombinantParents: string[] | undefined;
+    /** The recombinants that have this lineage as one of their `recombinantParents`. */
+    recombinantChildren: string[];
     /** `YYYY-MM-DD`; `undefined` for the few lineages without a designated sequence in the tree. */
     designationDate: string | undefined;
     /** The mutations on the way from the parent lineage to this one. */
@@ -42,8 +51,15 @@ export type LineageTree = {
  * one, at the topmost node of the lineage. Its parent is the lineage of the closest node above that
  * isn't of the lineage itself. Going by the leaf matters: a few lineages (like `B.1`) also show up at
  * a second place in the tree, and the leaf is where the designation is.
+ *
+ * The Nextclade tree doesn't know the parents of recombinants, so they come separately (see
+ * `parseRecombinantParents`); recombinants that aren't in the tree are left out.
  */
-export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: string): LineageTree {
+export function buildLineageTree(
+    root: NextcladeTreeNode,
+    lineageAttribute: string,
+    recombinantParents = new Map<string, string[]>(),
+): LineageTree {
     const placements = new Map<string, { node: TreeNode; designationDate: string | undefined }>();
 
     const stack: { node: NextcladeTreeNode; parent: TreeNode | undefined }[] = [{ node: root, parent: undefined }];
@@ -84,6 +100,8 @@ export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: stri
             name,
             parent: current?.lineage,
             children: [],
+            recombinantParents: recombinantParents.get(name),
+            recombinantChildren: [],
             designationDate,
             definingMutations: accumulateMutations(segment.reverse()),
             treeNode: node,
@@ -97,9 +115,29 @@ export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: stri
         } else {
             lineages.get(lineage.parent)!.children.push(lineage.name);
         }
+        for (const recombinantParent of lineage.recombinantParents ?? []) {
+            lineages.get(recombinantParent)?.recombinantChildren.push(lineage.name);
+        }
     }
 
     return { root: rootLineage!, lineages };
+}
+
+/**
+ * The recombinant the lineage descends from: the lineage itself if it's a recombinant, else the
+ * closest lineage above it that is (`XFG` for `XFG.3.1`). `undefined` if there is none.
+ */
+export function getRecombinantOrigin(lineageTree: LineageTree, name: string): Lineage | undefined {
+    for (
+        let lineage = lineageTree.lineages.get(name);
+        lineage !== undefined;
+        lineage = lineage.parent === undefined ? undefined : lineageTree.lineages.get(lineage.parent)
+    ) {
+        if (lineage.recombinantParents !== undefined) {
+            return lineage;
+        }
+    }
+    return undefined;
 }
 
 /**
