@@ -6,6 +6,9 @@ export type FeatureSort = { column: SortColumn; direction: SortDirection };
 /** The rows in their natural order: mutations by position, queries as in their collection. */
 export const DEFAULT_FEATURE_SORT: FeatureSort = { column: 'rowLabel', direction: 'ascending' };
 
+/** The rows with the highest Jaccard index first, the default where the rows have one. */
+export const JACCARD_FEATURE_SORT: FeatureSort = { column: 'jaccardIndex', direction: 'descending' };
+
 /**
  * The sort after clicking the header of `column`: the other direction if the rows are already
  * sorted by it, otherwise by it, the row labels in their natural order and values highest first.
