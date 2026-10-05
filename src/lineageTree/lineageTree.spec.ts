@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildLineageTree, getLineageSignature } from './lineageTree';
+import { buildLineageTree, getFoundedClade, getLineageSignature, getRecombinantOrigin } from './lineageTree';
 import { type NextcladeTreeNode } from './nextcladeTree';
 
 /* eslint-disable @typescript-eslint/naming-convention -- the field names of the Auspice JSON format */
@@ -97,5 +97,98 @@ describe('buildLineageTree', () => {
         const result = buildLineageTree(overriding, 'lineage');
 
         expect(getLineageSignature(result.lineages.get('C')!).nucleotide).toEqual(['C100G']);
+    });
+});
+
+describe('recombinants', () => {
+    // like in the Nextclade tree, the recombinant X hangs below the root lineage
+    const treeWithRecombinant = node('NODE_0', 'A', {}, [
+        node('A.1', 'A.1', { nuc: ['C100T'] }, []),
+        node('A.2', 'A.2', { nuc: ['A400G'] }, []),
+        node('NODE_1', 'X', { nuc: ['C100T', 'A400G'] }, [
+            node('X', 'X', {}, []),
+            node('X.1', 'X.1', { nuc: ['A900G'] }, [node('X.1.1', 'X.1.1', { nuc: ['A950G'] }, [])]),
+        ]),
+    ]);
+    const recombinantParents = new Map([
+        ['X', ['A.1', 'A.2', 'Z.9']],
+        ['Y', ['A.1', 'A.2']],
+    ]);
+    const lineageTree = buildLineageTree(treeWithRecombinant, 'lineage', recombinantParents);
+    const lineage = (name: string) => lineageTree.lineages.get(name)!;
+
+    it('records the parents of a recombinant, also those missing from the tree', () => {
+        expect(lineage('X').recombinantParents).toEqual(['A.1', 'A.2', 'Z.9']);
+        expect(lineage('X').parent).toBe('A');
+    });
+
+    it('leaves the sublineages of a recombinant and other lineages without parents', () => {
+        expect(lineage('X.1').recombinantParents).toBeUndefined();
+        expect(lineage('A.1').recombinantParents).toBeUndefined();
+    });
+
+    it('records the recombinants of a parent', () => {
+        expect(lineage('A.1').recombinantChildren).toEqual(['X']);
+        expect(lineage('A.2').recombinantChildren).toEqual(['X']);
+        expect(lineage('X').recombinantChildren).toEqual([]);
+    });
+
+    it('leaves out recombinants that are not in the tree', () => {
+        expect(lineageTree.lineages.has('Y')).toBe(false);
+    });
+
+    it('finds the recombinant a lineage descends from', () => {
+        expect(getRecombinantOrigin(lineageTree, 'X')?.name).toBe('X');
+        expect(getRecombinantOrigin(lineageTree, 'X.1.1')?.name).toBe('X');
+        expect(getRecombinantOrigin(lineageTree, 'A.1')).toBeUndefined();
+        expect(getRecombinantOrigin(lineageTree, 'unknown')).toBeUndefined();
+    });
+
+    it('builds without recombinant parents', () => {
+        const withoutParents = buildLineageTree(treeWithRecombinant, 'lineage');
+
+        expect(withoutParents.lineages.get('X')!.recombinantParents).toBeUndefined();
+        expect(withoutParents.lineages.get('A.1')!.recombinantChildren).toEqual([]);
+    });
+});
+
+describe('clades', () => {
+    function cladeNode(name: string, lineage: string, clade: string, children: NextcladeTreeNode[] = []) {
+        return { name, node_attrs: { lineage: { value: lineage }, clade: { value: clade } }, children };
+    }
+
+    const treeWithClades = cladeNode('NODE_0', 'A', '1A', [
+        cladeNode('A', 'A', '1A'),
+        cladeNode('NODE_1', 'A.1', '1A', [
+            cladeNode('A.1', 'A.1', '1A'),
+            cladeNode('NODE_2', 'A.1.1', '2B', [
+                cladeNode('A.1.1', 'A.1.1', '2B'),
+                cladeNode('A.1.1.1', 'A.1.1.1', '2B'),
+            ]),
+        ]),
+        cladeNode('NODE_3', 'X', 'recombinant', [cladeNode('X', 'X', 'recombinant')]),
+    ]);
+
+    it('gives each lineage the clade of its designated sequence', () => {
+        const lineageTree = buildLineageTree(treeWithClades, 'lineage', new Map(), 'clade');
+
+        expect(lineageTree.lineages.get('A.1.1')!.clade).toBe('2B');
+    });
+
+    it('finds the lineages that start a clade, other than the recombinant one', () => {
+        const lineageTree = buildLineageTree(treeWithClades, 'lineage', new Map(), 'clade');
+        const foundedClade = (name: string) => getFoundedClade(lineageTree, lineageTree.lineages.get(name)!);
+
+        expect(foundedClade('A')).toBe('1A');
+        expect(foundedClade('A.1')).toBeUndefined();
+        expect(foundedClade('A.1.1')).toBe('2B');
+        expect(foundedClade('A.1.1.1')).toBeUndefined();
+        expect(foundedClade('X')).toBeUndefined();
+    });
+
+    it('has no clades without a clade attribute', () => {
+        const lineageTree = buildLineageTree(treeWithClades, 'lineage');
+
+        expect(lineageTree.lineages.get('A.1.1')!.clade).toBeUndefined();
     });
 });

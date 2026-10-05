@@ -48,11 +48,10 @@ export const LocationOverviewTable: FC = () => {
     );
 
     return (
-        <TitledPanel title='Sampling locations'>
-            {/* Out to the panel's sides and bottom, so the row lines reach its border and the last row
-                is as tall as the others. The outer cells take over the panel's padding, which keeps the
-                text in line with the title. */}
-            <table className='-mx-4 -mb-4 w-[calc(100%+2rem)] text-sm [&_td:first-child]:pl-4 [&_td:last-child]:pr-4 [&_th:first-child]:pl-4 [&_th:last-child]:pr-4'>
+        <TitledPanel title='Sampling locations' flush>
+            {/* Flush with the panel, so the row lines reach its border. The outer cells take over the
+                panel's padding at the sides. */}
+            <table className='w-full text-sm [&_td:first-child]:pl-4 [&_td:last-child]:pr-4 [&_th:first-child]:pl-4 [&_th:last-child]:pr-4'>
                 <thead>
                     <tr className='border-b border-stone-300 text-left'>
                         {header('name', 'Location')}

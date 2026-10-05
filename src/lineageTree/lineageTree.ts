@@ -22,8 +22,22 @@ export type Lineage = {
     /** `undefined` only for the root lineage. */
     parent: string | undefined;
     children: string[];
+    /**
+     * For a recombinant (like `XFG`, but not its sublineages like `XFG.1`), the lineages it's a
+     * recombinant of; `undefined` for any other lineage. The Nextclade tree puts recombinants below
+     * the root lineage (`B`), so `parent` doesn't say where they come from. A parent can be missing
+     * from the tree, if pango-designation is ahead of the Nextclade dataset.
+     */
+    recombinantParents: string[] | undefined;
+    /** The recombinants that have this lineage as one of their `recombinantParents`. */
+    recombinantChildren: string[];
     /** `YYYY-MM-DD`; `undefined` for the few lineages without a designated sequence in the tree. */
     designationDate: string | undefined;
+    /**
+     * The clade (like the Nextstrain clade `24A`) of the lineage's designated sequence;
+     * `undefined` if the tree has no clades configured. See `getFoundedClade`.
+     */
+    clade: string | undefined;
     /** The mutations on the way from the parent lineage to this one. */
     definingMutations: Mutations;
     /** The node of the tree the lineage is placed at; see `getLineageSignature`. */
@@ -42,9 +56,22 @@ export type LineageTree = {
  * one, at the topmost node of the lineage. Its parent is the lineage of the closest node above that
  * isn't of the lineage itself. Going by the leaf matters: a few lineages (like `B.1`) also show up at
  * a second place in the tree, and the leaf is where the designation is.
+ *
+ * The Nextclade tree doesn't know the parents of recombinants, so they come separately (see
+ * `parseRecombinantParents`); recombinants that aren't in the tree are left out.
+ *
+ * With a `cladeAttribute`, each lineage gets the clade of the node it's placed at.
  */
-export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: string): LineageTree {
-    const placements = new Map<string, { node: TreeNode; designationDate: string | undefined }>();
+export function buildLineageTree(
+    root: NextcladeTreeNode,
+    lineageAttribute: string,
+    recombinantParents = new Map<string, string[]>(),
+    cladeAttribute?: string,
+): LineageTree {
+    const placements = new Map<
+        string,
+        { node: TreeNode; designationDate: string | undefined; clade: string | undefined }
+    >();
 
     const stack: { node: NextcladeTreeNode; parent: TreeNode | undefined }[] = [{ node: root, parent: undefined }];
     while (stack.length > 0) {
@@ -55,15 +82,17 @@ export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: stri
         }
         const treeNode: TreeNode = { parent, lineage, mutations: toMutations(node.branch_attrs?.mutations ?? {}) };
 
+        const clade = cladeAttribute === undefined ? undefined : node.node_attrs[cladeAttribute]?.value;
         const isLeaf = (node.children ?? []).length === 0;
         if (isLeaf && node.name === lineage) {
             placements.set(lineage, {
                 node: treeNode,
                 designationDate: node.node_attrs[DESIGNATION_DATE_ATTRIBUTE]?.value,
+                clade,
             });
         } else if (!placements.has(lineage) && parent?.lineage !== lineage) {
             // a placeholder until the leaf of the lineage comes up (if there is one)
-            placements.set(lineage, { node: treeNode, designationDate: undefined });
+            placements.set(lineage, { node: treeNode, designationDate: undefined, clade });
         }
 
         // reversed, so that the children are visited (and end up listed) in the order of the tree
@@ -73,7 +102,7 @@ export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: stri
     }
 
     const lineages = new Map<string, Lineage>();
-    for (const [name, { node, designationDate }] of placements) {
+    for (const [name, { node, designationDate, clade }] of placements) {
         const segment: TreeNode[] = [];
         let current: TreeNode | undefined = node;
         while (current?.lineage === name) {
@@ -84,7 +113,10 @@ export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: stri
             name,
             parent: current?.lineage,
             children: [],
+            recombinantParents: recombinantParents.get(name),
+            recombinantChildren: [],
             designationDate,
+            clade,
             definingMutations: accumulateMutations(segment.reverse()),
             treeNode: node,
         });
@@ -97,10 +129,44 @@ export function buildLineageTree(root: NextcladeTreeNode, lineageAttribute: stri
         } else {
             lineages.get(lineage.parent)!.children.push(lineage.name);
         }
+        for (const recombinantParent of lineage.recombinantParents ?? []) {
+            lineages.get(recombinantParent)?.recombinantChildren.push(lineage.name);
+        }
     }
 
     return { root: rootLineage!, lineages };
 }
+
+/**
+ * The recombinant the lineage descends from: the lineage itself if it's a recombinant, else the
+ * closest lineage above it that is (`XFG` for `XFG.3.1`). `undefined` if there is none.
+ */
+export function getRecombinantOrigin(lineageTree: LineageTree, name: string): Lineage | undefined {
+    for (
+        let lineage = lineageTree.lineages.get(name);
+        lineage !== undefined;
+        lineage = lineage.parent === undefined ? undefined : lineageTree.lineages.get(lineage.parent)
+    ) {
+        if (lineage.recombinantParents !== undefined) {
+            return lineage;
+        }
+    }
+    return undefined;
+}
+
+/**
+ * The clade that starts with the lineage, i.e. its clade if the parent lineage is of another one;
+ * `undefined` if it doesn't start a clade. These are the landmarks of the tree, like `JN.1` (`24A`)
+ * or `BA.2.86` (`23I`). The catch-all clade `recombinant` doesn't count.
+ */
+export function getFoundedClade(lineageTree: LineageTree, lineage: Lineage): string | undefined {
+    const parentClade = lineage.parent === undefined ? undefined : lineageTree.lineages.get(lineage.parent)?.clade;
+    return lineage.clade !== undefined && lineage.clade !== parentClade && lineage.clade !== RECOMBINANT_CLADE
+        ? lineage.clade
+        : undefined;
+}
+
+const RECOMBINANT_CLADE = 'recombinant';
 
 /**
  * All the mutations of the lineage compared to the reference, i.e. the mutations from the root of
