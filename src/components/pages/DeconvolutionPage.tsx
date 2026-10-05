@@ -1,9 +1,10 @@
 import { useMemo, type ReactNode } from 'react';
+import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
 import { informativeMutations, type DeconvolutionOptions } from '../../../lollipop';
-import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { MIN_COVERAGE, useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
@@ -12,8 +13,10 @@ import { poolFrequencies } from '../../deconvolution/poolFrequencies';
 import { useDeconvolution } from '../../deconvolution/useDeconvolution';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
+import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { modePath } from '../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { Loading } from '../../util/Loading';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
@@ -36,6 +39,14 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
         [lineageTree, analysis.panel],
     );
+    const lineageLink = isModeEnabled(config, 'variant')
+        ? (lineage: string): To => {
+              const search = datasetFilterSearchParams(base, config);
+              search.set('signatureType', 'predefined');
+              search.set('lineage', lineage);
+              return { pathname: modePath(config.path, 'variant'), search: `?${search.toString()}` };
+          }
+        : undefined;
 
     return (
         <ModePageLayout
@@ -75,6 +86,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                     colors={colors}
                     filter={filter}
                     granularity={base.granularity}
+                    lineageLink={lineageLink}
                 />
             )}
             {lineageTree !== undefined && analysis.panel.length > 0 && (
@@ -92,12 +104,14 @@ function DeconvolutionResults({
     colors,
     filter,
     granularity,
+    lineageLink,
 }: {
     lineageTree: LineageTree;
     panel: string[];
     colors: Map<string, string>;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
+    lineageLink: ((lineage: string) => To) | undefined;
 }) {
     const signatures = useMemo(() => lineageSignatures(lineageTree, panel), [lineageTree, panel]);
     const mutations = useMemo(() => informativeMutations(signatures.signatures), [signatures]);
@@ -169,7 +183,12 @@ function DeconvolutionResults({
                     />
                 }
             >
-                <DeconvolutionPlot result={deconvolution.result} colors={colors} granularity={granularity} />
+                <DeconvolutionPlot
+                    result={deconvolution.result}
+                    colors={colors}
+                    granularity={granularity}
+                    lineageLink={lineageLink}
+                />
             </TitledPanel>
         </>
     );

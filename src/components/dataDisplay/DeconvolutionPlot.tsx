@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { Link, type To } from 'react-router-dom';
 
 import { UNDETERMINED_COLOR } from './lineageColors';
 import { UNDETERMINED, type DeconvolutionResult } from '../../../lollipop';
@@ -14,18 +15,22 @@ const HIGHLIGHTED_BAND_OPACITY = 0.25;
 /**
  * The estimated prevalence of each lineage over time, all in one chart: a point per sampling date
  * and a line through the points, over a translucent band of the confidence interval. Hovering a
- * lineage in the legend brings it to the front and shows only its band.
+ * lineage in the legend brings it to the front and shows only its band, clicking it goes to
+ * `lineageLink` of the lineage, if there is one.
  */
 export function DeconvolutionPlot({
     result,
     colors,
     granularity,
+    lineageLink,
 }: {
     result: DeconvolutionResult;
     /** The colour of each lineage of the panel (see `lineageColors`). */
     colors: Map<string, string>;
     /** What a date stands for: by week, it is the week's first day. */
     granularity: TemporalGranularity;
+    /** Where the name of a lineage in the legend links to (not "Undetermined", which isn't one). */
+    lineageLink?: (lineage: string) => To | undefined;
 }) {
     const [container, { width, height }] = useSize();
     const colorOf = (variant: string) => colors.get(variant) ?? UNDETERMINED_COLOR;
@@ -215,11 +220,24 @@ export function DeconvolutionPlot({
                         onPointerLeave={() => setHighlighted(undefined)}
                     >
                         <span className='inline-block h-2.5 w-2.5 rounded-full' style={{ backgroundColor: color }} />
-                        <span>{variantLabel(variant)}</span>
+                        <LegendLabel to={variant === UNDETERMINED ? undefined : lineageLink?.(variant)}>
+                            {variantLabel(variant)}
+                        </LegendLabel>
                     </span>
                 ))}
             </figcaption>
         </figure>
+    );
+}
+
+function LegendLabel({ to, children }: { to: To | undefined; children: string }) {
+    if (to === undefined) {
+        return <span>{children}</span>;
+    }
+    return (
+        <Link to={to} className='link link-hover'>
+            {children}
+        </Link>
     );
 }
 
