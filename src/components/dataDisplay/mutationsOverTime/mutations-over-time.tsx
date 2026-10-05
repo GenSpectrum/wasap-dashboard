@@ -24,7 +24,7 @@ import { AnnotatedMutation } from '../annotated-mutation';
 import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
-import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { DEFAULT_FEATURE_SORT, JACCARD_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { getProportion, type ProportionValue } from '../overTime/proportionValue';
 import { pageSizesSchema } from '../tanstackTable/pagination';
 import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
@@ -79,7 +79,8 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
     const [pageIndex, setPageIndex] = useState(0);
     useEffect(() => setPageIndex(0), [filter, granularity, sequenceType, displayMutations]);
     // Up here rather than next to the rows, so it survives the reloading when the filters change.
-    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
+    // `undefined` until a header is clicked: the default depends on whether there are Jaccard indices.
+    const [sort, setSort] = useState<FeatureSort | undefined>(undefined);
 
     if (metadataLoading) {
         return <LoadingDisplay />;
@@ -112,7 +113,7 @@ type MutationsOverTimeWithMetadataProps = {
     originalComponentProps: MutationsOverTimeProps;
     pageIndex: number;
     setPageIndex: Dispatch<SetStateAction<number>>;
-    sort: FeatureSort;
+    sort: FeatureSort | undefined;
     setSort: (sort: FeatureSort) => void;
 };
 
@@ -163,7 +164,9 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     );
 
     // A sort by a Jaccard index that the mutations no longer have (e.g. another mode) falls back.
-    const effectiveSort = sort.column === 'jaccardIndex' && jaccardIndices === undefined ? DEFAULT_FEATURE_SORT : sort;
+    const defaultSort = jaccardIndices === undefined ? DEFAULT_FEATURE_SORT : JACCARD_FEATURE_SORT;
+    const effectiveSort =
+        sort === undefined || (sort.column === 'jaccardIndex' && jaccardIndices === undefined) ? defaultSort : sort;
     const sortedMutationCodes = useMemo(
         () => sortRowLabels(filteredMutationCodes, effectiveSort, { meanProportions, jaccardIndices }),
         [filteredMutationCodes, effectiveSort, meanProportions, jaccardIndices],

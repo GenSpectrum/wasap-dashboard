@@ -48,7 +48,11 @@ describe('VariantExplorerPageStateHandler', () => {
     });
 
     it('variant mode round-trip preserves numeric precision', () => {
-        const url = '/wastewater/covid/variantExplorer?' + 'minProportion=0.123456&' + 'minJaccard=0.789012&';
+        const url =
+            '/wastewater/covid/variantExplorer?' +
+            'signatureType=computed&' +
+            'minProportion=0.123456&' +
+            'minJaccard=0.789012&';
         const filter1 = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
         const url2 = handler.toUrl(filter1);
         const filter2 = handler.parsePageStateFromUrl(new URL(`http://example.com${url2}`).searchParams);
@@ -59,12 +63,13 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(analysis2.minJaccard).toBe(analysis1.minJaccard);
     });
 
-    it('defaults signatureType to computed when absent from URL', () => {
+    it('defaults signatureType to predefined when absent from URL', () => {
         const url = '/wastewater/covid/variantExplorer?';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         const { analysis } = filter;
-        expect(analysis.signatureType).toBe('computed');
+        expect(analysis.signatureType).toBe('predefined');
+        expect(analysis.lineage).toBe('XFG');
     });
 
     it('parses and encodes predefined variant filter with lineage (round-trip)', () => {

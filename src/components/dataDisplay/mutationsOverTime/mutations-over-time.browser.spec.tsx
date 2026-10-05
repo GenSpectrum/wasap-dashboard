@@ -180,6 +180,11 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         // One mutation per page, so the one shown is the first in the order.
         const screen = renderOverTime({ pageSizes: [1], jaccardIndices: { C241T: 0.1, C3037T: 0.7 } });
 
+        // By Jaccard index, highest first, until a header is clicked.
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+        await expect.element(screen.getByText('C241T').first()).not.toBeInTheDocument();
+
+        await screen.getByRole('button', { name: 'Mutation' }).click();
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
         await expect.element(screen.getByText('C3037T').first()).not.toBeInTheDocument();
 
@@ -198,6 +203,14 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
 
         await screen.getByRole('button', { name: 'Jaccard index' }).click();
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+    });
+
+    it('sorts by position by default without Jaccard indices', async () => {
+        stubSilo();
+        const screen = renderOverTime({ pageSizes: [1] });
+
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+        await expect.element(screen.getByText('C3037T').first()).not.toBeInTheDocument();
     });
 
     it('shows a dash for a display mutation without a measured mean proportion', async () => {
