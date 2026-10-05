@@ -23,13 +23,14 @@ export const DESIGNATION_DATE_ATTRIBUTE = 'designation_date';
 
 const attributeSchema = z.object({ value: z.string() }).optional();
 
-/** The schema of a Nextclade reference tree, with the lineage in the given node attribute. */
-export function nextcladeTreeSchema(lineageAttribute: string) {
+/** The schema of a Nextclade reference tree, with the lineage (and clade) in the given node attributes. */
+export function nextcladeTreeSchema(lineageAttribute: string, cladeAttribute?: string) {
     const nodeSchema: z.ZodType<NextcladeTreeNode> = z.object({
         name: z.string(),
         node_attrs: z.object({
             [lineageAttribute]: attributeSchema,
             [DESIGNATION_DATE_ATTRIBUTE]: attributeSchema,
+            ...(cladeAttribute === undefined ? {} : { [cladeAttribute]: attributeSchema }),
         }),
         branch_attrs: z.object({ mutations: z.record(z.string(), z.array(z.string())).optional() }).optional(),
         get children() {

@@ -16,7 +16,7 @@ export async function fetchLineageTree(config: LineageTreeConfig): Promise<Linea
         fetchNextcladeTree(config),
         config.aliasKeyUrl === undefined ? new Map<string, string[]>() : fetchRecombinantParents(config.aliasKeyUrl),
     ]);
-    return buildLineageTree(tree, config.lineageAttribute, recombinantParents);
+    return buildLineageTree(tree, config.lineageAttribute, recombinantParents, config.cladeAttribute);
 }
 
 async function fetchNextcladeTree(config: LineageTreeConfig) {
@@ -26,7 +26,7 @@ async function fetchNextcladeTree(config: LineageTreeConfig) {
             `Failed to fetch the Nextclade tree from ${config.url}: ${response.status} ${response.statusText}`,
         );
     }
-    return nextcladeTreeSchema(config.lineageAttribute).parse(await response.json()).tree;
+    return nextcladeTreeSchema(config.lineageAttribute, config.cladeAttribute).parse(await response.json()).tree;
 }
 
 /** Without the alias key, the tree is still useful, just without the parents of recombinants. */
