@@ -4,9 +4,20 @@ import Tooltip from '../dataDisplay/tooltip';
 
 /**
  * A box around a plot or table with its title above it, so that they look alike across the pages.
- * With `info`, a help button next to the title shows it on hover.
+ * With `info`, a help button next to the title shows it on hover. `flush` drops the box's padding,
+ * for content that should reach its border, such as a table with row lines.
  */
-export function TitledPanel({ title, info, children }: { title: string; info?: ReactElement; children: ReactNode }) {
+export function TitledPanel({
+    title,
+    info,
+    flush = false,
+    children,
+}: {
+    title: string;
+    info?: ReactElement;
+    flush?: boolean;
+    children: ReactNode;
+}) {
     return (
         <section>
             <div className='mb-2 flex items-center gap-2'>
@@ -23,7 +34,7 @@ export function TitledPanel({ title, info, children }: { title: string; info?: R
                     </Tooltip>
                 )}
             </div>
-            <div className='border border-stone-300 bg-white p-4'>{children}</div>
+            <div className={`border border-stone-300 bg-white ${flush ? '' : 'p-4'}`}>{children}</div>
         </section>
     );
 }
