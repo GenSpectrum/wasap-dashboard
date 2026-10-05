@@ -90,7 +90,12 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
             )}
             {lineageTree !== undefined && analysis.panel.length > 0 && (
                 <TitledPanel title='Lineage tree'>
-                    <LineagePanelTree lineageTree={lineageTree} panel={analysis.panel} colors={colors} />
+                    <LineagePanelTree
+                        lineageTree={lineageTree}
+                        panel={analysis.panel}
+                        colors={colors}
+                        lineageLink={lineageLink}
+                    />
                 </TitledPanel>
             )}
         </ModePageLayout>

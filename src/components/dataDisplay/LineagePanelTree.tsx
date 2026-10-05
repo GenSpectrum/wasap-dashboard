@@ -1,5 +1,6 @@
 import { flip, offset, shift } from '@floating-ui/dom';
 import { useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { Link, type To } from 'react-router-dom';
 
 import { useFloatingUi } from './floating-ui-hooks';
 import { TOOLTIP_BASE_STYLES } from './tooltip';
@@ -11,17 +12,21 @@ import { buildPanelTree, type PanelTreeNode } from '../../lineageTree/panelTree'
  * the panel, it shows (greyed out) only the common ancestors where the panel branches apart and
  * the lineages on the way that start a clade; a dashed line and "via N" mark where others are left
  * out. Recombinants get a section of their own, a tree per recombinant with the lineages it's a
- * recombinant of. Hovering a lineage shows its immediate parents and when it was designated.
+ * recombinant of. Hovering a lineage shows its immediate parents and when it was designated,
+ * clicking it goes to `lineageLink` of the lineage, if there is one.
  */
 export function LineagePanelTree({
     lineageTree,
     panel,
     colors,
+    lineageLink,
 }: {
     lineageTree: LineageTree;
     panel: string[];
     /** The colour of each lineage, to match the other plots of the page. */
     colors: Map<string, string>;
+    /** Where the name of a lineage links to. */
+    lineageLink?: (lineage: string) => To;
 }) {
     const panelTree = useMemo(() => buildPanelTree(lineageTree, panel), [lineageTree, panel]);
     const inPanel = new Set(panel);
@@ -33,7 +38,7 @@ export function LineagePanelTree({
                     {panelTree.lineages.length === 0 ? (
                         <Empty>No lineages outside the recombinants.</Empty>
                     ) : (
-                        <Nodes nodes={panelTree.lineages} colors={colors} />
+                        <Nodes nodes={panelTree.lineages} colors={colors} lineageLink={lineageLink} />
                     )}
                 </TreeSection>
                 <TreeSection title='Recombinants'>
@@ -44,7 +49,7 @@ export function LineagePanelTree({
                             {panelTree.recombinants.map((recombinant) => (
                                 <div key={recombinant.name}>
                                     <RecombinantParents parents={recombinant.parents} inPanel={inPanel} />
-                                    <Nodes nodes={[recombinant]} colors={colors} />
+                                    <Nodes nodes={[recombinant]} colors={colors} lineageLink={lineageLink} />
                                 </div>
                             ))}
                         </div>
@@ -94,10 +99,12 @@ const CONNECTOR =
 function Nodes({
     nodes,
     colors,
+    lineageLink,
     nested = false,
 }: {
     nodes: PanelTreeNode[];
     colors: Map<string, string>;
+    lineageLink: ((lineage: string) => To) | undefined;
     nested?: boolean;
 }) {
     return (
@@ -108,9 +115,11 @@ function Nodes({
                     className={nested ? `${CONNECTOR} ${node.skipped.length > 0 ? 'before:border-dashed' : ''}` : ''}
                 >
                     <NodeTooltip node={node}>
-                        <NodeLabel node={node} color={colors.get(node.name)} />
+                        <NodeLabel node={node} color={colors.get(node.name)} to={lineageLink?.(node.name)} />
                     </NodeTooltip>
-                    {node.children.length > 0 && <Nodes nodes={node.children} colors={colors} nested />}
+                    {node.children.length > 0 && (
+                        <Nodes nodes={node.children} colors={colors} lineageLink={lineageLink} nested />
+                    )}
                 </li>
             ))}
         </ul>
@@ -155,14 +164,21 @@ function FloatingNodeInfo({
     );
 }
 
-function NodeLabel({ node, color }: { node: PanelTreeNode; color: string | undefined }) {
+function NodeLabel({ node, color, to }: { node: PanelTreeNode; color: string | undefined; to: To | undefined }) {
+    const nameClassName = node.inPanel ? 'font-medium' : 'text-gray-500';
     return (
         <div className='flex h-7 items-center gap-2 text-sm'>
             <span
                 className={`inline-block size-2.5 shrink-0 rounded-full border-2 ${node.inPanel ? '' : 'border-stone-400 bg-white'}`}
                 style={node.inPanel ? { backgroundColor: color, borderColor: color } : undefined}
             />
-            <span className={node.inPanel ? 'font-medium' : 'text-gray-500'}>{node.name}</span>
+            {to === undefined ? (
+                <span className={nameClassName}>{node.name}</span>
+            ) : (
+                <Link to={to} className={`link link-hover ${nameClassName}`}>
+                    {node.name}
+                </Link>
+            )}
             {node.clade !== undefined && (
                 <span className='rounded bg-stone-100 px-1 text-xs text-gray-600'>{node.clade}</span>
             )}
