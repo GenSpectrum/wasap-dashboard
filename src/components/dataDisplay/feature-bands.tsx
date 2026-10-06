@@ -237,7 +237,9 @@ export function FeatureBands<F>({
                                           {formatMeanProportion(meanProportions[featureRenderer.asString(feature)])}
                                       </td>
                                       {jaccardIndices !== undefined && (
-                                          <td className='px-2 text-center whitespace-nowrap'>
+                                          <td
+                                              className={`px-2 text-center whitespace-nowrap ${jaccardIndexShading(jaccardIndices[featureRenderer.asString(feature)])}`}
+                                          >
                                               {formatJaccardIndex(jaccardIndices[featureRenderer.asString(feature)])}
                                           </td>
                                       )}
@@ -321,6 +323,17 @@ const NO_VALUE = '–';
 
 function formatMeanProportion(meanProportion: number | undefined) {
     return meanProportion === undefined ? NO_VALUE : formatProportion(meanProportion, 1);
+}
+
+/** A green background for a high Jaccard index, a darker one from .9: the rows most specific to the variant. */
+export function jaccardIndexShading(jaccardIndex: number | undefined): string {
+    if (jaccardIndex === undefined) {
+        return '';
+    }
+    if (jaccardIndex >= 0.9) {
+        return 'bg-green-200';
+    }
+    return jaccardIndex >= 0.8 ? 'bg-green-100' : '';
 }
 
 /** Like `.95`: the index is never above 1, so the leading zero says nothing and is left off. */
