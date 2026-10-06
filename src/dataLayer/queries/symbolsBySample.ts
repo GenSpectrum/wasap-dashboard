@@ -5,22 +5,10 @@
  *
  * ## What the query does
  *
- * One column per position, grouped by all of them at once:
- *
- * ```
- * filter(<scope>)
- *   .map({p241 := main.at(241), p670 := main.at(670), …})
- *   .groupBy({count := count()}, {<sampleId>, <date>, p241, p670, …})
- * ```
- *
- * That is the *joint* distribution of the symbols at the positions, the same shape as the
- * co-occurrence mode's query. A deconvolution only needs each position on its own (the
+ * A joint symbols query (`jointSymbolsQuery`): one column per position, grouped by sample, date and
+ * all of the positions at once. A deconvolution only needs each position on its own (the
  * marginals), so `readSymbolsBySample` sums the joint counts over the other positions — exactly
  * what one query per position would have returned (checked live).
- *
- * The joint distribution stays small because the reads are short amplicons (a few hundred bases):
- * a read covers one or two of positions spread over the genome, and is `N` at all the others. So
- * the rows grow with the number of positions, not with the number of combinations of symbols.
  *
  * ## Why batched
  *
@@ -48,38 +36,23 @@
  *   range would then cost no queries at all. Independent of the batching.
  */
 
-import { scoped, type SiloReadFilter } from './filter';
+import { type SiloReadFilter } from './filter';
+import { jointSymbolsQuery, positionColumn } from './jointSymbols';
 import type { SiloSchema } from './schema';
-import { field } from '../transport/expression';
-import { count } from '../transport/functions';
 import { type Relation } from '../transport/relation';
 import { readCount, readOptionalText, readText, type RhydbRow } from '../transport/row';
 
 /** How many positions one query maps (see above). */
 export const POSITIONS_PER_QUERY = 12;
 
-function positionColumn(position: number): string {
-    return `p${position}`;
-}
-
-/**
- * Grouping columns are named bare (`{date, p241, …}`), not reassigned inline, for the same reason
- * as in `positionOverTimeQuery`: the older SILO version behind rsv-a / rsv-b rejects an inline
- * `:=` in a `groupBy` column list.
- */
+/** A joint symbols query (`jointSymbolsQuery`) by sample and date. */
 export function symbolsBySampleQuery(
     schema: SiloSchema,
     filter: SiloReadFilter,
     sequenceName: string,
     positions: readonly number[],
 ): Relation {
-    return scoped(schema, filter)
-        .map(
-            Object.fromEntries(
-                positions.map((position) => [positionColumn(position), field(sequenceName).at(position)]),
-            ),
-        )
-        .groupBy({ count: count() }, [schema.sampleId, schema.groupingDate, ...positions.map(positionColumn)]);
+    return jointSymbolsQuery(schema, filter, sequenceName, positions, [schema.sampleId, schema.groupingDate]);
 }
 
 export type SymbolsBySampleRow = {
