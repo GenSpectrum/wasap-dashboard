@@ -14,3 +14,4 @@ export * from './queriesOverTime';
 export * from './positionBySample';
 export * from './jointSymbols';
 export * from './symbolsBySample';
+export * from './haplotypesOverTime';
