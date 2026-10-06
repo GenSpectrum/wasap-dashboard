@@ -134,21 +134,23 @@ async function fetchPredefinedSignature(
 }
 
 export function getLapisFilterForTimeFrame(timeFrame: VariantTimeFrame, dateFieldName: string): LapisFilter {
-    let fromDate = undefined;
-    switch (timeFrame) {
-        case 'all':
-            break;
-        case '6months':
-            fromDate = dayjs().subtract(6, 'month').format('YYYY-MM-DD');
-            break;
-        case '3months':
-            fromDate = dayjs().subtract(3, 'month').format('YYYY-MM-DD');
-            break;
-    }
+    const fromDate = getFromDateForTimeFrame(timeFrame);
     if (fromDate === undefined) {
         return {};
     }
     return {
         [`${dateFieldName}From`]: fromDate,
     };
+}
+
+/** The first day of the time frame, `YYYY-MM-DD`; none for all of the time. */
+export function getFromDateForTimeFrame(timeFrame: VariantTimeFrame): string | undefined {
+    switch (timeFrame) {
+        case 'all':
+            return undefined;
+        case '6months':
+            return dayjs().subtract(6, 'month').format('YYYY-MM-DD');
+        case '3months':
+            return dayjs().subtract(3, 'month').format('YYYY-MM-DD');
+    }
 }
