@@ -20,6 +20,7 @@ export function MutationsResult({
     granularity,
     sequenceType,
     meanProportionInterval,
+    ampliconsByMutation,
     title,
     info,
     children,
@@ -33,6 +34,8 @@ export function MutationsResult({
     granularity: TemporalGranularity;
     sequenceType: SequenceType;
     meanProportionInterval: MeanProportionInterval;
+    /** The numbers of the amplicons each mutation is in, by code; with it, the mutations get a column of them. */
+    ampliconsByMutation?: Record<string, number[]>;
     title?: string;
     info?: ReactElement;
     children?: ReactNode;
@@ -47,6 +50,7 @@ export function MutationsResult({
             pageSizes={[20, 50, 100, 250]}
             meanProportionInterval={meanProportionInterval}
             jaccardIndices={jaccardIndices}
+            ampliconsByMutation={ampliconsByMutation}
         />
     );
     return (

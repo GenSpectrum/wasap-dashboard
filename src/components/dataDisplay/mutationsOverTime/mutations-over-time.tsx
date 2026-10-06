@@ -50,6 +50,8 @@ const mutationOverTimeSchema = z.object({
     pageSizes: pageSizesSchema,
     /** The Jaccard index of each mutation, by mutation code. Shown as a column if given. */
     jaccardIndices: z.record(z.string(), z.number()).optional(),
+    /** The numbers of the amplicons each mutation is in, by mutation code; with it, a column of them. */
+    ampliconsByMutation: z.record(z.string(), z.array(z.number())).optional(),
 });
 export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
 
@@ -125,7 +127,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     sort,
     setSort,
 }) => {
-    const { filter, sequenceType, granularity, jaccardIndices } = originalComponentProps;
+    const { filter, sequenceType, granularity, jaccardIndices, ampliconsByMutation } = originalComponentProps;
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
     const { nucleotideSequence } = useSiloSchema();
     const { pageSize } = usePageSizeContext();
@@ -253,6 +255,14 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 paginationEnd={paginationEnd}
                 meanProportions={meanProportions}
                 jaccardIndices={jaccardIndices}
+                extraColumn={
+                    ampliconsByMutation === undefined
+                        ? undefined
+                        : {
+                              header: 'Amplicon',
+                              render: (code) => (ampliconsByMutation[code] as number[] | undefined)?.join(', ') ?? '–',
+                          }
+                }
                 sort={effectiveSort}
                 onSortChange={changeSort}
             />

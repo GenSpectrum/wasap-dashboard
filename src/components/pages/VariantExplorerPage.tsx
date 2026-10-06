@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
+import { ampliconNumbersByMutation } from '../../amplicons/mutationsByAmplicon';
+import { useAmplicons } from '../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { getFromDateForTimeFrame, useVariantSignature } from '../../externalData/lapis/useVariantSignature';
 import { usePageState } from '../../pageState/usePageState';
@@ -22,6 +24,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
         setPageState,
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
+    const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
     const { data, isPending, isError } = useVariantSignature(config, analysis, lineageTree);
     const meanProportionInterval = useMemo(
@@ -77,6 +80,11 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                                 granularity={base.granularity}
                                 sequenceType={analysis.sequenceType}
                                 meanProportionInterval={meanProportionInterval}
+                                ampliconsByMutation={
+                                    amplicons.data === undefined || analysis.sequenceType !== 'nucleotide'
+                                        ? undefined
+                                        : ampliconNumbersByMutation(displayMutations, amplicons.data)
+                                }
                                 title='Mutations'
                                 info={<MutationsInfo />}
                             >

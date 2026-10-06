@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { mutationsByAmplicon } from './mutationsByAmplicon';
+import { ampliconNumbersByMutation, mutationsByAmplicon } from './mutationsByAmplicon';
 import { type Amplicon } from './primerBed';
 
 function amplicon(number: number, insertStart: number, insertEnd: number): Amplicon {
@@ -43,5 +43,14 @@ describe('mutationsByAmplicon', () => {
 
         expect(groups.map(({ amplicon }) => amplicon.number)).toEqual([1]);
         expect(outside).toEqual(['C10T', 'A900G', 'S:N501Y', 'ins_100:AAA']);
+    });
+});
+
+describe('ampliconNumbersByMutation', () => {
+    test("gives each mutation its amplicons' numbers, two in an overlap, none outside the inserts", () => {
+        expect(ampliconNumbersByMutation(['C100T', 'C290T', 'C10T', 'S:N501Y'], amplicons)).toEqual({
+            C100T: [1],
+            C290T: [1, 2],
+        });
     });
 });

@@ -102,6 +102,8 @@ export interface FeatureBandsProps<F> {
      * there is no Jaccard index column.
      */
     jaccardIndices?: Partial<Record<string, number>>;
+    /** One more column after the row label, by row label (see `FeatureRenderer.asString`). Not sortable. */
+    extraColumn?: { header: string; render: (rowLabel: string) => ReactNode };
     /** How the rows are sorted, shown in the headers. The rows have to be given in this order already. */
     sort: FeatureSort;
     /** Called with the new sort when a header is clicked. */
@@ -125,6 +127,7 @@ export function FeatureBands<F>({
     paginationEnd,
     meanProportions,
     jaccardIndices,
+    extraColumn,
     sort,
     onSortChange,
 }: FeatureBandsProps<F>) {
@@ -132,7 +135,7 @@ export function FeatureBands<F>({
     const features = useMemo(() => data?.getFirstAxisKeys() ?? [], [data]);
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
-    const numberOfValueColumns = jaccardIndices === undefined ? 1 : 2;
+    const numberOfValueColumns = (jaccardIndices === undefined ? 1 : 2) + (extraColumn === undefined ? 0 : 1);
 
     // A table instance with no columns of its own: it exists only to drive the
     // shared `Pagination` control the same way the grid tab's table does - the
@@ -187,6 +190,7 @@ export function FeatureBands<F>({
                             <SortableHeader column='rowLabel' sort={sort} onSortChange={onSortChange}>
                                 {rowLabelHeader}
                             </SortableHeader>
+                            {extraColumn !== undefined && <th className='px-2'>{extraColumn.header}</th>}
                             <SortableHeader column='meanProportion' sort={sort} onSortChange={onSortChange}>
                                 Mean proportion
                             </SortableHeader>
@@ -233,6 +237,11 @@ export function FeatureBands<F>({
                                       <th className='px-2 font-medium whitespace-nowrap'>
                                           {featureRenderer.renderRowLabel(feature)}
                                       </th>
+                                      {extraColumn !== undefined && (
+                                          <td className='px-2 text-center whitespace-nowrap'>
+                                              {extraColumn.render(featureRenderer.asString(feature))}
+                                          </td>
+                                      )}
                                       <td className='px-2 text-center whitespace-nowrap'>
                                           {formatMeanProportion(meanProportions[featureRenderer.asString(feature)])}
                                       </td>

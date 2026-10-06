@@ -56,3 +56,20 @@ function parseNucleotideMutation(code: string): AmpliconMutation | null {
     const mutation = DeletionClass.parse(code) ?? SubstitutionClass.parse(code);
     return mutation === null || mutation.segment !== undefined ? null : mutation;
 }
+
+/**
+ * The numbers of the amplicons each nucleotide mutation is in, by code: one, or two where it is in
+ * the overlap of two inserts. Codes in no insert (or not nucleotide mutations) are left out.
+ */
+export function ampliconNumbersByMutation(
+    codes: readonly string[],
+    amplicons: readonly Amplicon[],
+): Record<string, number[]> {
+    const numbers: Record<string, number[]> = {};
+    for (const { amplicon, mutations } of mutationsByAmplicon(codes, amplicons).groups) {
+        for (const { code } of mutations) {
+            (numbers[code] ??= []).push(amplicon.number);
+        }
+    }
+    return numbers;
+}
