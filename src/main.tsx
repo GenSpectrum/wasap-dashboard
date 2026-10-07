@@ -5,7 +5,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { loadAppConfig } from './config/appConfig';
 import { routes } from './routes';
 import { DataProviders } from './util/queryClient';
-import setupDayjs from './util/setupDayjs';
 import './index.css';
 
 // Real paths, not hash routing: we host on our own nginx, which serves
@@ -19,7 +18,6 @@ const router = createBrowserRouter(routes, {
 
 async function bootstrap() {
     await loadAppConfig();
-    setupDayjs();
 
     createRoot(document.getElementById('root')!).render(
         <StrictMode>

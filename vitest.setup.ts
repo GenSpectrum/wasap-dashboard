@@ -3,9 +3,6 @@ import { afterAll, afterEach, beforeAll } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 
 import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker } from './routeMocker.ts';
-import setupDayjs from './src/util/setupDayjs.ts';
-
-setupDayjs();
 
 export const testServer = setupServer();
 
