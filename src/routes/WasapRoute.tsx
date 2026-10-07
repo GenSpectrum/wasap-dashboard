@@ -11,6 +11,7 @@ import { ResistancePage } from '../components/pages/ResistancePage';
 import { UntrackedPage } from '../components/pages/UntrackedPage';
 import { VariantExplorerPage } from '../components/pages/VariantExplorerPage';
 import { WasapLayout, useWasapLayoutContext } from '../components/pages/WasapLayout';
+import { LoadingDisplay } from '../components/shared/loading-display';
 import { NoDataDisplay } from '../components/shared/no-data-display';
 import { getAppConfig } from '../config/appConfig';
 import { isModeEnabled, type WasapPageConfig } from '../config/wasapPageConfig';
@@ -19,7 +20,6 @@ import { getApiServiceForClientside } from '../externalData/genSpectrum/apiServi
 import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
 import { fetchLineageTree } from '../lineageTree/fetchLineageTree';
 import { segmentToMode } from '../pageState/wasap/wasapModes';
-import { Loading } from '../util/Loading';
 import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
 const logger = getClientLogger('WasapRoute');
@@ -86,7 +86,7 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
     });
 
     if (isPending || lineageTreeQuery.isPending) {
-        return <Loading />;
+        return <LoadingDisplay />;
     }
 
     return (

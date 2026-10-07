@@ -1,15 +1,6 @@
 import { lineageDefinitionResponseSchema } from './LineageDefinition';
 import { referenceGenomeResponse } from './ReferenceGenome';
-import {
-    aggregatedResponse,
-    detailsResponse,
-    insertionsResponse,
-    type LapisBaseRequest,
-    lapisError,
-    problemDetail,
-    type ProblemDetail,
-} from './lapisTypes';
-import { type SequenceType } from '../../types/dashboardComponents';
+import { aggregatedResponse, type LapisBaseRequest, lapisError, problemDetail, type ProblemDetail } from './lapisTypes';
 
 export class UnknownLapisError extends Error {
     constructor(
@@ -49,43 +40,6 @@ export async function fetchAggregated(lapisUrl: string, body: LapisBaseRequest, 
     );
 
     return aggregatedResponse.parse(await response.json());
-}
-
-export async function fetchDetails(lapisUrl: string, body: LapisBaseRequest, signal?: AbortSignal) {
-    const response = await fetch(detailsEndpoint(lapisUrl), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-        signal,
-    });
-
-    await handleErrors(response, 'aggregated data');
-
-    return detailsResponse.parse(await response.json());
-}
-
-export async function fetchInsertions(
-    lapisUrl: string,
-    body: LapisBaseRequest,
-    sequenceType: SequenceType,
-    signal?: AbortSignal,
-) {
-    const response = await callLapis(
-        insertionsEndpoint(lapisUrl, sequenceType),
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-            signal,
-        },
-        `${sequenceType} insertions`,
-    );
-
-    return insertionsResponse.parse(await response.json());
 }
 
 export async function fetchReferenceGenome(lapisUrl: string, signal?: AbortSignal) {
@@ -179,13 +133,7 @@ const handleErrors = async (response: Response, requestedData: string) => {
     }
 };
 
-export const aggregatedEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/aggregated`;
-export const detailsEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/details`;
-export const insertionsEndpoint = (lapisUrl: string, sequenceType: SequenceType) => {
-    return sequenceType === 'amino acid'
-        ? `${lapisUrl}/sample/aminoAcidInsertions`
-        : `${lapisUrl}/sample/nucleotideInsertions`;
-};
-export const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;
-export const lineageDefinitionEndpoint = (lapisUrl: string, lapisField: string) =>
+const aggregatedEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/aggregated`;
+const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;
+const lineageDefinitionEndpoint = (lapisUrl: string, lapisField: string) =>
     `${lapisUrl}/sample/lineageDefinition/${lapisField}`;

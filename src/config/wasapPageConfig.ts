@@ -293,16 +293,3 @@ export function isModeEnabled<Mode extends WasapAnalysisMode>(
 ): config is WasapPageConfigFor<Mode> {
     return config[MODE_ENABLED_FLAGS[mode]] === true;
 }
-
-/**
- * For code that has been given the config of a page whose mode is known to be enabled
- * (see `WasapModeRoute`), but has to get the type to say so.
- */
-export function assertModeEnabled<Mode extends WasapAnalysisMode>(
-    config: WasapPageConfig,
-    mode: Mode,
-): asserts config is WasapPageConfigFor<Mode> {
-    if (!isModeEnabled(config, mode)) {
-        throw Error(`The '${mode}' analysis mode is not enabled.`);
-    }
-}

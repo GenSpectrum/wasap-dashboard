@@ -110,35 +110,6 @@ export class Map2dBase<Key1 extends object | string, Key2 extends object | strin
     }
 }
 
-export class SortedMap2d<Key1 extends object | string, Key2 extends object | string, Value> extends Map2dBase<
-    Key1,
-    Key2,
-    Value
-> {
-    constructor(
-        delegate: Map2d<Key1, Key2, Value>,
-        sortFirstAxis: (a: Key1, b: Key1) => number,
-        sortSecondAxis: (a: Key2, b: Key2) => number,
-    ) {
-        const contents = delegate.getContents();
-        const sortedFirstAxisKeys = new Map(
-            [...contents.keysFirstAxis.entries()].sort((a, b) => sortFirstAxis(a[1], b[1])),
-        );
-        const sortedSecondAxisKeys = new Map(
-            [...contents.keysSecondAxis.entries()].sort((a, b) => sortSecondAxis(a[1], b[1])),
-        );
-        super(
-            (key: Key1) => delegate.serializeFirstAxis(key),
-            (key: Key2) => delegate.serializeSecondAxis(key),
-            {
-                keysFirstAxis: sortedFirstAxisKeys,
-                keysSecondAxis: sortedSecondAxisKeys,
-                data: contents.data,
-            },
-        );
-    }
-}
-
 export class Map2dView<Key1 extends object | string, Key2 extends object | string, Value> implements Map2d<
     Key1,
     Key2,

@@ -1,4 +1,4 @@
-import { type FC, type ReactNode, type Ref, type RefObject, useRef } from 'react';
+import { type FC, type ReactNode, type Ref, useRef } from 'react';
 
 const modalSize = {
     large: 'max-w-(--breakpoint-lg)',
@@ -12,24 +12,9 @@ export type ModalButtonProps = {
     size?: keyof typeof modalSize;
 };
 
-export const Modal: FC<ModalButtonProps> = (props) => {
-    const modalRef = useModalRef();
+export const Modal: FC<ModalButtonProps> = ({ children, buttonClassName, buttonAriaLabel, modalContent, size }) => {
+    const modalRef = useRef<HTMLDialogElement>(null);
 
-    return <ButtonWithModalDialog {...props} modalRef={modalRef} />;
-};
-
-type ButtonWithModalDialogProps = ModalButtonProps & {
-    modalRef: RefObject<HTMLDialogElement | null>;
-};
-
-export const ButtonWithModalDialog: FC<ButtonWithModalDialogProps> = ({
-    children,
-    buttonClassName,
-    buttonAriaLabel,
-    modalContent,
-    modalRef,
-    size,
-}) => {
     return (
         <>
             <button
@@ -47,17 +32,13 @@ export const ButtonWithModalDialog: FC<ButtonWithModalDialogProps> = ({
     );
 };
 
-export function useModalRef() {
-    return useRef<HTMLDialogElement>(null);
-}
-
-export type ModalProps = {
+type ModalProps = {
     modalRef: Ref<HTMLDialogElement>;
     children?: ReactNode;
     size?: keyof typeof modalSize;
 };
 
-export const ModalDialog: FC<ModalProps> = ({ children, modalRef, size }) => {
+const ModalDialog: FC<ModalProps> = ({ children, modalRef, size }) => {
     return (
         <dialog ref={modalRef} className={'modal modal-bottom sm:modal-middle'}>
             <div className={`modal-box ${size !== undefined ? modalSize[size] : 'sm:max-w-5xl'}`}>

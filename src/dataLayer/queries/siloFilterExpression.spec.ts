@@ -1,11 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import {
-    type SiloFilterExpression,
-    extractMetadataFields,
-    siloFilterExpressionSchema,
-    validateGenomeOnly,
-} from './siloFilterExpression';
+import { type SiloFilterExpression, siloFilterExpressionSchema, validateGenomeOnly } from './siloFilterExpression';
 
 describe('siloFilterExpressionSchema', () => {
     test('should parse StringEquals', () => {
@@ -233,38 +228,6 @@ describe('siloFilterExpressionSchema', () => {
         const result = siloFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(false);
-    });
-});
-
-describe('extractMetadataFields', () => {
-    test('extracts column names from nested And/Or expressions', () => {
-        const expr: SiloFilterExpression = {
-            type: 'And',
-            children: [
-                { type: 'Lineage', column: 'nextcladePangoLineage', value: 'BA.1', includeSublineages: true },
-                {
-                    type: 'Or',
-                    children: [
-                        { type: 'StringEquals', column: 'country', value: 'Germany' },
-                        { type: 'DateBetween', column: 'date', from: '2024-01-01', to: null },
-                    ],
-                },
-            ],
-        };
-
-        expect(extractMetadataFields(expr)).toEqual(['nextcladePangoLineage', 'country', 'date']);
-    });
-
-    test('returns no columns for mutation-only expressions', () => {
-        const expr: SiloFilterExpression = {
-            type: 'And',
-            children: [
-                { type: 'NucleotideEquals', position: 123, symbol: 'A' },
-                { type: 'HasAminoAcidMutation', sequenceName: 'S', position: 501 },
-            ],
-        };
-
-        expect(extractMetadataFields(expr)).toEqual([]);
     });
 });
 

@@ -1,7 +1,6 @@
 import { type FC, type PropsWithChildren } from 'react';
 import z from 'zod';
 
-import { LapisUrlContextProvider } from './LapisUrlContext';
 import { type MutationAnnotations, MutationAnnotationsContextProvider } from './MutationAnnotationsContext';
 import { type MutationLinkTemplate, MutationLinkTemplateContextProvider } from './MutationLinkTemplateContext';
 import { INITIAL_REFERENCE_GENOMES, ReferenceGenomeContext } from './ReferenceGenomeContext';
@@ -26,8 +25,8 @@ export type GsAppProps = {
 
 /**
  * The React port's equivalent of the old `<gs-app>` Lit component: fetches the reference genome
- * from LAPIS and provides it, the LAPIS URL, and the mutation annotation/link-template config to
- * all descendants via context. Every gs-* component must be a (possibly nested) descendant of
+ * from LAPIS and provides it and the mutation annotation/link-template config to all descendants
+ * via context. Every gs-* component must be a (possibly nested) descendant of
  * this component.
  *
  * Ported from Lit's `@lit/context` provide/consume split, which stored the raw annotations/
@@ -59,16 +58,14 @@ export const GsApp: FC<PropsWithChildren<GsAppProps>> = ({
     const fetchError = !result.isLoading ? result.error : null;
 
     return (
-        <LapisUrlContextProvider value={lapis}>
-            <ReferenceGenomeContext.Provider value={referenceGenome}>
-                <MutationAnnotationsContextProvider value={mutationAnnotations}>
-                    <MutationLinkTemplateContextProvider value={mutationLinkTemplate}>
-                        {fetchError !== null && <GsAppError error={fetchError} lapis={lapis} />}
-                        {children}
-                    </MutationLinkTemplateContextProvider>
-                </MutationAnnotationsContextProvider>
-            </ReferenceGenomeContext.Provider>
-        </LapisUrlContextProvider>
+        <ReferenceGenomeContext.Provider value={referenceGenome}>
+            <MutationAnnotationsContextProvider value={mutationAnnotations}>
+                <MutationLinkTemplateContextProvider value={mutationLinkTemplate}>
+                    {fetchError !== null && <GsAppError error={fetchError} lapis={lapis} />}
+                    {children}
+                </MutationLinkTemplateContextProvider>
+            </MutationAnnotationsContextProvider>
+        </ReferenceGenomeContext.Provider>
     );
 };
 
