@@ -17,7 +17,12 @@ const lineageTree = buildLineageTree(
         [],
         [
             node('A', 'A', []),
-            node('NODE_1', 'B', ['C100T', 'A200-'], [node('B', 'B', []), node('B.1', 'B.1', ['G300A'], [])]),
+            node(
+                'NODE_1',
+                'B',
+                ['C100T', 'A200-'],
+                [node('B', 'B', []), node('B.1', 'B.1', ['G300A'], []), node('B.2', 'B.2', ['A400-'], [])],
+            ),
         ],
     ),
     'lineage',
@@ -35,6 +40,15 @@ describe('lineageSignatures', () => {
         expect(lineageSignatures(lineageTree, ['B', 'XYZ'])).toEqual({
             signatures: { B: ['C100T'] },
             missing: ['XYZ'],
+            indistinguishable: [],
+        });
+    });
+
+    it('leaves out the lineages with the same signature as an earlier one of the panel', () => {
+        expect(lineageSignatures(lineageTree, ['B.1', 'B', 'B.2'])).toEqual({
+            signatures: { 'B.1': ['C100T', 'G300A'], B: ['C100T'] },
+            missing: [],
+            indistinguishable: [{ lineage: 'B.2', sameAs: 'B' }],
         });
     });
 });

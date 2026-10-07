@@ -137,19 +137,29 @@ function DeconvolutionResults({
         return <Message>There was an error fetching the data: {frequencies.error.message}</Message>;
     }
 
-    const { missing } = signatures;
-    const missingNote = missing.length > 0 && (
-        <Message>
-            {missing.join(', ')} {missing.length === 1 ? 'is' : 'are'} not in the lineage tree, so{' '}
-            {missing.length === 1 ? 'it is' : 'they are'} left out.
-        </Message>
+    const { missing, indistinguishable } = signatures;
+    const notes = (
+        <>
+            {missing.length > 0 && (
+                <Message>
+                    {missing.join(', ')} {missing.length === 1 ? 'is' : 'are'} not in the lineage tree, so{' '}
+                    {missing.length === 1 ? 'it is' : 'they are'} left out.
+                </Message>
+            )}
+            {indistinguishable.map(({ lineage, sameAs }) => (
+                <Message key={lineage}>
+                    {lineage} has the same signature as {sameAs}, so the two can&apos;t be told apart: {lineage} is left
+                    out, and the share of {sameAs} includes it.
+                </Message>
+            ))}
+        </>
     );
     if (Object.keys(signatures.signatures).length < 2) {
         return (
             <>
-                {missingNote}
+                {notes}
                 <NothingSelected title='Not enough lineages'>
-                    Fewer than two lineages of the panel have a signature.
+                    Fewer than two lineages of the panel have a signature of their own.
                 </NothingSelected>
             </>
         );
@@ -163,7 +173,7 @@ function DeconvolutionResults({
     if (deconvolution.result.dates.length === 0) {
         return (
             <>
-                {missingNote}
+                {notes}
                 <NothingSelected title='No samples'>
                     There are no samples with enough coverage at this location in this time range.
                 </NothingSelected>
@@ -174,7 +184,7 @@ function DeconvolutionResults({
     const sampleCount = new Set(frequencies.data.map((frequency) => frequency.sampleId)).size;
     return (
         <>
-            {missingNote}
+            {notes}
             <TitledPanel
                 title='Estimated prevalence'
                 info={
