@@ -169,12 +169,10 @@ const MutationsOverTimeWithMetadata: FC<{
                 getRows: () =>
                     pageData === null
                         ? []
-                        : pageData
-                              .getFirstAxisKeys()
-                              .map((mutation) => ({
-                                  mutation: mutation.code,
-                                  ...proportionsByDate(pageData, mutation),
-                              })),
+                        : pageData.getFirstAxisKeys().map((mutation) => ({
+                              mutation: mutation.code,
+                              ...proportionsByDate(pageData, mutation),
+                          })),
             }}
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}
