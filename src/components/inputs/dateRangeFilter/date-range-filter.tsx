@@ -1,31 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import z from 'zod';
 
 import { computeInitialValues } from './computeInitialValues';
 import { DatePicker } from './date-picker';
 import { toYYYYMMDD } from './dateConversion';
-import { type DateRangeOption, dateRangeOptionSchema, dateRangeValueSchema } from './dateRangeOption';
+import { type DateRangeOption, type DateRangeValue } from './dateRangeOption';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { ClearableSelect } from '../clearable-select';
 
 const CUSTOM_OPTION = 'Custom';
 
-const dateRangeFilterInnerPropsSchema = z.object({
-    dateRangeOptions: z.array(dateRangeOptionSchema),
-    value: dateRangeValueSchema,
-    placeholder: z.string().optional(),
-});
-
-const dateRangeFilterPropsSchema = dateRangeFilterInnerPropsSchema.extend({
-    width: z.string(),
-});
-
-export type DateRangeFilterInnerProps = z.infer<typeof dateRangeFilterInnerPropsSchema> & {
-    onDateRangeChange?: (value: DateRangeOption | null) => void;
-};
-
-export type DateRangeFilterProps = Omit<z.infer<typeof dateRangeFilterPropsSchema>, 'width'> & {
-    width?: string;
+export type DateRangeFilterProps = {
+    dateRangeOptions: DateRangeOption[];
+    value: DateRangeValue;
+    placeholder?: string;
     onDateRangeChange?: (value: DateRangeOption | null) => void;
 };
 
@@ -35,31 +22,18 @@ type DateRangeFilterState = {
     dateTo?: Date;
 } | null;
 
-// width default reproduces the old gs-date-range-filter Lit component's @property field initializer.
-export const DateRangeFilter = ({ width = '100%', onDateRangeChange, ...innerProps }: DateRangeFilterProps) => {
-    const size = { width, height: '3rem' };
-    const validatedProps = { width, ...innerProps };
+export const DateRangeFilter = (props: DateRangeFilterProps) => (
+    <ErrorBoundary layout='horizontal' resetKeys={[props.value, props.dateRangeOptions]}>
+        <DateRangeFilterWithoutErrors {...props} />
+    </ErrorBoundary>
+);
 
-    return (
-        <ErrorBoundary
-            size={size}
-            layout='horizontal'
-            componentProps={validatedProps}
-            schema={dateRangeFilterPropsSchema}
-        >
-            <div style={{ width }}>
-                <DateRangeFilterInner {...innerProps} onDateRangeChange={onDateRangeChange} />
-            </div>
-        </ErrorBoundary>
-    );
-};
-
-export const DateRangeFilterInner = ({
+const DateRangeFilterWithoutErrors = ({
     dateRangeOptions,
     value,
     placeholder,
     onDateRangeChange,
-}: DateRangeFilterInnerProps) => {
+}: DateRangeFilterProps) => {
     const initialValues = useMemo(() => computeInitialValues(value, dateRangeOptions), [value, dateRangeOptions]);
 
     const getInitialState = useCallback(() => {

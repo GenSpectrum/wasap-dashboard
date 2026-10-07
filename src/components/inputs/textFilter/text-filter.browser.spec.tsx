@@ -52,12 +52,7 @@ describe('TextFilter', () => {
 
         const onInputChange = vi.fn();
         const screen = renderFilter(
-            <TextFilter
-                field='locationName'
-                width='100%'
-                placeholderText='Sampling location'
-                onInputChange={onInputChange}
-            />,
+            <TextFilter field='locationName' placeholderText='Sampling location' onInputChange={onInputChange} />,
         );
 
         await screen.getByPlaceholder('Sampling location').click();

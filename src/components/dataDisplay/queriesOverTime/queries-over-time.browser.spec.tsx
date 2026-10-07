@@ -79,7 +79,6 @@ function renderOverTime(pageSizes = [10, 20]) {
         <QueryClientProvider client={queryClient}>
             <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
                 <QueriesOverTime
-                    width='100%'
                     filter={filter}
                     granularity='day'
                     queries={queries}

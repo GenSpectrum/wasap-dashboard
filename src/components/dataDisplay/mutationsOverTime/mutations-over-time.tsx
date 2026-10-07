@@ -1,8 +1,7 @@
 import { type Dispatch, type FC, type SetStateAction, useEffect, useMemo, useState } from 'react';
-import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
-import { displayMutationsSchema, getFilteredMutationCodes } from './getFilteredMutationCodes';
+import { getFilteredMutationCodes, type ProportionInterval } from './getFilteredMutationCodes';
 import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import {
     genesOf,
@@ -10,14 +9,13 @@ import {
     useOverTimeMetadata,
     type OverTimeMetadata,
 } from '../../../dataLayer/hooks/mutationsOverTime';
-import { siloReadFilterSchema } from '../../../dataLayer/queries/filter';
-import { sequenceTypeSchema, temporalGranularitySchema } from '../../../types/dashboardComponents';
+import { type SiloReadFilter } from '../../../dataLayer/queries/filter';
+import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { toTemporalClass } from '../../../util/temporalClass';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
-import { ResizeContainer } from '../../shared/resize-container';
 import { AnnotatedMutation } from '../annotated-mutation';
 import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
@@ -26,45 +24,30 @@ import { DEFAULT_FEATURE_SORT, JACCARD_FEATURE_SORT, sortRowLabels, type Feature
 import { getProportion } from '../overTime/proportionValue';
 import { ViewSettingsControls } from '../view-settings-controls';
 
-const meanProportionIntervalSchema = z.object({
-    min: z.number().min(0).max(1),
-    max: z.number().min(0).max(1),
-    minExclusive: z.boolean().optional(),
-    maxExclusive: z.boolean().optional(),
-});
-export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema>;
-
-const mutationOverTimeSchema = z.object({
-    filter: siloReadFilterSchema,
-    sequenceType: sequenceTypeSchema,
-    granularity: temporalGranularitySchema,
-    displayMutations: displayMutationsSchema.optional(),
+export type MutationsOverTimeProps = {
+    filter: SiloReadFilter;
+    sequenceType: SequenceType;
+    granularity: TemporalGranularity;
+    displayMutations?: string[];
     /** Only mutations whose mean proportion over the time range lies within this interval are shown. */
-    meanProportionInterval: meanProportionIntervalSchema,
-    width: z.string(),
-    height: z.string().optional(),
-    pageSizes: z.array(z.number()),
+    meanProportionInterval: ProportionInterval;
+    pageSizes: number[];
     /** The Jaccard index of each mutation, by mutation code. Shown as a column if given. */
-    jaccardIndices: z.record(z.string(), z.number()).optional(),
+    jaccardIndices?: Record<string, number>;
     /** The numbers of the amplicons each mutation is in, by mutation code; with it, a column of them. */
-    ampliconsByMutation: z.record(z.string(), z.array(z.number())).optional(),
-});
-export type MutationsOverTimeProps = z.infer<typeof mutationOverTimeSchema>;
+    ampliconsByMutation?: Record<string, number[]>;
+};
 
-export const MutationsOverTime: FC<MutationsOverTimeProps> = (componentProps) => {
-    const { width, height } = componentProps;
-    const size = { height, width };
-
+export const MutationsOverTime: FC<MutationsOverTimeProps> = (props) => {
+    const { filter, sequenceType, granularity, displayMutations } = props;
     return (
-        <ErrorBoundary size={size} schema={mutationOverTimeSchema} componentProps={componentProps}>
-            <ResizeContainer size={size}>
-                <MutationsOverTimeInner {...componentProps} />
-            </ResizeContainer>
+        <ErrorBoundary resetKeys={[filter, sequenceType, granularity, displayMutations]}>
+            <MutationsOverTimeWithoutErrors {...props} />
         </ErrorBoundary>
     );
 };
 
-export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componentProps }) => {
+const MutationsOverTimeWithoutErrors: FC<MutationsOverTimeProps> = ({ ...componentProps }) => {
     const { filter, sequenceType, granularity, displayMutations, pageSizes } = componentProps;
     const sequenceNames = useMemo(() => genesOf(displayMutations, sequenceType), [displayMutations, sequenceType]);
 

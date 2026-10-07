@@ -1,85 +1,29 @@
-import { Component, useMemo, type PropsWithChildren, type ReactNode } from 'react';
-import { type ZodSchema } from 'zod';
+import { Component, type ReactNode } from 'react';
 
-import { ErrorDisplay, type ErrorDisplayProps, InvalidPropsError } from './error-display';
-import { ResizeContainer, type Size } from './resize-container';
+import { ErrorDisplay, type ErrorDisplayProps } from './error-display';
 
-export type ErrorBoundaryProps<T> = {
-    size: Size;
-    componentProps: T;
-    schema: ZodSchema<T>;
+type ErrorBoundaryProps = {
+    /** When one of these changes (by `Object.is`), the children are rendered again after an error. */
+    resetKeys?: unknown[];
     layout?: ErrorDisplayProps['layout'];
-};
-
-export const ErrorBoundary = <T extends Record<string, unknown>>({
-    size,
-    layout,
-    componentProps,
-    schema,
-    children,
-}: PropsWithChildren<ErrorBoundaryProps<T>>) => {
-    const componentPropsParseError = useCheckComponentProps(schema, componentProps);
-
-    if (componentPropsParseError !== undefined) {
-        return (
-            <ResizeContainer size={size}>
-                <ErrorDisplay error={componentPropsParseError} layout={layout} />
-            </ResizeContainer>
-        );
-    }
-
-    return (
-        <RenderErrorCatcher size={size} layout={layout} resetKey={componentProps}>
-            {children}
-        </RenderErrorCatcher>
-    );
-};
-
-function useCheckComponentProps<T extends Record<string, unknown>>(schema: ZodSchema<T>, componentProps: T) {
-    return useMemo(() => {
-        const parseResult = schema.safeParse(componentProps);
-        if (parseResult.success) {
-            return undefined;
-        }
-
-        return new InvalidPropsError(parseResult.error, componentProps);
-    }, [componentProps, schema]);
-}
-
-type RenderErrorCatcherProps = {
-    size: Size;
-    layout?: ErrorDisplayProps['layout'];
-    // Preact's `useErrorBoundary` reset itself whenever the wrapped component's props
-    // changed (see the original `useEffect` this replaces). React has no hook for
-    // catching errors thrown while rendering children — only a class component's
-    // `getDerivedStateFromError` can — so `resetKey` reproduces that "reset on prop
-    // change" behavior via `componentDidUpdate`. Compared by shallow equality, not
-    // reference: callers pass `componentProps` as a fresh object on every render, so
-    // reference equality would clear a caught error on the next unrelated re-render.
-    resetKey: Record<string, unknown>;
     children?: ReactNode;
 };
 
-type RenderErrorCatcherState = { error: Error | undefined };
+type ErrorBoundaryState = { error: Error | undefined };
 
-function shallowEqual(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
-    if (a === b) {
-        return true;
-    }
-    const aKeys = Object.keys(a);
-    const bKeys = Object.keys(b);
-    return aKeys.length === bKeys.length && aKeys.every((key) => Object.is(a[key], b[key]));
-}
+/**
+ * Shows an `ErrorDisplay` in place of the children when rendering them throws, e.g. because a query
+ * they read failed. Only a class component can catch that, with `getDerivedStateFromError`.
+ */
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    override state: ErrorBoundaryState = { error: undefined };
 
-class RenderErrorCatcher extends Component<RenderErrorCatcherProps, RenderErrorCatcherState> {
-    override state: RenderErrorCatcherState = { error: undefined };
-
-    static getDerivedStateFromError(error: Error): RenderErrorCatcherState {
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
         return { error };
     }
 
-    override componentDidUpdate(prevProps: RenderErrorCatcherProps) {
-        if (this.state.error !== undefined && !shallowEqual(prevProps.resetKey, this.props.resetKey)) {
+    override componentDidUpdate(prevProps: ErrorBoundaryProps) {
+        if (this.state.error !== undefined && !sameKeys(prevProps.resetKeys, this.props.resetKeys)) {
             this.setState({ error: undefined });
         }
     }
@@ -91,13 +35,13 @@ class RenderErrorCatcher extends Component<RenderErrorCatcherProps, RenderErrorC
     override render() {
         const { error } = this.state;
         if (error !== undefined) {
-            return (
-                <ResizeContainer size={this.props.size}>
-                    <ErrorDisplay error={error} resetError={this.resetError} layout={this.props.layout} />
-                </ResizeContainer>
-            );
+            return <ErrorDisplay error={error} resetError={this.resetError} layout={this.props.layout} />;
         }
 
-        return <>{this.props.children}</>;
+        return this.props.children;
     }
+}
+
+function sameKeys(a: unknown[] = [], b: unknown[] = []): boolean {
+    return a.length === b.length && a.every((key, index) => Object.is(key, b[index]));
 }

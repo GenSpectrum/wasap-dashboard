@@ -1,16 +1,12 @@
-import { createContext, useContext, useMemo, type FC, type PropsWithChildren } from 'react';
-import z from 'zod';
+import { createContext, useContext, type FC, type PropsWithChildren } from 'react';
 
 import type { SequenceType } from '../types/dashboardComponents';
 import type { Deletion, Substitution } from '../util/mutations';
-import { ErrorDisplay } from './shared/error-display';
-import { ResizeContainer } from './shared/resize-container';
 
-export const mutationLinkTemplateSchema = z.object({
-    nucleotideMutation: z.string().optional(),
-    aminoAcidMutation: z.string().optional(),
-});
-export type MutationLinkTemplate = z.infer<typeof mutationLinkTemplateSchema>;
+export type MutationLinkTemplate = {
+    nucleotideMutation?: string;
+    aminoAcidMutation?: string;
+};
 
 const MutationLinkTemplateContext = createContext<MutationLinkTemplate>({
     nucleotideMutation: undefined,
@@ -21,19 +17,7 @@ export const MutationLinkTemplateContextProvider: FC<PropsWithChildren<{ value: 
     value,
     children,
 }) => {
-    const parseResult = useMemo(() => mutationLinkTemplateSchema.safeParse(value), [value]);
-
-    if (!parseResult.success) {
-        return (
-            <ResizeContainer size={{ width: '100%' }}>
-                <ErrorDisplay error={parseResult.error} layout='vertical' />
-            </ResizeContainer>
-        );
-    }
-
-    return (
-        <MutationLinkTemplateContext.Provider value={parseResult.data}>{children}</MutationLinkTemplateContext.Provider>
-    );
+    return <MutationLinkTemplateContext.Provider value={value}>{children}</MutationLinkTemplateContext.Provider>;
 };
 
 export function useMutationLinkProvider() {

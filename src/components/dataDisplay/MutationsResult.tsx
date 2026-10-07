@@ -1,7 +1,8 @@
 import { type ReactElement, type ReactNode } from 'react';
 
 import { NoDataHelperText } from './NoDataHelperText';
-import { type MeanProportionInterval, MutationsOverTime } from './mutationsOverTime/mutations-over-time';
+import { type ProportionInterval } from './mutationsOverTime/getFilteredMutationCodes';
+import { MutationsOverTime } from './mutationsOverTime/mutations-over-time';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type WasapAnalysisFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
@@ -33,7 +34,7 @@ export function MutationsResult({
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
     sequenceType: SequenceType;
-    meanProportionInterval: MeanProportionInterval;
+    meanProportionInterval: ProportionInterval;
     /** The numbers of the amplicons each mutation is in, by code; with it, the mutations get a column of them. */
     ampliconsByMutation?: Record<string, number[]>;
     title?: string;
@@ -42,7 +43,6 @@ export function MutationsResult({
 }) {
     const mutationsOverTime = (
         <MutationsOverTime
-            width='100%'
             filter={filter}
             sequenceType={sequenceType}
             granularity={granularity}

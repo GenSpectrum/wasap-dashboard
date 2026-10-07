@@ -43,7 +43,6 @@ describe('LineageFilter', () => {
         const screen = renderFilter(
             <LineageFilter
                 field='nextcladePangoLineage'
-                width='100%'
                 value=''
                 placeholderText='Variant'
                 onLineageChange={onLineageChange}

@@ -1,78 +1,53 @@
 import { type FC, useEffect, useMemo, useState } from 'react';
-import z from 'zod';
 
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
-import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../../dataLayer/queries';
-import { temporalGranularitySchema } from '../../../types/dashboardComponents';
+import { type SiloFilterExpression, type SiloReadFilter } from '../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
-import { ResizeContainer } from '../../shared/resize-container';
 import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { HoverTooltip } from '../hover-tooltip';
+import { type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
 import { type ProportionValue, getProportion } from '../overTime/proportionValue';
 import { ViewSettingsControls } from '../view-settings-controls';
 
-const meanProportionIntervalSchema = z.object({
-    min: z.number().min(0).max(1),
-    max: z.number().min(0).max(1),
-});
-export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema>;
-
-const queriesOverTimeQuerySchema = z.object({
-    displayLabel: z.string(),
-    description: z.string().optional(),
+export type QueriesOverTimeQuery = {
+    /** Unique among the queries. */
+    displayLabel: string;
+    description?: string;
     /** The advanced-query string, kept for display in the row-label tooltip. */
-    query: z.string(),
+    query: string;
     /** The parsed, genome-only expression that SILO is asked (see `data/queriesOverTime.ts`). */
-    filter: siloFilterExpressionSchema,
-});
-export type QueriesOverTimeQuery = z.infer<typeof queriesOverTimeQuerySchema>;
+    filter: SiloFilterExpression;
+};
 
-const queriesOverTimeSchema = z.object({
-    filter: siloReadFilterSchema,
-    queries: z
-        .array(queriesOverTimeQuerySchema)
-        .min(1)
-        .superRefine((queries, ctx) => {
-            const duplicateDisplayLabels = findDuplicateStrings(queries.map((v) => v.displayLabel));
-            if (duplicateDisplayLabels.length > 0) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: `Display labels must be unique. Duplicates: ${duplicateDisplayLabels.join(', ')}`,
-                });
-            }
-        }),
-    granularity: temporalGranularitySchema,
+export type QueriesOverTimeProps = {
+    filter: SiloReadFilter;
+    queries: QueriesOverTimeQuery[];
+    granularity: TemporalGranularity;
     /** Only queries whose mean proportion over the time range lies within this interval are shown. */
-    meanProportionInterval: meanProportionIntervalSchema,
-    width: z.string(),
-    height: z.string().optional(),
-    pageSizes: z.array(z.number()),
-});
-export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
+    meanProportionInterval: ProportionInterval;
+    pageSizes: number[];
+};
 
-export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
-    const { width, height } = componentProps;
-    const size = { height, width };
-
+export const QueriesOverTime: FC<QueriesOverTimeProps> = (props) => {
+    const { filter, queries, granularity } = props;
     return (
-        <ErrorBoundary size={size} schema={queriesOverTimeSchema} componentProps={componentProps}>
-            <ResizeContainer size={size}>
-                <QueriesOverTimeInner {...componentProps} />
-            </ResizeContainer>
+        <ErrorBoundary resetKeys={[filter, queries, granularity]}>
+            <QueriesOverTimeWithoutErrors {...props} />
         </ErrorBoundary>
     );
 };
 
-export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentProps }) => {
+const QueriesOverTimeWithoutErrors: FC<QueriesOverTimeProps> = ({ ...componentProps }) => {
     const { filter, queries, granularity } = componentProps;
 
     const { data: queryOverTimeData, isLoading } = useQueriesOverTime(filter, granularity, queries);
@@ -258,14 +233,4 @@ function getDownloadData(filteredData: ReturnType<typeof getFilteredQueryOverTim
             { query },
         );
     });
-}
-
-function findDuplicateStrings(items: string[]): string[] {
-    const counts = new Map<string, number>();
-
-    for (const item of items) {
-        counts.set(item, (counts.get(item) ?? 0) + 1);
-    }
-
-    return [...counts.entries()].filter(([, count]) => count > 1).map(([key]) => key);
 }
