@@ -16,6 +16,7 @@ import { sortRowLabels } from '../featureSort';
 import { HoverTooltip } from '../hover-tooltip';
 import { type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
 import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../over-time-grid';
+import { TotalInDateRange } from '../over-time-grid-tooltip';
 import { type ProportionValue } from '../overTime/proportionValue';
 
 export type QueriesOverTimeQuery = {
@@ -119,7 +120,10 @@ const QueriesOverTimeWithData: FC<{
             },
             describe: (query, value) =>
                 value.type === 'noCoverage' ? (
-                    <p className='text-gray-600'>No reads cover the query.</p>
+                    <>
+                        <p className='text-gray-600'>No reads cover the query.</p>
+                        <TotalInDateRange value={value} />
+                    </>
                 ) : (
                     <>
                         <p>
@@ -128,6 +132,7 @@ const QueriesOverTimeWithData: FC<{
                         <p>
                             {value.coverage} <span className='text-gray-600'>with coverage for this query.</span>
                         </p>
+                        <TotalInDateRange value={value} />
                     </>
                 ),
         }),

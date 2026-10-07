@@ -19,6 +19,7 @@ import { useBandViewSettings } from '../band-view-settings';
 import { type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, JACCARD_FEATURE_SORT, sortRowLabels } from '../featureSort';
 import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../over-time-grid';
+import { TotalInDateRange } from '../over-time-grid-tooltip';
 
 export type MutationsOverTimeProps = {
     filter: SiloReadFilter;
@@ -137,7 +138,10 @@ const MutationsOverTimeWithMetadata: FC<{
             ),
             describe: (mutation, value) =>
                 value.type === 'noCoverage' ? (
-                    <p className='text-gray-600'>No reads cover position {mutation.position}.</p>
+                    <>
+                        <p className='text-gray-600'>No reads cover position {mutation.position}.</p>
+                        <TotalInDateRange value={value} />
+                    </>
                 ) : (
                     <>
                         <p>
@@ -148,6 +152,7 @@ const MutationsOverTimeWithMetadata: FC<{
                             {value.coverage}{' '}
                             <span className='text-gray-600'>with coverage at position {mutation.position}.</span>
                         </p>
+                        <TotalInDateRange value={value} />
                     </>
                 ),
         }),

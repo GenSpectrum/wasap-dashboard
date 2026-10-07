@@ -194,7 +194,6 @@ describe('FeatureBands', () => {
         await expect.element(tooltip).toHaveTextContent('S:C2G');
         await expect.element(tooltip).toHaveTextContent('30.00%');
         await expect.element(tooltip).toHaveTextContent('S:C2G described');
-        await expect.element(tooltip).toHaveTextContent('100 total in this date range.');
 
         await userEvent.hover(container.querySelector('thead')!);
         await expect.element(getByRole('tooltip')).not.toBeInTheDocument();
