@@ -1,20 +1,10 @@
-import { type FC, useEffect, useRef } from 'react';
+import { type FC } from 'react';
 import { type ZodError } from 'zod';
 
 import { InfoHeadline1, InfoParagraph } from './info';
 import { Modal } from './modal';
 import { RhydbError } from '../../dataLayer/transport/query';
 import { LapisError, UnknownLapisError } from '../../externalData/lapisApi/lapisApi';
-import { gsEventNames } from '../../util/gsEventNames';
-
-export class ErrorEvent extends Event {
-    constructor(public readonly error: Error) {
-        super(gsEventNames.error, {
-            bubbles: true,
-            composed: true,
-        });
-    }
-}
 
 export class UserFacingError extends Error {
     constructor(
@@ -46,17 +36,10 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, resetError, layout 
     // eslint-disable-next-line no-console -- Currently we use the following statement for our error handling
     console.error(error);
 
-    const containerRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        containerRef.current?.dispatchEvent(new ErrorEvent(error));
-    });
-
     const { headline, details } = getDisplayedErrorMessage(error);
 
     return (
         <div
-            ref={containerRef}
             className={`flex h-full w-full items-center justify-center border border-stone-300 bg-white p-2 ${layout === 'horizontal' ? 'flex-row' : 'flex-col'}`}
         >
             <div>

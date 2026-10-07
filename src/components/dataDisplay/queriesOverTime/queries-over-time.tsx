@@ -1,4 +1,4 @@
-import { type FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { type FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
@@ -9,7 +9,6 @@ import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../../dataL
 import { temporalGranularitySchema } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
-import { useDispatchFinishedLoadingEvent } from '../../../util/useDispatchFinishedLoadingEvent';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
@@ -116,7 +115,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
     sort,
     setSort,
 }) => {
-    const wrapperRef = useDispatchFinishedLoadingEvent();
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
 
     useLayoutEffect(() => {

@@ -1,4 +1,13 @@
-import { type Dispatch, type FC, type SetStateAction, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import {
+    type Dispatch,
+    type FC,
+    type SetStateAction,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
@@ -15,7 +24,6 @@ import { siloReadFilterSchema } from '../../../dataLayer/queries/filter';
 import { sequenceTypeSchema, temporalGranularitySchema } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
-import { useDispatchFinishedLoadingEvent } from '../../../util/useDispatchFinishedLoadingEvent';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
@@ -132,7 +140,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     const { nucleotideSequence } = useSiloSchema();
     const { pageSize } = usePageSizeContext();
 
-    const wrapperRef = useDispatchFinishedLoadingEvent();
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
 
     useLayoutEffect(() => {
