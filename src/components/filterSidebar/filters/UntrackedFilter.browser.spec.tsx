@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider, type UseQueryResult } from '@tanstack/react-query';
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { describe, expect, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
@@ -33,15 +33,23 @@ describe('UntrackedFilter - custom variants textarea', () => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = renderWithQueryClient(
-            <UntrackedFilter
-                pageState={defaultPageState}
-                setPageState={mockSetPageState}
-                clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
-                clinicalSequenceLapisLineageField='pangoLineage'
-                cladeLineageQueryResult={mockCladeLineageQueryResult}
-            />,
-        );
+        // The filter shows what it is given, so the page state has to change for a second pick to add to the first.
+        function WithPageState() {
+            const [pageState, setPageState] = useState(defaultPageState);
+            return (
+                <UntrackedFilter
+                    pageState={pageState}
+                    setPageState={(newPageState) => {
+                        mockSetPageState(newPageState);
+                        setPageState(newPageState);
+                    }}
+                    clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
+                    clinicalSequenceLapisLineageField='pangoLineage'
+                    cladeLineageQueryResult={mockCladeLineageQueryResult}
+                />
+            );
+        }
+        const { getByRole } = renderWithQueryClient(<WithPageState />);
 
         const variantCombobox = await vi.waitFor(() => getByRole('combobox', { name: /variant/i }));
 

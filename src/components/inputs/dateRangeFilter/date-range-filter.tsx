@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { computeInitialValues } from './computeInitialValues';
 import { DatePicker } from './date-picker';
@@ -28,105 +28,47 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => (
     </ErrorBoundary>
 );
 
+/** What is chosen: a preset by its label, or a custom range (`CUSTOM_OPTION`). Derived from `value` alone. */
+function toState(value: DateRangeValue, dateRangeOptions: DateRangeOption[]): DateRangeFilterState {
+    const initialValues = computeInitialValues(value, dateRangeOptions);
+    if (!initialValues) {
+        return null;
+    }
+    return {
+        label: initialValues.initialSelectedDateRange ?? CUSTOM_OPTION,
+        dateFrom: initialValues.initialSelectedDateFrom,
+        dateTo: initialValues.initialSelectedDateTo,
+    };
+}
+
 const DateRangeFilterWithoutErrors = ({
     dateRangeOptions,
     value,
     placeholder,
     onDateRangeChange,
 }: DateRangeFilterProps) => {
-    const initialValues = useMemo(() => computeInitialValues(value, dateRangeOptions), [value, dateRangeOptions]);
+    const state = useMemo(() => toState(value, dateRangeOptions), [value, dateRangeOptions]);
+    // "Custom" is only an option while a custom range is chosen: it can't be picked, only typed.
+    const options = state?.label === CUSTOM_OPTION ? [...dateRangeOptions, { label: CUSTOM_OPTION }] : dateRangeOptions;
 
-    const getInitialState = useCallback(() => {
-        if (!initialValues) {
-            return null;
-        }
-        return initialValues.initialSelectedDateRange
-            ? {
-                  label: initialValues.initialSelectedDateRange,
-                  dateFrom: initialValues.initialSelectedDateFrom,
-                  dateTo: initialValues.initialSelectedDateTo,
-              }
-            : {
-                  label: CUSTOM_OPTION,
-                  dateFrom: initialValues.initialSelectedDateFrom,
-                  dateTo: initialValues.initialSelectedDateTo,
-              };
-    }, [initialValues]);
-
-    const customComboboxValue = { label: CUSTOM_OPTION };
-    const [options, setOptions] = useState(
-        getInitialState()?.label === CUSTOM_OPTION ? [...dateRangeOptions, customComboboxValue] : [...dateRangeOptions],
-    );
-    const [state, setState] = useState<DateRangeFilterState>(getInitialState());
-
-    function updateState(newState: DateRangeFilterState) {
-        setState(newState);
-        notifyChange(newState);
-    }
-
-    useEffect(() => {
-        setState(getInitialState());
-    }, [getInitialState]);
-
-    const onSelectChange = (option: DateRangeOption | null) => {
-        updateState(
-            option !== null
-                ? {
-                      label: option.label,
-                      dateFrom: toMaybeDate(option.dateFrom),
-                      dateTo: toMaybeDate(option.dateTo),
-                  }
-                : null,
-        );
-        if (option?.label !== CUSTOM_OPTION) {
-            setOptions([...dateRangeOptions]);
-        }
+    const changeCustomRange = (dateFrom: Date | undefined, dateTo: Date | undefined) => {
+        onDateRangeChange?.({
+            label: CUSTOM_OPTION,
+            dateFrom: dateFrom !== undefined ? toYYYYMMDD(dateFrom) : undefined,
+            dateTo: dateTo !== undefined ? toYYYYMMDD(dateTo) : undefined,
+        });
     };
 
     const onChangeDateFrom = (date: Date | undefined) => {
-        if (date?.toDateString() === state?.dateFrom?.toDateString()) {
-            return;
+        if (date?.toDateString() !== state?.dateFrom?.toDateString()) {
+            changeCustomRange(date, state?.dateTo);
         }
-
-        updateState({
-            label: CUSTOM_OPTION,
-            dateFrom: date,
-            dateTo: state?.dateTo,
-        });
-        setOptions([...dateRangeOptions, customComboboxValue]);
     };
 
     const onChangeDateTo = (date: Date | undefined) => {
-        if (date?.toDateString() === state?.dateTo?.toDateString()) {
-            return;
+        if (date?.toDateString() !== state?.dateTo?.toDateString()) {
+            changeCustomRange(state?.dateFrom, date);
         }
-
-        updateState({
-            label: CUSTOM_OPTION,
-            dateFrom: state?.dateFrom,
-            dateTo: date,
-        });
-        setOptions([...dateRangeOptions, customComboboxValue]);
-    };
-
-    const notifyChange = (state: DateRangeFilterState) => {
-        if (state === null) {
-            onDateRangeChange?.(null);
-            return;
-        }
-        if (state.label === CUSTOM_OPTION) {
-            onDateRangeChange?.({
-                label: CUSTOM_OPTION,
-                dateFrom: state.dateFrom !== undefined ? toYYYYMMDD(state.dateFrom) : undefined,
-                dateTo: state.dateTo !== undefined ? toYYYYMMDD(state.dateTo) : undefined,
-            });
-            return;
-        }
-        const matchingOption = dateRangeOptions.find((option) => option.label === state.label);
-        if (matchingOption === undefined) {
-            throw new Error(`Invalid date range option: ${state.label}`);
-        }
-        onDateRangeChange?.(matchingOption);
     };
 
     return (
@@ -134,9 +76,15 @@ const DateRangeFilterWithoutErrors = ({
             <ClearableSelect
                 items={options.map((item) => item.label)}
                 placeholderText={placeholder}
-                onChange={(value) => {
-                    const dateRangeOption = options.find((item) => item.label === value);
-                    onSelectChange(dateRangeOption ?? null);
+                onChange={(label) => {
+                    if (label === null) {
+                        onDateRangeChange?.(null);
+                        return;
+                    }
+                    const option = dateRangeOptions.find((item) => item.label === label);
+                    if (option !== undefined) {
+                        onDateRangeChange?.(option);
+                    }
                 }}
                 value={state?.label ?? null}
                 className='w-full'
@@ -158,7 +106,3 @@ const DateRangeFilterWithoutErrors = ({
         </div>
     );
 };
-
-function toMaybeDate(dateString: string | undefined) {
-    return dateString ? new Date(dateString) : undefined;
-}

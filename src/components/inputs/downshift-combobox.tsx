@@ -1,5 +1,5 @@
 import { useCombobox, useMultipleSelection } from 'downshift';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useMemo, useRef, useState } from 'react';
 
 import { DeleteIcon } from '../shared/icons/DeleteIcon';
 
@@ -22,24 +22,15 @@ export function DownshiftCombobox<Item>({
     formatItemInList: (item: Item) => ReactNode;
     inputClassName?: string;
 }) {
-    const [selectedItem, setSelectedItem] = useState<Item | null>(() => value);
-    const [itemsFilter, setItemsFilter] = useState(() => itemToString(selectedItem));
-
-    useEffect(() => {
-        setSelectedItem(value);
-        setItemsFilter(itemToString(value));
-    }, [itemToString, value]);
+    // Follows Downshift's input value (see `onInputValueChange`), which Downshift sets to the
+    // selected item when `value` changes.
+    const [itemsFilter, setItemsFilter] = useState(() => itemToString(value));
 
     const items = useMemo(
         () => allItems.filter((item) => filterItemsByInputValue(item, itemsFilter)),
         [allItems, filterItemsByInputValue, itemsFilter],
     );
     const [inputIsInvalid, setInputIsInvalid] = useState(false);
-
-    const selectItem = (item: Item | null) => {
-        setSelectedItem(item);
-        onChange(item);
-    };
 
     const {
         isOpen,
@@ -57,25 +48,28 @@ export function DownshiftCombobox<Item>({
             setItemsFilter(inputValue.trim());
         },
         onSelectedItemChange({ selectedItem }) {
-            selectItem(selectedItem);
+            onChange(selectedItem);
         },
         items,
         itemToString(item) {
             return itemToString(item);
         },
-        selectedItem,
+        selectedItem: value,
+        // The parent may pass an equal item as a new object on every render, which is no change
+        // of the selection: it must not overwrite what is being typed.
+        itemToKey: itemToString,
     });
 
     const onInputBlur = () => {
         if (inputValue === '') {
-            selectItem(null);
+            onChange(null);
             return;
         }
 
         const trimmedInput = inputValue.trim();
         const matchingItem = items.find((item) => itemToString(item) === trimmedInput);
         if (matchingItem !== undefined) {
-            selectItem(matchingItem);
+            onChange(matchingItem);
             return;
         }
 
@@ -122,7 +116,7 @@ export function DownshiftCombobox<Item>({
                 getItemProps={getItemProps}
                 formatItemInList={formatItemInList}
                 itemToString={itemToString}
-                selectedItem={selectedItem}
+                selectedItem={value}
                 emptyMessage='No elements to select.'
             />
         </div>
@@ -150,12 +144,8 @@ export function DownshiftMultiCombobox<Item>({
     formatSelectedItem?: (item: Item) => ReactNode;
     inputClassName?: string;
 }) {
-    const [selectedItems, setSelectedItems] = useState<Item[]>(() => value);
+    const selectedItems = value;
     const [itemsFilter, setItemsFilter] = useState('');
-
-    useEffect(() => {
-        setSelectedItems(value);
-    }, [value]);
 
     const availableItems = useMemo(() => {
         return allItems.filter((item) => {
@@ -167,10 +157,7 @@ export function DownshiftMultiCombobox<Item>({
         });
     }, [allItems, selectedItems, filterItemsByInputValue, itemsFilter, itemToString]);
 
-    const notifyChange = (items: Item[]) => {
-        setSelectedItems(items);
-        onChange(items);
-    };
+    const notifyChange = onChange;
 
     const { getDropdownProps, removeSelectedItem } = useMultipleSelection({
         selectedItems,
