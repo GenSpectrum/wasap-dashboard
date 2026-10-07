@@ -12,4 +12,6 @@ export * from './siloFilterExpression';
 export * from './mutationsOverTime';
 export * from './queriesOverTime';
 export * from './positionBySample';
+export * from './jointSymbols';
 export * from './symbolsBySample';
+export * from './haplotypesOverTime';

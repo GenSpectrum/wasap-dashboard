@@ -16,7 +16,14 @@ const logger = getClientLogger('useVariantSignature');
  * (by mutation code) with the variant in the clinical sequences.
  */
 export type VariantSignature = {
+    /** The mutations to show: those of the variant with a Jaccard index of at least `minJaccard`. */
     displayMutations: string[];
+    /**
+     * All the mutations of the variant, before the Jaccard threshold. A mutation that is not
+     * specific to the variant on its own can be in combination with others (see the amplicon
+     * co-occurrence), so that is where combinations are looked for.
+     */
+    candidateMutations: string[];
     jaccardIndices?: Record<string, number>;
     /** The lineage the Jaccard indices are computed for, of a predefined signature. */
     lineageForJaccard?: string;
@@ -70,14 +77,14 @@ async function fetchComputedSignature(
         },
         analysis.minProportion,
         analysis.minCount,
-        analysis.minJaccard,
+        0,
         getLapisFilterForTimeFrame(analysis.timeFrame, config.clinicalLapis.dateField),
     );
+    const displayed = mutationsWithScore.filter(({ jaccardIndex }) => jaccardIndex >= analysis.minJaccard);
     return {
-        displayMutations: mutationsWithScore.map(({ mutation }) => mutation),
-        jaccardIndices: Object.fromEntries(
-            mutationsWithScore.map(({ mutation, jaccardIndex }) => [mutation, jaccardIndex]),
-        ),
+        displayMutations: displayed.map(({ mutation }) => mutation),
+        candidateMutations: mutationsWithScore.map(({ mutation }) => mutation),
+        jaccardIndices: Object.fromEntries(displayed.map(({ mutation, jaccardIndex }) => [mutation, jaccardIndex])),
     };
 }
 
@@ -109,13 +116,14 @@ async function fetchPredefinedSignature(
     );
 
     if (jaccardByMutation.size === 0) {
-        return { displayMutations: mutations, lineageForJaccard };
+        return { displayMutations: mutations, candidateMutations: mutations, lineageForJaccard };
     }
 
     const displayMutations = mutations.filter((m) => (jaccardByMutation.get(m) ?? 0) >= analysis.minJaccard);
     return {
         lineageForJaccard,
         displayMutations,
+        candidateMutations: mutations,
         jaccardIndices: Object.fromEntries(
             displayMutations.flatMap((m) => {
                 const jaccardIndex = jaccardByMutation.get(m);
@@ -126,21 +134,23 @@ async function fetchPredefinedSignature(
 }
 
 export function getLapisFilterForTimeFrame(timeFrame: VariantTimeFrame, dateFieldName: string): LapisFilter {
-    let fromDate = undefined;
-    switch (timeFrame) {
-        case 'all':
-            break;
-        case '6months':
-            fromDate = dayjs().subtract(6, 'month').format('YYYY-MM-DD');
-            break;
-        case '3months':
-            fromDate = dayjs().subtract(3, 'month').format('YYYY-MM-DD');
-            break;
-    }
+    const fromDate = getFromDateForTimeFrame(timeFrame);
     if (fromDate === undefined) {
         return {};
     }
     return {
         [`${dateFieldName}From`]: fromDate,
     };
+}
+
+/** The first day of the time frame, `YYYY-MM-DD`; none for all of the time. */
+export function getFromDateForTimeFrame(timeFrame: VariantTimeFrame): string | undefined {
+    switch (timeFrame) {
+        case 'all':
+            return undefined;
+        case '6months':
+            return dayjs().subtract(6, 'month').format('YYYY-MM-DD');
+        case '3months':
+            return dayjs().subtract(3, 'month').format('YYYY-MM-DD');
+    }
 }

@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
+import { ampliconNumbersByMutation } from '../../amplicons/mutationsByAmplicon';
+import { useAmplicons } from '../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
-import { useVariantSignature } from '../../externalData/lapis/useVariantSignature';
+import { getFromDateForTimeFrame, useVariantSignature } from '../../externalData/lapis/useVariantSignature';
 import { usePageState } from '../../pageState/usePageState';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
@@ -11,6 +13,7 @@ import { ClinicalSequenceCountStat } from '../dataDisplay/ClinicalSequenceCountS
 import { MutationsResult } from '../dataDisplay/MutationsResult';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
 import { WasapResults } from '../dataDisplay/WasapResults';
+import { AmpliconCooccurrenceSection } from '../dataDisplay/ampliconCooccurrence/AmpliconCooccurrenceSection';
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../filterSidebar/filters/VariantExplorerFilter';
 
@@ -21,6 +24,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
         setPageState,
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
+    const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
     const { data, isPending, isError } = useVariantSignature(config, analysis, lineageTree);
     const meanProportionInterval = useMemo(
@@ -64,7 +68,9 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                 </NothingSelected>
             ) : (
                 <WasapResults data={data} isError={isError} isPending={isPending || isFilterPending}>
-                    {({ displayMutations, jaccardIndices, lineageForJaccard }) => {
+                    {({ displayMutations, candidateMutations, jaccardIndices, lineageForJaccard }) => {
+                        const jaccardLineage =
+                            analysis.signatureType === 'computed' ? analysis.variant : lineageForJaccard;
                         return (
                             <MutationsResult
                                 displayMutations={displayMutations}
@@ -74,7 +80,35 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                                 granularity={base.granularity}
                                 sequenceType={analysis.sequenceType}
                                 meanProportionInterval={meanProportionInterval}
+                                ampliconsByMutation={
+                                    amplicons.data === undefined || analysis.sequenceType !== 'nucleotide'
+                                        ? undefined
+                                        : ampliconNumbersByMutation(displayMutations, amplicons.data)
+                                }
+                                title='Mutations'
+                                info={<MutationsInfo />}
                             >
+                                {config.amplicons !== undefined &&
+                                    analysis.sequenceType === 'nucleotide' &&
+                                    candidateMutations.length !== 0 && (
+                                        <AmpliconCooccurrenceSection
+                                            amplicons={config.amplicons}
+                                            filter={filter}
+                                            granularity={base.granularity}
+                                            candidateMutations={candidateMutations}
+                                            minJaccard={analysis.minJaccard}
+                                            jaccardSource={
+                                                jaccardLineage === undefined
+                                                    ? undefined
+                                                    : {
+                                                          lapisBaseUrl: clinicalLapis.lapisBaseUrl,
+                                                          lineageQuery: `${clinicalLapis.lineageField}=${jaccardLineage}`,
+                                                          dateField: clinicalLapis.dateField,
+                                                          dateFrom: getFromDateForTimeFrame(analysis.timeFrame),
+                                                      }
+                                            }
+                                        />
+                                    )}
                                 {analysis.signatureType === 'computed' && analysis.variant !== undefined && (
                                     <ClinicalSequenceCountStat
                                         {...clinicalLapisProps}
@@ -102,5 +136,14 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                 </WasapResults>
             )}
         </ModePageLayout>
+    );
+}
+
+function MutationsInfo() {
+    return (
+        <div className='w-96 text-sm font-normal text-gray-700'>
+            The variant&apos;s mutations with a Jaccard index of at least the minimum, each on its own: the share of the
+            reads covering its position that carry it.
+        </div>
     );
 }
