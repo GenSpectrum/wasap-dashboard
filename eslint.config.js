@@ -1,6 +1,5 @@
 import eslint from '@eslint/js';
 import tanstackQuery from '@tanstack/eslint-plugin-query';
-import parser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -161,7 +160,7 @@ export default tseslint.config(
             ...tseslint.configs.stylisticTypeChecked,
         ],
         languageOptions: {
-            parser: parser,
+            parser: tseslint.parser,
             globals: {
                 ...globals.browser,
             },

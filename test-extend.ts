@@ -3,9 +3,6 @@ import '@testing-library/jest-dom/vitest';
 import { it as itBase } from 'vitest';
 
 import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker } from './routeMocker.ts';
-import setupDayjs from './src/util/setupDayjs.ts';
-
-setupDayjs();
 
 export const worker = setupWorker();
 

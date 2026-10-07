@@ -1,8 +1,8 @@
 import z, { type ZodTypeAny } from 'zod';
 
-export const orderByType = z.enum(['ascending', 'descending']);
+const orderByType = z.enum(['ascending', 'descending']);
 
-export const orderBy = z.object({
+const orderBy = z.object({
     field: z.string(),
     type: orderByType,
 });
@@ -19,24 +19,10 @@ export const lapisBaseRequest = z
     .catchall(filterValue);
 export type LapisBaseRequest = z.infer<typeof lapisBaseRequest>;
 
-const insertionCount = z.object({
-    insertion: z.string(),
-    count: z.number(),
-    insertedSymbols: z.string(),
-    position: z.number(),
-    sequenceName: z.union([z.string(), z.null()]),
-});
-export const insertionsResponse = makeLapisResponse(z.array(insertionCount));
-
 const baseResponseValueSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 
 export const aggregatedItem = z.object({ count: z.number() }).catchall(baseResponseValueSchema);
 export const aggregatedResponse = makeLapisResponse(z.array(aggregatedItem));
-export type AggregatedItem = z.infer<typeof aggregatedItem>;
-
-export const detailsItem = z.object({}).catchall(baseResponseValueSchema);
-export const detailsResponse = makeLapisResponse(z.array(detailsItem));
-export type DetailsItem = z.infer<typeof detailsItem>;
 
 function makeLapisResponse<T extends ZodTypeAny>(data: T) {
     return z.object({

@@ -11,9 +11,9 @@ import {
 
 import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
 import { type SampleOverview } from '../../dataLayer/queries';
-import { Loading } from '../../util/Loading';
 import { TitledPanel } from '../shared/TitledPanel';
 import { singleGraphColorRGBAById } from '../shared/charts/colors';
+import { LoadingDisplay } from '../shared/loading-display';
 
 /**
  * Which locations were sampled on which dates, and which sequencing batch each sample came
@@ -35,7 +35,13 @@ export function SamplesOverTimePlot() {
 
     return (
         <TitledPanel title='Sampling timeline'>
-            {isPending ? <Loading /> : isError ? <span>{error.message}</span> : <SamplesOverTimeGrid samples={data} />}
+            {isPending ? (
+                <LoadingDisplay />
+            ) : isError ? (
+                <span>{error.message}</span>
+            ) : (
+                <SamplesOverTimeGrid samples={data} />
+            )}
         </TitledPanel>
     );
 }

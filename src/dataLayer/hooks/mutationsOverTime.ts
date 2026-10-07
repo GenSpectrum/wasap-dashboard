@@ -17,6 +17,7 @@
 import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import {
     BaseMutationOverTimeDataMap,
@@ -185,21 +186,16 @@ export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranula
 export type MutationsOverTimePage = {
     /** The full count/coverage/proportion matrix for the visible mutations, or `null` while any position query is still in flight. */
     data: MutationOverTimeDataMap | null;
-    /** True until every position on the page has answered. */
+    /**
+     * True until every position on the page has answered.
+     *
+     * The grid waits for the whole page rather than filling in row by row, because at page size 20
+     * and a concurrency cap of 24 the position queries all land within one round-trip, and a
+     * half-built matrix renders not-yet-loaded rows as "no coverage", which reads as real data. If a
+     * large page (e.g. 250) ever makes the wait noticeable, switch to progressive rendering.
+     */
     isLoading: boolean;
     error: unknown;
-    /**
-     * Positions answered so far / total.
-     *
-     * Currently only informational — the grid waits for the whole page
-     * (`isLoading`) rather than filling in row by row, because at page size 20
-     * and a concurrency cap of 24 the position queries all land within one
-     * round-trip, and a half-built matrix renders not-yet-loaded rows as "no
-     * coverage", which reads as real data. If a large page (e.g. 250) ever makes
-     * the wait noticeable, switch to progressive rendering: build the matrix from
-     * `rowsByPosition` as it grows and let the grid show these counts.
-     */
-    progress: { counted: number; total: number };
 };
 
 export function useMutationsOverTimePage(
@@ -221,7 +217,8 @@ export function useMutationsOverTimePage(
         [visibleMutationCodes, sequenceType, schemaNucleotideSequence],
     );
 
-    const results = useQueries({
+    const positionRows = useQueries({
+        combine: allQueryData,
         // `schema` stands in for `connection.key` (same memoized SiloInstance).
         // eslint-disable-next-line @tanstack/query/exhaustive-deps
         queries: targets.map((target) => ({
@@ -245,30 +242,18 @@ export function useMutationsOverTimePage(
         })),
     });
 
-    const error = results.find((result) => result.error)?.error;
-    const counted = results.filter((result) => result.data !== undefined).length;
-
-    const rowsByPosition = useMemo(() => {
-        const map = new Map<string, PositionOverTimeRow[]>();
-        targets.forEach((target, index) => {
-            const rows = results[index]?.data;
-            if (rows !== undefined) {
-                map.set(targetKey(target), rows);
-            }
-        });
-        return map;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [targets, results.map((result) => (result.data === undefined ? 0 : 1)).join('')]);
+    const { error, data: rows } = positionRows;
+    const rowsByPosition = useMemo(
+        () => rows && new Map(targets.map((target, index) => [targetKey(target), rows[index]])),
+        [targets, rows],
+    );
 
     return useMemo(() => {
         if (error) {
             throw error instanceof Error ? error : new Error(String(error));
         }
-        // Wait for the whole page: a matrix built from a partial `rowsByPosition`
-        // shows the missing rows as "no coverage" (see `progress` above). One
-        // day we could render progressively from `rowsByPosition` instead.
-        const allAnswered = counted === targets.length;
-        const matrix = allAnswered
+        // Wait for the whole page (see `isLoading` above).
+        const matrix = rowsByPosition
             ? buildMatrix(
                   visibleMutationCodes,
                   granularity,
@@ -281,9 +266,8 @@ export function useMutationsOverTimePage(
             : null;
         return {
             data: matrix === null ? null : removeEmptyDatesUnlessShown(matrix, showEmptyDates),
-            isLoading: !allAnswered,
+            isLoading: matrix === null,
             error: undefined,
-            progress: { counted, total: targets.length },
         };
     }, [
         error,
@@ -295,8 +279,6 @@ export function useMutationsOverTimePage(
         requestedDateRanges,
         totalCountsByBucket,
         showEmptyDates,
-        counted,
-        targets.length,
     ]);
 }
 

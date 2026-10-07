@@ -208,5 +208,3 @@ export type WasapModeFilter<Analysis extends WasapAnalysisFilter = WasapAnalysis
     base: WasapBaseFilter;
     analysis: Analysis;
 };
-
-export type WasapFilter = WasapModeFilter;

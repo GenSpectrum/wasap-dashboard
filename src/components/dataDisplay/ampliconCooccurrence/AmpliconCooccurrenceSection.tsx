@@ -15,9 +15,9 @@ import { useDateAxis, type DateAxis } from '../../../dataLayer/hooks/mutationsOv
 import { normalizeFilter, type SiloReadFilter } from '../../../dataLayer/queries';
 import { type ClusterJaccardSource } from '../../../externalData/lapis/getClusterJaccards';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
-import { Loading } from '../../../util/Loading';
 import { TitledPanel } from '../../shared/TitledPanel';
 import { ErrorDisplay } from '../../shared/error-display';
+import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
 
 const NO_ROWS: CooccurrenceRow[] = [];
@@ -49,7 +49,7 @@ export function AmpliconCooccurrenceSection(props: SectionProps) {
             {error ? (
                 <ErrorDisplay error={error} />
             ) : amplicons.data === undefined || dateAxis.data === undefined ? (
-                <Loading />
+                <LoadingDisplay />
             ) : (
                 <Cooccurrences {...props} ampliconList={amplicons.data} dateAxis={dateAxis.data} />
             )}
@@ -114,7 +114,7 @@ function Cooccurrences({
         return <ErrorDisplay error={cooccurrence.error} />;
     }
     if (shownRows === undefined) {
-        return <Loading />;
+        return <LoadingDisplay />;
     }
     if (shownRows.length === 0) {
         return (

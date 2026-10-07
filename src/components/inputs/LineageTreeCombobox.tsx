@@ -67,7 +67,7 @@ export function sortedLineageNames(lineageTree: LineageTree): string[] {
     return [...lineageTree.lineages.keys()].sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
 }
 
-// module level, so that they stay the same between renders (the comboboxes have them as effect dependencies)
+// module level, so that they stay the same between renders (the comboboxes memoize on them)
 const lineageToString = (lineage: string | undefined | null) => lineage ?? '';
 const matchesInput = (lineage: string, input: string) => lineage.toLowerCase().includes(input.toLowerCase());
 const formatLineage = (lineage: string) => <span>{lineage}</span>;

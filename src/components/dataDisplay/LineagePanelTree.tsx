@@ -1,9 +1,7 @@
-import { flip, offset, shift } from '@floating-ui/dom';
-import { useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Link, type To } from 'react-router-dom';
 
-import { useFloatingUi } from './floating-ui-hooks';
-import { TOOLTIP_BASE_STYLES } from './tooltip';
+import { HoverTooltip } from './hover-tooltip';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import { buildPanelTree, type PanelTreeNode } from '../../lineageTree/panelTree';
 
@@ -114,53 +112,16 @@ function Nodes({
                     key={node.name}
                     className={nested ? `${CONNECTOR} ${node.skipped.length > 0 ? 'before:border-dashed' : ''}` : ''}
                 >
-                    <NodeTooltip node={node}>
+                    {/* Shown on hover (or focus, on the link), so it never makes the page longer. */}
+                    <HoverTooltip content={<NodeInfo node={node} />} placement='right' className='w-max'>
                         <NodeLabel node={node} color={colors.get(node.name)} to={lineageLink?.(node.name)} />
-                    </NodeTooltip>
+                    </HoverTooltip>
                     {node.children.length > 0 && (
                         <Nodes nodes={node.children} colors={colors} lineageLink={lineageLink} nested />
                     )}
                 </li>
             ))}
         </ul>
-    );
-}
-
-/**
- * Shows the info of the lineage next to its label on hover. It's only rendered while shown, and
- * moved back into view at the edge of the window, so that it never makes the page longer.
- */
-function NodeTooltip({ node, children }: { node: PanelTreeNode; children: ReactNode }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const referenceRef = useRef<HTMLDivElement>(null);
-    return (
-        <div
-            ref={referenceRef}
-            className='w-max'
-            onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={() => setIsOpen(false)}
-        >
-            {children}
-            {isOpen && <FloatingNodeInfo node={node} referenceRef={referenceRef} />}
-        </div>
-    );
-}
-
-const TOOLTIP_MIDDLEWARE = [offset(4), flip(), shift({ padding: 8 })];
-
-function FloatingNodeInfo({
-    node,
-    referenceRef,
-}: {
-    node: PanelTreeNode;
-    referenceRef: RefObject<HTMLElement | null>;
-}) {
-    const floatingRef = useRef<HTMLDivElement>(null);
-    useFloatingUi(referenceRef, floatingRef, TOOLTIP_MIDDLEWARE, 'right');
-    return (
-        <div ref={floatingRef} className={`absolute top-0 left-0 ${TOOLTIP_BASE_STYLES}`}>
-            <NodeInfo node={node} />
-        </div>
     );
 }
 

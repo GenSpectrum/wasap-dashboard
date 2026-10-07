@@ -1,59 +1,27 @@
-import { type ChangeEvent, useEffect, useState } from 'react';
+import { type ChangeEvent } from 'react';
 
 import { DeleteIcon } from '../shared/icons/DeleteIcon';
 
-export const undefinedValue = '__undefined__';
+const NOTHING_SELECTED = '__undefined__';
 
 export type ClearableSelectProps = {
     items: string[];
-    initiallySelectedItem?: string | null;
+    /** `null` when nothing is selected: the placeholder shows. */
+    value: string | null;
     onChange?: (item: string | null) => void;
     placeholderText?: string;
-    value?: string | null;
-    selectClassName?: string;
     className?: string;
 };
 
-export function ClearableSelect({
-    items,
-    initiallySelectedItem,
-    onChange,
-    placeholderText,
-    className,
-    value,
-    selectClassName,
-}: ClearableSelectProps) {
-    const [selectedOption, setSelectedOption] = useState<string | null>(initiallySelectedItem ?? null);
-
-    useEffect(() => {
-        if (value !== undefined) {
-            setSelectedOption(value);
-        }
-    }, [value]);
-
-    const handleClear = () => {
-        setSelectedOption(null);
-        if (onChange) {
-            onChange(null);
-        }
-    };
-
-    const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const newValue = event.currentTarget.value;
-        setSelectedOption(newValue);
-        if (onChange) {
-            onChange(newValue);
-        }
-    };
-
+export function ClearableSelect({ items, value, onChange, placeholderText, className }: ClearableSelectProps) {
     return (
         <div className={`relative block min-w-24 ${className}`}>
             <select
-                className={`select w-full pr-14 ${selectClassName}`}
-                value={selectedOption ?? undefinedValue}
-                onChange={handleChange}
+                className='select w-full pr-14'
+                value={value ?? NOTHING_SELECTED}
+                onChange={(event: ChangeEvent<HTMLSelectElement>) => onChange?.(event.currentTarget.value)}
             >
-                <option value={undefinedValue} disabled>
+                <option value={NOTHING_SELECTED} disabled>
                     {placeholderText ?? 'Select an option'}
                 </option>
                 {items.map((item) => (
@@ -62,9 +30,11 @@ export function ClearableSelect({
                     </option>
                 ))}
             </select>
-            {selectedOption && (
+            {value !== null && (
                 <button
-                    onClick={handleClear}
+                    type='button'
+                    aria-label='Clear'
+                    onClick={() => onChange?.(null)}
                     className='absolute top-1/2 right-10 -translate-y-1/2 cursor-pointer border-0 bg-transparent'
                 >
                     <DeleteIcon />

@@ -1,4 +1,4 @@
-import { type SubstitutionOrDeletionOrInsertion, type SequenceType } from '../types/dashboardComponents';
+import { type SubstitutionOrDeletionOrInsertion } from '../types/dashboardComponents';
 
 export interface Mutation {
     readonly position: number;
@@ -221,67 +221,3 @@ export class InsertionClass implements MutationClass {
         );
     }
 }
-
-export function toMutation(
-    mutationClass: SubstitutionClass | DeletionClass | InsertionClass,
-): Substitution | Deletion | Insertion {
-    if (mutationClass.type === 'insertion') {
-        return {
-            type: 'insertion' as const,
-            code: mutationClass.code,
-            segment: mutationClass.segment,
-            position: mutationClass.position,
-            insertedSymbols: mutationClass.insertedSymbols,
-        };
-    }
-    return toSubstitutionOrDeletion(mutationClass);
-}
-
-export function toSubstitutionOrDeletion(mutation: SubstitutionClass | DeletionClass): Substitution | Deletion {
-    switch (mutation.type) {
-        case 'substitution':
-            return {
-                type: 'substitution' as const,
-                code: mutation.code,
-                segment: mutation.segment,
-                position: mutation.position,
-                valueAtReference: mutation.valueAtReference,
-                substitutionValue: mutation.substitutionValue,
-            };
-        case 'deletion':
-            return {
-                type: 'deletion' as const,
-                code: mutation.code,
-                segment: mutation.segment,
-                position: mutation.position,
-                valueAtReference: mutation.valueAtReference,
-            };
-    }
-}
-
-export const bases: Record<SequenceType, string[]> = {
-    nucleotide: ['A', 'C', 'G', 'T', '-'],
-    'amino acid': [
-        'I',
-        'L',
-        'V',
-        'F',
-        'M',
-        'C',
-        'A',
-        'G',
-        'P',
-        'T',
-        'S',
-        'Y',
-        'W',
-        'Q',
-        'N',
-        'H',
-        'E',
-        'D',
-        'K',
-        'R',
-        '-',
-    ],
-};

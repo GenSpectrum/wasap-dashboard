@@ -9,8 +9,8 @@ import {
 } from './locationSort';
 import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
 import { readLocationOverview } from '../../dataLayer/queries';
-import { Loading } from '../../util/Loading';
 import { TitledPanel } from '../shared/TitledPanel';
+import { LoadingDisplay } from '../shared/loading-display';
 
 /**
  * One row per location: its name, how many samples were collected there, how many amplicon
@@ -36,7 +36,7 @@ export const LocationOverviewTable: FC = () => {
     if (isPending || locations === undefined) {
         return (
             <TitledPanel title='Sampling locations'>
-                <Loading />
+                <LoadingDisplay />
             </TitledPanel>
         );
     }

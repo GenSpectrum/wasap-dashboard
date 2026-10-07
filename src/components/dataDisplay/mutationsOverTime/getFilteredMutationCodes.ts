@@ -1,11 +1,5 @@
-import z from 'zod';
-
 import { type SubstitutionOrDeletionEntry } from '../../../types/dashboardComponents';
 import type { Deletion, Substitution } from '../../../util/mutations';
-
-export const displayMutationsSchema = z.array(z.string(), {
-    errorMap: () => ({ message: `invalid display mutations` }),
-});
 
 /**
  * An interval of mean proportions. Both bounds are included, unless marked as exclusive,

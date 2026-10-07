@@ -104,7 +104,6 @@ function renderOverTime(props: Partial<MutationsOverTimeProps> = {}) {
             <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
                 <MutationAnnotationsContextProvider value={[]}>
                     <MutationsOverTime
-                        width='100%'
                         filter={{ samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-02' }}
                         sequenceType='nucleotide'
                         granularity='day'

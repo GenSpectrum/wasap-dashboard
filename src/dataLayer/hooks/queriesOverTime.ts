@@ -13,6 +13,7 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
@@ -79,7 +80,8 @@ export function useQueriesOverTime(
         },
     });
 
-    const results = useQueries({
+    const dailyCounts = useQueries({
+        combine: allQueryData<QueryDailyCounts>,
         queries: queries.map((query) => ({
             queryKey: [
                 'silo',
@@ -111,29 +113,18 @@ export function useQueriesOverTime(
         })),
     });
 
-    const error = axis.error ?? results.find((result) => result.error)?.error;
-    const answeredSignature = results.map((result) => (result.data === undefined ? 0 : 1)).join('');
-    const allAnswered = axis.data !== undefined && !answeredSignature.includes('0');
-
-    const dailyByLabel = useMemo(() => {
-        const map = new Map<string, QueryDailyCounts>();
-        queries.forEach((query, index) => {
-            const daily = results[index]?.data;
-            if (daily !== undefined) {
-                map.set(query.displayLabel, daily);
-            }
-        });
-        return map;
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- results identity churns; the signature captures what matters
-    }, [queries, answeredSignature]);
+    const error = axis.error ?? dailyCounts.error;
+    const dailyByLabel = useMemo(
+        () =>
+            dailyCounts.data && new Map(queries.map((query, index) => [query.displayLabel, dailyCounts.data![index]])),
+        [queries, dailyCounts.data],
+    );
 
     return useMemo(() => {
         if (error) {
             throw error instanceof Error ? error : new Error(String(error));
         }
-        // `allAnswered` already implies `axis.data !== undefined` (see its
-        // definition above); TS tracks that, so `axis.data` narrows below.
-        if (!allAnswered) {
+        if (axis.data === undefined || dailyByLabel === undefined) {
             return { data: null, isLoading: true, error: undefined };
         }
         const matrix = buildQueriesMatrix(
@@ -144,7 +135,7 @@ export function useQueriesOverTime(
             dailyByLabel,
         );
         return { data: matrix, isLoading: false, error: undefined };
-    }, [error, allAnswered, axis.data, queries, granularity, dailyByLabel]);
+    }, [error, axis.data, queries, granularity, dailyByLabel]);
 }
 
 // --- pure matrix assembly (exported for tests) ------------------------------

@@ -71,22 +71,25 @@ const queries = [
     },
 ];
 
+const filter = { samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-02' };
+
 function renderOverTime(pageSizes = [10, 20]) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    return render(
+    const withFilter = (filter: { samplingDateFrom: string; samplingDateTo: string }) => (
         <QueryClientProvider client={queryClient}>
             <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
                 <QueriesOverTime
-                    width='100%'
-                    filter={{ samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-02' }}
+                    filter={filter}
                     granularity='day'
                     queries={queries}
                     meanProportionInterval={{ min: 0, max: 1 }}
                     pageSizes={pageSizes}
                 />
             </ConnectionProvider>
-        </QueryClientProvider>,
+        </QueryClientProvider>
     );
+    const screen = render(withFilter(filter));
+    return { ...screen, rerenderWithFilter: (newFilter: typeof filter) => screen.rerender(withFilter(newFilter)) };
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -151,5 +154,19 @@ describe('QueriesOverTime (SILO)', () => {
 
         await screen.getByRole('button', { name: 'Mean proportion' }).click();
         await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+    });
+
+    it('keeps the page size when the filter changes', async () => {
+        stubSilo();
+        const screen = renderOverTime([1, 2]);
+
+        await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
+        await screen.getByRole('combobox', { name: 'Select number of rows per page' }).selectOptions('2');
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+
+        screen.rerenderWithFilter({ ...filter, samplingDateTo: '2026-06-03' });
+
+        await expect.element(screen.getByText('C3037T').first()).toBeInTheDocument();
+        await expect.element(screen.getByRole('combobox', { name: 'Select number of rows per page' })).toHaveValue('2');
     });
 });

@@ -2,11 +2,11 @@ import { type UseQueryResult } from '@tanstack/react-query';
 
 import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
 import type { ExcludeSetName, WasapUntrackedFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { Loading } from '../../../util/Loading';
 import { KnownVariantsExclusionInfo } from '../../InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
+import { LoadingDisplay } from '../../shared/loading-display';
 
 interface UntrackedFilterProps {
     pageState: WasapUntrackedFilter;
@@ -49,7 +49,7 @@ export function UntrackedFilter({
             {/* The list of variants (-mt-4) is about the select above, so it stays close to it instead of being a field of its own. */}
             {pageState.excludeSet === 'predefined' ? (
                 isPending ? (
-                    <Loading />
+                    <LoadingDisplay />
                 ) : isError ? (
                     <span>Failed to load variant list. Please try again or use custom variant list.</span>
                 ) : (

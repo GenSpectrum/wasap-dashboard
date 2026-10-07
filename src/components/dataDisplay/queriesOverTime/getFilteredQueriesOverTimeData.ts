@@ -1,12 +1,13 @@
 import { Map2dBase, Map2dView, type Map2DContents } from '../../../util/map2d';
 import { type Temporal } from '../../../util/temporalClass';
+import { isInProportionInterval, type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
 import { removeEmptyDatesInPlace, type ProportionValue, serializeTemporal } from '../overTime/proportionValue';
 
 export type GetFilteredQueryOverTimeDataArgs = {
     data: Map2DContents<string, Temporal, ProportionValue>;
     /** See `getMeanProportions`. */
     meanProportions: Partial<Record<string, number>>;
-    proportionInterval: { min: number; max: number };
+    proportionInterval: ProportionInterval;
     showEmptyDates: boolean;
 };
 
@@ -59,8 +60,7 @@ export function getFilteredQueryOverTimeData({
 
     const queriesToFilterOut = filteredData.getFirstAxisKeys().filter((query) => {
         // A query without a mean proportion counts as 0, as it always has.
-        const meanProportion = meanProportions[query] ?? 0;
-        return meanProportion < proportionInterval.min || meanProportion > proportionInterval.max;
+        return !isInProportionInterval(meanProportions[query] ?? 0, proportionInterval);
     });
 
     // Remove filtered queries from the data view

@@ -4,7 +4,7 @@ import { DateRangeFilter } from './dateRangeFilter/date-range-filter';
 import { type DateRangeOption } from './dateRangeFilter/dateRangeOption';
 import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
-import { Loading } from '../../util/Loading';
+import { LoadingDisplay } from '../shared/loading-display';
 
 /**
  * Computes the available date-range options dynamically from the newest
@@ -55,7 +55,7 @@ export function DynamicDateFilter({
             </div>
             {isPending ? (
                 <div className='h-20'>
-                    <Loading />
+                    <LoadingDisplay />
                 </div>
             ) : isError ? (
                 <div className='flex h-20 items-center'>

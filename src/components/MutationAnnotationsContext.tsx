@@ -1,36 +1,23 @@
 import { createContext, type ComponentProps, type FC, useContext, useMemo } from 'react';
-import z from 'zod';
 
 import { type SequenceType } from '../types/dashboardComponents';
-import { ErrorDisplay } from './shared/error-display';
-import { ResizeContainer } from './shared/resize-container';
 import { type Mutation } from '../util/mutations';
 
-const mutationEntrySchema = z.union([
-    z.string(),
-    z.object({ mutation: z.string(), name: z.string().optional(), description: z.string().optional() }),
-]);
+type MutationEntry = string | { mutation: string; name?: string; description?: string };
 
-const positionEntrySchema = z.union([
-    z.string(),
-    z.object({ position: z.string(), name: z.string().optional(), description: z.string().optional() }),
-]);
+type PositionEntry = string | { position: string; name?: string; description?: string };
 
-const mutationAnnotationSchema = z.object({
-    name: z.string(),
-    description: z.string(),
-    symbol: z.string(),
-    nucleotideMutations: z.array(mutationEntrySchema).optional(),
-    nucleotidePositions: z.array(positionEntrySchema).optional(),
-    aminoAcidMutations: z.array(mutationEntrySchema).optional(),
-    aminoAcidPositions: z.array(positionEntrySchema).optional(),
-});
-export type MutationAnnotation = z.infer<typeof mutationAnnotationSchema>;
+export type MutationAnnotation = {
+    name: string;
+    description: string;
+    symbol: string;
+    nucleotideMutations?: MutationEntry[];
+    nucleotidePositions?: PositionEntry[];
+    aminoAcidMutations?: MutationEntry[];
+    aminoAcidPositions?: PositionEntry[];
+};
 
-export const mutationAnnotationsSchema = z.array(mutationAnnotationSchema, {
-    errorMap: () => ({ message: 'invalid mutation annotations' }),
-});
-export type MutationAnnotations = z.infer<typeof mutationAnnotationsSchema>;
+export type MutationAnnotations = MutationAnnotation[];
 
 export type ResolvedMutationAnnotation = {
     annotation: MutationAnnotation;
@@ -57,33 +44,15 @@ const MutationAnnotationsContext = createContext<MutationAnnotationsContextValue
 });
 
 /**
- * Validates and provides mutation annotations to all descendant components.
+ * Provides mutation annotations to all descendant components.
  * Accepts the raw MutationAnnotations config, builds the internal lookup index, and stores it in context.
- * Renders an error message if the provided annotations fail schema validation.
  */
 export const MutationAnnotationsContextProvider: FC<
     Omit<ComponentProps<typeof MutationAnnotationsContext.Provider>, 'value'> & { value: MutationAnnotations }
 > = ({ value, children }) => {
-    const parseResult = useMemo(() => mutationAnnotationsSchema.safeParse(value), [value]);
-    const contextValue = useMemo(
-        () =>
-            parseResult.success
-                ? { success: true as const, value: buildAnnotationIndex(parseResult.data) }
-                : { success: false as const, error: parseResult.error },
-        [parseResult],
-    );
+    const contextValue = useMemo(() => buildAnnotationIndex(value), [value]);
 
-    if (!contextValue.success) {
-        return (
-            <ResizeContainer size={{ width: '100%' }}>
-                <ErrorDisplay error={contextValue.error} layout='vertical' />
-            </ResizeContainer>
-        );
-    }
-
-    return (
-        <MutationAnnotationsContext.Provider value={contextValue.value}>{children}</MutationAnnotationsContext.Provider>
-    );
+    return <MutationAnnotationsContext.Provider value={contextValue}>{children}</MutationAnnotationsContext.Provider>;
 };
 
 /**

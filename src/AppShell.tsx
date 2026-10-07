@@ -1,6 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import { AppHeader } from './components/header/AppHeader';
 
@@ -16,8 +14,6 @@ export function AppShell() {
             <main className='mx-auto flex w-full max-w-[110rem] flex-1 flex-col'>
                 <Outlet />
             </main>
-
-            <ToastContainer position='bottom-right' />
         </div>
     );
 }

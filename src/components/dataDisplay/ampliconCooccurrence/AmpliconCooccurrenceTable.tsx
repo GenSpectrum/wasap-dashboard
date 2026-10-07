@@ -1,26 +1,22 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { cooccurrenceTableData, type CooccurrenceRow } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { Map2dView } from '../../../util/map2d';
-import { type Temporal, type TemporalClass, toTemporalClass } from '../../../util/temporalClass';
+import { type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import { useBandViewSettings } from '../band-view-settings';
-import { CsvDownloadButton } from '../csv-download-button';
-import { FeatureBands, type FeatureRenderer } from '../feature-bands';
-import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
-import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
-import { getProportion, type ProportionValue } from '../overTime/proportionValue';
-import PortalTooltip from '../portal-tooltip';
+import { type FeatureRenderer } from '../feature-bands';
+import { DEFAULT_FEATURE_SORT, sortRowLabels } from '../featureSort';
+import { HoverTooltip } from '../hover-tooltip';
+import { OverTimeGrid, proportionsByDate, useOverTimeGridState } from '../over-time-grid';
+import { type ProportionValue } from '../overTime/proportionValue';
 import { getFilteredQueryOverTimeData, getMeanProportions } from '../queriesOverTime/getFilteredQueriesOverTimeData';
-import { type PageSizes } from '../tanstackTable/pagination';
-import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
-import { ViewSettingsControls } from '../view-settings-controls';
 
 type TableProps = {
     rows: CooccurrenceRow[];
     /** The date axis the rows' values are index-aligned with. */
     dateRanges: TemporalClass[];
     jaccardIndices: Partial<Record<string, number>> | undefined;
-    pageSizes: PageSizes;
+    pageSizes: number[];
 };
 
 /**
@@ -28,25 +24,9 @@ type TableProps = {
  * cluster, the share of the reads spanning its amplicon's mutations that carry at least its
  * mutations.
  */
-export function AmpliconCooccurrenceTable(props: TableProps) {
-    return (
-        <PageSizeContextProvider pageSizes={props.pageSizes}>
-            <Table {...props} />
-        </PageSizeContextProvider>
-    );
-}
-
-function Table({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
-    const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
-    const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
-    useLayoutEffect(() => setTooltipPortalTarget(wrapper), [wrapper]);
-
-    const { pageSize } = usePageSizeContext();
-    const [pageIndex, setPageIndex] = useState(0);
-    // By amplicon (the rows' order), unlike the mutations over time, which go by Jaccard index first.
-    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
-    const [viewSettings, setViewSettings] = useBandViewSettings();
-    const { showEmptyDates } = viewSettings;
+export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
+    const gridState = useOverTimeGridState(pageSizes);
+    const [{ showEmptyDates }] = useBandViewSettings();
 
     const data = useMemo(() => cooccurrenceTableData(rows, dateRanges), [rows, dateRanges]);
     const meanProportions = useMemo(() => getMeanProportions(data), [data]);
@@ -60,18 +40,14 @@ function Table({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
             }),
         [data, meanProportions, showEmptyDates],
     );
-    // A sort by Jaccard index without any falls back.
-    const effectiveSort = sort.column === 'jaccardIndex' && jaccardIndices === undefined ? DEFAULT_FEATURE_SORT : sort;
+    // By amplicon (the rows' order), unlike the mutations over time, which go by Jaccard index first.
+    const sort = gridState.sortOr(DEFAULT_FEATURE_SORT, jaccardIndices !== undefined);
     const sortedLabels = useMemo(
-        () => sortRowLabels(filteredData.getFirstAxisKeys(), effectiveSort, { meanProportions, jaccardIndices }),
-        [filteredData, effectiveSort, meanProportions, jaccardIndices],
+        () => sortRowLabels(filteredData.getFirstAxisKeys(), sort, { meanProportions, jaccardIndices }),
+        [filteredData, sort, meanProportions, jaccardIndices],
     );
-    useEffect(() => setPageIndex(0), [filteredData]);
-
-    const changeSort = (newSort: FeatureSort) => {
-        setSort(newSort);
-        setPageIndex(0);
-    };
+    const { setPageIndex, pageOf } = gridState;
+    useEffect(() => setPageIndex(0), [filteredData, setPageIndex]);
 
     const rowByLabel = useMemo(() => new Map(rows.map((row) => [row.label, row])), [rows]);
     const renderer = useMemo<FeatureRenderer<string>>(
@@ -80,11 +56,7 @@ function Table({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
             renderRowLabel: (label) => {
                 const row = rowByLabel.get(label);
                 return (
-                    <PortalTooltip
-                        content={row ? <RowLabelTooltip row={row} /> : label}
-                        position='right'
-                        portalTarget={tooltipPortalTarget}
-                    >
+                    <HoverTooltip content={row ? <RowLabelTooltip row={row} /> : label} placement='right' focusable>
                         {row ? (
                             <div className='mr-2 flex items-center gap-1.5 text-left'>
                                 Amplicon {row.amplicon.number}
@@ -93,74 +65,54 @@ function Table({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
                         ) : (
                             <div className='mr-2'>{label}</div>
                         )}
-                    </PortalTooltip>
+                    </HoverTooltip>
                 );
             },
-            renderTooltip: (label, temporal, value) => {
+            describe: (label, value) => {
                 const row = rowByLabel.get(label);
+                if (value.type === 'noCoverage') {
+                    return <p className='text-gray-600'>No read spans the mutations (the amplicon dropped out?).</p>;
+                }
                 return (
-                    <OverTimeGridTooltip
-                        label={<span className='font-bold'>{label}</span>}
-                        date={temporal}
-                        value={value}
-                    >
-                        {row && value?.type === 'value' && (
-                            <p className='mt-2'>
-                                {value.count.toLocaleString()}{' '}
-                                <span className='text-gray-600'>
-                                    of the {value.coverage.toLocaleString()} reads spanning the amplicon&apos;s
-                                    mutations carry all {row.cluster.length} mutations of the cluster.
-                                </span>
-                            </p>
-                        )}
-                        {value?.type === 'noCoverage' && (
-                            <p className='mt-2 text-gray-600'>
-                                No read spans the mutations (the amplicon dropped out?).
-                            </p>
-                        )}
-                    </OverTimeGridTooltip>
+                    row && (
+                        <p>
+                            {value.count.toLocaleString()}{' '}
+                            <span className='text-gray-600'>
+                                of the {value.coverage.toLocaleString()} reads spanning the amplicon&apos;s mutations
+                                carry all {row.cluster.length} mutations of the cluster.
+                            </span>
+                        </p>
+                    )
                 );
             },
         }),
-        [rowByLabel, tooltipPortalTarget],
+        [rowByLabel],
     );
 
     const pageData = useMemo(() => {
         const page = new Map2dView(filteredData);
-        page.selectRows(sortedLabels.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize));
+        page.selectRows(pageOf(sortedLabels));
         return page;
-    }, [filteredData, sortedLabels, pageIndex, pageSize]);
+    }, [filteredData, sortedLabels, pageOf]);
 
     return (
-        <div ref={setWrapper} className='border border-stone-300 bg-white'>
-            <FeatureBands
-                rowLabelHeader='Amplicon'
-                data={pageData}
-                isLoading={false}
-                loadingRowLabels={[]}
-                requestedDateRanges={filteredData.getSecondAxisKeys()}
-                viewSettings={viewSettings}
-                featureRenderer={renderer}
-                tooltipPortalTarget={tooltipPortalTarget}
-                pageSizes={pageSizes}
-                pageIndex={pageIndex}
-                totalRows={sortedLabels.length}
-                onPageChange={setPageIndex}
-                paginationStart={<ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />}
-                paginationEnd={
-                    <CsvDownloadButton
-                        className='btn btn-xs'
-                        label='Download CSV'
-                        getData={() => getDownloadData(filteredData, rowByLabel, jaccardIndices)}
-                        filename='amplicon_cooccurrence.csv'
-                    />
-                }
-                meanProportions={meanProportions}
-                jaccardIndices={jaccardIndices}
-                sort={effectiveSort}
-                onSortChange={changeSort}
-            />
-        </div>
+        <OverTimeGrid
+            state={gridState}
+            rowLabelHeader='Amplicon'
+            data={pageData}
+            isLoading={false}
+            loadingRowLabels={[]}
+            requestedDateRanges={filteredData.getSecondAxisKeys()}
+            featureRenderer={renderer}
+            totalRows={sortedLabels.length}
+            csv={{
+                filename: 'amplicon_cooccurrence.csv',
+                getRows: () => getDownloadData(filteredData, rowByLabel, jaccardIndices),
+            }}
+            meanProportions={meanProportions}
+            jaccardIndices={jaccardIndices}
+            sort={sort}
+        />
     );
 }
 
@@ -212,7 +164,6 @@ function getDownloadData(
     rowByLabel: Map<string, CooccurrenceRow>,
     jaccardIndices: Partial<Record<string, number>> | undefined,
 ) {
-    const dates = data.getSecondAxisKeys().map((date) => toTemporalClass(date));
     return data.getFirstAxisKeys().map((label) => {
         const row = rowByLabel.get(label);
         return {
@@ -220,9 +171,7 @@ function getDownloadData(
             cluster: row?.cluster.map((mutation) => mutation.code).join(' ') ?? '',
             ampliconMutations: row?.mutations.map((mutation) => mutation.code).join(' ') ?? '',
             jaccardIndex: jaccardIndices?.[label] ?? '',
-            ...Object.fromEntries(
-                dates.map((date) => [date.dateString, getProportion(data.get(label, date) ?? null) ?? '']),
-            ),
+            ...proportionsByDate(data, label),
         };
     });
 }

@@ -1,60 +1,22 @@
 import DOMPurify from 'dompurify';
-import { Fragment, type FC, type RefObject, useRef } from 'react';
+import { Fragment, type FC } from 'react';
 
 import type { SequenceType } from '../../types/dashboardComponents';
 import type { Deletion, Substitution } from '../../util/mutations';
 import { useMutationAnnotationsProvider } from '../MutationAnnotationsContext';
 import { useMutationLinkProvider } from '../MutationLinkTemplateContext';
 import { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../shared/info';
-import { ButtonWithModalDialog, useModalRef } from '../shared/modal';
+import { Modal } from '../shared/modal';
 
 export type AnnotatedMutationProps = {
     mutation: Substitution | Deletion;
     sequenceType: SequenceType;
 };
 
-export const AnnotatedMutation: FC<AnnotatedMutationProps> = (props) => {
+export const AnnotatedMutation: FC<AnnotatedMutationProps> = ({ mutation, sequenceType }) => {
     const annotationsProvider = useMutationAnnotationsProvider();
     const linkProvider = useMutationLinkProvider();
-    const modalRef = useModalRef();
 
-    return (
-        <AnnotatedMutationWithoutContext
-            {...props}
-            annotationsProvider={annotationsProvider}
-            linkProvider={linkProvider}
-            modalRef={modalRef}
-        />
-    );
-};
-
-type GridJsAnnotatedMutationProps = AnnotatedMutationProps & {
-    annotationsProvider: ReturnType<typeof useMutationAnnotationsProvider>;
-    linkProvider: ReturnType<typeof useMutationLinkProvider>;
-};
-
-/**
- * GridJS internally also uses Preact, but it uses its own Preact instance:
- * - Our Preact contexts are not available in GridJS. We need to inject context content as long as we're in our Preact instance.
- * - We must use the GridJS re-exports of the Preact hooks. I'm not sure why.
- */
-export const GridJsAnnotatedMutation: FC<GridJsAnnotatedMutationProps> = (props) => {
-    const modalRef = useRef<HTMLDialogElement>(null);
-
-    return <AnnotatedMutationWithoutContext {...props} modalRef={modalRef} />;
-};
-
-type AnnotatedMutationWithoutContextProps = GridJsAnnotatedMutationProps & {
-    modalRef: RefObject<HTMLDialogElement | null>;
-};
-
-const AnnotatedMutationWithoutContext: FC<AnnotatedMutationWithoutContextProps> = ({
-    mutation,
-    sequenceType,
-    annotationsProvider,
-    linkProvider,
-    modalRef,
-}) => {
     const link = linkProvider(mutation, sequenceType);
     let innerLabel = <>{mutation.code}</>;
     if (link !== undefined) {
@@ -91,11 +53,7 @@ const AnnotatedMutationWithoutContext: FC<AnnotatedMutationWithoutContextProps> 
     return (
         <>
             {innerLabel}
-            <ButtonWithModalDialog
-                buttonClassName={'select-text cursor-pointer'}
-                modalContent={modalContent}
-                modalRef={modalRef}
-            >
+            <Modal buttonClassName={'select-text cursor-pointer'} modalContent={modalContent}>
                 <sup className='decoration-red-600 hover:underline focus-visible:underline'>
                     {mutationAnnotations
                         .map((resolved) => resolved.annotation.symbol)
@@ -106,7 +64,7 @@ const AnnotatedMutationWithoutContext: FC<AnnotatedMutationWithoutContextProps> 
                             </Fragment>
                         ))}
                 </sup>
-            </ButtonWithModalDialog>
+            </Modal>
         </>
     );
 };

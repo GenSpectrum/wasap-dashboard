@@ -1,61 +1,28 @@
-import z from 'zod';
-
 import { useStringFieldOptions } from '../../../dataLayer/hooks/stringFieldOptions';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
-import { ResizeContainer } from '../../shared/resize-container';
 import { DownshiftCombobox } from '../downshift-combobox';
 
-const textSelectorPropsSchema = z.object({
-    field: z.string().min(1),
-    placeholderText: z.string().optional(),
-    value: z.string().optional(),
-    hideCounts: z.boolean().optional(),
-});
-const textFilterInnerPropsSchema = textSelectorPropsSchema;
-const textFilterPropsSchema = textFilterInnerPropsSchema.extend({
-    width: z.string(),
-});
-
-export type TextFilterInnerProps<Field extends string = string> = Omit<
-    z.infer<typeof textFilterInnerPropsSchema>,
-    'field'
-> & {
+export type TextFilterProps<Field extends string = string> = {
     field: Field;
+    placeholderText?: string;
+    value?: string;
+    hideCounts?: boolean;
     onInputChange?: (input: { [key in Field]: string | undefined }) => void;
 };
 
-export type TextFilterProps<Field extends string = string> = Omit<TextFilterInnerProps<Field>, 'field'> & {
-    field: Field;
-    width?: string;
-};
-
-// width default reproduces the old gs-text-filter Lit component's @property field initializer.
-export function TextFilter<Field extends string = string>({
-    width = '100%',
-    onInputChange,
-    ...innerProps
-}: TextFilterProps<Field>) {
-    const size = { width, height: '3rem' };
-    const validatedProps = { width, ...innerProps };
-
+export function TextFilter<Field extends string = string>(props: TextFilterProps<Field>) {
     return (
-        <ErrorBoundary size={size} layout='horizontal' componentProps={validatedProps} schema={textFilterPropsSchema}>
-            <ResizeContainer size={size}>
-                <TextFilterInner {...innerProps} onInputChange={onInputChange} />
-            </ResizeContainer>
+        <ErrorBoundary layout='horizontal' resetKeys={[props.field]}>
+            <div className='h-12'>
+                <TextFilterWithoutErrors {...props} />
+            </div>
         </ErrorBoundary>
     );
 }
 
-function TextFilterInner<Field extends string>({
-    value,
-    field,
-    placeholderText,
-    hideCounts,
-    onInputChange,
-}: TextFilterInnerProps<Field>) {
-    const { data, error, isLoading } = useStringFieldOptions(field);
+function TextFilterWithoutErrors<Field extends string>(props: TextFilterProps<Field>) {
+    const { data, error, isLoading } = useStringFieldOptions(props.field);
 
     if (isLoading) {
         return <LoadingDisplay />;
@@ -66,14 +33,7 @@ function TextFilterInner<Field extends string>({
     }
 
     return (
-        <TextSelector
-            field={field}
-            value={value}
-            placeholderText={placeholderText}
-            hideCounts={hideCounts}
-            onInputChange={onInputChange}
-            data={(data ?? []).map((option) => ({ value: option.name, count: option.count }))}
-        />
+        <TextSelector {...props} data={(data ?? []).map((option) => ({ value: option.name, count: option.count }))} />
     );
 }
 
@@ -89,7 +49,7 @@ const TextSelector = <Field extends string>({
     data,
     hideCounts = false,
     onInputChange,
-}: TextFilterInnerProps<Field> & {
+}: TextFilterProps<Field> & {
     data: SelectItem[];
 }) => {
     const initialSelectedItem = data.find((candidate) => candidate.value == value);
