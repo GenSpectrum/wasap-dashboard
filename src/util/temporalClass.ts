@@ -344,39 +344,6 @@ export function toTemporalClass(temporal: Temporal) {
     }
 }
 
-export function toTemporal(temporalClass: TemporalClass): Temporal {
-    switch (temporalClass.type) {
-        case 'YearMonthDay':
-            return {
-                type: 'YearMonthDay',
-                yearNumber: temporalClass.yearNumber,
-                monthNumber: temporalClass.monthNumber,
-                dayNumber: temporalClass.dayNumber,
-                dateString: temporalClass.dateString,
-            };
-        case 'YearWeek':
-            return {
-                type: 'YearWeek',
-                isoYearNumber: temporalClass.isoYearNumber,
-                isoWeekNumber: temporalClass.isoWeekNumber,
-                dateString: temporalClass.dateString,
-            };
-        case 'YearMonth':
-            return {
-                type: 'YearMonth',
-                yearNumber: temporalClass.yearNumber,
-                monthNumber: temporalClass.monthNumber,
-                dateString: temporalClass.dateString,
-            };
-        case 'Year':
-            return {
-                type: 'Year',
-                year: temporalClass.year,
-                dateString: temporalClass.dateString,
-            };
-    }
-}
-
 export function generateAllDaysInRange(start: YearMonthDayClass, end: YearMonthDayClass): YearMonthDayClass[] {
     const days = [];
     const daysInBetween = end.minus(start);
@@ -485,22 +452,6 @@ export function getMinMaxTemporal<T extends TemporalClass>(values: Iterable<T | 
     return { min, max };
 }
 
-export function addUnit(temporal: TemporalClass, amount: number): TemporalClass {
-    if (temporal instanceof YearMonthDayClass) {
-        return temporal.addDays(amount);
-    }
-    if (temporal instanceof YearWeekClass) {
-        return temporal.addWeeks(amount);
-    }
-    if (temporal instanceof YearMonthClass) {
-        return temporal.addMonths(amount);
-    }
-    if (temporal instanceof YearClass) {
-        return temporal.addYears(amount);
-    }
-    throw new Error(`Invalid argument: ${temporal}`);
-}
-
 /**
  * Given a date like 2025-10-15 and a granularity ("day", "week", ...), returns a date range
  * like "2025-10-15" (day) or "2025-W42" (week) etc.
@@ -518,14 +469,4 @@ export function parseDateStringToTemporal(date: string, granularity: TemporalGra
         case 'year':
             return day.year;
     }
-}
-
-export function dateRangeCompare(a: { dateRange: TemporalClass | null }, b: { dateRange: TemporalClass | null }) {
-    if (a.dateRange === null) {
-        return 1;
-    }
-    if (b.dateRange === null) {
-        return -1;
-    }
-    return compareTemporal(a.dateRange, b.dateRange);
 }
