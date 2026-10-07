@@ -16,6 +16,7 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { useSampleOverview } from './sampleOverview';
@@ -72,7 +73,8 @@ export function useMedianAmpliconCoverage(amplicons: Amplicon[]): MedianAmplicon
         [amplicons],
     );
 
-    const results = useQueries({
+    const positionRows = useQueries({
+        combine: allQueryData,
         queries: positions.map((position) => {
             // `schema` stands in for `connection.key` (same memoized SiloInstance).
             // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -91,22 +93,16 @@ export function useMedianAmpliconCoverage(amplicons: Amplicon[]): MedianAmplicon
         }),
     });
 
-    const counted = results.filter((result) => result.data !== undefined).length;
-    const error = samples.error ?? results.find((result) => result.error)?.error ?? undefined;
-    const answeredKey = results.map((result) => (result.data === undefined ? 0 : 1)).join('');
+    const error = samples.error ?? positionRows.error;
+    const rowsByAmplicon = positionRows.data;
 
-    const data = useMemo(() => {
-        if (samples.data === undefined || counted < positions.length) {
-            return undefined;
-        }
-        const coverages = sampleAmpliconCoverages(
-            samples.data,
-            results.map((result) => result.data!),
-        );
-        return medianAmpliconCoverageGrid(coverages, positions.length);
-        // `answeredKey` stands in for `results`, which is a new array every render.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [samples.data, answeredKey, positions.length]);
+    const data = useMemo(
+        () =>
+            samples.data &&
+            rowsByAmplicon &&
+            medianAmpliconCoverageGrid(sampleAmpliconCoverages(samples.data, rowsByAmplicon), rowsByAmplicon.length),
+        [samples.data, rowsByAmplicon],
+    );
 
     return { data, error: error ?? undefined };
 }
