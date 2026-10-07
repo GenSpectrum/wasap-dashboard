@@ -1,7 +1,6 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { type ZodSchema } from 'zod';
 
-import { UserFacingError } from '../../components/ErrorReportInstruction';
 import { getAppConfig } from '../../config/appConfig';
 import { type ProblemDetail, problemDetailSchema } from '../../types/ProblemDetail';
 
@@ -86,7 +85,7 @@ export class ApiService {
 
 const axiosNotFoundError = 'ENOTFOUND';
 
-export class BackendError extends UserFacingError {
+export class BackendError extends Error {
     constructor(
         message: string,
         public readonly status: number,
@@ -110,7 +109,7 @@ export class UnknownBackendError extends Error {
     }
 }
 
-export class BackendNotAvailable extends UserFacingError {
+export class BackendNotAvailable extends Error {
     constructor(url: string) {
         super(`Backend not available under ${url}`);
         this.name = 'BackendNotAvailable';
