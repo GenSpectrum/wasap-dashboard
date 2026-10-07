@@ -1,86 +1,57 @@
-import { type FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import z from 'zod';
+import { type FC, useEffect, useMemo } from 'react';
 
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
-import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
-import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../../dataLayer/queries';
-import { temporalGranularitySchema } from '../../../types/dashboardComponents';
+import { type SiloFilterExpression, type SiloReadFilter } from '../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
-import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
+import { type Temporal } from '../../../util/temporalClass';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
-import { ResizeContainer } from '../../shared/resize-container';
 import { useBandViewSettings } from '../band-view-settings';
-import { CsvDownloadButton } from '../csv-download-button';
-import { FeatureBands, type FeatureRenderer } from '../feature-bands';
-import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
-import { type ProportionValue, getProportion } from '../overTime/proportionValue';
-import PortalTooltip from '../portal-tooltip';
-import { pageSizesSchema } from '../tanstackTable/pagination';
-import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
-import { ViewSettingsControls } from '../view-settings-controls';
+import { type FeatureRenderer } from '../feature-bands';
+import { sortRowLabels } from '../featureSort';
+import { HoverTooltip } from '../hover-tooltip';
+import { type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
+import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../over-time-grid';
+import { TotalInDateRange } from '../over-time-grid-tooltip';
+import { type ProportionValue } from '../overTime/proportionValue';
 
-const meanProportionIntervalSchema = z.object({
-    min: z.number().min(0).max(1),
-    max: z.number().min(0).max(1),
-});
-export type MeanProportionInterval = z.infer<typeof meanProportionIntervalSchema>;
-
-const queriesOverTimeQuerySchema = z.object({
-    displayLabel: z.string(),
-    description: z.string().optional(),
+export type QueriesOverTimeQuery = {
+    /** Unique among the queries. */
+    displayLabel: string;
+    description?: string;
     /** The advanced-query string, kept for display in the row-label tooltip. */
-    query: z.string(),
+    query: string;
     /** The parsed, genome-only expression that SILO is asked (see `data/queriesOverTime.ts`). */
-    filter: siloFilterExpressionSchema,
-});
-export type QueriesOverTimeQuery = z.infer<typeof queriesOverTimeQuerySchema>;
+    filter: SiloFilterExpression;
+};
 
-const queriesOverTimeSchema = z.object({
-    filter: siloReadFilterSchema,
-    queries: z
-        .array(queriesOverTimeQuerySchema)
-        .min(1)
-        .superRefine((queries, ctx) => {
-            const duplicateDisplayLabels = findDuplicateStrings(queries.map((v) => v.displayLabel));
-            if (duplicateDisplayLabels.length > 0) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: `Display labels must be unique. Duplicates: ${duplicateDisplayLabels.join(', ')}`,
-                });
-            }
-        }),
-    granularity: temporalGranularitySchema,
+export type QueriesOverTimeProps = {
+    filter: SiloReadFilter;
+    queries: QueriesOverTimeQuery[];
+    granularity: TemporalGranularity;
     /** Only queries whose mean proportion over the time range lies within this interval are shown. */
-    meanProportionInterval: meanProportionIntervalSchema,
-    width: z.string(),
-    height: z.string().optional(),
-    pageSizes: pageSizesSchema,
-});
-export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
+    meanProportionInterval: ProportionInterval;
+    pageSizes: number[];
+};
 
-export const QueriesOverTime: FC<QueriesOverTimeProps> = (componentProps) => {
-    const { width, height } = componentProps;
-    const size = { height, width };
-
+export const QueriesOverTime: FC<QueriesOverTimeProps> = (props) => {
+    const { filter, queries, granularity } = props;
     return (
-        <ErrorBoundary size={size} schema={queriesOverTimeSchema} componentProps={componentProps}>
-            <ResizeContainer size={size}>
-                <QueriesOverTimeInner {...componentProps} />
-            </ResizeContainer>
+        <ErrorBoundary resetKeys={[filter, queries, granularity]}>
+            <QueriesOverTimeWithoutErrors {...props} />
         </ErrorBoundary>
     );
 };
 
-export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentProps }) => {
-    const { filter, queries, granularity } = componentProps;
+const QueriesOverTimeWithoutErrors: FC<QueriesOverTimeProps> = (props) => {
+    const { filter, queries, granularity, pageSizes } = props;
 
     const { data: queryOverTimeData, isLoading } = useQueriesOverTime(filter, granularity, queries);
-    // Up here rather than next to the rows, so it survives the reloading when the filters change.
-    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
+    const gridState = useOverTimeGridState(pageSizes);
 
     if (isLoading) {
         return <LoadingDisplay />;
@@ -90,72 +61,40 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
         return <NoDataDisplay />;
     }
 
-    return (
-        <PageSizeContextProvider pageSizes={componentProps.pageSizes}>
-            <QueriesOverTimeWithData
-                queryOverTimeData={queryOverTimeData}
-                originalComponentProps={componentProps}
-                sort={sort}
-                setSort={setSort}
-            />
-        </PageSizeContextProvider>
-    );
+    return <QueriesOverTimeWithData queryOverTimeData={queryOverTimeData} props={props} gridState={gridState} />;
 };
 
-type QueriesOverTimeWithDataProps = {
+const QueriesOverTimeWithData: FC<{
     queryOverTimeData: Map2DContents<string, Temporal, ProportionValue>;
-    originalComponentProps: QueriesOverTimeProps;
-    sort: FeatureSort;
-    setSort: (sort: FeatureSort) => void;
-};
-
-const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
-    queryOverTimeData,
-    originalComponentProps,
-    sort,
-    setSort,
-}) => {
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
-
-    useLayoutEffect(() => {
-        setTooltipPortalTarget(wrapperRef.current);
-    }, [wrapperRef]);
-
-    const { pageSize } = usePageSizeContext();
-    const [pageIndex, setPageIndex] = useState(0);
-
-    const proportionInterval = originalComponentProps.meanProportionInterval;
-    const [viewSettings, setViewSettings] = useBandViewSettings();
-    const { showEmptyDates } = viewSettings;
+    props: QueriesOverTimeProps;
+    gridState: OverTimeGridState;
+}> = ({ queryOverTimeData, props, gridState }) => {
+    const { queries, meanProportionInterval } = props;
+    const [{ showEmptyDates }] = useBandViewSettings();
 
     const meanProportions = useMemo(() => getMeanProportions(queryOverTimeData), [queryOverTimeData]);
 
-    const filteredData = useMemo(() => {
-        return getFilteredQueryOverTimeData({
-            data: queryOverTimeData,
-            meanProportions,
-            proportionInterval,
-            showEmptyDates,
-        });
-    }, [queryOverTimeData, meanProportions, proportionInterval, showEmptyDates]);
+    const filteredData = useMemo(
+        () =>
+            getFilteredQueryOverTimeData({
+                data: queryOverTimeData,
+                meanProportions,
+                proportionInterval: meanProportionInterval,
+                showEmptyDates,
+            }),
+        [queryOverTimeData, meanProportions, meanProportionInterval, showEmptyDates],
+    );
 
+    const sort = gridState.sortOr();
     const sortedQueries = useMemo(
         () => sortRowLabels(filteredData.getFirstAxisKeys(), sort, { meanProportions }),
         [filteredData, sort, meanProportions],
     );
 
-    useEffect(() => setPageIndex(0), [filteredData]);
+    const { setPageIndex } = gridState;
+    useEffect(() => setPageIndex(0), [filteredData, setPageIndex]);
 
-    const changeSort = (newSort: FeatureSort) => {
-        setSort(newSort);
-        setPageIndex(0);
-    };
-
-    const queryLookupMap = useMemo(
-        () => new Map(originalComponentProps.queries.map((query) => [query.displayLabel, query])),
-        [originalComponentProps.queries],
-    );
+    const queryLookupMap = useMemo(() => new Map(queries.map((query) => [query.displayLabel, query])), [queries]);
 
     const queryRenderer = useMemo<FeatureRenderer<string>>(
         () => ({
@@ -164,96 +103,68 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
                 const queryObject = queryLookupMap.get(value);
 
                 return (
-                    <PortalTooltip
+                    <HoverTooltip
                         content={
                             <QueriesOverTimeRowLabelTooltip
                                 query={queryObject ?? { displayLabel: value, description: undefined, query: '' }}
                             />
                         }
-                        position='right'
-                        portalTarget={tooltipPortalTarget}
+                        placement='right'
+                        focusable
                     >
                         <div className='mr-2 text-center whitespace-nowrap'>
                             <span>{value}</span>
                         </div>
-                    </PortalTooltip>
+                    </HoverTooltip>
                 );
             },
-            renderTooltip: (value: string, temporal: Temporal, proportionValue: ProportionValue) => (
-                <QueriesOverTimeGridTooltip query={value} date={temporal} value={proportionValue} />
-            ),
+            describe: (query, value) =>
+                value.type === 'noCoverage' ? (
+                    <>
+                        <p className='text-gray-600'>No reads cover the query.</p>
+                        <TotalInDateRange value={value} />
+                    </>
+                ) : (
+                    <>
+                        <p>
+                            {value.count} <span className='text-gray-600'>match the query {query} out of</span>
+                        </p>
+                        <p>
+                            {value.coverage} <span className='text-gray-600'>with coverage for this query.</span>
+                        </p>
+                        <TotalInDateRange value={value} />
+                    </>
+                ),
         }),
-        [tooltipPortalTarget, queryLookupMap],
+        [queryLookupMap],
     );
 
-    const paginationStart = <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />;
-
-    const paginationEnd = (
-        <div className='flex items-center gap-1'>
-            <CsvDownloadButton
-                className='btn btn-xs'
-                label='Download CSV'
-                getData={() => getDownloadData(filteredData)}
-                filename='queries_over_time.csv'
-            />
-        </div>
-    );
-
+    const { pageOf } = gridState;
     const pageData = useMemo(() => {
         const page = new Map2dView(filteredData);
-        page.selectRows(sortedQueries.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize));
+        page.selectRows(pageOf(sortedQueries));
         return page;
-    }, [filteredData, sortedQueries, pageIndex, pageSize]);
+    }, [filteredData, sortedQueries, pageOf]);
 
     return (
-        <div ref={wrapperRef} className='border border-stone-300 bg-white'>
-            <FeatureBands
-                rowLabelHeader='Query'
-                data={pageData}
-                isLoading={false}
-                loadingRowLabels={[]}
-                requestedDateRanges={filteredData.getSecondAxisKeys()}
-                viewSettings={viewSettings}
-                featureRenderer={queryRenderer}
-                tooltipPortalTarget={tooltipPortalTarget}
-                pageSizes={originalComponentProps.pageSizes}
-                pageIndex={pageIndex}
-                totalRows={sortedQueries.length}
-                onPageChange={setPageIndex}
-                paginationStart={paginationStart}
-                paginationEnd={paginationEnd}
-                meanProportions={meanProportions}
-                sort={sort}
-                onSortChange={changeSort}
-            />
-        </div>
+        <OverTimeGrid
+            state={gridState}
+            rowLabelHeader='Query'
+            data={pageData}
+            isLoading={false}
+            loadingRowLabels={[]}
+            requestedDateRanges={filteredData.getSecondAxisKeys()}
+            featureRenderer={queryRenderer}
+            totalRows={sortedQueries.length}
+            csv={{
+                filename: 'queries_over_time.csv',
+                getRows: () =>
+                    filteredData
+                        .getFirstAxisKeys()
+                        .map((query) => ({ query, ...proportionsByDate(filteredData, query) })),
+            }}
+            meanProportions={meanProportions}
+            sort={sort}
+        />
     );
 };
-
-function getDownloadData(filteredData: ReturnType<typeof getFilteredQueryOverTimeData>) {
-    const dates = filteredData.getSecondAxisKeys().map((date) => toTemporalClass(date));
-
-    return filteredData.getFirstAxisKeys().map((query) => {
-        return dates.reduce(
-            (accumulated, date) => {
-                const value = filteredData.get(query, date);
-                const proportion = getProportion(value ?? null) ?? '';
-                return {
-                    ...accumulated,
-                    [date.dateString]: proportion,
-                };
-            },
-            { query },
-        );
-    });
-}
-
-function findDuplicateStrings(items: string[]): string[] {
-    const counts = new Map<string, number>();
-
-    for (const item of items) {
-        counts.set(item, (counts.get(item) ?? 0) + 1);
-    }
-
-    return [...counts.entries()].filter(([, count]) => count > 1).map(([key]) => key);
-}

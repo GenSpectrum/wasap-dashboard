@@ -1,6 +1,7 @@
 import { CollectionInfo } from './CollectionInfo';
 import { NothingSelected } from './NothingSelected';
-import { type MeanProportionInterval, QueriesOverTime } from './queriesOverTime/queries-over-time';
+import { type ProportionInterval } from './mutationsOverTime/getFilteredMutationCodes';
+import { QueriesOverTime } from './queriesOverTime/queries-over-time';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type CollectionQueries } from '../../externalData/useCollectionQueries';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
@@ -19,7 +20,7 @@ export function CollectionResult({
     data: CollectionQueries;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
-    meanProportionInterval: MeanProportionInterval;
+    meanProportionInterval: ProportionInterval;
     /** Where the collection comes from, like "GenSpectrum collection". */
     sourceLabel: string;
     /** The link to the collection on its own site. */
@@ -36,7 +37,6 @@ export function CollectionResult({
     return (
         <>
             <QueriesOverTime
-                width='100%'
                 filter={filter}
                 queries={data.collection.queries}
                 granularity={granularity}

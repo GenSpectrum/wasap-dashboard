@@ -1,18 +1,11 @@
 import { useCombobox, useMultipleSelection } from 'downshift';
 import { type FC, useContext, useEffect, useMemo, useState } from 'react';
-import z from 'zod';
 
 import { getExampleMutation } from './ExampleMutation';
 import { MutationFilterInfo } from './mutation-filter-info';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
 import { type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
-import {
-    type MutationsFilter,
-    mutationsFilterSchema,
-    mutationType,
-    mutationTypeSchema,
-    type MutationType,
-} from '../../../types/dashboardComponents';
+import { type MutationsFilter, mutationType, type MutationType } from '../../../types/dashboardComponents';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
 import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
 import { ReferenceGenomesAwaiter } from '../../shared/ReferenceGenomesAwaiter';
@@ -20,20 +13,10 @@ import { singleGraphColorRGBByName } from '../../shared/charts/colors';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { UserFacingError } from '../../shared/error-display';
 
-const mutationFilterInnerPropsSchema = z.object({
-    initialValue: z.union([mutationsFilterSchema.optional(), z.array(z.string()), z.undefined()]),
-    enabledMutationTypes: z.array(mutationTypeSchema).optional(),
-});
-
-const mutationFilterPropsSchema = mutationFilterInnerPropsSchema.extend({
-    width: z.string(),
-});
-
-export type MutationFilterInnerProps = z.infer<typeof mutationFilterInnerPropsSchema> & {
-    onMutationChange?: (mutationFilter: MutationsFilter | undefined) => void;
-};
-export type MutationFilterProps = Omit<z.infer<typeof mutationFilterPropsSchema>, 'width'> & {
-    width?: string;
+export type MutationFilterProps = {
+    /** Only read when mounted: to set another value, mount it again (e.g. with a new `key`). */
+    initialValue?: MutationsFilter | string[];
+    enabledMutationTypes?: MutationType[];
     onMutationChange?: (mutationFilter: MutationsFilter | undefined) => void;
 };
 
@@ -60,14 +43,7 @@ type SelectedAminoAcidInsertion = {
 export type MutationFilterItem =
     SelectedNucleotideMutation | SelectedAminoAcidMutation | SelectedNucleotideInsertion | SelectedAminoAcidInsertion;
 
-// width default reproduces the old gs-mutation-filter Lit component's @property field initializer.
-export const MutationFilter: FC<MutationFilterProps> = ({
-    width = '100%',
-    initialValue,
-    enabledMutationTypes,
-    onMutationChange,
-}) => {
-    const validatedProps = { width, initialValue, enabledMutationTypes };
+export const MutationFilter: FC<MutationFilterProps> = (props) => {
     return (
         // This was a <label> wrapping the whole thing, unlabeled by a `for`/`id` pair. Behind a
         // shadow-DOM custom element that was inert — a <label> only implicitly associates with a
@@ -82,30 +58,19 @@ export const MutationFilter: FC<MutationFilterProps> = ({
                 <span className='label-text'>Mutations</span>
             </div>
             <ReferenceGenomesAwaiter>
-                <ErrorBoundary
-                    size={{ height: '40px', width }}
-                    layout='horizontal'
-                    schema={mutationFilterPropsSchema}
-                    componentProps={validatedProps}
-                >
-                    <div style={{ width }}>
-                        <MutationFilterInner
-                            initialValue={initialValue}
-                            enabledMutationTypes={enabledMutationTypes}
-                            onMutationChange={onMutationChange}
-                        />
-                    </div>
+                <ErrorBoundary layout='horizontal' resetKeys={[props.initialValue, props.enabledMutationTypes]}>
+                    <MutationFilterWithReferenceGenome {...props} />
                 </ErrorBoundary>
             </ReferenceGenomesAwaiter>
         </div>
     );
 };
 
-function MutationFilterInner({
+function MutationFilterWithReferenceGenome({
     initialValue,
     enabledMutationTypes = Object.values(mutationType),
     onMutationChange,
-}: MutationFilterInnerProps) {
+}: MutationFilterProps) {
     const referenceGenome = useContext(ReferenceGenomeContext);
     const [inputValue, setInputValue] = useState('');
 

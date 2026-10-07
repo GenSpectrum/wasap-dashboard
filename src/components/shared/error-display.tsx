@@ -1,5 +1,4 @@
 import { type FC } from 'react';
-import { type ZodError } from 'zod';
 
 import { InfoHeadline1, InfoParagraph } from './info';
 import { Modal } from './modal';
@@ -13,16 +12,6 @@ export class UserFacingError extends Error {
     ) {
         super(message);
         this.name = 'UserFacingError';
-    }
-}
-
-export class InvalidPropsError extends Error {
-    constructor(
-        public readonly zodError: ZodError,
-        public readonly componentProps: Record<string, unknown>,
-    ) {
-        super(zodError.message);
-        this.name = 'InvalidPropsError';
     }
 }
 
@@ -115,48 +104,5 @@ function getDisplayedErrorMessage(error: Error) {
         };
     }
 
-    if (error instanceof InvalidPropsError) {
-        return {
-            headline: 'Error - Invalid component attributes',
-            details: { headline: 'Invalid component attributes', message: <ZodErrorDetails error={error} /> },
-        };
-    }
-
     return { headline: 'Error', details: undefined };
-}
-
-function ZodErrorDetails({ error }: { error: InvalidPropsError }) {
-    const firstError = error.zodError.errors[0];
-    return (
-        <>
-            <p>
-                <span className='font-bold'>You are a regular user?</span> Unfortunately, there is nothing you can do at
-                the moment. This component is misconfigured. Please contact the administrator of this page.
-            </p>
-            <p>
-                <span className='font-bold'>You are the administrator of this page?</span> You supplied invalid
-                attributes to this component. Please check the browser console for more detailed error messages.
-            </p>
-            {firstError.code === 'invalid_type' && firstError.received === 'null' && (
-                <p>
-                    Is the "{firstError.path[0]}" attribute in the HTML of the correct type? The attribute is expected
-                    to be of type "{firstError.expected}".
-                </p>
-            )}
-            <p>This is a summary of the unexpected attribute values:</p>
-            <ul className='m-4 list-outside list-disc'>
-                {error.zodError.issues.map((issue, index) => {
-                    const actual =
-                        issue.path[0] in error.componentProps
-                            ? `'${JSON.stringify(error.componentProps[issue.path[0]])}'`
-                            : '';
-                    return (
-                        <li key={index}>
-                            Unexpected value {actual} for "{issue.path.join('.')}": {issue.message}
-                        </li>
-                    );
-                })}
-            </ul>
-        </>
-    );
 }

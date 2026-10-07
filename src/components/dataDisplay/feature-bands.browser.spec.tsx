@@ -1,11 +1,11 @@
 import { describe, expect, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
 import { FeatureBands, type FeatureBandsProps } from './feature-bands';
 import { DEFAULT_FEATURE_SORT } from './featureSort';
 import { serializeTemporal, type ProportionValue } from './overTime/proportionValue';
-import { PageSizeContextProvider } from './tanstackTable/pagination-context';
 import { it } from '../../../test-extend';
 import { Map2dBase } from '../../util/map2d';
 import { type Temporal, TemporalCache } from '../../util/temporalClass';
@@ -30,30 +30,31 @@ function someData() {
 
 function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
     return render(
-        <PageSizeContextProvider pageSizes={[10]}>
-            <FeatureBands
-                rowLabelHeader='Mutation'
-                data={someData()}
-                isLoading={false}
-                loadingRowLabels={[]}
-                requestedDateRanges={dates}
-                viewSettings={DEFAULT_BAND_VIEW_SETTINGS}
-                featureRenderer={{
-                    asString: (value) => value,
-                    renderRowLabel: (value) => <span>{value}</span>,
-                    renderTooltip: (value) => <span>{value}</span>,
-                }}
-                tooltipPortalTarget={null}
-                pageSizes={[10]}
-                pageIndex={0}
-                totalRows={2}
-                onPageChange={() => undefined}
-                meanProportions={{ 'S:A1T': 0.15, 'S:C2G': 0.35 }}
-                sort={DEFAULT_FEATURE_SORT}
-                onSortChange={() => undefined}
-                {...props}
-            />
-        </PageSizeContextProvider>,
+        <FeatureBands
+            rowLabelHeader='Mutation'
+            data={someData()}
+            isLoading={false}
+            loadingRowLabels={[]}
+            requestedDateRanges={dates}
+            viewSettings={DEFAULT_BAND_VIEW_SETTINGS}
+            featureRenderer={{
+                asString: (value) => value,
+                renderRowLabel: (value) => <span>{value}</span>,
+                describe: (value) => <span>{value} described</span>,
+            }}
+            pagination={{
+                pageIndex: 0,
+                pageSize: 10,
+                pageSizes: [10],
+                totalRows: 2,
+                onPageChange: () => undefined,
+                onPageSizeChange: () => undefined,
+            }}
+            meanProportions={{ 'S:A1T': 0.15, 'S:C2G': 0.35 }}
+            sort={DEFAULT_FEATURE_SORT}
+            onSortChange={() => undefined}
+            {...props}
+        />,
     );
 }
 
@@ -83,7 +84,7 @@ describe('FeatureBands', () => {
         data.set('S:A1T', threeDates[0], valueOf(10));
         data.set('S:A1T', threeDates[1], { type: 'noCoverage', totalCount: 100 });
         data.set('S:A1T', threeDates[2], valueOf(30));
-        const { container, getByText } = renderBands({ data, requestedDateRanges: threeDates, totalRows: 1 });
+        const { container, getByText } = renderBands({ data, requestedDateRanges: threeDates });
 
         await expect.element(getByText('S:A1T')).toBeVisible();
         expect(container.querySelectorAll('[data-no-coverage]')).toHaveLength(1);
@@ -95,7 +96,7 @@ describe('FeatureBands', () => {
         const data = new Map2dBase<string, Temporal, ProportionValue>((key) => key, serializeTemporal);
         data.set('S:A1T', dates[0], valueOf(10));
         data.set('S:A1T', dates[1], null);
-        const { container, getByText } = renderBands({ data, totalRows: 1 });
+        const { container, getByText } = renderBands({ data });
 
         await expect.element(getByText('S:A1T')).toBeVisible();
         expect(container.querySelectorAll('[data-no-coverage]')).toHaveLength(0);
@@ -182,5 +183,27 @@ describe('FeatureBands', () => {
 
         await getByRole('button', { name: 'Jaccard index' }).click();
         expect(onSortChange).toHaveBeenLastCalledWith({ column: 'jaccardIndex', direction: 'ascending' });
+    });
+
+    it('shows the tooltip of the bucket under the mouse, and none once it leaves', async () => {
+        const { container, getByRole } = renderBands();
+
+        const cell = container.querySelector<HTMLElement>('[data-row="1"][data-column="0"]')!;
+        await userEvent.hover(cell);
+        const tooltip = getByRole('tooltip');
+        await expect.element(tooltip).toHaveTextContent('S:C2G');
+        await expect.element(tooltip).toHaveTextContent('30.00%');
+        await expect.element(tooltip).toHaveTextContent('S:C2G described');
+
+        await userEvent.hover(container.querySelector('thead')!);
+        await expect.element(getByRole('tooltip')).not.toBeInTheDocument();
+    });
+
+    it('renders no tooltip for buckets that are not hovered', async () => {
+        const { container, getByText } = renderBands();
+
+        await expect.element(getByText('S:A1T')).toBeVisible();
+        expect(container.ownerDocument.querySelectorAll('[role="tooltip"]')).toHaveLength(0);
+        expect(container.textContent).not.toContain('described');
     });
 });

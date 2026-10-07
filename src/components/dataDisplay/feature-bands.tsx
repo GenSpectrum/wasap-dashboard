@@ -1,23 +1,32 @@
-import { getCoreRowModel } from '@tanstack/table-core';
-import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
+import { type Placement } from '@floating-ui/utils';
+import {
+    Fragment,
+    useEffect,
+    useId,
+    useMemo,
+    useRef,
+    useState,
+    type ReactElement,
+    type ReactNode,
+    type RefObject,
+} from 'react';
 
 import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
 import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
+import { FloatingTooltip } from './hover-tooltip';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
+import { OverTimeGridTooltip } from './over-time-grid-tooltip';
 import { getProportion, type ProportionValue } from './overTime/proportionValue';
-import PortalTooltip from './portal-tooltip';
-import { Pagination, type PageSizes } from './tanstackTable/pagination';
-import { usePageSizeContext } from './tanstackTable/pagination-context';
-import { useReactTable } from './tanstackTable/tanstackTable';
-import { type TooltipPosition } from './tooltip';
+import { Pagination, type PaginationProps } from './pagination';
 import { type Temporal } from '../../util/temporalClass';
 
 export interface FeatureRenderer<D> {
     asString(value: D): string;
     renderRowLabel(value: D): ReactElement;
-    renderTooltip(value: D, temporal: Temporal, proportionValue: ProportionValue): ReactElement;
+    /** What the tooltip of a bucket says about the counts behind its proportion. */
+    describe(value: D, proportionValue: NonNullable<ProportionValue>): ReactNode;
 }
 
 /**
@@ -25,10 +34,10 @@ export interface FeatureRenderer<D> {
  * instead of overflowing off the top/bottom or left/right edge (meaning the tooltip tends to
  * open towards the 'center' of the component).
  */
-function getTooltipPosition(rowIndex: number, rows: number, columnIndex: number, columns: number): TooltipPosition {
-    const tooltipX = rowIndex < rows / 2 || rowIndex < 6 ? 'bottom' : 'top';
-    const tooltipY = columnIndex < columns / 2 ? 'start' : 'end';
-    return `${tooltipX}-${tooltipY}`;
+function getTooltipPlacement(rowIndex: number, rows: number, columnIndex: number, columns: number): Placement {
+    const side = rowIndex < rows / 2 || rowIndex < 6 ? 'bottom' : 'top';
+    const alignment = columnIndex < columns / 2 ? 'start' : 'end';
+    return `${side}-${alignment}`;
 }
 
 /**
@@ -81,17 +90,8 @@ export interface FeatureBandsProps<F> {
     requestedDateRanges: Temporal[];
     viewSettings: BandViewSettings;
     featureRenderer: FeatureRenderer<F>;
-    tooltipPortalTarget: HTMLElement | null;
-    pageSizes: PageSizes;
-    /** Controlled page index (0-based). */
-    pageIndex: number;
-    /** Total number of rows across all pages. */
-    totalRows: number;
-    onPageChange: Dispatch<SetStateAction<number>>;
-    /** Shown at the very left of the pagination row below the bands, e.g. view settings. */
-    paginationStart?: ReactNode;
-    /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
-    paginationEnd?: ReactNode;
+    /** The pagination row below the bands. */
+    pagination: PaginationProps;
     /**
      * The proportion of each row over the whole time range, by row label (see `FeatureRenderer.asString`).
      * A row without one (nothing measured it) shows a dash.
@@ -118,13 +118,7 @@ export function FeatureBands<F>({
     requestedDateRanges,
     viewSettings,
     featureRenderer,
-    tooltipPortalTarget,
-    pageSizes,
-    pageIndex,
-    totalRows,
-    onPageChange,
-    paginationStart,
-    paginationEnd,
+    pagination,
     meanProportions,
     jaccardIndices,
     extraColumn,
@@ -136,29 +130,7 @@ export function FeatureBands<F>({
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
     const numberOfValueColumns = (jaccardIndices === undefined ? 1 : 2) + (extraColumn === undefined ? 0 : 1);
-
-    // A table instance with no columns of its own: it exists only to drive the
-    // shared `Pagination` control the same way the grid tab's table does - the
-    // rows it's given are just for `Pagination` to read a correct row count off.
-    const { pageSize, setPageSize } = usePageSizeContext();
-    const paginationTable = useReactTable({
-        data: features,
-        columns: [],
-        getCoreRowModel: getCoreRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(totalRows / pageSize),
-        state: { pagination: { pageIndex, pageSize } },
-        onPaginationChange: (updater) => {
-            const current = { pageIndex, pageSize };
-            const next = typeof updater === 'function' ? updater(current) : updater;
-            if (next.pageIndex !== current.pageIndex) {
-                onPageChange(next.pageIndex);
-            }
-            if (next.pageSize !== current.pageSize) {
-                setPageSize(next.pageSize);
-            }
-        },
-    });
+    const bandsRef = useRef<HTMLDivElement>(null);
 
     // TODO: This is the largest coverage on the current page only, not of all the rows, so the
     // thickness of a band changes when the page (or the page size) changes. It has to be the same
@@ -172,7 +144,7 @@ export function FeatureBands<F>({
 
     return (
         <div className='w-full'>
-            <div className='overflow-auto'>
+            <div ref={bandsRef} className='overflow-auto'>
                 {/* All the date buckets live inside one table column (a flex row in the
                     header, a band per row), instead of one table column per bucket:
                     browsers disagree on how to size dozens of empty auto-width columns
@@ -254,16 +226,12 @@ export function FeatureBands<F>({
                                       )}
                                       <td className='p-0'>
                                           <BandRow
-                                              feature={feature}
                                               values={rows[rowIndex] ?? []}
                                               columns={columns}
                                               viewSettings={viewSettings}
                                               maxCoverage={maxCoverage}
                                               gradientId={`${gradientPrefix}-${rowIndex}`}
                                               rowIndex={rowIndex}
-                                              numberOfRows={features.length}
-                                              featureRenderer={featureRenderer}
-                                              tooltipPortalTarget={tooltipPortalTarget}
                                           />
                                       </td>
                                   </tr>
@@ -278,15 +246,18 @@ export function FeatureBands<F>({
                     </tbody>
                 </table>
             </div>
+            {!isLoading && (
+                <CellTooltip
+                    bandsRef={bandsRef}
+                    features={features}
+                    rows={rows}
+                    columns={columns}
+                    featureRenderer={featureRenderer}
+                />
+            )}
             {/* The table reaches the edges of the component, so its lines do; only this is padded. */}
             <div className='border-t border-stone-200 p-2'>
-                <Pagination
-                    table={paginationTable}
-                    pageSizes={pageSizes}
-                    totalRows={totalRows}
-                    startContent={paginationStart}
-                    endContent={paginationEnd}
-                />
+                <Pagination {...pagination} />
             </div>
         </div>
     );
@@ -371,29 +342,88 @@ function DateHeaderLabel({ label, index, numberOfColumns }: { label: string; ind
     return <p className='invisible overflow-hidden text-nowrap @[6rem]:visible'>{label}</p>;
 }
 
-/** One mutation's band across the loaded date columns. */
-function BandRow<F>({
-    feature,
+/**
+ * The tooltip of the bucket under the mouse. There is one for all the buckets, which say which
+ * one they are with `data-row` and `data-column`: one per bucket would be thousands of them on a
+ * large page. It keeps its own state, so the bands aren't rendered again when the mouse moves.
+ */
+function CellTooltip<F>({
+    bandsRef,
+    features,
+    rows,
+    columns,
+    featureRenderer,
+}: {
+    bandsRef: RefObject<HTMLElement | null>;
+    features: F[];
+    rows: (ProportionValue | undefined)[][];
+    columns: Temporal[];
+    featureRenderer: FeatureRenderer<F>;
+}) {
+    const [cell, setCell] = useState<HTMLElement | undefined>(undefined);
+    const cellRef = useMemo(() => ({ current: cell ?? null }), [cell]);
+
+    useEffect(() => {
+        const bands = bandsRef.current;
+        if (bands === null) {
+            return;
+        }
+        const onMouseOver = (event: MouseEvent) =>
+            setCell((event.target as Element).closest<HTMLElement>('[data-column]') ?? undefined);
+        const onMouseLeave = () => setCell(undefined);
+        bands.addEventListener('mouseover', onMouseOver);
+        bands.addEventListener('mouseleave', onMouseLeave);
+        return () => {
+            bands.removeEventListener('mouseover', onMouseOver);
+            bands.removeEventListener('mouseleave', onMouseLeave);
+        };
+    }, [bandsRef]);
+
+    // The bucket can be gone since, e.g. after paging with the mouse still over it.
+    if (cell?.isConnected !== true) {
+        return null;
+    }
+    const rowIndex = Number(cell.dataset.row);
+    const columnIndex = Number(cell.dataset.column);
+    const feature = features.at(rowIndex);
+    const date = columns.at(columnIndex);
+    if (feature === undefined || date === undefined) {
+        return null;
+    }
+    const value = rows[rowIndex]?.[columnIndex] ?? null;
+
+    return (
+        <FloatingTooltip
+            referenceRef={cellRef}
+            placement={getTooltipPlacement(rowIndex, features.length, columnIndex, columns.length)}
+            // Not in the way of the mouse, which would leave the bands for it and close it.
+            className='pointer-events-none'
+        >
+            <OverTimeGridTooltip
+                label={featureRenderer.asString(feature)}
+                date={date}
+                value={value}
+                description={value === null ? undefined : featureRenderer.describe(feature, value)}
+            />
+        </FloatingTooltip>
+    );
+}
+
+/** One feature's band across the loaded date columns. */
+function BandRow({
     values,
     columns,
     viewSettings,
     maxCoverage,
     gradientId,
     rowIndex,
-    numberOfRows,
-    featureRenderer,
-    tooltipPortalTarget,
 }: {
-    feature: F;
     values: (ProportionValue | undefined)[];
     columns: Temporal[];
     viewSettings: BandViewSettings;
     maxCoverage: number;
     gradientId: string;
     rowIndex: number;
-    numberOfRows: number;
-    featureRenderer: FeatureRenderer<F>;
-    tooltipPortalTarget: HTMLElement | null;
 }) {
     const width = SPAN / columns.length;
     const centre = ROW_HEIGHT / 2;
@@ -452,35 +482,26 @@ function BandRow<F>({
                     const value = values[index] ?? null;
                     const proportion = getProportion(value);
                     const isUncovered = value?.type === 'noCoverage';
-                    const tooltip = featureRenderer.renderTooltip(feature, column, value);
                     return (
-                        // PortalTooltip's own wrapper div isn't a flex item itself, so
-                        // give it one to stretch into - otherwise it collapses to the
-                        // width of its (empty) content and there's nothing to hover.
-                        <div key={column.dateString} className='flex-1'>
-                            <PortalTooltip
-                                content={tooltip}
-                                position={getTooltipPosition(rowIndex, numberOfRows, index, columns.length)}
-                                portalTarget={tooltipPortalTarget}
-                            >
-                                <div
-                                    className='@container flex cursor-default items-center justify-center'
-                                    style={{
-                                        height: `${ROW_HEIGHT}px`,
-                                        backgroundImage: isUncovered ? NO_COVERAGE_HATCHING : undefined,
-                                    }}
-                                    data-no-coverage={isUncovered || undefined}
+                        <div
+                            key={column.dateString}
+                            className='@container flex flex-1 cursor-default items-center justify-center'
+                            style={{
+                                height: `${ROW_HEIGHT}px`,
+                                backgroundImage: isUncovered ? NO_COVERAGE_HATCHING : undefined,
+                            }}
+                            data-row={rowIndex}
+                            data-column={index}
+                            data-no-coverage={isUncovered || undefined}
+                        >
+                            {viewSettings.showPercentages && proportion !== undefined && (
+                                <span
+                                    className='invisible text-xs font-medium text-black @[2rem]:visible'
+                                    style={{ textShadow: PERCENTAGE_OUTLINE }}
                                 >
-                                    {viewSettings.showPercentages && proportion !== undefined && (
-                                        <span
-                                            className='invisible text-xs font-medium text-black @[2rem]:visible'
-                                            style={{ textShadow: PERCENTAGE_OUTLINE }}
-                                        >
-                                            {formatProportion(proportion, 0)}
-                                        </span>
-                                    )}
-                                </div>
-                            </PortalTooltip>
+                                    {formatProportion(proportion, 0)}
+                                </span>
+                            )}
                         </div>
                     );
                 })}

@@ -1,4 +1,4 @@
-import { autoUpdate, computePosition, type Middleware } from '@floating-ui/dom';
+import { autoUpdate, computePosition, type Middleware, type Strategy } from '@floating-ui/dom';
 import type { Placement } from '@floating-ui/utils';
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
@@ -8,6 +8,7 @@ export function useFloatingUi(
     floatingRef: RefObject<HTMLElement | null>,
     middleware?: (Middleware | null | undefined | false)[],
     placement?: Placement,
+    strategy?: Strategy,
 ) {
     const cleanupRef = useRef<(() => void) | null>(null);
 
@@ -23,6 +24,7 @@ export function useFloatingUi(
             void computePosition(reference, floating, {
                 placement,
                 middleware,
+                strategy,
             }).then(({ x, y }) => {
                 floating.style.left = `${x}px`;
                 floating.style.top = `${y}px`;
@@ -37,7 +39,7 @@ export function useFloatingUi(
                 cleanupRef.current();
             }
         };
-    }, [placement, middleware, referenceRef, floatingRef]);
+    }, [placement, middleware, strategy, referenceRef, floatingRef]);
 }
 
 export function useCloseOnClickOutside(
