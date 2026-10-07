@@ -8,7 +8,7 @@
 /* Iconify utility classes (`iconify mdi--…`) used by our chrome and the ported
    wastewater components. Mirrors the dashboards repo (`src/styles/tailwind.css`). */
 @plugin '@iconify/tailwind4' {
-    prefixes: mdi, mdi-light;
+    prefixes: mdi;
 }
 
 /* Palette lifted verbatim from the dashboards repo (`src/styles/tailwind.css`),
