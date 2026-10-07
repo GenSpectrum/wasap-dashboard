@@ -12,6 +12,7 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import {
     normalizeFilter,
@@ -57,7 +58,8 @@ export function useMutationFrequencies(
         );
     }, [mutations]);
 
-    const results = useQueries({
+    const symbols = useQueries({
+        combine: allQueryData,
         queries: batches.map((positions) => {
             // `schema` stands in for `connection.key` (same memoized SiloInstance).
             // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -76,22 +78,15 @@ export function useMutationFrequencies(
         }),
     });
 
-    const answered = results.filter((result) => result.data !== undefined).length;
-    const answeredKey = results.map((result) => result.dataUpdatedAt).join();
-    const data = useMemo(() => {
-        if (answered < batches.length) {
-            return undefined;
-        }
-        const rowsByPosition = new Map(results.flatMap((result) => [...result.data!]));
-        return mutationFrequencies(mutations, rowsByPosition);
-        // `answeredKey` stands in for `results`, which is a new array every render.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [answered, answeredKey, batches, mutations]);
+    const rowsByBatch = symbols.data;
+    const data = useMemo(
+        () =>
+            rowsByBatch &&
+            mutationFrequencies(mutations, new Map(rowsByBatch.flatMap((rowsByPosition) => [...rowsByPosition]))),
+        [rowsByBatch, mutations],
+    );
 
-    return {
-        data,
-        error: results.find((result) => result.error)?.error ?? undefined,
-    };
+    return { data, error: symbols.error };
 }
 
 /** The frequencies from the base counts of each position (exported for tests). */
