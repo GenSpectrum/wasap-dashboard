@@ -1,4 +1,5 @@
 import { describe, expect, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
@@ -39,9 +40,8 @@ function renderBands(props: Partial<FeatureBandsProps<string>> = {}) {
             featureRenderer={{
                 asString: (value) => value,
                 renderRowLabel: (value) => <span>{value}</span>,
-                renderTooltip: (value) => <span>{value}</span>,
+                describe: (value) => <span>{value} described</span>,
             }}
-            tooltipPortalTarget={null}
             pagination={{
                 pageIndex: 0,
                 pageSize: 10,
@@ -183,5 +183,28 @@ describe('FeatureBands', () => {
 
         await getByRole('button', { name: 'Jaccard index' }).click();
         expect(onSortChange).toHaveBeenLastCalledWith({ column: 'jaccardIndex', direction: 'ascending' });
+    });
+
+    it('shows the tooltip of the bucket under the mouse, and none once it leaves', async () => {
+        const { container, getByRole } = renderBands();
+
+        const cell = container.querySelector<HTMLElement>('[data-row="1"][data-column="0"]')!;
+        await userEvent.hover(cell);
+        const tooltip = getByRole('tooltip');
+        await expect.element(tooltip).toHaveTextContent('S:C2G');
+        await expect.element(tooltip).toHaveTextContent('30.00%');
+        await expect.element(tooltip).toHaveTextContent('S:C2G described');
+        await expect.element(tooltip).toHaveTextContent('100 total in this date range.');
+
+        await userEvent.hover(container.querySelector('thead')!);
+        await expect.element(getByRole('tooltip')).not.toBeInTheDocument();
+    });
+
+    it('renders no tooltip for buckets that are not hovered', async () => {
+        const { container, getByText } = renderBands();
+
+        await expect.element(getByText('S:A1T')).toBeVisible();
+        expect(container.ownerDocument.querySelectorAll('[role="tooltip"]')).toHaveLength(0);
+        expect(container.textContent).not.toContain('described');
     });
 });

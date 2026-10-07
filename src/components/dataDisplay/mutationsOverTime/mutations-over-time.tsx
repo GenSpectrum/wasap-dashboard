@@ -1,18 +1,8 @@
-import {
-    type Dispatch,
-    type FC,
-    type SetStateAction,
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { type Dispatch, type FC, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
 import { type MutationOverTimeDataMap } from './MutationOverTimeData';
 import { displayMutationsSchema, getFilteredMutationCodes } from './getFilteredMutationCodes';
-import { MutationsOverTimeGridTooltip } from './mutations-over-time-grid-tooltip';
 import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import {
     genesOf,
@@ -23,7 +13,7 @@ import {
 import { siloReadFilterSchema } from '../../../dataLayer/queries/filter';
 import { sequenceTypeSchema, temporalGranularitySchema } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
-import { type Temporal, toTemporalClass } from '../../../util/temporalClass';
+import { toTemporalClass } from '../../../util/temporalClass';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
@@ -33,7 +23,7 @@ import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, JACCARD_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
-import { getProportion, type ProportionValue } from '../overTime/proportionValue';
+import { getProportion } from '../overTime/proportionValue';
 import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
@@ -142,13 +132,6 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
     const { nucleotideSequence } = useSiloSchema();
 
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
-
-    useLayoutEffect(() => {
-        setTooltipPortalTarget(wrapperRef.current);
-    }, [wrapperRef]);
-
     const proportionInterval = originalComponentProps.meanProportionInterval;
     const [viewSettings, setViewSettings] = useBandViewSettings();
 
@@ -225,9 +208,21 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                     <AnnotatedMutation mutation={value} sequenceType={originalComponentProps.sequenceType} />
                 </div>
             ),
-            renderTooltip: (value: Substitution | Deletion, temporal: Temporal, proportionValue: ProportionValue) => (
-                <MutationsOverTimeGridTooltip mutation={value} date={temporal} value={proportionValue} />
-            ),
+            describe: (mutation, value) =>
+                value.type === 'noCoverage' ? (
+                    <p className='text-gray-600'>No reads cover position {mutation.position}.</p>
+                ) : (
+                    <>
+                        <p>
+                            {value.count}{' '}
+                            <span className='text-gray-600'>have the mutation {mutation.code} out of</span>
+                        </p>
+                        <p>
+                            {value.coverage}{' '}
+                            <span className='text-gray-600'>with coverage at position {mutation.position}.</span>
+                        </p>
+                    </>
+                ),
         }),
         [originalComponentProps.sequenceType],
     );
@@ -252,7 +247,7 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     );
 
     return (
-        <div ref={wrapperRef} className='border border-stone-300 bg-white'>
+        <div className='border border-stone-300 bg-white'>
             <FeatureBands
                 rowLabelHeader='Mutation'
                 data={pageData}
@@ -261,7 +256,6 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 requestedDateRanges={requestedDateRanges}
                 viewSettings={viewSettings}
                 featureRenderer={mutationRenderer}
-                tooltipPortalTarget={tooltipPortalTarget}
                 pagination={{
                     pageIndex,
                     pageSize,

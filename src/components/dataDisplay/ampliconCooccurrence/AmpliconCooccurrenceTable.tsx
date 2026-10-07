@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { cooccurrenceTableData, type CooccurrenceRow } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { Map2dView } from '../../../util/map2d';
@@ -8,7 +8,6 @@ import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { HoverTooltip } from '../hover-tooltip';
-import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 import { getProportion, type ProportionValue } from '../overTime/proportionValue';
 import { getFilteredQueryOverTimeData, getMeanProportions } from '../queriesOverTime/getFilteredQueriesOverTimeData';
 import { ViewSettingsControls } from '../view-settings-controls';
@@ -27,10 +26,6 @@ type TableProps = {
  * mutations.
  */
 export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
-    const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
-    const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
-    useLayoutEffect(() => setTooltipPortalTarget(wrapper), [wrapper]);
-
     const [pageSize, setPageSize] = useState(pageSizes[0]);
     const [pageIndex, setPageIndex] = useState(0);
     // By amplicon (the rows' order), unlike the mutations over time, which go by Jaccard index first.
@@ -82,29 +77,21 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
                     </HoverTooltip>
                 );
             },
-            renderTooltip: (label, temporal, value) => {
+            describe: (label, value) => {
                 const row = rowByLabel.get(label);
+                if (value.type === 'noCoverage') {
+                    return <p className='text-gray-600'>No read spans the mutations (the amplicon dropped out?).</p>;
+                }
                 return (
-                    <OverTimeGridTooltip
-                        label={<span className='font-bold'>{label}</span>}
-                        date={temporal}
-                        value={value}
-                    >
-                        {row && value?.type === 'value' && (
-                            <p className='mt-2'>
-                                {value.count.toLocaleString()}{' '}
-                                <span className='text-gray-600'>
-                                    of the {value.coverage.toLocaleString()} reads spanning the amplicon&apos;s
-                                    mutations carry all {row.cluster.length} mutations of the cluster.
-                                </span>
-                            </p>
-                        )}
-                        {value?.type === 'noCoverage' && (
-                            <p className='mt-2 text-gray-600'>
-                                No read spans the mutations (the amplicon dropped out?).
-                            </p>
-                        )}
-                    </OverTimeGridTooltip>
+                    row && (
+                        <p>
+                            {value.count.toLocaleString()}{' '}
+                            <span className='text-gray-600'>
+                                of the {value.coverage.toLocaleString()} reads spanning the amplicon&apos;s mutations
+                                carry all {row.cluster.length} mutations of the cluster.
+                            </span>
+                        </p>
+                    )
                 );
             },
         }),
@@ -118,7 +105,7 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
     }, [filteredData, sortedLabels, pageIndex, pageSize]);
 
     return (
-        <div ref={setWrapper} className='border border-stone-300 bg-white'>
+        <div className='border border-stone-300 bg-white'>
             <FeatureBands
                 rowLabelHeader='Amplicon'
                 data={pageData}
@@ -127,7 +114,6 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
                 requestedDateRanges={filteredData.getSecondAxisKeys()}
                 viewSettings={viewSettings}
                 featureRenderer={renderer}
-                tooltipPortalTarget={tooltipPortalTarget}
                 pagination={{
                     pageIndex,
                     pageSize,

@@ -1,8 +1,7 @@
-import { type FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type FC, useEffect, useMemo, useState } from 'react';
 import z from 'zod';
 
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
-import { QueriesOverTimeGridTooltip } from './queries-over-time-grid-tooltip';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
 import { siloFilterExpressionSchema, siloReadFilterSchema } from '../../../dataLayer/queries';
@@ -118,13 +117,6 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
     pageSize,
     setPageSize,
 }) => {
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
-
-    useLayoutEffect(() => {
-        setTooltipPortalTarget(wrapperRef.current);
-    }, [wrapperRef]);
-
     const [pageIndex, setPageIndex] = useState(0);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
@@ -186,9 +178,19 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
                     </HoverTooltip>
                 );
             },
-            renderTooltip: (value: string, temporal: Temporal, proportionValue: ProportionValue) => (
-                <QueriesOverTimeGridTooltip query={value} date={temporal} value={proportionValue} />
-            ),
+            describe: (query, value) =>
+                value.type === 'noCoverage' ? (
+                    <p className='text-gray-600'>No reads cover the query.</p>
+                ) : (
+                    <>
+                        <p>
+                            {value.count} <span className='text-gray-600'>match the query {query} out of</span>
+                        </p>
+                        <p>
+                            {value.coverage} <span className='text-gray-600'>with coverage for this query.</span>
+                        </p>
+                    </>
+                ),
         }),
         [queryLookupMap],
     );
@@ -213,7 +215,7 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
     }, [filteredData, sortedQueries, pageIndex, pageSize]);
 
     return (
-        <div ref={wrapperRef} className='border border-stone-300 bg-white'>
+        <div className='border border-stone-300 bg-white'>
             <FeatureBands
                 rowLabelHeader='Query'
                 data={pageData}
@@ -222,7 +224,6 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
                 requestedDateRanges={filteredData.getSecondAxisKeys()}
                 viewSettings={viewSettings}
                 featureRenderer={queryRenderer}
-                tooltipPortalTarget={tooltipPortalTarget}
                 pagination={{
                     pageIndex,
                     pageSize,

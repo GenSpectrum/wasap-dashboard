@@ -64,16 +64,18 @@ function OpenTooltip({
 export function FloatingTooltip({
     referenceRef,
     placement,
+    className = '',
     children,
 }: {
     referenceRef: RefObject<HTMLElement | null>;
     placement: Placement;
+    className?: string;
     children: ReactNode;
 }) {
     const floatingRef = useRef<HTMLDivElement>(null);
     useFloatingUi(referenceRef, floatingRef, TOOLTIP_MIDDLEWARE, placement, 'fixed');
     return (
-        <div ref={floatingRef} role='tooltip' className={`fixed top-0 left-0 ${TOOLTIP_BASE_STYLES}`}>
+        <div ref={floatingRef} role='tooltip' className={`fixed top-0 left-0 ${TOOLTIP_BASE_STYLES} ${className}`}>
             {children}
         </div>
     );

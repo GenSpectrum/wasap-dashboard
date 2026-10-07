@@ -5,13 +5,16 @@ import { type ProportionValue } from './overTime/proportionValue';
 import { type Temporal, type TemporalClass, toTemporalClass, YearMonthDayClass } from '../../util/temporalClass';
 
 type OverTimeGridTooltipProps = {
-    label: ReactNode;
+    /** The row, e.g. the mutation code. */
+    label: string;
     date: Temporal;
     value: ProportionValue;
-    children?: ReactNode;
+    /** What the counts behind the proportion are, which depends on what the rows are. */
+    description?: ReactNode;
 };
 
-export const OverTimeGridTooltip: FC<OverTimeGridTooltipProps> = ({ label, date, value, children }) => {
+/** The tooltip of a bucket of a row in the over-time grids: its proportion, its date range and the counts. */
+export const OverTimeGridTooltip: FC<OverTimeGridTooltipProps> = ({ label, date, value, description }) => {
     const dateClass = toTemporalClass(date);
 
     let proportionText = 'No reads';
@@ -30,7 +33,7 @@ export const OverTimeGridTooltip: FC<OverTimeGridTooltipProps> = ({ label, date,
         <div>
             <div className='flex flex-row items-baseline justify-between gap-4'>
                 <div className='flex flex-col text-left'>
-                    {label}
+                    <span className='font-bold'>{label}</span>
                     <span>{proportionText}</span>
                 </div>
                 <div className='flex flex-col text-right'>
@@ -38,7 +41,14 @@ export const OverTimeGridTooltip: FC<OverTimeGridTooltipProps> = ({ label, date,
                     <span className='text-gray-600'>{timeIntervalDisplay(dateClass)}</span>
                 </div>
             </div>
-            {children}
+            {value !== null && (
+                <div className='mt-2'>
+                    {description}
+                    <p>
+                        {value.totalCount} <span className='text-gray-600'>total in this date range.</span>
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
