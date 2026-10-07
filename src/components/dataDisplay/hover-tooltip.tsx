@@ -1,6 +1,7 @@
 import { flip, offset, shift } from '@floating-ui/dom';
 import { type Placement } from '@floating-ui/utils';
 import { useRef, useState, type Dispatch, type ReactNode, type RefObject, type SetStateAction } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useCloseOnEsc, useFloatingUi } from './floating-ui-hooks';
 
@@ -60,7 +61,11 @@ function OpenTooltip({
     return <FloatingTooltip {...props} />;
 }
 
-/** A tooltip box next to `referenceRef`. Render it only while it is shown. */
+/**
+ * A tooltip box next to `referenceRef`. Render it only while it is shown. It is rendered into the
+ * body, so it doesn't take on the text styles of where it is used, e.g. a centered, bold, unwrapped
+ * table header.
+ */
 export function FloatingTooltip({
     referenceRef,
     placement,
@@ -74,9 +79,10 @@ export function FloatingTooltip({
 }) {
     const floatingRef = useRef<HTMLDivElement>(null);
     useFloatingUi(referenceRef, floatingRef, TOOLTIP_MIDDLEWARE, placement, 'fixed');
-    return (
+    return createPortal(
         <div ref={floatingRef} role='tooltip' className={`fixed top-0 left-0 ${TOOLTIP_BASE_STYLES} ${className}`}>
             {children}
-        </div>
+        </div>,
+        document.body,
     );
 }
