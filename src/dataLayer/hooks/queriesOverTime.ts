@@ -10,8 +10,8 @@
  * pure function of the folded counts (`buildQueriesMatrix`).
  */
 
-import { useQueries, useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
 
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
@@ -79,7 +79,26 @@ export function useQueriesOverTime(
         },
     });
 
-    const results = useQueries({
+    // Combined by TanStack, which runs this again whenever a result changes - including when a
+    // filter change swaps in other, already cached, results.
+    const combineDailyCounts = useCallback(
+        (results: UseQueryResult<QueryDailyCounts>[]) => {
+            const error = results.find((result) => result.error)?.error ?? null;
+            const dailyByLabel = new Map<string, QueryDailyCounts>();
+            for (const [index, query] of queries.entries()) {
+                const daily = results[index]?.data;
+                if (daily === undefined) {
+                    return { dailyByLabel: undefined, error };
+                }
+                dailyByLabel.set(query.displayLabel, daily);
+            }
+            return { dailyByLabel, error };
+        },
+        [queries],
+    );
+
+    const dailyCounts = useQueries({
+        combine: combineDailyCounts,
         queries: queries.map((query) => ({
             queryKey: [
                 'silo',
@@ -111,29 +130,14 @@ export function useQueriesOverTime(
         })),
     });
 
-    const error = axis.error ?? results.find((result) => result.error)?.error;
-    const answeredSignature = results.map((result) => (result.data === undefined ? 0 : 1)).join('');
-    const allAnswered = axis.data !== undefined && !answeredSignature.includes('0');
-
-    const dailyByLabel = useMemo(() => {
-        const map = new Map<string, QueryDailyCounts>();
-        queries.forEach((query, index) => {
-            const daily = results[index]?.data;
-            if (daily !== undefined) {
-                map.set(query.displayLabel, daily);
-            }
-        });
-        return map;
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- results identity churns; the signature captures what matters
-    }, [queries, answeredSignature]);
+    const error = axis.error ?? dailyCounts.error;
+    const { dailyByLabel } = dailyCounts;
 
     return useMemo(() => {
         if (error) {
             throw error instanceof Error ? error : new Error(String(error));
         }
-        // `allAnswered` already implies `axis.data !== undefined` (see its
-        // definition above); TS tracks that, so `axis.data` narrows below.
-        if (!allAnswered) {
+        if (axis.data === undefined || dailyByLabel === undefined) {
             return { data: null, isLoading: true, error: undefined };
         }
         const matrix = buildQueriesMatrix(
@@ -144,7 +148,7 @@ export function useQueriesOverTime(
             dailyByLabel,
         );
         return { data: matrix, isLoading: false, error: undefined };
-    }, [error, allAnswered, axis.data, queries, granularity, dailyByLabel]);
+    }, [error, axis.data, queries, granularity, dailyByLabel]);
 }
 
 // --- pure matrix assembly (exported for tests) ------------------------------
