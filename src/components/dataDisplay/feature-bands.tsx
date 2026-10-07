@@ -7,8 +7,7 @@ import { formatProportion } from './formatProportion';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import { getProportion, type ProportionValue } from './overTime/proportionValue';
 import { Pagination, type PaginationProps } from './pagination';
-import PortalTooltip from './portal-tooltip';
-import { type TooltipPosition } from './tooltip';
+import PortalTooltip, { type TooltipPosition } from './portal-tooltip';
 import { type Temporal } from '../../util/temporalClass';
 
 export interface FeatureRenderer<D> {

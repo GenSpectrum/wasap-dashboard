@@ -9,7 +9,10 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import { type TooltipPosition, TOOLTIP_BASE_STYLES } from './tooltip';
+import { TOOLTIP_BASE_STYLES } from './hover-tooltip';
+
+export type TooltipPosition =
+    'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'right';
 
 export type PortalTooltipProps = {
     content: string | ReactElement;
@@ -21,7 +24,7 @@ export type PortalTooltipProps = {
 /**
  * A portal-based tooltip component that renders content in a specified DOM element.
  *
- * Unlike the regular `Tooltip` component, this uses React portals to render the tooltip
+ * This uses React portals to render the tooltip
  * at a specific location in the DOM with fixed positioning. This is useful when:
  * - The tooltip needs to escape overflow constraints from parent containers
  * - You need precise control over the tooltip's rendering location

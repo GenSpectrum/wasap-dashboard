@@ -17,8 +17,8 @@ import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { HoverTooltip } from '../hover-tooltip';
 import { type ProportionValue, getProportion } from '../overTime/proportionValue';
-import PortalTooltip from '../portal-tooltip';
 import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
@@ -171,26 +171,26 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
                 const queryObject = queryLookupMap.get(value);
 
                 return (
-                    <PortalTooltip
+                    <HoverTooltip
                         content={
                             <QueriesOverTimeRowLabelTooltip
                                 query={queryObject ?? { displayLabel: value, description: undefined, query: '' }}
                             />
                         }
-                        position='right'
-                        portalTarget={tooltipPortalTarget}
+                        placement='right'
+                        focusable
                     >
                         <div className='mr-2 text-center whitespace-nowrap'>
                             <span>{value}</span>
                         </div>
-                    </PortalTooltip>
+                    </HoverTooltip>
                 );
             },
             renderTooltip: (value: string, temporal: Temporal, proportionValue: ProportionValue) => (
                 <QueriesOverTimeGridTooltip query={value} date={temporal} value={proportionValue} />
             ),
         }),
-        [tooltipPortalTarget, queryLookupMap],
+        [queryLookupMap],
     );
 
     const paginationStart = <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />;

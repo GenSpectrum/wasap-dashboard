@@ -7,9 +7,9 @@ import { useBandViewSettings } from '../band-view-settings';
 import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { HoverTooltip } from '../hover-tooltip';
 import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 import { getProportion, type ProportionValue } from '../overTime/proportionValue';
-import PortalTooltip from '../portal-tooltip';
 import { getFilteredQueryOverTimeData, getMeanProportions } from '../queriesOverTime/getFilteredQueriesOverTimeData';
 import { ViewSettingsControls } from '../view-settings-controls';
 
@@ -70,11 +70,7 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
             renderRowLabel: (label) => {
                 const row = rowByLabel.get(label);
                 return (
-                    <PortalTooltip
-                        content={row ? <RowLabelTooltip row={row} /> : label}
-                        position='right'
-                        portalTarget={tooltipPortalTarget}
-                    >
+                    <HoverTooltip content={row ? <RowLabelTooltip row={row} /> : label} placement='right' focusable>
                         {row ? (
                             <div className='mr-2 flex items-center gap-1.5 text-left'>
                                 Amplicon {row.amplicon.number}
@@ -83,7 +79,7 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
                         ) : (
                             <div className='mr-2'>{label}</div>
                         )}
-                    </PortalTooltip>
+                    </HoverTooltip>
                 );
             },
             renderTooltip: (label, temporal, value) => {
@@ -112,7 +108,7 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
                 );
             },
         }),
-        [rowByLabel, tooltipPortalTarget],
+        [rowByLabel],
     );
 
     const pageData = useMemo(() => {
