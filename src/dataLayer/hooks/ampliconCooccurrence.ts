@@ -15,6 +15,7 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { type AmpliconMutation, type AmpliconMutations } from '../../amplicons/mutationsByAmplicon';
@@ -61,7 +62,8 @@ export function useAmpliconCooccurrence(
     const schema = useSiloSchema();
     const measured = useMemo(() => groups.filter(hasCooccurrence), [groups]);
 
-    const results = useQueries({
+    const haplotypes = useQueries({
+        combine: allQueryData,
         queries: measured.map((group) => {
             const positions = positionsOf(group.mutations);
             // `schema` stands in for `connection.key` (same memoized SiloInstance).
@@ -88,23 +90,17 @@ export function useAmpliconCooccurrence(
         }),
     });
 
-    const counted = results.filter((result) => result.data !== undefined).length;
-    const error = results.find((result) => result.error)?.error ?? undefined;
-    const answeredKey = results.map((result) => (result.data === undefined ? 0 : 1)).join('');
-
+    const rowsByGroup = haplotypes.data;
     const data = useMemo(
         () =>
-            counted < measured.length
-                ? undefined
-                : measured.map((group, index) =>
-                      buildAmpliconCooccurrence(group, results[index].data!, dateRanges, granularity),
-                  ),
-        // `answeredKey` stands in for `results`, which is a new array every render.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [measured, answeredKey, dateRanges, granularity],
+            rowsByGroup &&
+            measured.map((group, index) =>
+                buildAmpliconCooccurrence(group, rowsByGroup[index], dateRanges, granularity),
+            ),
+        [measured, rowsByGroup, dateRanges, granularity],
     );
 
-    return { data, error: error ?? undefined };
+    return { data, error: haplotypes.error };
 }
 
 /** The distinct positions of the mutations, ascending: the query's symbol columns. */
