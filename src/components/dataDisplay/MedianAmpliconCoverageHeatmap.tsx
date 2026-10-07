@@ -8,11 +8,11 @@ import {
     type MedianAmpliconCoverageGrid,
     type SampleAmpliconCoverage,
 } from '../../dataLayer/hooks/medianAmpliconCoverage';
-import { Loading } from '../../util/Loading';
 import { type TemporalClass } from '../../util/temporalClass';
 import { TitledPanel } from '../shared/TitledPanel';
 import { singleGraphColorRGBByName } from '../shared/charts/colors';
 import { ErrorDisplay } from '../shared/error-display';
+import { LoadingDisplay } from '../shared/loading-display';
 
 const COLOR = 'indigo';
 const ROW_HEIGHT = 28;
@@ -40,7 +40,7 @@ export function MedianAmpliconCoverageHeatmap({ amplicons: ampliconsConfig }: { 
             {amplicons.isError ? (
                 <ErrorDisplay error={amplicons.error} />
             ) : amplicons.data === undefined ? (
-                <Loading />
+                <LoadingDisplay />
             ) : (
                 <Grid amplicons={amplicons.data} />
             )}
@@ -71,7 +71,7 @@ function Grid({ amplicons }: { amplicons: Amplicon[] }) {
         return <ErrorDisplay error={coverage.error} />;
     }
     if (coverage.data === undefined) {
-        return <Loading />;
+        return <LoadingDisplay />;
     }
 
     const grid = coverage.data;

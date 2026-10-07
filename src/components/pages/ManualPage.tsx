@@ -5,10 +5,10 @@ import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { usePageState } from '../../pageState/usePageState';
 import { ManualPageStateHandler } from '../../pageState/wasap/handlers/ManualPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
-import { Loading } from '../../util/Loading';
 import { MutationsResult } from '../dataDisplay/MutationsResult';
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
 import { ManualAnalysisFilter } from '../filterSidebar/filters/ManualAnalysisFilter';
+import { LoadingDisplay } from '../shared/loading-display';
 
 export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> }) {
     const pageStateHandler = useMemo(() => new ManualPageStateHandler(config), [config]);
@@ -38,7 +38,7 @@ export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> })
             }
         >
             {isFilterPending ? (
-                <Loading />
+                <LoadingDisplay />
             ) : (
                 <MutationsResult
                     displayMutations={analysis.mutations}

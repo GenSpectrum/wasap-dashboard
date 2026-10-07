@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-import { Loading } from '../../util/Loading';
+import { LoadingDisplay } from '../shared/loading-display';
 
 /**
  * The results of an analysis mode, once there are any. Until then it shows that
@@ -22,7 +22,7 @@ export function WasapResults<Data>({
     }
 
     if (isPending || data === undefined) {
-        return <Loading />;
+        return <LoadingDisplay />;
     }
 
     return <div className='h-full space-y-4'>{children(data)}</div>;
