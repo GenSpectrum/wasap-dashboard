@@ -120,6 +120,16 @@ export class LapisRouteMocker {
         this.workerOrServer.use(http.post(`${DUMMY_LAPIS_URL}/sample/aminoAcidMutations`, resolver(cases)));
     }
 
+    mockPostQueriesOverTime(
+        body: Record<string, unknown>,
+        response: { data: { data: { count: number; coverage: number }[][] } },
+        statusCode = 200,
+    ) {
+        this.workerOrServer.use(
+            http.post(`${DUMMY_LAPIS_URL}/component/queriesOverTime`, resolver([{ statusCode, body, response }])),
+        );
+    }
+
     mockPostQueryParse(body: ParseQueryRequest, response: { data: ParsedQueryResult[] }, statusCode = 200) {
         this.workerOrServer.use(
             http.post(`${DUMMY_LAPIS_URL}/query/parse`, resolver([{ statusCode, body, response }])),

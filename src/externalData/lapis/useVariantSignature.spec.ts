@@ -96,11 +96,21 @@ describe('fetchVariantSignature', () => {
         lapisRouteMocker.mockPostNucleotideMutationsMulti([
             {
                 body: { pangoLineage: 'XEC', minProportion: 0.8 },
-                response: { data: [{ mutation: 'A123T', count: 100 }] },
+                response: {
+                    data: [
+                        { mutation: 'A123T', count: 100 },
+                        { mutation: 'G456C', count: 100 },
+                    ],
+                },
             },
             {
                 body: { minProportion: 0 },
-                response: { data: [{ mutation: 'A123T', count: 200 }] },
+                response: {
+                    data: [
+                        { mutation: 'A123T', count: 200 },
+                        { mutation: 'G456C', count: 1000 },
+                    ],
+                },
             },
         ]);
         lapisRouteMocker.mockPostAggregated({ pangoLineage: 'XEC' }, { data: [{ count: 150 }] });
@@ -121,8 +131,10 @@ describe('fetchVariantSignature', () => {
         );
 
         // Jaccard for A123T: 100 / (150 + 200 - 100) = 0.4, which passes minJaccard=0.3
+        // Jaccard for G456C: 100 / (150 + 1000 - 100) ≈ 0.095, which fails it, but is still a candidate
         expect(result).toEqual({
             displayMutations: ['A123T'],
+            candidateMutations: ['A123T', 'G456C'],
             jaccardIndices: { A123T: 0.4 },
         });
     });
@@ -153,6 +165,7 @@ describe('fetchVariantSignature', () => {
 
         expect(result).toEqual({
             displayMutations: ['A123T', 'G456C'],
+            candidateMutations: ['A123T', 'G456C'],
             lineageForJaccard: 'XEC*',
         });
     });
@@ -200,6 +213,7 @@ describe('fetchVariantSignature', () => {
         // Jaccard for G456C: 10 / (150 + 200 - 10) ≈ 0.029, fails minJaccard=0.3
         expect(result).toEqual({
             displayMutations: ['A123T'],
+            candidateMutations: ['A123T', 'G456C'],
             lineageForJaccard: 'XEC*',
             jaccardIndices: { A123T: 0.4 },
         });
@@ -231,6 +245,7 @@ describe('fetchVariantSignature', () => {
 
         expect(result).toEqual({
             displayMutations: ['S:F59S'],
+            candidateMutations: ['S:F59S'],
             lineageForJaccard: 'XEC',
         });
     });

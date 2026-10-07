@@ -47,8 +47,10 @@ import {
     type PositionTarget,
     type PositionOverTimeRow,
     type SiloReadFilter,
+    type SiloSchema,
 } from '../queries';
 import { readNamedCounts } from '../queries/rows';
+import { type Connection } from '../transport/connection';
 
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
 const MAX_GRID_COLUMNS = 200;
@@ -103,20 +105,13 @@ export function useOverTimeMetadata(
         queryFn: async ({ signal }): Promise<OverTimeMetadata> => {
             // Date axis first: the "too many buckets" guard has to fire before the
             // (potentially expensive) mutations() scan.
-            const dateRows = await connection
-                .query(samplingDatesQuery(schema, normalized), 'Over-time date axis', { signal })
-                .then((result) => readNamedCounts(result.rows, schema.groupingDate));
-
-            const { requestedDateRanges, totalCountsByBucket } = buildDateAxis(dateRows, granularity, filter);
-
-            if (requestedDateRanges.length > MAX_GRID_COLUMNS) {
-                throw new UserFacingError(
-                    'Too many dates',
-                    `The dataset would contain ${requestedDateRanges.length} date intervals. ` +
-                        `Please reduce the number to below ${MAX_GRID_COLUMNS} — narrow the sampling-date filter, ` +
-                        'or choose a coarser granularity.',
-                );
-            }
+            const { requestedDateRanges, totalCountsByBucket } = await fetchDateAxis(
+                connection,
+                schema,
+                filter,
+                granularity,
+                signal,
+            );
 
             const boundedFilter = withDateBounds(normalized, requestedDateRanges);
             const mutationRows = await connection
@@ -134,6 +129,54 @@ export function useOverTimeMetadata(
 
             return { requestedDateRanges, totalCountsByBucket, overallMutations };
         },
+    });
+}
+
+export type DateAxis = {
+    /** Every bucket in range, gap-filled and sorted. */
+    requestedDateRanges: TemporalClass[];
+    /** Total reads per bucket, index-aligned with `requestedDateRanges`. */
+    totalCountsByBucket: number[];
+};
+
+/**
+ * The date buckets of a grid for the filter and granularity, and the reads in each. More buckets
+ * than a grid can show is an error for the user (`MAX_GRID_COLUMNS`).
+ */
+export async function fetchDateAxis(
+    connection: Connection,
+    schema: SiloSchema,
+    filter: SiloReadFilter,
+    granularity: TemporalGranularity,
+    signal: AbortSignal,
+): Promise<DateAxis> {
+    const dateRows = await connection
+        .query(samplingDatesQuery(schema, normalizeFilter(filter)), 'Over-time date axis', { signal })
+        .then((result) => readNamedCounts(result.rows, schema.groupingDate));
+
+    const dateAxis = buildDateAxis(dateRows, granularity, filter);
+    if (dateAxis.requestedDateRanges.length > MAX_GRID_COLUMNS) {
+        throw new UserFacingError(
+            'Too many dates',
+            `The dataset would contain ${dateAxis.requestedDateRanges.length} date intervals. ` +
+                `Please reduce the number to below ${MAX_GRID_COLUMNS} — narrow the sampling-date filter, ` +
+                'or choose a coarser granularity.',
+        );
+    }
+    return dateAxis;
+}
+
+/** The date axis (`fetchDateAxis`) on its own, for a grid of something other than the mutations. */
+export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranularity): UseQueryResult<DateAxis> {
+    const connection = useConnection();
+    const schema = useSiloSchema();
+    const normalized = normalizeFilter(filter);
+
+    // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for `filter`.
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    return useQuery({
+        queryKey: ['silo', 'date-axis', ...connection.key, normalized, granularity],
+        queryFn: ({ signal }) => fetchDateAxis(connection, schema, normalized, granularity, signal),
     });
 }
 
