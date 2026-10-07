@@ -129,7 +129,8 @@ export function deconvolve({ signatures, frequencies, options, resamples }: Deco
     const days = sortedDates.map(toDay);
 
     // LolliPop's `resample_mutations`: as many draws as there are mutations, with replacement.
-    const mutations = [...new Set(rows.map((row) => row.mutation))];
+    // Sorted, so that the draws don't depend on the order the frequencies come in.
+    const mutations = [...new Set(rows.map((row) => row.mutation))].sort();
     const random = mulberry32(SEED);
     const rounds =
         resamples ??
@@ -155,7 +156,13 @@ export function deconvolve({ signatures, frequencies, options, resamples }: Deco
 
     // The rows near enough to each date to count in any round: a mutation drawn `maxDraws` times
     // weighs that many times its kernel weight.
-    const maxDraws = Math.max(1, ...rounds.flatMap((counts) => Object.values(counts)));
+    // (A loop, not `Math.max(...)`: rounds × mutations can be more arguments than a call takes.)
+    let maxDraws = 1;
+    for (const counts of rounds) {
+        for (const draws of Object.values(counts)) {
+            maxDraws = Math.max(maxDraws, draws);
+        }
+    }
     const nearRows = days.map((day) =>
         rows.flatMap((row, i) => {
             const kernel = Math.exp(-((day - row.day) ** 2) / 2 / options.bandwidth);
