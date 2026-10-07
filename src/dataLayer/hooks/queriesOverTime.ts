@@ -10,9 +10,10 @@
  * pure function of the folded counts (`buildQueriesMatrix`).
  */
 
-import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { useQueries, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
+import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
@@ -79,26 +80,8 @@ export function useQueriesOverTime(
         },
     });
 
-    // Combined by TanStack, which runs this again whenever a result changes - including when a
-    // filter change swaps in other, already cached, results.
-    const combineDailyCounts = useCallback(
-        (results: UseQueryResult<QueryDailyCounts>[]) => {
-            const error = results.find((result) => result.error)?.error ?? null;
-            const dailyByLabel = new Map<string, QueryDailyCounts>();
-            for (const [index, query] of queries.entries()) {
-                const daily = results[index]?.data;
-                if (daily === undefined) {
-                    return { dailyByLabel: undefined, error };
-                }
-                dailyByLabel.set(query.displayLabel, daily);
-            }
-            return { dailyByLabel, error };
-        },
-        [queries],
-    );
-
     const dailyCounts = useQueries({
-        combine: combineDailyCounts,
+        combine: allQueryData<QueryDailyCounts>,
         queries: queries.map((query) => ({
             queryKey: [
                 'silo',
@@ -131,7 +114,11 @@ export function useQueriesOverTime(
     });
 
     const error = axis.error ?? dailyCounts.error;
-    const { dailyByLabel } = dailyCounts;
+    const dailyByLabel = useMemo(
+        () =>
+            dailyCounts.data && new Map(queries.map((query, index) => [query.displayLabel, dailyCounts.data![index]])),
+        [queries, dailyCounts.data],
+    );
 
     return useMemo(() => {
         if (error) {
