@@ -19,8 +19,6 @@ import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { type ProportionValue, getProportion } from '../overTime/proportionValue';
 import PortalTooltip from '../portal-tooltip';
-import { pageSizesSchema } from '../tanstackTable/pagination';
-import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
@@ -58,7 +56,7 @@ const queriesOverTimeSchema = z.object({
     meanProportionInterval: meanProportionIntervalSchema,
     width: z.string(),
     height: z.string().optional(),
-    pageSizes: pageSizesSchema,
+    pageSizes: z.array(z.number()),
 });
 export type QueriesOverTimeProps = z.infer<typeof queriesOverTimeSchema>;
 
@@ -81,6 +79,7 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
     const { data: queryOverTimeData, isLoading } = useQueriesOverTime(filter, granularity, queries);
     // Up here rather than next to the rows, so it survives the reloading when the filters change.
     const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
+    const [pageSize, setPageSize] = useState(componentProps.pageSizes[0]);
 
     if (isLoading) {
         return <LoadingDisplay />;
@@ -91,14 +90,14 @@ export const QueriesOverTimeInner: FC<QueriesOverTimeProps> = ({ ...componentPro
     }
 
     return (
-        <PageSizeContextProvider pageSizes={componentProps.pageSizes}>
-            <QueriesOverTimeWithData
-                queryOverTimeData={queryOverTimeData}
-                originalComponentProps={componentProps}
-                sort={sort}
-                setSort={setSort}
-            />
-        </PageSizeContextProvider>
+        <QueriesOverTimeWithData
+            queryOverTimeData={queryOverTimeData}
+            originalComponentProps={componentProps}
+            sort={sort}
+            setSort={setSort}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+        />
     );
 };
 
@@ -107,6 +106,8 @@ type QueriesOverTimeWithDataProps = {
     originalComponentProps: QueriesOverTimeProps;
     sort: FeatureSort;
     setSort: (sort: FeatureSort) => void;
+    pageSize: number;
+    setPageSize: (pageSize: number) => void;
 };
 
 const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
@@ -114,6 +115,8 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
     originalComponentProps,
     sort,
     setSort,
+    pageSize,
+    setPageSize,
 }) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
@@ -122,7 +125,6 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
         setTooltipPortalTarget(wrapperRef.current);
     }, [wrapperRef]);
 
-    const { pageSize } = usePageSizeContext();
     const [pageIndex, setPageIndex] = useState(0);
 
     const proportionInterval = originalComponentProps.meanProportionInterval;
@@ -149,6 +151,11 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
 
     const changeSort = (newSort: FeatureSort) => {
         setSort(newSort);
+        setPageIndex(0);
+    };
+
+    const changePageSize = (newPageSize: number) => {
+        setPageSize(newPageSize);
         setPageIndex(0);
     };
 
@@ -216,12 +223,16 @@ const QueriesOverTimeWithData: FC<QueriesOverTimeWithDataProps> = ({
                 viewSettings={viewSettings}
                 featureRenderer={queryRenderer}
                 tooltipPortalTarget={tooltipPortalTarget}
-                pageSizes={originalComponentProps.pageSizes}
-                pageIndex={pageIndex}
-                totalRows={sortedQueries.length}
-                onPageChange={setPageIndex}
-                paginationStart={paginationStart}
-                paginationEnd={paginationEnd}
+                pagination={{
+                    pageIndex,
+                    pageSize,
+                    pageSizes: originalComponentProps.pageSizes,
+                    totalRows: sortedQueries.length,
+                    onPageChange: setPageIndex,
+                    onPageSizeChange: changePageSize,
+                    startContent: paginationStart,
+                    endContent: paginationEnd,
+                }}
                 meanProportions={meanProportions}
                 sort={sort}
                 onSortChange={changeSort}

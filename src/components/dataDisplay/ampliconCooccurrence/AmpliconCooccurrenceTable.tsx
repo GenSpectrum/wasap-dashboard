@@ -11,8 +11,6 @@ import { OverTimeGridTooltip } from '../over-time-grid-tooltip';
 import { getProportion, type ProportionValue } from '../overTime/proportionValue';
 import PortalTooltip from '../portal-tooltip';
 import { getFilteredQueryOverTimeData, getMeanProportions } from '../queriesOverTime/getFilteredQueriesOverTimeData';
-import { type PageSizes } from '../tanstackTable/pagination';
-import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsControls } from '../view-settings-controls';
 
 type TableProps = {
@@ -20,7 +18,7 @@ type TableProps = {
     /** The date axis the rows' values are index-aligned with. */
     dateRanges: TemporalClass[];
     jaccardIndices: Partial<Record<string, number>> | undefined;
-    pageSizes: PageSizes;
+    pageSizes: number[];
 };
 
 /**
@@ -28,20 +26,12 @@ type TableProps = {
  * cluster, the share of the reads spanning its amplicon's mutations that carry at least its
  * mutations.
  */
-export function AmpliconCooccurrenceTable(props: TableProps) {
-    return (
-        <PageSizeContextProvider pageSizes={props.pageSizes}>
-            <Table {...props} />
-        </PageSizeContextProvider>
-    );
-}
-
-function Table({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
+export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
     const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
     useLayoutEffect(() => setTooltipPortalTarget(wrapper), [wrapper]);
 
-    const { pageSize } = usePageSizeContext();
+    const [pageSize, setPageSize] = useState(pageSizes[0]);
     const [pageIndex, setPageIndex] = useState(0);
     // By amplicon (the rows' order), unlike the mutations over time, which go by Jaccard index first.
     const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
@@ -142,19 +132,26 @@ function Table({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
                 viewSettings={viewSettings}
                 featureRenderer={renderer}
                 tooltipPortalTarget={tooltipPortalTarget}
-                pageSizes={pageSizes}
-                pageIndex={pageIndex}
-                totalRows={sortedLabels.length}
-                onPageChange={setPageIndex}
-                paginationStart={<ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />}
-                paginationEnd={
-                    <CsvDownloadButton
-                        className='btn btn-xs'
-                        label='Download CSV'
-                        getData={() => getDownloadData(filteredData, rowByLabel, jaccardIndices)}
-                        filename='amplicon_cooccurrence.csv'
-                    />
-                }
+                pagination={{
+                    pageIndex,
+                    pageSize,
+                    pageSizes,
+                    totalRows: sortedLabels.length,
+                    onPageChange: setPageIndex,
+                    onPageSizeChange: (newPageSize) => {
+                        setPageSize(newPageSize);
+                        setPageIndex(0);
+                    },
+                    startContent: <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />,
+                    endContent: (
+                        <CsvDownloadButton
+                            className='btn btn-xs'
+                            label='Download CSV'
+                            getData={() => getDownloadData(filteredData, rowByLabel, jaccardIndices)}
+                            filename='amplicon_cooccurrence.csv'
+                        />
+                    ),
+                }}
                 meanProportions={meanProportions}
                 jaccardIndices={jaccardIndices}
                 sort={effectiveSort}

@@ -34,8 +34,6 @@ import { CsvDownloadButton } from '../csv-download-button';
 import { FeatureBands, type FeatureRenderer } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, JACCARD_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
 import { getProportion, type ProportionValue } from '../overTime/proportionValue';
-import { pageSizesSchema } from '../tanstackTable/pagination';
-import { PageSizeContextProvider, usePageSizeContext } from '../tanstackTable/pagination-context';
 import { ViewSettingsControls } from '../view-settings-controls';
 
 const meanProportionIntervalSchema = z.object({
@@ -55,7 +53,7 @@ const mutationOverTimeSchema = z.object({
     meanProportionInterval: meanProportionIntervalSchema,
     width: z.string(),
     height: z.string().optional(),
-    pageSizes: pageSizesSchema,
+    pageSizes: z.array(z.number()),
     /** The Jaccard index of each mutation, by mutation code. Shown as a column if given. */
     jaccardIndices: z.record(z.string(), z.number()).optional(),
     /** The numbers of the amplicons each mutation is in, by mutation code; with it, a column of them. */
@@ -91,6 +89,7 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
     // Up here rather than next to the rows, so it survives the reloading when the filters change.
     // `undefined` until a header is clicked: the default depends on whether there are Jaccard indices.
     const [sort, setSort] = useState<FeatureSort | undefined>(undefined);
+    const [pageSize, setPageSize] = useState(pageSizes[0]);
 
     if (metadataLoading) {
         return <LoadingDisplay />;
@@ -105,16 +104,16 @@ export const MutationsOverTimeInner: FC<MutationsOverTimeProps> = ({ ...componen
     }
 
     return (
-        <PageSizeContextProvider pageSizes={pageSizes}>
-            <MutationsOverTimeWithMetadata
-                metadata={metadata}
-                originalComponentProps={componentProps}
-                pageIndex={pageIndex}
-                setPageIndex={setPageIndex}
-                sort={sort}
-                setSort={setSort}
-            />
-        </PageSizeContextProvider>
+        <MutationsOverTimeWithMetadata
+            metadata={metadata}
+            originalComponentProps={componentProps}
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            sort={sort}
+            setSort={setSort}
+        />
     );
 };
 
@@ -123,6 +122,8 @@ type MutationsOverTimeWithMetadataProps = {
     originalComponentProps: MutationsOverTimeProps;
     pageIndex: number;
     setPageIndex: Dispatch<SetStateAction<number>>;
+    pageSize: number;
+    setPageSize: (pageSize: number) => void;
     sort: FeatureSort | undefined;
     setSort: (sort: FeatureSort) => void;
 };
@@ -132,13 +133,14 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     originalComponentProps,
     pageIndex,
     setPageIndex,
+    pageSize,
+    setPageSize,
     sort,
     setSort,
 }) => {
     const { filter, sequenceType, granularity, jaccardIndices, ampliconsByMutation } = originalComponentProps;
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
     const { nucleotideSequence } = useSiloSchema();
-    const { pageSize } = usePageSizeContext();
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [tooltipPortalTarget, setTooltipPortalTarget] = useState<HTMLDivElement | null>(null);
@@ -190,6 +192,11 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
     // page was open are never sent for the reordered rows.
     const changeSort = (newSort: FeatureSort) => {
         setSort(newSort);
+        setPageIndex(0);
+    };
+
+    const changePageSize = (newPageSize: number) => {
+        setPageSize(newPageSize);
         setPageIndex(0);
     };
 
@@ -255,12 +262,16 @@ const MutationsOverTimeWithMetadata: FC<MutationsOverTimeWithMetadataProps> = ({
                 viewSettings={viewSettings}
                 featureRenderer={mutationRenderer}
                 tooltipPortalTarget={tooltipPortalTarget}
-                pageSizes={originalComponentProps.pageSizes}
-                pageIndex={pageIndex}
-                totalRows={totalFilteredRows}
-                onPageChange={setPageIndex}
-                paginationStart={paginationStart}
-                paginationEnd={paginationEnd}
+                pagination={{
+                    pageIndex,
+                    pageSize,
+                    pageSizes: originalComponentProps.pageSizes,
+                    totalRows: totalFilteredRows,
+                    onPageChange: setPageIndex,
+                    onPageSizeChange: changePageSize,
+                    startContent: paginationStart,
+                    endContent: paginationEnd,
+                }}
                 meanProportions={meanProportions}
                 jaccardIndices={jaccardIndices}
                 extraColumn={

@@ -1,5 +1,4 @@
-import { getCoreRowModel } from '@tanstack/table-core';
-import { Fragment, useId, useMemo, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from 'react';
+import { Fragment, useId, useMemo, type ReactElement, type ReactNode } from 'react';
 
 import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
@@ -7,10 +6,8 @@ import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import { getProportion, type ProportionValue } from './overTime/proportionValue';
+import { Pagination, type PaginationProps } from './pagination';
 import PortalTooltip from './portal-tooltip';
-import { Pagination, type PageSizes } from './tanstackTable/pagination';
-import { usePageSizeContext } from './tanstackTable/pagination-context';
-import { useReactTable } from './tanstackTable/tanstackTable';
 import { type TooltipPosition } from './tooltip';
 import { type Temporal } from '../../util/temporalClass';
 
@@ -82,16 +79,8 @@ export interface FeatureBandsProps<F> {
     viewSettings: BandViewSettings;
     featureRenderer: FeatureRenderer<F>;
     tooltipPortalTarget: HTMLElement | null;
-    pageSizes: PageSizes;
-    /** Controlled page index (0-based). */
-    pageIndex: number;
-    /** Total number of rows across all pages. */
-    totalRows: number;
-    onPageChange: Dispatch<SetStateAction<number>>;
-    /** Shown at the very left of the pagination row below the bands, e.g. view settings. */
-    paginationStart?: ReactNode;
-    /** Shown at the very right of the pagination row below the bands, e.g. a download button. */
-    paginationEnd?: ReactNode;
+    /** The pagination row below the bands. */
+    pagination: PaginationProps;
     /**
      * The proportion of each row over the whole time range, by row label (see `FeatureRenderer.asString`).
      * A row without one (nothing measured it) shows a dash.
@@ -119,12 +108,7 @@ export function FeatureBands<F>({
     viewSettings,
     featureRenderer,
     tooltipPortalTarget,
-    pageSizes,
-    pageIndex,
-    totalRows,
-    onPageChange,
-    paginationStart,
-    paginationEnd,
+    pagination,
     meanProportions,
     jaccardIndices,
     extraColumn,
@@ -136,29 +120,6 @@ export function FeatureBands<F>({
     const rows = useMemo(() => data?.getAsArray() ?? [], [data]);
     const gradientPrefix = useId();
     const numberOfValueColumns = (jaccardIndices === undefined ? 1 : 2) + (extraColumn === undefined ? 0 : 1);
-
-    // A table instance with no columns of its own: it exists only to drive the
-    // shared `Pagination` control the same way the grid tab's table does - the
-    // rows it's given are just for `Pagination` to read a correct row count off.
-    const { pageSize, setPageSize } = usePageSizeContext();
-    const paginationTable = useReactTable({
-        data: features,
-        columns: [],
-        getCoreRowModel: getCoreRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(totalRows / pageSize),
-        state: { pagination: { pageIndex, pageSize } },
-        onPaginationChange: (updater) => {
-            const current = { pageIndex, pageSize };
-            const next = typeof updater === 'function' ? updater(current) : updater;
-            if (next.pageIndex !== current.pageIndex) {
-                onPageChange(next.pageIndex);
-            }
-            if (next.pageSize !== current.pageSize) {
-                setPageSize(next.pageSize);
-            }
-        },
-    });
 
     // TODO: This is the largest coverage on the current page only, not of all the rows, so the
     // thickness of a band changes when the page (or the page size) changes. It has to be the same
@@ -280,13 +241,7 @@ export function FeatureBands<F>({
             </div>
             {/* The table reaches the edges of the component, so its lines do; only this is padded. */}
             <div className='border-t border-stone-200 p-2'>
-                <Pagination
-                    table={paginationTable}
-                    pageSizes={pageSizes}
-                    totalRows={totalRows}
-                    startContent={paginationStart}
-                    endContent={paginationEnd}
-                />
+                <Pagination {...pagination} />
             </div>
         </div>
     );
