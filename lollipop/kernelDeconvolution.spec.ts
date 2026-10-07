@@ -71,6 +71,26 @@ describe('deconvolve', () => {
         }
     });
 
+    it('should give the same intervals whatever the order of the frequencies', () => {
+        const signatures = reference.signatures;
+        const frequencies = reference.frequencies.filter((frequency) => frequency.date >= '2026-08-01');
+        const options = { ...reference.options, bootstraps: 10 };
+
+        const result = deconvolve({ signatures, frequencies, options });
+        const reversed = deconvolve({ signatures, frequencies: frequencies.toReversed(), options });
+
+        // Up to rounding: the fit sums the rows in another order.
+        expect(reversed.dates.map(({ date }) => date)).toEqual(result.dates.map(({ date }) => date));
+        result.dates.forEach(({ estimates }, i) => {
+            estimates.forEach(({ proportion, lower, upper }, j) => {
+                const other = reversed.dates[i].estimates[j];
+                expect(other.proportion).toBeCloseTo(proportion, 6);
+                expect(other.lower).toBeCloseTo(lower, 6);
+                expect(other.upper).toBeCloseTo(upper, 6);
+            });
+        });
+    });
+
     it('should match LolliPop on real data, replaying its bootstrap draws', () => {
         const result = deconvolve({
             signatures: reference.signatures,
