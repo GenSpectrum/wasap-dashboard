@@ -1,16 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { cooccurrenceTableData, type CooccurrenceRow } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { Map2dView } from '../../../util/map2d';
-import { type Temporal, type TemporalClass, toTemporalClass } from '../../../util/temporalClass';
+import { type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import { useBandViewSettings } from '../band-view-settings';
-import { CsvDownloadButton } from '../csv-download-button';
-import { FeatureBands, type FeatureRenderer } from '../feature-bands';
-import { DEFAULT_FEATURE_SORT, sortRowLabels, type FeatureSort } from '../featureSort';
+import { type FeatureRenderer } from '../feature-bands';
+import { DEFAULT_FEATURE_SORT, sortRowLabels } from '../featureSort';
 import { HoverTooltip } from '../hover-tooltip';
-import { getProportion, type ProportionValue } from '../overTime/proportionValue';
+import { OverTimeGrid, proportionsByDate, useOverTimeGridState } from '../over-time-grid';
+import { type ProportionValue } from '../overTime/proportionValue';
 import { getFilteredQueryOverTimeData, getMeanProportions } from '../queriesOverTime/getFilteredQueriesOverTimeData';
-import { ViewSettingsControls } from '../view-settings-controls';
 
 type TableProps = {
     rows: CooccurrenceRow[];
@@ -26,12 +25,8 @@ type TableProps = {
  * mutations.
  */
 export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pageSizes }: TableProps) {
-    const [pageSize, setPageSize] = useState(pageSizes[0]);
-    const [pageIndex, setPageIndex] = useState(0);
-    // By amplicon (the rows' order), unlike the mutations over time, which go by Jaccard index first.
-    const [sort, setSort] = useState(DEFAULT_FEATURE_SORT);
-    const [viewSettings, setViewSettings] = useBandViewSettings();
-    const { showEmptyDates } = viewSettings;
+    const gridState = useOverTimeGridState(pageSizes);
+    const [{ showEmptyDates }] = useBandViewSettings();
 
     const data = useMemo(() => cooccurrenceTableData(rows, dateRanges), [rows, dateRanges]);
     const meanProportions = useMemo(() => getMeanProportions(data), [data]);
@@ -45,18 +40,14 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
             }),
         [data, meanProportions, showEmptyDates],
     );
-    // A sort by Jaccard index without any falls back.
-    const effectiveSort = sort.column === 'jaccardIndex' && jaccardIndices === undefined ? DEFAULT_FEATURE_SORT : sort;
+    // By amplicon (the rows' order), unlike the mutations over time, which go by Jaccard index first.
+    const sort = gridState.sortOr(DEFAULT_FEATURE_SORT, jaccardIndices !== undefined);
     const sortedLabels = useMemo(
-        () => sortRowLabels(filteredData.getFirstAxisKeys(), effectiveSort, { meanProportions, jaccardIndices }),
-        [filteredData, effectiveSort, meanProportions, jaccardIndices],
+        () => sortRowLabels(filteredData.getFirstAxisKeys(), sort, { meanProportions, jaccardIndices }),
+        [filteredData, sort, meanProportions, jaccardIndices],
     );
-    useEffect(() => setPageIndex(0), [filteredData]);
-
-    const changeSort = (newSort: FeatureSort) => {
-        setSort(newSort);
-        setPageIndex(0);
-    };
+    const { setPageIndex, pageOf } = gridState;
+    useEffect(() => setPageIndex(0), [filteredData, setPageIndex]);
 
     const rowByLabel = useMemo(() => new Map(rows.map((row) => [row.label, row])), [rows]);
     const renderer = useMemo<FeatureRenderer<string>>(
@@ -100,46 +91,28 @@ export function AmpliconCooccurrenceTable({ rows, dateRanges, jaccardIndices, pa
 
     const pageData = useMemo(() => {
         const page = new Map2dView(filteredData);
-        page.selectRows(sortedLabels.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize));
+        page.selectRows(pageOf(sortedLabels));
         return page;
-    }, [filteredData, sortedLabels, pageIndex, pageSize]);
+    }, [filteredData, sortedLabels, pageOf]);
 
     return (
-        <div className='border border-stone-300 bg-white'>
-            <FeatureBands
-                rowLabelHeader='Amplicon'
-                data={pageData}
-                isLoading={false}
-                loadingRowLabels={[]}
-                requestedDateRanges={filteredData.getSecondAxisKeys()}
-                viewSettings={viewSettings}
-                featureRenderer={renderer}
-                pagination={{
-                    pageIndex,
-                    pageSize,
-                    pageSizes,
-                    totalRows: sortedLabels.length,
-                    onPageChange: setPageIndex,
-                    onPageSizeChange: (newPageSize) => {
-                        setPageSize(newPageSize);
-                        setPageIndex(0);
-                    },
-                    startContent: <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />,
-                    endContent: (
-                        <CsvDownloadButton
-                            className='btn btn-xs'
-                            label='Download CSV'
-                            getData={() => getDownloadData(filteredData, rowByLabel, jaccardIndices)}
-                            filename='amplicon_cooccurrence.csv'
-                        />
-                    ),
-                }}
-                meanProportions={meanProportions}
-                jaccardIndices={jaccardIndices}
-                sort={effectiveSort}
-                onSortChange={changeSort}
-            />
-        </div>
+        <OverTimeGrid
+            state={gridState}
+            rowLabelHeader='Amplicon'
+            data={pageData}
+            isLoading={false}
+            loadingRowLabels={[]}
+            requestedDateRanges={filteredData.getSecondAxisKeys()}
+            featureRenderer={renderer}
+            totalRows={sortedLabels.length}
+            csv={{
+                filename: 'amplicon_cooccurrence.csv',
+                getRows: () => getDownloadData(filteredData, rowByLabel, jaccardIndices),
+            }}
+            meanProportions={meanProportions}
+            jaccardIndices={jaccardIndices}
+            sort={sort}
+        />
     );
 }
 
@@ -191,7 +164,6 @@ function getDownloadData(
     rowByLabel: Map<string, CooccurrenceRow>,
     jaccardIndices: Partial<Record<string, number>> | undefined,
 ) {
-    const dates = data.getSecondAxisKeys().map((date) => toTemporalClass(date));
     return data.getFirstAxisKeys().map((label) => {
         const row = rowByLabel.get(label);
         return {
@@ -199,9 +171,7 @@ function getDownloadData(
             cluster: row?.cluster.map((mutation) => mutation.code).join(' ') ?? '',
             ampliconMutations: row?.mutations.map((mutation) => mutation.code).join(' ') ?? '',
             jaccardIndex: jaccardIndices?.[label] ?? '',
-            ...Object.fromEntries(
-                dates.map((date) => [date.dateString, getProportion(data.get(label, date) ?? null) ?? '']),
-            ),
+            ...proportionsByDate(data, label),
         };
     });
 }
