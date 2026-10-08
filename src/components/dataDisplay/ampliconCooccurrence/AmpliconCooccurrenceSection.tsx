@@ -7,6 +7,7 @@ import { mutationsByAmplicon } from '../../../amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../../amplicons/primerBed';
 import { useAmplicons } from '../../../amplicons/useAmplicons';
 import {
+    allRowsOf,
     cooccurrenceRows,
     useAmpliconCooccurrence,
     type CooccurrenceRow,
@@ -95,7 +96,7 @@ function Cooccurrences({
     );
 
     const rows = useMemo(
-        () => cooccurrence.data && cooccurrenceRows(cooccurrence.data, dateAxis.totalCountsByBucket),
+        () => cooccurrence.data && cooccurrenceRows(cooccurrence.data, dateAxis.totalCountsByBucket).flatMap(allRowsOf),
         [cooccurrence.data, dateAxis],
     );
     const { jaccardIndices, isLoading: isJaccardLoading } = useCooccurrenceJaccard(rows ?? NO_ROWS, jaccardSource);

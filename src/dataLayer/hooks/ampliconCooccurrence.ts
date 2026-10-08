@@ -157,58 +157,155 @@ export const MIN_CLUSTER_SHARE = 0.01;
 
 /**
  * One row of the co-occurrence table: a cluster, a combination of two or more of an amplicon's
- * mutations that reads carry together, and the reads that carry at least these mutations.
+ * mutations, and the reads that carry at least `atLeast` of these mutations.
  */
 export type CooccurrenceRow = AmpliconMutations & {
     /** The mutations of the cluster, a subset of the amplicon's `mutations`. */
     cluster: AmpliconMutation[];
+    /**
+     * How many of the cluster's mutations a read (or clinical sequence) has to carry to count: all
+     * of them, but in the rows of any all but one or two of an amplicon's mutations.
+     */
+    atLeast: number;
     /** Unique; the row's key in the table. */
     label: string;
-    /** Per date bucket (index-aligned with the date axis): the reads with at least the cluster's mutations. */
+    /** Per date bucket (index-aligned with the date axis): the reads with at least `atLeast` of the cluster's mutations. */
     values: ProportionValue[];
 };
 
 /**
- * The rows of the co-occurrence table (exported for tests).
- *
- * The clusters are the combinations of two or more of an amplicon's mutations that reads carry
- * exactly, on at least `MIN_CLUSTER_SHARE` of its spanning reads: the combinations that are there,
- * rather than every subset of the mutations. A row's values count the reads that carry at least the
- * cluster's mutations (those with more of the amplicon's mutations as well, too), out of the reads
- * spanning all of their positions. Per amplicon, the largest clusters come first.
+ * An amplicon's co-occurrence rows, as they belong together: the row of all of its mutations, which
+ * the others are compared to.
  */
-export function cooccurrenceRows(cooccurrences: AmpliconCooccurrence[], totalReads: number[]): CooccurrenceRow[] {
-    return cooccurrences.flatMap(({ amplicon, mutations, spanning, combinations }) => {
+export type AmpliconRows = {
+    /** All of the amplicon's mutations together: the variant's signature on the amplicon. */
+    all: CooccurrenceRow;
+    /** Any all but one, and any all but two, of the mutations, each with the clusters of that many of them. */
+    anyOf: { row: CooccurrenceRow; clusters: CooccurrenceRow[] }[];
+    /** The other combinations of two or more of the mutations that reads carry. */
+    observed: CooccurrenceRow[];
+    /** Each mutation on its own, in genome order. */
+    singles: CooccurrenceRow[];
+};
+
+/** All of an amplicon's rows, in the order of the tree. */
+export function allRowsOf({ all, anyOf, observed, singles }: AmpliconRows): CooccurrenceRow[] {
+    return [all, ...anyOf.flatMap(({ row, clusters }) => [row, ...clusters]), ...observed, ...singles];
+}
+
+/** Whether a row counts the reads with any `atLeast` of its cluster's mutations, rather than all of them. */
+export function isAnyOf(row: CooccurrenceRow): boolean {
+    return row.atLeast < row.cluster.length;
+}
+
+/**
+ * Up to this many mutations, an amplicon gets the rows leaving out two of them as well: one per
+ * pair of them, 66 for 12.
+ */
+export const MAX_MUTATIONS_TO_LEAVE_TWO_OUT = 12;
+
+/**
+ * The rows of the co-occurrence table, per amplicon (exported for tests).
+ *
+ * The cluster of all of the amplicon's mutations (whether reads carry it or not), and those leaving
+ * one or two of them out (`anyOfRows`). Then the other combinations of two or more of them that
+ * reads carry exactly, on at least `MIN_CLUSTER_SHARE` of its spanning reads: the combinations that
+ * are there, rather than every subset of the mutations, the largest first. And each mutation on its
+ * own: on the same reads as the others, to compare them to. A row's values count the reads that
+ * carry at least the cluster's mutations (those with more of the amplicon's mutations as well,
+ * too), out of the reads spanning all of their positions.
+ */
+export function cooccurrenceRows(cooccurrences: AmpliconCooccurrence[], totalReads: number[]): AmpliconRows[] {
+    return cooccurrences.map((cooccurrence) => {
+        const { mutations, spanning, combinations } = cooccurrence;
+        const anyOf = [anyOfRows(cooccurrence, 1, totalReads), anyOfRows(cooccurrence, 2, totalReads)].flatMap(
+            (rows) => (rows === undefined ? [] : [rows]),
+        );
+        // A combination seen on reads can be one of those leaving one or two out: it is there once, with them.
+        const leavingOut = new Set(anyOf.flatMap(({ clusters }) => clusters.map((row) => row.label)));
+
         const totalSpanning = spanning.reduce((sum, count) => sum + count, 0);
         const size = (combination: MutationCombination) => combination.carries.filter(Boolean).length;
-        const clusters = combinations
+        const observed = combinations
             .filter(
                 (combination) =>
                     size(combination) >= 2 &&
+                    size(combination) < mutations.length &&
                     combination.total > 0 &&
                     combination.total >= MIN_CLUSTER_SHARE * totalSpanning,
             )
-            .sort((a, b) => size(b) - size(a) || b.total - a.total);
-        return clusters.map(({ carries }) => {
-            const cluster = mutations.filter((_, index) => carries[index]);
-            const carrying = combinations.filter((other) =>
-                carries.every((carried, index) => !carried || other.carries[index]),
-            );
-            return {
-                amplicon,
-                mutations,
-                cluster,
-                label: `Amplicon ${amplicon.number}: ${cluster.map((mutation) => mutation.code).join(' + ')}`,
-                values: totalReads.map((total, bucket) =>
-                    proportionValue(
-                        carrying.reduce((sum, combination) => sum + combination.counts[bucket], 0),
-                        spanning[bucket],
-                        total,
-                    ),
-                ),
-            };
-        });
+            .sort((a, b) => size(b) - size(a) || b.total - a.total)
+            .map(({ carries }) => mutations.filter((_, index) => carries[index]))
+            .map((cluster) => clusterRow(cooccurrence, cluster, cluster.length, totalReads))
+            .filter((row) => !leavingOut.has(row.label));
+
+        return {
+            all: clusterRow(cooccurrence, mutations, mutations.length, totalReads),
+            anyOf,
+            observed,
+            singles: mutations.map((mutation) => clusterRow(cooccurrence, [mutation], 1, totalReads)),
+        };
     });
+}
+
+/**
+ * The rows that tell how much the mutations matter to an amplicon's cluster of all of them, leaving
+ * `out` of them out: any all but `out` of them (`≥3 of 4`), with each cluster of all but `out` of
+ * them, by the mutations left out, in genome order. None where that leaves less than two mutations
+ * (no co-occurrence), nor for leaving two out of more than `MAX_MUTATIONS_TO_LEAVE_TWO_OUT`.
+ */
+function anyOfRows(
+    cooccurrence: AmpliconCooccurrence,
+    out: 1 | 2,
+    totalReads: number[],
+): AmpliconRows['anyOf'][number] | undefined {
+    const { mutations } = cooccurrence;
+    const atLeast = mutations.length - out;
+    if (atLeast < 2 || (out === 2 && mutations.length > MAX_MUTATIONS_TO_LEAVE_TWO_OUT)) {
+        return undefined;
+    }
+    const leftOut =
+        out === 1
+            ? mutations.map((mutation) => [mutation])
+            : mutations.flatMap((first, index) => mutations.slice(index + 1).map((second) => [first, second]));
+    return {
+        row: clusterRow(cooccurrence, mutations, atLeast, totalReads),
+        clusters: leftOut.map((left) =>
+            clusterRow(
+                cooccurrence,
+                mutations.filter((mutation) => !left.includes(mutation)),
+                atLeast,
+                totalReads,
+            ),
+        ),
+    };
+}
+
+function clusterRow(
+    { amplicon, mutations, spanning, combinations }: AmpliconCooccurrence,
+    cluster: AmpliconMutation[],
+    atLeast: number,
+    totalReads: number[],
+): CooccurrenceRow {
+    const indices = cluster.map((mutation) => mutations.indexOf(mutation));
+    const carrying = combinations.filter(
+        (combination) => indices.filter((index) => combination.carries[index]).length >= atLeast,
+    );
+    const codes = cluster.map((mutation) => mutation.code);
+    return {
+        amplicon,
+        mutations,
+        cluster,
+        atLeast,
+        label: `Amplicon ${amplicon.number}: ${atLeast < cluster.length ? `≥${atLeast} of ${codes.join(', ')}` : codes.join(' + ')}`,
+        values: totalReads.map((total, bucket) =>
+            proportionValue(
+                carrying.reduce((sum, combination) => sum + combination.counts[bucket], 0),
+                spanning[bucket],
+                total,
+            ),
+        ),
+    };
 }
 
 /** The rows as the feature bands take them: by label, then by date bucket. */
