@@ -11,6 +11,7 @@ export function getCollections(
         excludeSystemCollections,
         tags,
     }: { organism?: string; userId?: number; excludeSystemCollections?: boolean; tags?: string | string[] } = {},
+    signal?: AbortSignal,
 ) {
     const requestParams: Record<string, string | string[]> = {};
     if (organism !== undefined) {
@@ -29,5 +30,6 @@ export function getCollections(
         url: '/collections',
         requestParams: Object.keys(requestParams).length > 0 ? requestParams : undefined,
         schema: z.array(collectionSummarySchema),
+        signal,
     });
 }
