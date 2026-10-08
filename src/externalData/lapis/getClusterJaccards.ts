@@ -13,6 +13,9 @@ export type ClusterJaccardSource = {
     dateFrom: string | undefined;
 };
 
+/** The sequences with at least `atLeast` of the mutations `codes`: all of them, `[3-of: …]` with fewer. */
+export type ClusterQuery = { codes: readonly string[]; atLeast: number };
+
 /** Before any sequence; the endpoint needs a date range with both ends. */
 const EARLIEST_DATE = '1900-01-01';
 
@@ -23,8 +26,8 @@ const queriesOverTimeResponseSchema = z.object({
 });
 
 /**
- * The Jaccard index of the lineage and each cluster (the sequences with all of its mutations), in
- * the order of `clusters`: like that of a single mutation (`getMutationsForVariant`), with the
+ * The Jaccard index of the lineage and each cluster (the sequences with all of its mutations, or
+ * at least `atLeast` of them), in the order of `clusters`: like that of a single mutation (`getMutationsForVariant`), with the
  * cluster in its place.
  *
  * All of them from one request to LAPIS's `queriesOverTime`, over one date range: per cluster, the
@@ -37,14 +40,14 @@ const queriesOverTimeResponseSchema = z.object({
  */
 export async function getClusterJaccards(
     source: ClusterJaccardSource,
-    clusters: readonly (readonly string[])[],
+    clusters: readonly ClusterQuery[],
     signal?: AbortSignal,
 ): Promise<number[]> {
     const { lapisBaseUrl, lineageQuery, dateField, dateFrom } = source;
     const queries = [
         { countQuery: lineageQuery, coverageQuery: lineageQuery },
-        ...clusters.map((codes) => {
-            const cluster = codes.join(' & ');
+        ...clusters.map(({ codes, atLeast }) => {
+            const cluster = atLeast < codes.length ? `[${atLeast}-of: ${codes.join(', ')}]` : codes.join(' & ');
             return { countQuery: `${lineageQuery} & ${cluster}`, coverageQuery: cluster };
         }),
     ];
