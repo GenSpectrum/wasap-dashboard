@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 
-import { type ReferenceGenome } from '../externalData/lapisApi/ReferenceGenome';
+import { type ReferenceGenome } from '../dataLayer/queries/referenceGenome';
 
 const UNINITIALIZED_SEQUENCE = '__uninitialized__';
 
 export const INITIAL_REFERENCE_GENOMES = {
-    nucleotideSequences: [{ name: UNINITIALIZED_SEQUENCE, sequence: '' }],
+    nucleotideSequences: [{ name: UNINITIALIZED_SEQUENCE, length: 0 }],
     genes: [],
 };
 

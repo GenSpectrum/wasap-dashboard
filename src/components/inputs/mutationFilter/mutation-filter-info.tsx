@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import { ExampleMutation } from './ExampleMutation';
-import { isSingleSegmented, type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
+import { isSingleSegmented, type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
 import Info, { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../../shared/info';
 

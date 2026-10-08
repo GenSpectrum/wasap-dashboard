@@ -1,7 +1,6 @@
 import { type z } from 'zod';
 
 import { lineageDefinitionResponseSchema } from './LineageDefinition';
-import { referenceGenomeResponse } from './ReferenceGenome';
 import { aggregatedResponse, type LapisBaseRequest, lapisError, problemDetail, type ProblemDetail } from './lapisTypes';
 
 export class UnknownLapisError extends Error {
@@ -65,22 +64,6 @@ export async function lapisPost<T>(
         );
     }
     return parsed.data;
-}
-
-export async function fetchReferenceGenome(lapisUrl: string, signal?: AbortSignal) {
-    const response = await callLapis(
-        referenceGenomeEndpoint(lapisUrl),
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            signal,
-        },
-        'the reference genomes',
-    );
-
-    return referenceGenomeResponse.parse(await response.json());
 }
 
 export async function fetchLineageDefinition({
@@ -178,6 +161,5 @@ function withDetail(statusText: string, detail: string | undefined) {
     return detail === undefined ? statusText : `${statusText}: ${detail}`;
 }
 
-const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;
 const lineageDefinitionEndpoint = (lapisUrl: string, lapisField: string) =>
     `${lapisUrl}/sample/lineageDefinition/${lapisField}`;

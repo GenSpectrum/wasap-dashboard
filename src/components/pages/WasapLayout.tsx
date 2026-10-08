@@ -4,6 +4,7 @@ import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 import { siloSchema } from '../../config/siloSchema';
 import type { WasapPageConfig } from '../../config/wasapPageConfig';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
+import { useReferenceGenome } from '../../dataLayer/hooks/referenceGenome';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
@@ -66,6 +67,7 @@ function WasapLayoutConnected({ config, resistanceData, lineageTree }: WasapLayo
 
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(dataset.samplingDate);
+    const referenceGenome = useReferenceGenome();
 
     const context: WasapLayoutContext = {
         config,
@@ -79,7 +81,8 @@ function WasapLayoutConnected({ config, resistanceData, lineageTree }: WasapLayo
 
     return (
         <GsApp
-            lapis={config.lapisBaseUrl}
+            referenceGenome={referenceGenome.data}
+            referenceGenomeError={referenceGenome.error}
             mutationAnnotations={resistanceData.mutationAnnotations}
             mutationLinkTemplate={config.linkTemplate}
         >

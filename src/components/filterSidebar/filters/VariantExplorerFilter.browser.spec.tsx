@@ -5,11 +5,17 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { VariantExplorerFilter } from './VariantExplorerFilter';
-import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../routeMocker';
+import { type LapisRouteMocker } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
+import type { ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import { buildLineageTree } from '../../../lineageTree/lineageTree';
 import type { WasapVariantFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { GsApp } from '../../GsApp';
+
+const REFERENCE_GENOME: ReferenceGenome = {
+    nucleotideSequences: [{ name: 'main', length: 20000 }],
+    genes: [{ name: 'S', length: 20000 }],
+};
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
 
@@ -53,7 +59,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = renderWithQueryClient(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
@@ -78,7 +84,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = renderWithQueryClient(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
@@ -110,7 +116,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = renderWithQueryClient(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
@@ -135,7 +141,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         renderWithQueryClient(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <VariantExplorerFilter
                     pageState={defaultPageState}
                     setPageState={mockSetPageState}
@@ -160,7 +166,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = renderWithQueryClient(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <VariantExplorerFilter
                     pageState={predefinedPageState}
                     setPageState={mockSetPageState}
@@ -191,7 +197,7 @@ describe('VariantExplorerFilter', () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = renderWithQueryClient(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <VariantExplorerFilter
                     pageState={predefinedPageState}
                     setPageState={mockSetPageState}
@@ -213,23 +219,10 @@ describe('VariantExplorerFilter', () => {
 });
 
 function setupLapisMocks(lapisRouteMocker: LapisRouteMocker) {
-    const sequence = 'ATGC'.repeat(5000); // 20,000 base pairs
-    lapisRouteMocker.mockReferenceGenome({
-        nucleotideSequences: [{ name: 'main', sequence }],
-        genes: [{ name: 'S', sequence }],
-    });
-
     lapisRouteMocker.mockLineageDefinition('pangoLineage', {
         'JN.1': { parents: ['BA.2'], aliases: [] },
         'KP.2': { parents: ['JN.1'], aliases: [] },
         'BA.2': { parents: ['B.1.1.529'], aliases: [] },
-    });
-
-    // Mocks for the internal gs-app that uses the other LAPIS URL
-
-    lapisRouteMocker.mockReferenceGenomeWithUrl(DUMMY_LAPIS_URL_2, {
-        nucleotideSequences: [{ name: 'main', sequence }],
-        genes: [{ name: 'S', sequence }],
     });
 
     lapisRouteMocker.mockLineageDefinitionWithUrl(DUMMY_LAPIS_URL_2, 'pangoLineage', {

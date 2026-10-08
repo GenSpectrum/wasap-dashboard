@@ -1,18 +1,15 @@
 import { type FC, type PropsWithChildren } from 'react';
-import z from 'zod';
 
 import { type MutationAnnotations, MutationAnnotationsContextProvider } from './MutationAnnotationsContext';
 import { type MutationLinkTemplate, MutationLinkTemplateContextProvider } from './MutationLinkTemplateContext';
 import { INITIAL_REFERENCE_GENOMES, ReferenceGenomeContext } from './ReferenceGenomeContext';
-import { type ReferenceGenome } from '../externalData/lapisApi/ReferenceGenome';
-import { fetchReferenceGenome } from '../externalData/lapisApi/lapisApi';
-import { useQuery } from '../externalData/useQuery';
-
-const lapisUrlSchema = z.string().url();
+import { type ReferenceGenome } from '../dataLayer/queries/referenceGenome';
 
 export type GsAppProps = {
-    /** Required. The URL of the LAPIS instance that all children of this component will use. */
-    lapis: string;
+    /** The reference genome of the instance; undefined while it loads. */
+    referenceGenome: ReferenceGenome | undefined;
+    /** Why the reference genome could not be loaded, if it could not. */
+    referenceGenomeError?: Error | null;
     /**
      * Supply lists of mutations that are especially relevant for the current organism. Visit
      * https://genspectrum.github.io/dashboard-components/?path=/docs/concepts-mutation-annotations--docs
@@ -24,8 +21,8 @@ export type GsAppProps = {
 };
 
 /**
- * The React port's equivalent of the old `<gs-app>` Lit component: fetches the reference genome
- * from LAPIS and provides it and the mutation annotation/link-template config to all descendants
+ * The React port's equivalent of the old `<gs-app>` Lit component: provides the reference genome
+ * and the mutation annotation/link-template config to all descendants
  * via context. Every gs-* component must be a (possibly nested) descendant of
  * this component.
  *
@@ -38,30 +35,20 @@ export type GsAppProps = {
  * Unlike the Lit version (which rendered its light-DOM children unconditionally and only ever
  * added an error banner alongside them, since Lit's `createRenderRoot` returning `this` couldn't
  * withhold already-present light-DOM content), this component's `children` are ordinary React
- * children — same effect, always rendered regardless of the reference-genome fetch's state.
+ * children — same effect, always rendered whether or not the reference genome has loaded.
  */
 export const GsApp: FC<PropsWithChildren<GsAppProps>> = ({
-    lapis,
+    referenceGenome,
+    referenceGenomeError = null,
     mutationAnnotations = [],
     mutationLinkTemplate = {},
     children,
 }) => {
-    // TODO (see TODO.md): drop this LAPIS fetch. We only ever need each segment's/gene's
-    // name and length, never the base-pair content, so require the user to put those in
-    // config.json instead of fetching the full reference genome here.
-    const result = useQuery<ReferenceGenome>(async () => {
-        const lapisUrl = lapisUrlSchema.parse(lapis);
-        return fetchReferenceGenome(lapisUrl.endsWith('/') ? lapisUrl.slice(0, -1) : lapisUrl);
-    }, [lapis]);
-
-    const referenceGenome = !result.isLoading && result.error === null ? result.data : INITIAL_REFERENCE_GENOMES;
-    const fetchError = !result.isLoading ? result.error : null;
-
     return (
-        <ReferenceGenomeContext.Provider value={referenceGenome}>
+        <ReferenceGenomeContext.Provider value={referenceGenome ?? INITIAL_REFERENCE_GENOMES}>
             <MutationAnnotationsContextProvider value={mutationAnnotations}>
                 <MutationLinkTemplateContextProvider value={mutationLinkTemplate}>
-                    {fetchError !== null && <GsAppError error={fetchError} lapis={lapis} />}
+                    {referenceGenomeError !== null && <GsAppError error={referenceGenomeError} />}
                     {children}
                 </MutationLinkTemplateContextProvider>
             </MutationAnnotationsContextProvider>
@@ -69,15 +56,10 @@ export const GsApp: FC<PropsWithChildren<GsAppProps>> = ({
     );
 };
 
-function GsAppError({ error, lapis }: { error: Error; lapis: string }) {
-    const message =
-        error instanceof z.ZodError
-            ? `Invalid LAPIS URL: '${lapis}'`
-            : 'Cannot fetch reference genome. Is LAPIS available?';
-
+function GsAppError({ error }: { error: Error }) {
     return (
         <div style={{ padding: '0.5rem', border: 'solid red', backgroundColor: 'lightcoral', borderRadius: '0.5rem' }}>
-            Error in GsApp: {message}
+            Error in GsApp: Cannot fetch the reference genome. {error.message}
         </div>
     );
 }
