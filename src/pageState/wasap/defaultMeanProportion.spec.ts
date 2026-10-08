@@ -14,6 +14,12 @@ describe('getDefaultMeanProportion', () => {
         expect(getDefaultMeanProportion(analysis)).toEqual({ lower: 0.05, upper: 0.95 });
     });
 
+    test('manual mode with an emptied mutation list is the same as without mutations', () => {
+        const analysis: WasapAnalysisFilter = { mode: 'manual', sequenceType: 'nucleotide', mutations: [] };
+
+        expect(getDefaultMeanProportion(analysis)).toEqual({ lower: 0.05, upper: 0.95 });
+    });
+
     test('other analysis states default to the full mean proportion range', () => {
         const analysis: WasapAnalysisFilter = {
             mode: 'variant',
