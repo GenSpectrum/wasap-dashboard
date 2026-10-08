@@ -15,14 +15,12 @@ import { Expr, field, int, num, PRECEDENCE, record, renderArgs, set, type Args }
 export type Queryable = { render(): string };
 
 /**
- * Grouping columns.
+ * Grouping columns, by name: `{sampleId, batchId}`.
  *
- * Names where the columns already exist — `{sampleId, batchId}` — and
- * assignments where they are computed. The instance takes one form or the
- * other and not a mixture, so a list holding one assignment must be all
- * assignments, and an existing column then travels as `sampleId := sampleId`.
+ * The instance takes only names here, so a computed column is `map()`-ed first
+ * and then grouped by its name.
  */
-export type GroupColumns = readonly (Expr | string)[] | Readonly<Record<string, Expr>>;
+export type GroupColumns = readonly string[];
 
 export type MutationOptions = {
     minProportion?: number;
@@ -98,7 +96,7 @@ function relation(text: string): Relation {
 const NO_COLUMNS = new Expr(PRECEDENCE.atomic, '{}');
 
 function groupColumns(columns: GroupColumns): Expr {
-    return Array.isArray(columns) ? set(columns.map(asExpr)) : record(columns as Readonly<Record<string, Expr>>);
+    return set(columns.map((name) => field(name)));
 }
 
 function asExpr(column: Expr | string): Expr {

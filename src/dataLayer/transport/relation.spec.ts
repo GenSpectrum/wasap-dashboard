@@ -22,16 +22,11 @@ describe('the pipeline', () => {
         expect(table('data').filter(and(undefined)).render()).toBe('data');
     });
 
-    test('grouping by names and by assignments', () => {
+    test('grouping by names', () => {
         expect(table('data').group({ n: count() }).render()).toBe('data.group(by := {}, aggs := {n := count()})');
         expect(table('data').group({ reads: count() }, ['sampleId', 'batchId']).render()).toBe(
             'data.group(by := {sampleId, batchId}, aggs := {reads := count()})',
         );
-        expect(
-            table('data')
-                .group({ n: count() }, { p1: main.at(1722), sampleId: field('sampleId') })
-                .render(),
-        ).toBe('data.group(by := {p1 := main.at(1722), sampleId := sampleId}, aggs := {n := count()})');
     });
 
     test('ordering and paging', () => {
@@ -97,14 +92,16 @@ describe('the pipeline', () => {
                     nucleotideEquals({ position: 23403, symbol: 'G', sequenceName: 'main' }),
                 ),
             )
-            .group({ n: count() }, { p1: main.at(23403), p2: main.at(23404) })
+            .map({ p1: main.at(23403), p2: main.at(23404) })
+            .group({ n: count() }, ['p1', 'p2'])
             .order(field('n').desc())
             .offset(60)
             .limit(60);
         expect(query.render()).toBe(
             "data.filter(sampleId = 'S1' && nucleotideEquals(position := 23403, symbol := 'G', " +
                 "sequenceName := 'main'))" +
-                '.group(by := {p1 := main.at(23403), p2 := main.at(23404)}, aggs := {n := count()})' +
+                '.map({p1 := main.at(23403), p2 := main.at(23404)})' +
+                '.group(by := {p1, p2}, aggs := {n := count()})' +
                 '.order(by := {n.desc()}).offset(60).limit(60)',
         );
     });
