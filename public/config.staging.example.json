@@ -82,7 +82,8 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "lineage": "XFG"
+                    "lineage": "XFG",
+                    "backgroundLineages": ["B.1.1.529"]
                 },
                 "resistance": {
                     "mode": "resistance",

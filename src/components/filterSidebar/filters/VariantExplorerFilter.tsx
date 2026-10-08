@@ -135,7 +135,55 @@ export function VariantExplorerFilter({
                     </LabeledField>
                 </Inset>
             )}
+            {lineageTree !== undefined && (
+                <Inset className='p-2'>
+                    <SelectorHeadline info={<ExcludeMutationsInfo />}>Exclude mutations</SelectorHeadline>
+                    <CheckboxWithTooltip
+                        className='pb-2'
+                        checked={pageState.excludeNearlyFixed !== false}
+                        onChange={(checked) => setPageState({ ...pageState, excludeNearlyFixed: checked })}
+                        tooltip='Mutations with a mean proportion of 99% or more over the time range'
+                        label='Exclude mutations on ≥99% of reads'
+                    />
+                    <CheckboxWithTooltip
+                        className='pb-2'
+                        checked={pageState.excludeDeletions !== false}
+                        onChange={(checked) => setPageState({ ...pageState, excludeDeletions: checked })}
+                        tooltip='Deletions are called less reliably on the reads (alignment, read ends)'
+                        label='Exclude deletions'
+                    />
+                    <LabeledField label='Background lineages'>
+                        <LineageTreeCombobox
+                            lineageTree={lineageTree}
+                            multiSelect={true}
+                            value={pageState.backgroundLineages ?? []}
+                            onChange={(backgroundLineages) => setPageState({ ...pageState, backgroundLineages })}
+                            placeholderText='Add a lineage'
+                        />
+                    </LabeledField>
+                </Inset>
+            )}
         </>
+    );
+}
+
+function ExcludeMutationsInfo() {
+    return (
+        <div className='w-96 space-y-2 text-sm font-normal text-gray-700'>
+            <p>
+                Mutations left out of the variant&apos;s as the background it stands on, rather than what tells it
+                apart. They are listed at the bottom of the page.
+            </p>
+            <p>
+                Those on 99% or more of the reads (their mean proportion over the time range) tell nothing about how
+                much of the variant there is. Those in the signature of a background lineage (all of its mutations
+                against the reference, from the Nextclade tree) are shared with it.
+            </p>
+            <p>
+                Deletions are hard to call on the reads: they can be aligned differently than in the clinical sequences,
+                and a read ending in one looks like it.
+            </p>
+        </div>
     );
 }
 

@@ -38,11 +38,14 @@ export function useVariantSignature(
     analysis: WasapVariantFilter,
     lineageTree: LineageTree | undefined,
 ) {
+    // The background lineages are taken out of the signature afterwards
+    // (`useSignatureWithoutBackground`): changing them asks for nothing new.
+    const { backgroundLineages: _, ...signatureAnalysis } = analysis;
     // `config.genSpectrumOrganismName` stands in for `config` and `lineageTree` — they're
     // 1:1 with it (one static config and one lineage tree per organism).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
-        queryKey: ['variantSignature', config.genSpectrumOrganismName, analysis],
+        queryKey: ['variantSignature', config.genSpectrumOrganismName, signatureAnalysis],
         queryFn: ({ signal }) =>
             fetchVariantSignature(config, analysis, lineageTree, signal).catch((error: unknown) => {
                 if (!signal.aborted) {

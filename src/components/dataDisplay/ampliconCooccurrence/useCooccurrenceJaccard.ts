@@ -5,15 +5,18 @@ import { type CooccurrenceRow } from '../../../dataLayer/hooks/ampliconCooccurre
 import { getClusterJaccards, type ClusterJaccardSource } from '../../../externalData/lapis/getClusterJaccards';
 
 /**
- * The Jaccard index of the lineage and each row's cluster (the sequences with all of its
- * mutations) in the clinical sequences, by row label; `undefined` without a `source`. All of them
+ * The Jaccard index of the lineage and each row's cluster (the sequences with at least `atLeast` of
+ * its mutations) in the clinical sequences, by row label; `undefined` without a `source`. All of them
  * from one request (`getClusterJaccards`), `isLoading` until it is answered.
  */
 export function useCooccurrenceJaccard(
     rows: CooccurrenceRow[],
     source: ClusterJaccardSource | undefined,
 ): { jaccardIndices: Partial<Record<string, number>> | undefined; isLoading: boolean } {
-    const clusters = useMemo(() => rows.map((row) => row.cluster.map((mutation) => mutation.code)), [rows]);
+    const clusters = useMemo(
+        () => rows.map((row) => ({ codes: row.cluster.map((mutation) => mutation.code), atLeast: row.atLeast })),
+        [rows],
+    );
 
     const { data, isPending } = useQuery({
         enabled: source !== undefined && clusters.length > 0,
