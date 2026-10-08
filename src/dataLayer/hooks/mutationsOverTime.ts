@@ -8,7 +8,7 @@
  *
  * `useMutationsOverTimePage` — the cells for the *visible page*: one
  * position-over-time query per distinct position of that page's mutations —
- * `groupBy(count(), {date, seq.at(pos)})`, location-scoped, the whole date
+ * `group(by := {date, seq.at(pos)}, aggs := {count()})`, location-scoped, the whole date
  * range. Cached per position (`staleTime: Infinity`), so paging, filter changes
  * and revisits reuse whatever positions are already in hand. The count/coverage
  * matrix is a pure function of those rows (`buildMatrix`).

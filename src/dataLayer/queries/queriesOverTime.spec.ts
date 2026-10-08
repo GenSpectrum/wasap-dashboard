@@ -5,7 +5,7 @@ import type { SiloSchema } from './schema';
 import type { SiloFilterExpression } from './siloFilterExpression';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -109,9 +109,9 @@ describe('countOverTimeQuery / coverageOverTimeQuery', () => {
 
     test('count: the query, scoped, grouped by the dictionary date column', () => {
         expect(countOverTimeQuery(schema, { locationName: 'Zürich (ZH)' }, node).render()).toBe(
-            "default.filter(locationName = 'Zürich (ZH)' && " +
+            "data.filter(locationName = 'Zürich (ZH)' && " +
                 "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
-                '.groupBy({n := count()}, {date})',
+                '.group(by := {date}, aggs := {n := count()})',
         );
     });
 
@@ -123,16 +123,16 @@ describe('countOverTimeQuery / coverageOverTimeQuery', () => {
                 node,
             ).render(),
         ).toBe(
-            "default.filter(date >= '2026-06-01' && date <= '2026-06-30' && " +
+            "data.filter(date >= '2026-06-01' && date <= '2026-06-30' && " +
                 "(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main') || " +
                 "!maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))))" +
-                '.groupBy({n := count()}, {date})',
+                '.group(by := {date}, aggs := {n := count()})',
         );
     });
 
     test('no filter: the query stands alone', () => {
         expect(countOverTimeQuery(schema, {}, { type: 'True' }).render()).toBe(
-            'default.filter(true).groupBy({n := count()}, {date})',
+            'data.filter(true).group(by := {date}, aggs := {n := count()})',
         );
     });
 });

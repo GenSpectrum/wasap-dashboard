@@ -13,7 +13,7 @@
  * So each query is two date-grouped counts; the totals per bucket come from the
  * shared date axis (`samplingDatesQuery`). No over-time primitive is involved —
  * unlike `mutations-over-time` there is no fan-out, just `queries.length × 2`
- * plain `groupBy(count(), {date})` calls, assembled into the matrix in
+ * plain `group(by := {date}, aggs := {count()})` calls, assembled into the matrix in
  * `dataLayer/hooks/queriesOverTime.ts`.
  *
  * `translateGenomeFilter` is the whole LAPIS→SILO bridge for this feature: the
@@ -108,7 +108,7 @@ export function translateGenomeFilter(schema: SiloSchema, node: SiloFilterExpres
 }
 
 function groupByDate(relation: Relation, schema: SiloSchema): Relation {
-    return relation.groupBy({ [READS]: count() }, [schema.groupingDate]);
+    return relation.group({ [READS]: count() }, [schema.groupingDate]);
 }
 
 /** Reads matching the query, per date bucket: `{ <date>, n }` rows. */

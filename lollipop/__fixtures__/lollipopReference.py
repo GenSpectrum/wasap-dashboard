@@ -52,8 +52,8 @@ def signature(lineage):
 
 def symbols_by_sample(position):
     query = (
-        f"default.filter(locationName = '{LOCATION}' && date >= '{DATE_FROM}' && date <= '{DATE_TO}')"
-        f".map({{sym := main.at({position})}}).groupBy({{count := count()}}, {{sampleId, date, sym}})"
+        f"data.filter(locationName = '{LOCATION}' && date >= '{DATE_FROM}' && date <= '{DATE_TO}')"
+        f".map({{sym := main.at({position})}}).group(by := {{sampleId, date, sym}}, aggs := {{count := count()}})"
     )
     request = urllib.request.Request(SILO_URL, data=query.encode(), headers={"Content-Type": "text/plain"})
     with urllib.request.urlopen(request) as response:

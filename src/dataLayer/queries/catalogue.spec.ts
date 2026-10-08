@@ -10,7 +10,7 @@ import {
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -21,38 +21,38 @@ const schema: SiloSchema = {
 };
 
 describe('the Tier-1 read catalogue', () => {
-    test('totalReadCountQuery groups by location, not a bare count, to dodge a SILO perf bug', () => {
-        expect(totalReadCountQuery(schema).render()).toBe('default.groupBy({n := count()}, {locationName})');
+    test('totalReadCountQuery is a bare count', () => {
+        expect(totalReadCountQuery(schema).render()).toBe('data.group(by := {}, aggs := {n := count()})');
         expect(totalReadCountQuery(schema, { locationName: 'Basel (BS)' }).render()).toBe(
-            "default.filter(locationName = 'Basel (BS)').groupBy({n := count()}, {locationName})",
+            "data.filter(locationName = 'Basel (BS)').group(by := {}, aggs := {n := count()})",
         );
     });
 
     test('stringFieldValuesQuery groups the whole table by the given column', () => {
         expect(stringFieldValuesQuery(schema, 'locationName').render()).toBe(
-            'default.groupBy({n := count()}, {locationName})',
+            'data.group(by := {locationName}, aggs := {n := count()})',
         );
     });
 
     test('samplingDatesQuery groups by the grouping-date column, oldest first', () => {
         expect(samplingDatesQuery(schema).render()).toBe(
-            'default.groupBy({n := count()}, {date}).orderBy({date.asc()})',
+            'data.group(by := {date}, aggs := {n := count()}).order(by := {date.asc()})',
         );
     });
 
     test('samplingDatesQuery filters and groups on the dictionary date column', () => {
         expect(samplingDatesQuery(schema, { samplingDateFrom: '2024-01-01' }).render()).toBe(
-            "default.filter(date >= '2024-01-01').groupBy({n := count()}, {date}).orderBy({date.asc()})",
+            "data.filter(date >= '2024-01-01').group(by := {date}, aggs := {n := count()}).order(by := {date.asc()})",
         );
     });
 
     test('sampleOverviewQuery groups the whole table by location, date, sample and batch, unfiltered', () => {
         expect(sampleOverviewQuery(schema).render()).toBe(
-            'default.groupBy({n := count()}, {locationName, date, sampleId, batchId})',
+            'data.group(by := {locationName, date, sampleId, batchId}, aggs := {n := count()})',
         );
     });
 
     test('batchCountQuery groups the whole table by batch, unfiltered', () => {
-        expect(batchCountQuery(schema).render()).toBe('default.groupBy({n := count()}, {batchId})');
+        expect(batchCountQuery(schema).render()).toBe('data.group(by := {batchId}, aggs := {n := count()})');
     });
 });

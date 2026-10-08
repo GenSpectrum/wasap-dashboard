@@ -7,7 +7,7 @@
  * context (`dataLayer/hooks/connection.tsx`).
  */
 export type SiloSchema = {
-    /** Root table. `default` for every current W-ASAP instance. */
+    /** Root table. `data` for every current W-ASAP instance. */
     table: string;
     /** Dictionary / indexed-string column holding the human-readable sampling location. */
     locationName: string;
@@ -25,7 +25,7 @@ export type SiloSchema = {
      *
      * Grouping a mapped `at()` column alongside it is sub-second on both —
      * verified live on rsv-a's ~17 M reads — as long as the query uses the
-     * `.map(sym := …).groupBy(count(), {groupingDate, sym})` shape
+     * `.map(sym := …).group(count(), {groupingDate, sym})` shape
      * (`positionOverTimeQuery`). An earlier, unverified assumption that this
      * *always* times out on a `DATE32` column turned out to be a different bug
      * (a `groupBy` column-list syntax rejected outright by the older SILO

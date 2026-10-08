@@ -8,7 +8,7 @@ import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { SiloSchema } from '../../../dataLayer/queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',

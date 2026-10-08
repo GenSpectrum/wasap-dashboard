@@ -10,7 +10,7 @@ import type { SiloSchema } from '../dataLayer/queries/schema';
 import type { WasapDatasetFilter } from '../pageState/wasap/wasapAnalysisFilter';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
