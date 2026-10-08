@@ -81,6 +81,7 @@ export function useOverTimeMetadata(
     sequenceType: OverTimeSequenceType,
     sequenceNames: readonly string[] | undefined,
     displayMutations: string[] | undefined,
+    enabled = true,
 ): UseQueryResult<OverTimeMetadata> {
     const connection = useConnection();
     const schema = useSiloSchema();
@@ -114,6 +115,7 @@ export function useOverTimeMetadata(
             sequenceType,
             sequenceNamesKey,
         ],
+        enabled,
         select: selectDisplayMutations,
         queryFn: async ({ signal }): Promise<OverTimeMetadata> => {
             // Date axis first: the "too many buckets" guard has to fire before the
