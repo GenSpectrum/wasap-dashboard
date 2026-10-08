@@ -87,26 +87,37 @@ async function callLapis(
     init: Parameters<typeof fetch>[1],
     requestedDataName: string,
 ) {
+    let response: Response;
     try {
-        const response = await fetch(input, init);
-
-        await handleErrors(response, requestedDataName);
-        return response;
+        response = await fetch(input, init);
     } catch (error) {
+        // An abort isn't a failure: TanStack Query expects the abort error itself.
+        if (init?.signal?.aborted === true) {
+            throw error;
+        }
         const message = error instanceof Error ? error.message : `${error}`;
         throw new UnknownLapisError(`Failed to connect to LAPIS: ${message}`, 500, requestedDataName);
     }
+    // Outside the `try`, so that the errors it throws aren't turned into "Failed to connect".
+    await handleErrors(response, requestedDataName);
+    return response;
 }
 
 const handleErrors = async (response: Response, requestedData: string) => {
     if (!response.ok) {
         if (response.status >= 400 && response.status < 500) {
-            const json = (await response.json()) as unknown;
+            const text = await response.text();
+            let json: unknown;
+            try {
+                json = JSON.parse(text);
+            } catch {
+                throw new UnknownLapisError(`${response.statusText}: ${text}`, response.status, requestedData);
+            }
 
             const lapisErrorResult = lapisError.safeParse(json);
             if (lapisErrorResult.success) {
                 throw new LapisError(
-                    response.statusText + (lapisErrorResult.data.error.detail ?? ''),
+                    withDetail(response.statusText, lapisErrorResult.data.error.detail),
                     response.status,
                     lapisErrorResult.data.error,
                     requestedData,
@@ -116,7 +127,7 @@ const handleErrors = async (response: Response, requestedData: string) => {
             const problemDetailResult = problemDetail.safeParse(json);
             if (problemDetailResult.success) {
                 throw new LapisError(
-                    response.statusText + (problemDetailResult.data.detail ?? ''),
+                    withDetail(response.statusText, problemDetailResult.data.detail),
                     response.status,
                     problemDetailResult.data,
                     requestedData,
@@ -132,6 +143,10 @@ const handleErrors = async (response: Response, requestedData: string) => {
         throw new UnknownLapisError(`${response.statusText}: ${response.status}`, response.status, requestedData);
     }
 };
+
+function withDetail(statusText: string, detail: string | undefined) {
+    return detail === undefined ? statusText : `${statusText}: ${detail}`;
+}
 
 const aggregatedEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/aggregated`;
 const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;

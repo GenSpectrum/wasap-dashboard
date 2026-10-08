@@ -3,6 +3,7 @@ import { type FC } from 'react';
 import { InfoHeadline1, InfoParagraph } from './info';
 import { Modal } from './modal';
 import { RhydbError } from '../../dataLayer/transport/query';
+import { BackendError, BackendNotAvailable, UnknownBackendError } from '../../externalData/genSpectrum/apiService';
 import { LapisError, UnknownLapisError } from '../../externalData/lapisApi/lapisApi';
 
 export class UserFacingError extends Error {
@@ -63,7 +64,7 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, resetError, layout 
     );
 };
 
-function getDisplayedErrorMessage(error: Error) {
+export function getDisplayedErrorMessage(error: Error) {
     if (error instanceof UserFacingError) {
         return {
             headline: `Error - ${error.headline}`,
@@ -104,5 +105,35 @@ function getDisplayedErrorMessage(error: Error) {
         };
     }
 
-    return { headline: 'Error', details: undefined };
+    if (error instanceof BackendError) {
+        return {
+            headline: 'Error - Failed fetching data from the GenSpectrum backend',
+            details: {
+                headline: `Backend request failed: ${error.requestedData} - ${error.status} ${error.problemDetail.title ?? ''}`,
+                message: error.problemDetail.detail ?? error.message,
+            },
+        };
+    }
+
+    if (error instanceof UnknownBackendError) {
+        return {
+            headline: 'Error - Failed fetching data from the GenSpectrum backend',
+            details: {
+                headline: `Backend request failed: ${error.requestedData} - ${error.status}`,
+                message: error.message,
+            },
+        };
+    }
+
+    if (error instanceof BackendNotAvailable) {
+        return {
+            headline: 'Error - The GenSpectrum backend is not available',
+            details: { headline: 'Backend not available', message: error.message },
+        };
+    }
+
+    return {
+        headline: 'Error',
+        details: error.message === '' ? undefined : { headline: error.name, message: error.message },
+    };
 }

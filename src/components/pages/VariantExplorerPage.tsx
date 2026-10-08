@@ -26,7 +26,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     const { lineageTree } = useWasapLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
-    const { data, isPending, isError } = useVariantSignature(config, analysis, lineageTree);
+    const { data, isPending, error } = useVariantSignature(config, analysis, lineageTree);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
@@ -67,7 +67,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                     Please select a variant from the filter panel.
                 </NothingSelected>
             ) : (
-                <WasapResults data={data} isError={isError} isPending={isPending || isFilterPending}>
+                <WasapResults data={data} error={error} isPending={isPending || isFilterPending}>
                     {({ displayMutations, candidateMutations, jaccardIndices, lineageForJaccard }) => {
                         const jaccardLineage =
                             analysis.signatureType === 'computed' ? analysis.variant : lineageForJaccard;
