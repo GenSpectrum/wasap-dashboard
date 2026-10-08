@@ -2,9 +2,12 @@ import { type WasapBaseFilter, type WasapDatasetFilter, type WasapMeanProportion
 import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
-import { type TemporalGranularity } from '../../types/dashboardComponents';
+import { temporalGranularitySchema } from '../../types/dashboardComponents';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
+import { enumParam } from '../urlParams';
 import { getStringFromSearch, setSearchFromDateRange, setSearchFromString } from '../urlSearchParams';
+
+const granularityParam = enumParam(temporalGranularitySchema);
 
 /**
  * Parsing and serializing of the settings that every analysis mode page has in
@@ -43,7 +46,7 @@ export function parseDatasetFilter(
     return {
         locationName: getStringFromSearch(search, config.locationNameField) ?? config.defaultLocationName,
         samplingDate: samplingDate ?? defaultSamplingDate,
-        granularity: (getStringFromSearch(search, 'granularity') as TemporalGranularity | undefined) ?? 'day',
+        granularity: granularityParam.parse(search.get('granularity') ?? '')?.value ?? 'day',
     };
 }
 

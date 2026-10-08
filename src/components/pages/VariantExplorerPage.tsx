@@ -6,7 +6,11 @@ import { ampliconNumbersByMutation } from '../../amplicons/mutationsByAmplicon';
 import { useAmplicons } from '../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { useSignatureWithoutBackground, type BackgroundLineage } from '../../dataLayer/hooks/backgroundMutations';
-import { getFromDateForTimeFrame, useVariantSignature } from '../../externalData/lapis/useVariantSignature';
+import {
+    getFromDateForTimeFrame,
+    isVariantSelected,
+    useVariantSignature,
+} from '../../externalData/lapis/useVariantSignature';
 import { getLineageSignature } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
@@ -92,7 +96,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                 </FilterSidebar>
             }
         >
-            {analysis.signatureType === 'predefined' && analysis.lineage === undefined ? (
+            {!isVariantSelected(analysis) ? (
                 <NothingSelected title='No variant selected'>
                     Please select a variant from the filter panel.
                 </NothingSelected>

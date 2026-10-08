@@ -6,7 +6,8 @@ import type { WasapAnalysisFilter, WasapMeanProportion } from './wasapAnalysisFi
  * are either (nearly) always or (nearly) never present, which isn't interesting.
  */
 export function getDefaultMeanProportion(analysis: WasapAnalysisFilter): WasapMeanProportion {
-    if (analysis.mode === 'manual' && analysis.mutations === undefined) {
+    // Without mutations, the manual mode shows all of them; an emptied list is the same as none.
+    if (analysis.mode === 'manual' && (analysis.mutations ?? []).length === 0) {
         return { lower: 0.05, upper: 0.95 };
     }
     return { lower: 0.0, upper: 1.0 };

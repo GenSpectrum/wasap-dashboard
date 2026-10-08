@@ -1,6 +1,7 @@
 import { type WasapPageConfig } from '../../../config/wasapPageConfig';
 import { formatUrl } from '../../../util/formatUrl';
 import { type PageStateHandler } from '../../PageStateHandler';
+import { parseUrlParams, type UrlParams, writeUrlParams } from '../../urlParams';
 import {
     parseBaseFilter,
     parseDatasetFilter,
@@ -13,8 +14,8 @@ import { modePath } from '../wasapModes';
 
 /**
  * The page state handler of one analysis mode page. The settings all modes have
- * in common (see `baseFilter.ts`) are handled here, a subclass only has to say
- * how the settings of its own mode are read from and written to the URL.
+ * in common (see `baseFilter.ts`) are handled here, a subclass only has to give
+ * the URL params of the settings of its own mode, and their defaults.
  */
 export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFilter> implements PageStateHandler<
     WasapModeFilter<Analysis>
@@ -57,7 +58,17 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
         return modePath(this.config.path, this.mode);
     }
 
-    protected abstract parseAnalysis(search: URLSearchParams): Analysis;
+    /** The URL params of the settings of the mode (see `urlParams.ts`). */
+    protected abstract readonly params: UrlParams<Analysis>;
 
-    protected abstract setAnalysisSearchParams(search: URLSearchParams, analysis: Analysis): void;
+    /** The settings of the mode when the URL doesn't say otherwise. */
+    protected abstract defaults(): Analysis;
+
+    protected parseAnalysis(search: URLSearchParams): Analysis {
+        return parseUrlParams(search, this.params, this.defaults());
+    }
+
+    protected setAnalysisSearchParams(search: URLSearchParams, analysis: Analysis) {
+        writeUrlParams(search, this.params, analysis, this.defaults());
+    }
 }
