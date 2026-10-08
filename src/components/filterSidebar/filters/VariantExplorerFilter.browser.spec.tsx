@@ -146,6 +146,32 @@ describe('VariantExplorerFilter', () => {
         });
     });
 
+    it('calls setPageState with the background lineages picked', async ({ routeMockers: { lapis } }) => {
+        setupLapisMocks(lapis);
+        const mockSetPageState = vi.fn();
+
+        const { getByRole } = renderWithQueryClient(
+            <VariantExplorerFilter
+                pageState={{ ...predefinedPageState, backgroundLineages: ['JN.1'] }}
+                setPageState={mockSetPageState}
+                clinicalSequenceLapisBaseUrl={DUMMY_LAPIS_URL_2}
+                clinicalSequenceLapisLineageField='pangoLineage'
+                lineageTree={lineageTree}
+            />,
+        );
+
+        await page.getByPlaceholder('Add a lineage').fill('XBB.1.5');
+        // The background lineages' combobox comes after the variant's, which lists the lineages too.
+        await getByRole('option', { name: 'XBB.1.5', exact: true }).last().click();
+
+        await vi.waitFor(() => {
+            expect(mockSetPageState).toHaveBeenCalledWith({
+                ...predefinedPageState,
+                backgroundLineages: ['JN.1', 'XBB.1.5'],
+            });
+        });
+    });
+
     it('calls setPageState when selecting a predefined lineage', async ({ routeMockers: { lapis } }) => {
         setupLapisMocks(lapis);
         const mockSetPageState = vi.fn();
@@ -164,7 +190,8 @@ describe('VariantExplorerFilter', () => {
         await lineageInput.click();
         await userEvent.type(lineageInput, 'XBB');
 
-        const option = await vi.waitFor(() => getByRole('option', { name: 'XBB.1.5', exact: true }));
+        // The variant's combobox comes before that of the background lineages, which lists the lineages too.
+        const option = await vi.waitFor(() => getByRole('option', { name: 'XBB.1.5', exact: true }).first());
         await option.click();
 
         await vi.waitFor(() => {

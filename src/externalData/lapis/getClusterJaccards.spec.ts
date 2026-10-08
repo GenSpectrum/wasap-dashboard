@@ -21,6 +21,10 @@ describe('getClusterJaccards', () => {
                     { countQuery: 'pangoLineage=XEC*', coverageQuery: 'pangoLineage=XEC*' },
                     { countQuery: 'pangoLineage=XEC* & C100T & G300A', coverageQuery: 'C100T & G300A' },
                     { countQuery: 'pangoLineage=XEC* & A200-', coverageQuery: 'A200-' },
+                    {
+                        countQuery: 'pangoLineage=XEC* & [2-of: C100T, A200-, G300A]',
+                        coverageQuery: '[2-of: C100T, A200-, G300A]',
+                    },
                 ],
                 dateRanges: [{ dateFrom: '2026-04-01', dateTo: dayjs().format('YYYY-MM-DD') }],
                 dateField: 'date',
@@ -31,15 +35,20 @@ describe('getClusterJaccards', () => {
                         [{ count: 150, coverage: 150 }],
                         [{ count: 100, coverage: 200 }],
                         [{ count: 0, coverage: 0 }],
+                        [{ count: 120, coverage: 180 }],
                     ],
                 },
             },
         );
 
-        const jaccards = await getClusterJaccards(source, [['C100T', 'G300A'], ['A200-']]);
+        const jaccards = await getClusterJaccards(source, [
+            { codes: ['C100T', 'G300A'], atLeast: 2 },
+            { codes: ['A200-'], atLeast: 1 },
+            { codes: ['C100T', 'A200-', 'G300A'], atLeast: 2 },
+        ]);
 
-        // 100 / (150 + 200 - 100) = 0.4; no sequence with A200- at all: 0
-        expect(jaccards).toEqual([0.4, 0]);
+        // 100 / (150 + 200 - 100) = 0.4; no sequence with A200- at all: 0; 120 / (150 + 180 - 120) = 4/7
+        expect(jaccards).toEqual([0.4, 0, 120 / 210]);
     });
 
     test('takes all of the time from long ago without a start date', async () => {
@@ -56,6 +65,8 @@ describe('getClusterJaccards', () => {
             { data: { data: [[{ count: 10, coverage: 10 }], [{ count: 10, coverage: 10 }]] } },
         );
 
-        expect(await getClusterJaccards({ ...source, dateFrom: undefined }, [['C100T']])).toEqual([1]);
+        expect(
+            await getClusterJaccards({ ...source, dateFrom: undefined }, [{ codes: ['C100T'], atLeast: 1 }]),
+        ).toEqual([1]);
     });
 });

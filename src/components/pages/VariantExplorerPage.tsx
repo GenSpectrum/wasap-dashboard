@@ -5,17 +5,23 @@ import { useWasapLayoutContext } from './WasapLayout';
 import { ampliconNumbersByMutation } from '../../amplicons/mutationsByAmplicon';
 import { useAmplicons } from '../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { useSignatureWithoutBackground, type BackgroundLineage } from '../../dataLayer/hooks/backgroundMutations';
 import { getFromDateForTimeFrame, useVariantSignature } from '../../externalData/lapis/useVariantSignature';
+import { getLineageSignature } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
 import { ClinicalSequenceCountStat } from '../dataDisplay/ClinicalSequenceCountStat';
+import { ExcludedMutations } from '../dataDisplay/ExcludedMutations';
 import { MutationsResult } from '../dataDisplay/MutationsResult';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
 import { WasapResults } from '../dataDisplay/WasapResults';
 import { AmpliconCooccurrenceSection } from '../dataDisplay/ampliconCooccurrence/AmpliconCooccurrenceSection';
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../filterSidebar/filters/VariantExplorerFilter';
+
+/** No mutations are left out by their mean proportion here: the sidebar has the mutations to exclude instead. */
+const ALL_MEAN_PROPORTIONS = { min: 0, max: 1 };
 
 export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
     const pageStateHandler = useMemo(() => new VariantExplorerPageStateHandler(config), [config]);
@@ -26,10 +32,33 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     const { lineageTree } = useWasapLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
-    const { data, isPending, error } = useVariantSignature(config, analysis, lineageTree);
-    const meanProportionInterval = useMemo(
-        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
-        [base.meanProportion.lower, base.meanProportion.upper],
+    const signature = useVariantSignature(config, analysis, lineageTree);
+    const backgroundLineages = useMemo(
+        () =>
+            (analysis.backgroundLineages ?? []).flatMap((name): BackgroundLineage[] => {
+                const lineage = lineageTree?.lineages.get(name);
+                if (lineage === undefined) {
+                    return [];
+                }
+                const { nucleotide, aminoAcid } = getLineageSignature(lineage);
+                return [{ name, mutations: analysis.sequenceType === 'nucleotide' ? nucleotide : aminoAcid }];
+            }),
+        [analysis.backgroundLineages, analysis.sequenceType, lineageTree],
+    );
+    const exclusionOptions = useMemo(
+        () => ({
+            excludeNearlyFixed: analysis.excludeNearlyFixed !== false,
+            excludeDeletions: analysis.excludeDeletions !== false,
+        }),
+        [analysis.excludeNearlyFixed, analysis.excludeDeletions],
+    );
+    const { data, isPending, error } = useSignatureWithoutBackground(
+        signature.data,
+        backgroundLineages,
+        exclusionOptions,
+        filter,
+        base.granularity,
+        analysis.sequenceType,
     );
     const { clinicalLapis } = config;
 
@@ -45,6 +74,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
         <ModePageLayout
             sidebar={
                 <FilterSidebar
+                    withMeanProportion={false}
                     pageStateHandler={pageStateHandler}
                     base={base}
                     analysis={analysis}
@@ -67,8 +97,18 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                     Please select a variant from the filter panel.
                 </NothingSelected>
             ) : (
-                <WasapResults data={data} error={error} isPending={isPending || isFilterPending}>
-                    {({ displayMutations, candidateMutations, jaccardIndices, lineageForJaccard }) => {
+                <WasapResults
+                    data={data}
+                    error={signature.error ?? error}
+                    isPending={signature.isPending || isPending || isFilterPending}
+                >
+                    {({
+                        displayMutations,
+                        candidateMutations,
+                        jaccardIndices,
+                        lineageForJaccard,
+                        excludedMutations,
+                    }) => {
                         const jaccardLineage =
                             analysis.signatureType === 'computed' ? analysis.variant : lineageForJaccard;
                         return (
@@ -79,7 +119,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                                 filter={filter}
                                 granularity={base.granularity}
                                 sequenceType={analysis.sequenceType}
-                                meanProportionInterval={meanProportionInterval}
+                                meanProportionInterval={ALL_MEAN_PROPORTIONS}
                                 ampliconsByMutation={
                                     amplicons.data === undefined || analysis.sequenceType !== 'nucleotide'
                                         ? undefined
@@ -130,6 +170,11 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                                         zeroMessage='. No sequences found — min. Jaccard filter was not applied.'
                                     />
                                 )}
+                                <ExcludedMutations
+                                    mutations={excludedMutations}
+                                    backgroundLineages={backgroundLineages.map(({ name }) => name)}
+                                    sequenceType={analysis.sequenceType}
+                                />
                             </MutationsResult>
                         );
                     }}

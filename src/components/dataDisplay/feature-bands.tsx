@@ -82,6 +82,13 @@ function coverageOf(value: ProportionValue): number {
     return value?.type === 'value' ? value.coverage : 0;
 }
 
+export type RowStyle = {
+    /** Classes of its table row, e.g. borders setting rows apart. */
+    className?: string;
+    /** Classes of some of its cells; that of the Jaccard index in place of its shading. */
+    cellClassNames?: { jaccardIndex?: string; band?: string };
+};
+
 export interface FeatureBandsProps<F> {
     rowLabelHeader: string;
     data: TemporalDataMap<F> | null;
@@ -102,6 +109,11 @@ export interface FeatureBandsProps<F> {
      * there is no Jaccard index column.
      */
     jaccardIndices?: Partial<Record<string, number>>;
+    /**
+     * How a row looks besides its values, by row label (see `FeatureRenderer.asString`): classes of
+     * its table row and of some of its cells.
+     */
+    rowStyle?: (rowLabel: string) => RowStyle;
     /** One more column after the row label, by row label (see `FeatureRenderer.asString`). Not sortable. */
     extraColumn?: { header: string; render: (rowLabel: string) => ReactNode };
     /** How the rows are sorted, shown in the headers. The rows have to be given in this order already. */
@@ -122,6 +134,7 @@ export function FeatureBands<F>({
     meanProportions,
     jaccardIndices,
     extraColumn,
+    rowStyle,
     sort,
     onSortChange,
 }: FeatureBandsProps<F>) {
@@ -204,38 +217,42 @@ export function FeatureBands<F>({
                                       )}
                                   </tr>
                               ))
-                            : features.map((feature, rowIndex) => (
-                                  <tr key={featureRenderer.asString(feature)} className='divide-x divide-stone-200'>
-                                      <th className='px-2 font-medium whitespace-nowrap'>
-                                          {featureRenderer.renderRowLabel(feature)}
-                                      </th>
-                                      {extraColumn !== undefined && (
+                            : features.map((feature, rowIndex) => {
+                                  const label = featureRenderer.asString(feature);
+                                  const style = rowStyle?.(label);
+                                  return (
+                                      <tr key={label} className={`divide-x divide-stone-200 ${style?.className ?? ''}`}>
+                                          <th className='px-2 font-medium whitespace-nowrap'>
+                                              {featureRenderer.renderRowLabel(feature)}
+                                          </th>
+                                          {extraColumn !== undefined && (
+                                              <td className='px-2 text-center whitespace-nowrap'>
+                                                  {extraColumn.render(label)}
+                                              </td>
+                                          )}
                                           <td className='px-2 text-center whitespace-nowrap'>
-                                              {extraColumn.render(featureRenderer.asString(feature))}
+                                              {formatMeanProportion(meanProportions[label])}
                                           </td>
-                                      )}
-                                      <td className='px-2 text-center whitespace-nowrap'>
-                                          {formatMeanProportion(meanProportions[featureRenderer.asString(feature)])}
-                                      </td>
-                                      {jaccardIndices !== undefined && (
-                                          <td
-                                              className={`px-2 text-center whitespace-nowrap ${jaccardIndexShading(jaccardIndices[featureRenderer.asString(feature)])}`}
-                                          >
-                                              {formatJaccardIndex(jaccardIndices[featureRenderer.asString(feature)])}
+                                          {jaccardIndices !== undefined && (
+                                              <td
+                                                  className={`px-2 text-center whitespace-nowrap ${style?.cellClassNames?.jaccardIndex ?? jaccardIndexShading(jaccardIndices[label])}`}
+                                              >
+                                                  {formatJaccardIndex(jaccardIndices[label])}
+                                              </td>
+                                          )}
+                                          <td className={`p-0 ${style?.cellClassNames?.band ?? ''}`}>
+                                              <BandRow
+                                                  values={rows[rowIndex] ?? []}
+                                                  columns={columns}
+                                                  viewSettings={viewSettings}
+                                                  maxCoverage={maxCoverage}
+                                                  gradientId={`${gradientPrefix}-${rowIndex}`}
+                                                  rowIndex={rowIndex}
+                                              />
                                           </td>
-                                      )}
-                                      <td className='p-0'>
-                                          <BandRow
-                                              values={rows[rowIndex] ?? []}
-                                              columns={columns}
-                                              viewSettings={viewSettings}
-                                              maxCoverage={maxCoverage}
-                                              gradientId={`${gradientPrefix}-${rowIndex}`}
-                                              rowIndex={rowIndex}
-                                          />
-                                      </td>
-                                  </tr>
-                              ))}
+                                      </tr>
+                                  );
+                              })}
                         {!isLoading && features.length === 0 && (
                             <tr>
                                 <td colSpan={numberOfValueColumns + 2}>
@@ -510,9 +527,14 @@ function BandRow({
     );
 }
 
+/** The share of a bucket's column, in its middle, where the band is straight at the bucket's thickness. */
+const STRAIGHT_SHARE = 1 / 3;
+
 /**
  * The knots of each stretch of the band, i.e. of each run of buckets that some reads cover
- * (`half > 0`). A bucket is measured at the middle of its column. At either end of the row
+ * (`half > 0`). A bucket is measured in the middle of its column: the band is straight at its
+ * thickness there (`STRAIGHT_SHARE` of the column), and bends into the next one around the edge
+ * between them (exported for tests). At either end of the row
  * the band is drawn from nothing, as a violin tapers; next to a bucket without coverage it is
  * cut off square at the edge of the column, so it doesn't reach into a bucket where nothing
  * was measured.
@@ -530,7 +552,8 @@ export function bandSegments(halves: number[], width: number): { x: number; half
             return;
         }
         current ??= [index === 0 ? { x: 0, half: 0 } : { x: index * width, half }];
-        current.push({ x: (index + 0.5) * width, half });
+        const straightFrom = (index + (1 - STRAIGHT_SHARE) / 2) * width;
+        current.push({ x: straightFrom, half }, { x: straightFrom + STRAIGHT_SHARE * width, half });
     });
     if (current) {
         current.push({ x: halves.length * width, half: 0 });

@@ -16,7 +16,7 @@ const { mutations } = mutationsByAmplicon(['C100T', 'G300A'], [amplicon]).groups
 
 function row(cluster: CooccurrenceRow['cluster']): CooccurrenceRow {
     const label = `Amplicon 7: ${cluster.map((mutation) => mutation.code).join(' + ')}`;
-    return { amplicon, mutations, cluster, label, values: [] };
+    return { amplicon, mutations, cluster, atLeast: cluster.length, label, values: [] };
 }
 
 const source = {

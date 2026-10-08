@@ -79,6 +79,15 @@ export const wasapVariantFilterSchema = z.object({
     lineage: z.string().optional(),
     newMutationsOnly: z.boolean().optional(),
     includeSublineagesForJaccard: z.boolean().optional(),
+    /**
+     * Lineages of the lineage tree whose signature mutations are left out of the variant's, as the
+     * background it stands on, for either type of signature.
+     */
+    backgroundLineages: z.array(z.string()).optional(),
+    /** Whether the variant's mutations on (nearly) all reads are left out of it, too; unless `false`, they are. */
+    excludeNearlyFixed: z.boolean().optional(),
+    /** Whether the variant's deletions are left out of it, too; unless `false`, they are. */
+    excludeDeletions: z.boolean().optional(),
 });
 export type WasapVariantFilter = z.infer<typeof wasapVariantFilterSchema>;
 
