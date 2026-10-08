@@ -76,7 +76,7 @@ export type QueryResult<Row> = {
  * into curl:
  *
  * ```
- * [Query][Amplicons] 63 ms default.filter(...).groupBy({n := count()})
+ * [Query][Amplicons] 63 ms data.filter(...).group(by := {}, aggs := {n := count()})
  * ```
  *
  * The duration is the wall clock the caller waited, retries included; a retry

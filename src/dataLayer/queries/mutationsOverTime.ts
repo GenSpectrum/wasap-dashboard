@@ -2,7 +2,7 @@
  * The SILO queries behind `gs-mutations-over-time`.
  *
  * There is no over-time / coverage primitive in SaneQL, and the batching
- * options don't hold (grouping by a `unionAll` tag literal, or by the `DATE32`
+ * options don't hold (grouping by a `unionall` tag literal, or by the `DATE32`
  * column alongside a mapped `at()`, both time out — see
  * standalone-wasap/10-silo-over-time-findings.md). So the matrix is assembled
  * from **one symbol distribution per position, per day**, and the two queries
@@ -11,7 +11,7 @@
  *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
  *     mutations get a grid row, and each one's proportion over the whole shown
  *     span (drives the "minimum proportion" filter across pages).
- *   `positionOverTimeQuery` — one `map(sym := seq.at(pos)).groupBy(count(), {date, sym})`
+ *   `positionOverTimeQuery` — one `map(sym := seq.at(pos)).group(count(), {date, sym})`
  *     per distinct position of the visible *page*: the full symbol distribution
  *     there, per day. `coverage = Σ count(known symbols)`,
  *     `count = Σ count(alt)`. No date filter — the whole range comes back and
@@ -100,9 +100,9 @@ export type PositionTarget = {
 
 /**
  * The symbol every read carries at one position, per day:
- * `filter(location).map({sym := <seq>.at(<pos>)}).groupBy({count := count()}, {<date>, sym})`.
+ * `filter(location).map({sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`.
  *
- * The computed `sym` column is `.map()`-ed *before* `groupBy`, and both
+ * The computed `sym` column is `.map()`-ed *before* `group`, and both
  * grouping columns are named bare rather than re-assigned inline
  * (`{<date>, sym}`, not `{<date> := <date>, sym := sym}`) — the older SILO
  * version behind rsv-a / rsv-b rejects an inline `:=` assignment in a
@@ -121,7 +121,7 @@ export function positionOverTimeQuery(
 ): Relation {
     return scoped(schema, { locationName: filter.locationName })
         .map({ sym: field(target.sequenceName).at(target.position) })
-        .groupBy({ count: count() }, [schema.groupingDate, 'sym']);
+        .group({ count: count() }, [schema.groupingDate, 'sym']);
 }
 
 export type PositionOverTimeRow = {

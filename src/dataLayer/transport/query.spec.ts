@@ -31,7 +31,7 @@ async function withoutWaiting<T>(work: () => Promise<T>): Promise<T> {
 describe('query', () => {
     test('parses NDJSON and reads the data version', async () => {
         vi.stubGlobal('fetch', vi.fn().mockResolvedValue(ndjson('{"n":1}\n{"n":2}\n')));
-        const result = await query('https://example.org/covid', 'default.limit(2)', 'Test');
+        const result = await query('https://example.org/covid', 'data.limit(2)', 'Test');
         expect(result.rows).toEqual([{ n: 1 }, { n: 2 }]);
         expect(result.dataVersion).toBe('1787819037');
     });
@@ -44,7 +44,7 @@ describe('query', () => {
             .mockResolvedValue(ndjson('{"n":7}\n'));
         vi.stubGlobal('fetch', fetchMock);
 
-        const result = await withoutWaiting(() => query('https://example.org/covid', 'default', 'Test'));
+        const result = await withoutWaiting(() => query('https://example.org/covid', 'data', 'Test'));
         expect(result.rows).toEqual([{ n: 7 }]);
         expect(fetchMock).toHaveBeenCalledTimes(2);
     });
@@ -56,7 +56,7 @@ describe('query', () => {
             .mockResolvedValue(ndjson('{"n":1}\n'));
         vi.stubGlobal('fetch', fetchMock);
 
-        await withoutWaiting(() => query('https://example.org/covid', 'default', 'Test'));
+        await withoutWaiting(() => query('https://example.org/covid', 'data', 'Test'));
         expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
@@ -64,11 +64,9 @@ describe('query', () => {
         const fetchMock = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
         vi.stubGlobal('fetch', fetchMock);
 
-        await expect(withoutWaiting(() => query('https://example.org/covid', 'default', 'Test'))).rejects.toMatchObject(
-            {
-                kind: 'network',
-            },
-        );
+        await expect(withoutWaiting(() => query('https://example.org/covid', 'data', 'Test'))).rejects.toMatchObject({
+            kind: 'network',
+        });
         expect(fetchMock).toHaveBeenCalledTimes(3);
     });
 
@@ -84,7 +82,7 @@ describe('query', () => {
         const fetchMock = vi.fn().mockResolvedValue(new Response('<html>gateway timeout</html>', { status: 504 }));
         vi.stubGlobal('fetch', fetchMock);
 
-        await expect(query('https://example.org/covid', 'default', 'Test')).rejects.toMatchObject({
+        await expect(query('https://example.org/covid', 'data', 'Test')).rejects.toMatchObject({
             kind: 'too-expensive',
         });
         expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -98,7 +96,7 @@ describe('query', () => {
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        await expect(query('https://example.org/covid', 'default', 'Test', controller.signal)).rejects.toBeInstanceOf(
+        await expect(query('https://example.org/covid', 'data', 'Test', controller.signal)).rejects.toBeInstanceOf(
             DOMException,
         );
         expect(fetchMock).toHaveBeenCalledTimes(1);

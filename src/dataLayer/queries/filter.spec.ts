@@ -4,7 +4,7 @@ import { filterExpression, normalizeFilter, scoped, type SiloReadFilter } from '
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -62,12 +62,12 @@ describe('normalizeFilter', () => {
 
 describe('scoped', () => {
     test('an unnarrowed table stays bare', () => {
-        expect(scoped(schema, {}).render()).toBe('default');
+        expect(scoped(schema, {}).render()).toBe('data');
     });
 
     test('a narrowed table is filtered', () => {
         expect(scoped(schema, { locationName: 'Basel (BS)' }).render()).toBe(
-            "default.filter(locationName = 'Basel (BS)')",
+            "data.filter(locationName = 'Basel (BS)')",
         );
     });
 });

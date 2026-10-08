@@ -8,7 +8,7 @@ import { ConnectionProvider } from './connection';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -56,7 +56,7 @@ describe('useBatchCount', () => {
         expect(result.current.data).toBe(3);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {batchId})');
+        expect(init.body).toBe('data.group(by := {batchId}, aggs := {n := count()})');
     });
 
     it('no batches means zero', async () => {

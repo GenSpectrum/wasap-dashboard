@@ -15,7 +15,7 @@ export const testConfig = {
     },
     silo: {
         url: '',
-        table: 'default',
+        table: 'data',
         dateColumn: 'date',
         dateColumnIsDictionaryEncoded: true,
         samplingDateColumn: 'samplingDate',

@@ -48,7 +48,7 @@
             "locationNameField": "locationName",
             "silo": {
                 "url": "https://silo.wasap.genspectrum.org/covid",
-                "table": "default",
+                "table": "data",
                 "dateColumn": "date",
                 "dateColumnIsDictionaryEncoded": true,
                 "samplingDateColumn": "samplingDate",
@@ -127,7 +127,7 @@
             "locationNameField": "locationName",
             "silo": {
                 "url": "https://silo.wasap.genspectrum.org/rsva",
-                "table": "default",
+                "table": "data",
                 "dateColumn": "samplingDate",
                 "dateColumnIsDictionaryEncoded": false,
                 "samplingDateColumn": "samplingDate",
@@ -208,7 +208,7 @@
             "locationNameField": "locationName",
             "silo": {
                 "url": "https://silo.wasap.genspectrum.org/rsvb",
-                "table": "default",
+                "table": "data",
                 "dateColumn": "samplingDate",
                 "dateColumnIsDictionaryEncoded": false,
                 "samplingDateColumn": "samplingDate",

@@ -4,7 +4,7 @@ import { readLocationOverview, readNamedCounts, readSampleOverview, readTotalCou
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',

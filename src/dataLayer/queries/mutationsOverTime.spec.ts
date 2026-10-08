@@ -9,7 +9,7 @@ import {
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -24,7 +24,7 @@ const fields = '{mutationFrom, mutationTo, sequenceName, position, count, covera
 describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
     test('nucleotide: mutations() with the proportion floor and trimmed fields', () => {
         expect(overallMutationsQuery(schema, {}, { sequenceType: 'nucleotide' }).render()).toBe(
-            `default.mutations(minProportion := 0.001, fields := ${fields})`,
+            `data.mutations(minProportion := 0.001, fields := ${fields})`,
         );
     });
 
@@ -36,7 +36,7 @@ describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
                 { sequenceType: 'amino acid', sequenceNames: ['S'] },
             ).render(),
         ).toBe(
-            "default.filter(locationName = 'Basel (BS)' && date >= '2026-06-01' && date <= '2026-06-30')" +
+            "data.filter(locationName = 'Basel (BS)' && date >= '2026-06-01' && date <= '2026-06-30')" +
                 `.aminoAcidMutations(minProportion := 0.001, sequenceNames := {S}, fields := ${fields})`,
         );
     });
@@ -51,14 +51,14 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
                 { sequenceName: 'main', position: 241 },
             ).render(),
         ).toBe(
-            "default.filter(locationName = 'Zürich (ZH)')" +
-                '.map({sym := main.at(241)}).groupBy({count := count()}, {date, sym})',
+            "data.filter(locationName = 'Zürich (ZH)')" +
+                '.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
     test('no location narrows nothing; amino acid uses the gene column', () => {
         expect(positionOverTimeQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
-            'default.map({sym := S.at(19)}).groupBy({count := count()}, {date, sym})',
+            'data.map({sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
@@ -69,7 +69,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
     // sub-second on both that version and covid's newer one.
     test('the DATE32-grouping instance uses the same map()-first shape', () => {
         const rsvSchema: SiloSchema = {
-            table: 'default',
+            table: 'data',
             locationName: 'locationName',
             samplingDate: 'samplingDate',
             groupingDate: 'samplingDate',
@@ -85,8 +85,8 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
                 { sequenceName: 'main', position: 848 },
             ).render(),
         ).toBe(
-            "default.filter(locationName = 'Geneva')" +
-                '.map({sym := main.at(848)}).groupBy({count := count()}, {samplingDate, sym})',
+            "data.filter(locationName = 'Geneva')" +
+                '.map({sym := main.at(848)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
         );
     });
 });

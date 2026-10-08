@@ -8,7 +8,7 @@ import { useTotalReadCount } from './totalReadCount';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -50,7 +50,9 @@ describe('useTotalReadCount', () => {
         expect(result.current.data).toBe(596520334);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe("default.filter(locationName = 'Basel (BS)').groupBy({n := count()}, {locationName})");
+        expect(init.body).toBe(
+            "data.filter(locationName = 'Basel (BS)').group(by := {locationName}, aggs := {n := count()})",
+        );
     });
 
     it('sums the per-location rows into one total, unfiltered', async () => {
@@ -71,6 +73,6 @@ describe('useTotalReadCount', () => {
         expect(result.current.data).toBe(596520334);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {locationName})');
+        expect(init.body).toBe('data.group(by := {locationName}, aggs := {n := count()})');
     });
 });

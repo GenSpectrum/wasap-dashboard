@@ -4,16 +4,16 @@ import { connect } from './connection';
 import { field, str } from './expression';
 import { count } from './functions';
 
-const connection = connect({ url: 'https://example.org/covid/', table: 'default' });
+const connection = connect({ url: 'https://example.org/covid/', table: 'data' });
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe('a connection', () => {
     test('carries the two things every request and every cache entry needs', () => {
         expect(connection.url).toBe('https://example.org/covid/');
-        expect(connection.table).toBe('default');
-        expect(connection.key).toEqual(['https://example.org/covid/', 'default']);
-        expect(connection.id).toBe('https://example.org/covid/|default');
+        expect(connection.table).toBe('data');
+        expect(connection.key).toEqual(['https://example.org/covid/', 'data']);
+        expect(connection.id).toBe('https://example.org/covid/|data');
     });
 
     test('two instances never share a cache entry', () => {
@@ -23,8 +23,8 @@ describe('a connection', () => {
     });
 
     test('starts a query at its own table', () => {
-        expect(connection.root().groupBy({ n: count() }, ['sampleId']).render()).toBe(
-            'default.groupBy({n := count()}, {sampleId})',
+        expect(connection.root().group({ n: count() }, ['sampleId']).render()).toBe(
+            'data.group(by := {sampleId}, aggs := {n := count()})',
         );
     });
 
@@ -39,9 +39,9 @@ describe('a connection', () => {
         );
 
         await connection.query(connection.root().filter(field('sampleId').eq(str('S1'))), 'Test');
-        await connection.query('default.limit(1)', 'Test');
+        await connection.query('data.limit(1)', 'Test');
 
-        expect(fetched.map((init) => init.body)).toEqual(["default.filter(sampleId = 'S1')", 'default.limit(1)']);
+        expect(fetched.map((init) => init.body)).toEqual(["data.filter(sampleId = 'S1')", 'data.limit(1)']);
         for (const init of fetched) {
             expect(init.headers).toEqual({ 'Content-Type': 'text/plain', Accept: 'application/x-ndjson' });
         }
@@ -50,7 +50,7 @@ describe('a connection', () => {
     test('offers the curl line for what it would send', () => {
         const command = connection.curl(connection.root().limit(1));
         expect(command).toContain("'https://example.org/covid/query'");
-        expect(command).toContain("--data-binary 'default.limit(1)'");
+        expect(command).toContain("--data-binary 'data.limit(1)'");
         expect(command).toContain("-H 'Content-Type: text/plain'");
     });
 });

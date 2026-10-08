@@ -8,7 +8,7 @@ import { useStringFieldOptions } from './stringFieldOptions';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -60,6 +60,6 @@ describe('useStringFieldOptions', () => {
         ]);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {locationName})');
+        expect(init.body).toBe('data.group(by := {locationName}, aggs := {n := count()})');
     });
 });
