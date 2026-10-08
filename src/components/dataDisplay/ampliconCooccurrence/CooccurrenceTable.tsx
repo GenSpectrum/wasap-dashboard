@@ -176,8 +176,14 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
             classNameByLabel.set(block[0].row.label, OPEN_BLOCK_TOP);
             classNameByLabel.set(block[block.length - 1].row.label, OPEN_BLOCK_BOTTOM);
         }
-        return (label: string): RowStyle => ({ className: classNameByLabel.get(label) });
-    }, [pageBlocks]);
+        return (label: string): RowStyle => ({
+            className: classNameByLabel.get(label),
+            cellClassNames:
+                (jaccardIndices?.[label] ?? 1) < LOW_JACCARD
+                    ? { jaccardIndex: LOW_JACCARD_CELLS, band: LOW_JACCARD_CELLS }
+                    : undefined,
+        });
+    }, [pageBlocks, jaccardIndices]);
 
     return (
         <OverTimeGrid
@@ -249,6 +255,13 @@ function RowLabel({
         <div className='mr-2 w-full'>{content}</div>
     );
 }
+
+/**
+ * Below this Jaccard index, a row's Jaccard index and band are on a grey background, to tell it is
+ * little specific to the variant.
+ */
+const LOW_JACCARD = 0.3;
+const LOW_JACCARD_CELLS = 'bg-stone-200';
 
 const OPEN_BLOCK_TOP = 'border-t-2 border-t-stone-400';
 const OPEN_BLOCK_BOTTOM = 'border-b-2 border-b-stone-400';

@@ -85,6 +85,8 @@ function coverageOf(value: ProportionValue): number {
 export type RowStyle = {
     /** Classes of its table row, e.g. borders setting rows apart. */
     className?: string;
+    /** Classes of some of its cells; that of the Jaccard index in place of its shading. */
+    cellClassNames?: { jaccardIndex?: string; band?: string };
 };
 
 export interface FeatureBandsProps<F> {
@@ -109,7 +111,7 @@ export interface FeatureBandsProps<F> {
     jaccardIndices?: Partial<Record<string, number>>;
     /**
      * How a row looks besides its values, by row label (see `FeatureRenderer.asString`): classes of
-     * its table row.
+     * its table row and of some of its cells.
      */
     rowStyle?: (rowLabel: string) => RowStyle;
     /** One more column after the row label, by row label (see `FeatureRenderer.asString`). Not sortable. */
@@ -233,12 +235,12 @@ export function FeatureBands<F>({
                                           </td>
                                           {jaccardIndices !== undefined && (
                                               <td
-                                                  className={`px-2 text-center whitespace-nowrap ${jaccardIndexShading(jaccardIndices[label])}`}
+                                                  className={`px-2 text-center whitespace-nowrap ${style?.cellClassNames?.jaccardIndex ?? jaccardIndexShading(jaccardIndices[label])}`}
                                               >
                                                   {formatJaccardIndex(jaccardIndices[label])}
                                               </td>
                                           )}
-                                          <td className='p-0'>
+                                          <td className={`p-0 ${style?.cellClassNames?.band ?? ''}`}>
                                               <BandRow
                                                   values={rows[rowIndex] ?? []}
                                                   columns={columns}
