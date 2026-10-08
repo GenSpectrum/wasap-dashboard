@@ -4,13 +4,13 @@ import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 import { siloSchema } from '../../config/siloSchema';
 import type { WasapPageConfig } from '../../config/wasapPageConfig';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
-import { useReferenceGenome } from '../../dataLayer/hooks/referenceGenome';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
 import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { GsApp } from '../GsApp';
+import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
+import { MutationLinkTemplateContextProvider } from '../MutationLinkTemplateContext';
 import { SiloUnreachableWrapper } from '../SiloUnreachableWrapper';
 import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 
@@ -67,7 +67,6 @@ function WasapLayoutConnected({ config, resistanceData, lineageTree }: WasapLayo
 
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(dataset.samplingDate);
-    const referenceGenome = useReferenceGenome();
 
     const context: WasapLayoutContext = {
         config,
@@ -80,13 +79,10 @@ function WasapLayoutConnected({ config, resistanceData, lineageTree }: WasapLayo
     };
 
     return (
-        <GsApp
-            referenceGenome={referenceGenome.data}
-            referenceGenomeError={referenceGenome.error}
-            mutationAnnotations={resistanceData.mutationAnnotations}
-            mutationLinkTemplate={config.linkTemplate}
-        >
-            <Outlet context={context} />
-        </GsApp>
+        <MutationAnnotationsContextProvider value={resistanceData.mutationAnnotations}>
+            <MutationLinkTemplateContextProvider value={config.linkTemplate}>
+                <Outlet context={context} />
+            </MutationLinkTemplateContextProvider>
+        </MutationAnnotationsContextProvider>
     );
 }
