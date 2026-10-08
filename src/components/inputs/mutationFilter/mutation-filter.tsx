@@ -1,14 +1,13 @@
 import { useCombobox, useMultipleSelection } from 'downshift';
-import { type FC, useContext, useEffect, useMemo, useState } from 'react';
+import { type FC, useEffect, useMemo, useState } from 'react';
 
 import { getExampleMutation } from './ExampleMutation';
 import { MutationFilterInfo } from './mutation-filter-info';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
+import { useReferenceGenome } from '../../../dataLayer/hooks/referenceGenome';
 import { type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import { type MutationsFilter, mutationType, type MutationType } from '../../../types/dashboardComponents';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
-import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
-import { ReferenceGenomesAwaiter } from '../../shared/ReferenceGenomesAwaiter';
 import { singleGraphColorRGBByName } from '../../shared/charts/colors';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { UserFacingError } from '../../shared/error-display';
@@ -44,6 +43,8 @@ export type MutationFilterItem =
     SelectedNucleotideMutation | SelectedAminoAcidMutation | SelectedNucleotideInsertion | SelectedAminoAcidInsertion;
 
 export const MutationFilter: FC<MutationFilterProps> = (props) => {
+    const referenceGenome = useReferenceGenome();
+
     return (
         // This was a <label> wrapping the whole thing, unlabeled by a `for`/`id` pair. Behind a
         // shadow-DOM custom element that was inert — a <label> only implicitly associates with a
@@ -57,21 +58,25 @@ export const MutationFilter: FC<MutationFilterProps> = (props) => {
             <div className='label'>
                 <span className='label-text'>Mutations</span>
             </div>
-            <ReferenceGenomesAwaiter>
+            {referenceGenome.isError ? (
+                <span>Cannot fetch the reference genome. {referenceGenome.error.message}</span>
+            ) : referenceGenome.isPending ? (
+                <div className='loading loading-spinner loading-md'>Loading...</div>
+            ) : (
                 <ErrorBoundary layout='horizontal' resetKeys={[props.initialValue, props.enabledMutationTypes]}>
-                    <MutationFilterWithReferenceGenome {...props} />
+                    <MutationFilterWithReferenceGenome {...props} referenceGenome={referenceGenome.data} />
                 </ErrorBoundary>
-            </ReferenceGenomesAwaiter>
+            )}
         </div>
     );
 };
 
 function MutationFilterWithReferenceGenome({
+    referenceGenome,
     initialValue,
     enabledMutationTypes = Object.values(mutationType),
     onMutationChange,
-}: MutationFilterProps) {
-    const referenceGenome = useContext(ReferenceGenomeContext);
+}: MutationFilterProps & { referenceGenome: ReferenceGenome }) {
     const [inputValue, setInputValue] = useState('');
 
     const initialState = useMemo(() => {
@@ -219,7 +224,7 @@ function MutationFilterWithReferenceGenome({
                         }}
                         size={10}
                     />
-                    <MutationFilterInfo />
+                    <MutationFilterInfo referenceGenome={referenceGenome} />
                 </div>
             </div>
             <ul

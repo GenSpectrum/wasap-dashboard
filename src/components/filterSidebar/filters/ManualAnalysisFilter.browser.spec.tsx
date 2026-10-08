@@ -1,16 +1,42 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { type ReactElement } from 'react';
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { it } from '../../../../test-extend';
-import type { ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
+import { DUMMY_SILO_URL } from '../../../../routeMocker';
+import { it, siloRouteMocker } from '../../../../test-extend';
+import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
+import type { SiloSchema } from '../../../dataLayer/queries/schema';
 import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { GsApp } from '../../GsApp';
 
-const REFERENCE_GENOME: ReferenceGenome = {
-    nucleotideSequences: [{ name: 'main', length: 20000 }],
-    genes: [{ name: 'S', length: 20000 }],
+const schema: SiloSchema = {
+    table: 'data',
+    locationName: 'locationName',
+    samplingDate: 'samplingDate',
+    groupingDate: 'date',
+    groupingDateIsDictionary: true,
+    nucleotideSequence: 'main',
+    sampleId: 'sampleId',
+    batchId: 'batchId',
 };
+
+/** Renders inside a SILO connection whose reference genome has one 20,000 bp segment and one gene. */
+function renderWithSilo(ui: ReactElement) {
+    const sequence = 'ATGC'.repeat(5000);
+    siloRouteMocker.mockReferenceGenome([
+        { name: 'main', type: 'nucleotide', sequence },
+        { name: 'S', type: 'amino_acid', sequence },
+    ]);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return render(
+        <QueryClientProvider client={queryClient}>
+            <ConnectionProvider url={DUMMY_SILO_URL} schema={schema}>
+                {ui}
+            </ConnectionProvider>
+        </QueryClientProvider>,
+    );
+}
 
 describe('ManualAnalysisFilter', () => {
     const defaultPageState: WasapManualFilter = {
@@ -22,10 +48,8 @@ describe('ManualAnalysisFilter', () => {
     it('renders with nucleotide sequence type selected', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByLabelText } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByLabelText } = renderWithSilo(
+            <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
         const nucleotideRadio = getByLabelText('Nucleotide');
@@ -39,10 +63,8 @@ describe('ManualAnalysisFilter', () => {
             sequenceType: 'amino acid',
         };
 
-        const { getByLabelText } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByLabelText } = renderWithSilo(
+            <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
         );
 
         const aminoAcidRadio = getByLabelText('Amino acid');
@@ -57,10 +79,8 @@ describe('ManualAnalysisFilter', () => {
             mutations: ['A23T'],
         };
 
-        const { getByLabelText } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByLabelText } = renderWithSilo(
+            <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
         );
 
         const aminoAcidRadio = getByLabelText('Amino acid');
@@ -76,10 +96,8 @@ describe('ManualAnalysisFilter', () => {
     it('does not call setPageState when clicking the already selected sequence type', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByLabelText } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByLabelText } = renderWithSilo(
+            <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
         const nucleotideRadio = getByLabelText('Nucleotide');
@@ -91,10 +109,8 @@ describe('ManualAnalysisFilter', () => {
     it('calls setPageState with nucleotide mutation when entering and confirming A23T', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByRole } = renderWithSilo(
+            <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
         const mutationInput = getByRole('combobox');
@@ -117,10 +133,8 @@ describe('ManualAnalysisFilter', () => {
             sequenceType: 'amino acid',
         };
 
-        const { getByRole } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByRole } = renderWithSilo(
+            <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
         );
 
         const mutationInput = getByRole('combobox');
@@ -139,10 +153,8 @@ describe('ManualAnalysisFilter', () => {
     it('allows multiple mutations to be entered', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = render(
-            <GsApp referenceGenome={REFERENCE_GENOME}>
-                <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
-            </GsApp>,
+        const { getByRole } = renderWithSilo(
+            <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
         const mutationInput = getByRole('combobox');
