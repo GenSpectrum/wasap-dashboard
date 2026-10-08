@@ -510,9 +510,14 @@ function BandRow({
     );
 }
 
+/** The share of a bucket's column, in its middle, where the band is straight at the bucket's thickness. */
+const STRAIGHT_SHARE = 1 / 3;
+
 /**
  * The knots of each stretch of the band, i.e. of each run of buckets that some reads cover
- * (`half > 0`). A bucket is measured at the middle of its column. At either end of the row
+ * (`half > 0`). A bucket is measured in the middle of its column: the band is straight at its
+ * thickness there (`STRAIGHT_SHARE` of the column), and bends into the next one around the edge
+ * between them (exported for tests). At either end of the row
  * the band is drawn from nothing, as a violin tapers; next to a bucket without coverage it is
  * cut off square at the edge of the column, so it doesn't reach into a bucket where nothing
  * was measured.
@@ -530,7 +535,8 @@ export function bandSegments(halves: number[], width: number): { x: number; half
             return;
         }
         current ??= [index === 0 ? { x: 0, half: 0 } : { x: index * width, half }];
-        current.push({ x: (index + 0.5) * width, half });
+        const straightFrom = (index + (1 - STRAIGHT_SHARE) / 2) * width;
+        current.push({ x: straightFrom, half }, { x: straightFrom + STRAIGHT_SHARE * width, half });
     });
     if (current) {
         current.push({ x: halves.length * width, half: 0 });
