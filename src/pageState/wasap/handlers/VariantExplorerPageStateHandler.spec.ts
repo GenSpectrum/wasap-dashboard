@@ -33,8 +33,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(analysis.minJaccard).toBe(0.6);
         expect(analysis.timeFrame).toBe(VARIANT_TIME_FRAME.threeMonths);
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('parses and encodes the background lineages, for either signature type', () => {
@@ -52,7 +51,7 @@ describe('VariantExplorerPageStateHandler', () => {
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.backgroundLineages).toEqual(['JN.1', 'BA.2']);
-        expect(handler.toUrl(filter)).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
         expect(
             handler.parsePageStateFromUrl(new URL('http://example.com/wastewater/covid/variantExplorer').searchParams)
                 .analysis.backgroundLineages,
@@ -159,8 +158,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(analysis.lineage).toBe('XEC');
         expect(analysis.newMutationsOnly).toBe(false);
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('parses and encodes newMutationsOnly=true in predefined variant mode (round-trip)', () => {
@@ -182,8 +180,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(analysis.signatureType).toBe('predefined');
         expect(analysis.newMutationsOnly).toBe(true);
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('parses and encodes includeSublineagesForJaccard=false in predefined variant mode (round-trip)', () => {
@@ -205,7 +202,49 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(analysis.signatureType).toBe('predefined');
         expect(analysis.includeSublineagesForJaccard).toBe(false);
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
+    });
+
+    it('keeps a cleared variant or lineage cleared, instead of going back to the default', () => {
+        const parse = (query: string) =>
+            handler.parsePageStateFromUrl(
+                new URL(`http://example.com/wastewater/covid/variantExplorer?${query}`).searchParams,
+            );
+        const cleared = { ...parse(''), analysis: { ...parse('').analysis, variant: undefined, lineage: undefined } };
+
+        const url = handler.toUrl(cleared);
+
+        expect(url).toContain('variant=&');
+        expect(url).toContain('lineage=&');
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(cleared))).toEqual(cleared);
+    });
+
+    it('leaves the defaults out of the URL', () => {
+        const url = handler.toUrl(
+            handler.parsePageStateFromUrl(
+                new URL('http://example.com/wastewater/covid/variantExplorer?sequenceType=nucleotide&minCount=15')
+                    .searchParams,
+            ),
+        );
+
+        expect(url).not.toContain('sequenceType');
+        expect(url).not.toContain('minCount');
+    });
+
+    it('takes the default for invalid values, as from an old or mistyped link', () => {
+        const { analysis } = handler.parsePageStateFromUrl(
+            new URL(
+                'http://example.com/wastewater/covid/variantExplorer?' +
+                    'signatureType=other&sequenceType=dna&minProportion=abc&minCount=-3&minJaccard=2&timeFrame=1year',
+            ).searchParams,
+        );
+
+        const defaults = testConfig.filterDefaults.variant;
+        expect(analysis.signatureType).toBe(defaults.signatureType);
+        expect(analysis.sequenceType).toBe(defaults.sequenceType);
+        expect(analysis.minProportion).toBe(defaults.minProportion);
+        expect(analysis.minCount).toBe(defaults.minCount);
+        expect(analysis.minJaccard).toBe(defaults.minJaccard);
+        expect(analysis.timeFrame).toBe(defaults.timeFrame);
     });
 });

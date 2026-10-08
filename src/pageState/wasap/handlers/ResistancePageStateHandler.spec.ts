@@ -21,8 +21,7 @@ describe('ResistancePageStateHandler', () => {
         expect(analysis.resistanceSet).toBe('3CLpro');
         expect(analysis.proportionRange).toBe('high');
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('resistance mode always uses amino acid sequence type', () => {

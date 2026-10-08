@@ -7,7 +7,9 @@ import { type z } from 'zod';
  */
 export type UrlParam<T> = {
     parse: (raw: string) => { value: T } | undefined;
-    write: (value: T) => string;
+    // A method, so that a param can stand for an optional setting whose default isn't `undefined`
+    // (like a list that is empty by default): `parse` never gives `undefined` then.
+    write(value: T): string;
 };
 
 /** The URL params of the settings of a page, by the name of the setting, which is also the param's name. */

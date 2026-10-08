@@ -1,6 +1,6 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { getStringFromSearch } from '../../urlSearchParams';
+import { listParam } from '../../urlParams';
 import { type WasapDeconvolutionFilter } from '../wasapAnalysisFilter';
 
 export class DeconvolutionPageStateHandler extends WasapModePageStateHandler<WasapDeconvolutionFilter> {
@@ -10,19 +10,12 @@ export class DeconvolutionPageStateHandler extends WasapModePageStateHandler<Was
         super(config, 'deconvolution');
     }
 
-    protected parseAnalysis(search: URLSearchParams): WasapDeconvolutionFilter {
-        const panel = getStringFromSearch(search, 'panel');
-        return {
-            mode: 'deconvolution',
-            panel:
-                panel === undefined
-                    ? this.config.filterDefaults.deconvolution.panel
-                    : panel.split('|').filter((lineage) => lineage !== ''),
-        };
-    }
+    protected readonly params = {
+        // An emptied panel is written as `panel=`, so that it doesn't fall back to the default one.
+        panel: listParam,
+    };
 
-    protected setAnalysisSearchParams(search: URLSearchParams, analysis: WasapDeconvolutionFilter) {
-        // Written even when empty, so that an emptied panel doesn't fall back to the default one.
-        search.set('panel', analysis.panel.join('|'));
+    protected defaults(): WasapDeconvolutionFilter {
+        return { mode: 'deconvolution', panel: this.config.filterDefaults.deconvolution.panel };
     }
 }

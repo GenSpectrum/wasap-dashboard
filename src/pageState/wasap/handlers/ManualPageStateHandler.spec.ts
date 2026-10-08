@@ -24,7 +24,7 @@ describe('ManualPageStateHandler', () => {
         expect(filter.base.locationName).toBe('Zürich (ZH)');
         expect(filter.base.granularity).toBe('day');
         expect(filter.analysis).toEqual({ mode: 'manual', sequenceType: 'nucleotide', mutations: undefined });
-        expect(handler.toUrl(filter)).toBe(`/wastewater/covid/manual?${query}`);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('does not put the mode into the search params', () => {

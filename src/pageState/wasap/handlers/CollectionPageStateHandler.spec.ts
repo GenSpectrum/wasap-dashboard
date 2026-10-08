@@ -25,6 +25,10 @@ describe('CollectionPageStateHandler', () => {
         expect(handler.toUrl(filter)).not.toContain('collectionId');
     });
 
+    it('has no collection for an invalid collectionId', () => {
+        expect(parse('collectionId=abc').analysis.collectionId).toBeUndefined();
+    });
+
     it('round-trips the collectionId', () => {
         expect(handler.toUrl(parse('collectionId=789'))).toContain('collectionId=789');
     });
