@@ -91,16 +91,15 @@ function getLengthOfSegment(segment: string | undefined, referenceGenome: Refere
     switch (sequenceType) {
         case 'nucleotide': {
             if (referenceGenome.nucleotideSequences.length === 1) {
-                return referenceGenome.nucleotideSequences.at(0)?.sequence.length;
+                return referenceGenome.nucleotideSequences.at(0)?.length;
             }
 
             return referenceGenome.nucleotideSequences.find(
                 (sequence) => sequence.name.toUpperCase() === segment?.toUpperCase(),
-            )?.sequence.length;
+            )?.length;
         }
         case 'amino acid': {
-            return referenceGenome.genes.find((gene) => gene.name.toUpperCase() === segment?.toUpperCase())?.sequence
-                .length;
+            return referenceGenome.genes.find((gene) => gene.name.toUpperCase() === segment?.toUpperCase())?.length;
         }
     }
 }

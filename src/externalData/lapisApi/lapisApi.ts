@@ -1,7 +1,7 @@
 import { type z } from 'zod';
 
 import { lineageDefinitionResponseSchema } from './LineageDefinition';
-import { referenceGenomeResponse } from './ReferenceGenome';
+import { referenceGenomeResponse, type ReferenceGenome, type ReferenceSequence } from './ReferenceGenome';
 import { aggregatedResponse, type LapisBaseRequest, lapisError, problemDetail, type ProblemDetail } from './lapisTypes';
 
 export class UnknownLapisError extends Error {
@@ -80,7 +80,10 @@ export async function fetchReferenceGenome(lapisUrl: string, signal?: AbortSigna
         'the reference genomes',
     );
 
-    return referenceGenomeResponse.parse(await response.json());
+    const { nucleotideSequences, genes } = referenceGenomeResponse.parse(await response.json());
+    const lengths = (sequences: { name: string; sequence: string }[]): ReferenceSequence[] =>
+        sequences.map(({ name, sequence }) => ({ name, length: sequence.length }));
+    return { nucleotideSequences: lengths(nucleotideSequences), genes: lengths(genes) } satisfies ReferenceGenome;
 }
 
 export async function fetchLineageDefinition({
