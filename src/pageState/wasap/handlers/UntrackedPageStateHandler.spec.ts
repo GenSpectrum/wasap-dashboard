@@ -21,8 +21,7 @@ describe('UntrackedPageStateHandler', () => {
         expect(analysis.excludeSet).toBe('predefined');
         expect(analysis.excludeVariants).toBeUndefined();
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('parses and encodes untracked filter with custom excludeSet and variants', () => {
@@ -41,8 +40,7 @@ describe('UntrackedPageStateHandler', () => {
         expect(analysis.excludeSet).toBe('custom');
         expect(analysis.excludeVariants).toEqual(['XBB.1.5*', 'BA.2*', 'JN.1']);
 
-        const newUrl = handler.toUrl(filter);
-        expect(newUrl).toBe(url);
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
     it('untracked mode round-trip with pipe-separated variants', () => {
