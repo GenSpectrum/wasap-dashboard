@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { describe, expect, test } from 'vitest';
 
-import { fetchVariantSignature, getLapisFilterForTimeFrame } from './useVariantSignature';
+import { fetchVariantSignature, getLapisFilterForTimeFrame, isVariantSelected } from './useVariantSignature';
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
 import type { WasapPageConfig } from '../../config/wasapPageConfig';
@@ -267,6 +267,23 @@ describe('fetchVariantSignature', () => {
                 lineageTree,
             ),
         ).rejects.toThrow('Lineage "XFG" is not in the lineage tree.');
+    });
+
+    test('computed signature: does not ask for the signature of all sequences without a variant', async () => {
+        const analysis = {
+            mode: WASAP_ANALYSIS_MODE.variant,
+            signatureType: SIGNATURE_TYPE.computed,
+            sequenceType: SEQUENCE_TYPE.nucleotide,
+            variant: undefined,
+            minProportion: 0.8,
+            minCount: 15,
+            minJaccard: 0,
+            timeFrame: VARIANT_TIME_FRAME.all,
+        };
+
+        expect(isVariantSelected(analysis)).toBe(false);
+        expect(isVariantSelected({ ...analysis, variant: 'XFG*' })).toBe(true);
+        await expect(fetchVariantSignature(config, analysis, lineageTree)).rejects.toThrow('No variant selected');
     });
 });
 

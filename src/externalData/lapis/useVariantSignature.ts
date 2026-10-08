@@ -53,8 +53,16 @@ export function useVariantSignature(
                 }
                 throw error;
             }),
-        enabled: analysis.signatureType === 'computed' || analysis.lineage !== undefined,
+        enabled: isVariantSelected(analysis),
     });
+}
+
+/**
+ * Whether there is a variant to show: the variant of a computed signature, or the lineage of a
+ * predefined one. Without one, a computed signature would be that of all clinical sequences.
+ */
+export function isVariantSelected(analysis: WasapVariantFilter): boolean {
+    return (analysis.signatureType === 'computed' ? analysis.variant : analysis.lineage) !== undefined;
 }
 
 export async function fetchVariantSignature(
@@ -76,6 +84,9 @@ async function fetchComputedSignature(
     analysis: WasapVariantFilter,
     signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {
+    if (analysis.variant === undefined) {
+        throw new Error('No variant selected for computed variant mode.');
+    }
     const mutationsWithScore = await getMutationsForVariant(
         config.clinicalLapis.lapisBaseUrl,
         analysis.sequenceType,
