@@ -9,7 +9,8 @@ import { type LineageTree } from '../../lineageTree/lineageTree';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
 import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { GsApp } from '../GsApp';
+import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
+import { MutationLinkTemplateContextProvider } from '../MutationLinkTemplateContext';
 import { SiloUnreachableWrapper } from '../SiloUnreachableWrapper';
 import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 
@@ -78,12 +79,10 @@ function WasapLayoutConnected({ config, resistanceData, lineageTree }: WasapLayo
     };
 
     return (
-        <GsApp
-            lapis={config.lapisBaseUrl}
-            mutationAnnotations={resistanceData.mutationAnnotations}
-            mutationLinkTemplate={config.linkTemplate}
-        >
-            <Outlet context={context} />
-        </GsApp>
+        <MutationAnnotationsContextProvider value={resistanceData.mutationAnnotations}>
+            <MutationLinkTemplateContextProvider value={config.linkTemplate}>
+                <Outlet context={context} />
+            </MutationLinkTemplateContextProvider>
+        </MutationAnnotationsContextProvider>
     );
 }

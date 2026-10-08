@@ -13,11 +13,10 @@ import type { ParsedQueryResult, ParseQueryRequest } from './src/externalData/la
 // type) are all gone — none of that code was copied.
 export const DUMMY_BACKEND_URL = 'http://backend.dummy';
 export const DUMMY_LAPIS_URL = 'http://lapis.dummy';
+export const DUMMY_SILO_URL = 'http://silo.dummy';
 
 type MSWWorkerOrServer = SetupWorker | SetupServer;
 
-type ReferenceSequence = { name: string; sequence: string };
-type ReferenceGenome = { nucleotideSequences: ReferenceSequence[]; genes: ReferenceSequence[] };
 type LineageDefinition = Record<
     string,
     {
@@ -40,6 +39,32 @@ export class CovSpectrumRouteMocker {
         this.workerOrServer.use(
             http.get(`${baseUrl}/resource/collection`, () => {
                 return new Response(JSON.stringify(response), { status: statusCode });
+            }),
+        );
+    }
+}
+
+/**
+ * Allows you to mock SILO's `/query` route on DUMMY_SILO_URL: a query, exactly as sent, answered
+ * with NDJSON rows. A query nothing mocks fails the test as an unhandled request.
+ */
+export class SiloRouteMocker {
+    constructor(private workerOrServer: MSWWorkerOrServer) {}
+
+    mockReferenceGenome(rows: { name: string; type: 'nucleotide' | 'amino_acid'; sequence: string }[]) {
+        this.mockQuery('reference_genomes', rows);
+    }
+
+    mockQuery(query: string, rows: Record<string, unknown>[], statusCode = 200) {
+        this.workerOrServer.use(
+            http.post(`${DUMMY_SILO_URL}/query`, async ({ request }) => {
+                if ((await request.text()) !== query) {
+                    return undefined;
+                }
+                return new Response(rows.map((row) => JSON.stringify(row)).join('\n'), {
+                    status: statusCode,
+                    headers: { 'content-type': 'application/x-ndjson' },
+                });
             }),
         );
     }
@@ -72,14 +97,6 @@ export class LapisRouteMocker {
 
     mockPostAggregatedMulti(cases: MockCase[]) {
         this.workerOrServer.use(http.post(`${DUMMY_LAPIS_URL}/sample/aggregated`, resolver(cases)));
-    }
-
-    mockReferenceGenome(response: ReferenceGenome, statusCode = 200) {
-        this.mockReferenceGenomeWithUrl(DUMMY_LAPIS_URL, response, statusCode);
-    }
-
-    mockReferenceGenomeWithUrl(lapisUrl: string, response: ReferenceGenome, statusCode = 200) {
-        this.workerOrServer.use(http.get(`${lapisUrl}/sample/referenceGenome`, resolver([{ statusCode, response }])));
     }
 
     mockLineageDefinition(fieldName: string, response: LineageDefinition, statusCode = 200) {

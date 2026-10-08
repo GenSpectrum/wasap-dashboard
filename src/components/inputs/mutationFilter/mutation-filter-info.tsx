@@ -1,29 +1,25 @@
-import { useContext } from 'react';
-
 import { ExampleMutation } from './ExampleMutation';
-import { isSingleSegmented, type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
-import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
+import { isSingleSegmented, type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import Info, { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../../shared/info';
 
-export const MutationFilterInfo = () => {
+export const MutationFilterInfo = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     return (
         <Info>
             <InfoHeadline1> Mutation Filter</InfoHeadline1>
             <InfoParagraph>This component allows you to filter for mutations at specific positions.</InfoParagraph>
 
-            <QuickStart />
-            <NucleotideMutationsInfo />
-            <AminoAcidMutationsInfo />
-            <InsertionWildcards />
+            <QuickStart referenceGenome={referenceGenome} />
+            <NucleotideMutationsInfo referenceGenome={referenceGenome} />
+            <AminoAcidMutationsInfo referenceGenome={referenceGenome} />
+            <InsertionWildcards referenceGenome={referenceGenome} />
             <MultipleMutations />
-            <AnyMutation />
+            <AnyMutation referenceGenome={referenceGenome} />
             <NoMutation />
         </Info>
     );
 };
 
-const QuickStart = () => {
-    const referenceGenome = useContext(ReferenceGenomeContext);
+const QuickStart = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     return (
         <>
             <InfoHeadline2>Quickstart</InfoHeadline2>
@@ -32,25 +28,41 @@ const QuickStart = () => {
                     {referenceGenome.nucleotideSequences.length > 0 && (
                         <li>
                             Filter for nucleotide mutations:{' '}
-                            <ExampleMutation mutationType='substitution' sequenceType='nucleotide' />
+                            <ExampleMutation
+                                referenceGenome={referenceGenome}
+                                mutationType='substitution'
+                                sequenceType='nucleotide'
+                            />
                         </li>
                     )}
                     {referenceGenome.genes.length > 0 && (
                         <li>
                             Filter for amino acid mutations:{' '}
-                            <ExampleMutation mutationType='substitution' sequenceType='amino acid' />
+                            <ExampleMutation
+                                referenceGenome={referenceGenome}
+                                mutationType='substitution'
+                                sequenceType='amino acid'
+                            />
                         </li>
                     )}
                     {referenceGenome.nucleotideSequences.length > 0 && (
                         <li>
                             Filter for nucleotide insertions:{' '}
-                            <ExampleMutation mutationType='insertion' sequenceType='nucleotide' />
+                            <ExampleMutation
+                                referenceGenome={referenceGenome}
+                                mutationType='insertion'
+                                sequenceType='nucleotide'
+                            />
                         </li>
                     )}
                     {referenceGenome.genes.length > 0 && (
                         <li>
                             Filter for amino acid insertions:{' '}
-                            <ExampleMutation mutationType='insertion' sequenceType='amino acid' />
+                            <ExampleMutation
+                                referenceGenome={referenceGenome}
+                                mutationType='insertion'
+                                sequenceType='amino acid'
+                            />
                         </li>
                     )}
                 </ul>
@@ -75,9 +87,7 @@ const QuickStart = () => {
     );
 };
 
-const NucleotideMutationsInfo = () => {
-    const referenceGenome = useContext(ReferenceGenomeContext);
-
+const NucleotideMutationsInfo = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     if (referenceGenome.nucleotideSequences.length === 0) {
         return null;
     }
@@ -118,15 +128,15 @@ const NucleotideMutationsInfo = () => {
             </InfoParagraph>
             <InfoParagraph>
                 Insertions can be searched for in the same manner, they just need to have <b>ins_</b> appended to the
-                start of the mutation. Example: <ExampleMutation mutationType='insertion' sequenceType='nucleotide' />.
+                start of the mutation. Example:{' '}
+                <ExampleMutation referenceGenome={referenceGenome} mutationType='insertion' sequenceType='nucleotide' />
+                .
             </InfoParagraph>
         </>
     );
 };
 
-const AminoAcidMutationsInfo = () => {
-    const referenceGenome = useContext(ReferenceGenomeContext);
-
+const AminoAcidMutationsInfo = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     if (referenceGenome.genes.length === 0) {
         return null;
     }
@@ -140,7 +150,13 @@ const AminoAcidMutationsInfo = () => {
                 An amino acid mutation has the format <b>&lt;gene&gt;:&lt;position&gt;&lt;base&gt;</b> or
                 <b>&lt;gene&gt;:&lt;base_ref&gt;&lt;position&gt;&lt;base&gt;</b>. A <b>&lt;base&gt;</b> can be one of
                 the 20 amino acid codes. It can also be <b>*</b> for a stop codon, <b>-</b> for deletion and <b>X</b>{' '}
-                for unknown. Example: <ExampleMutation mutationType='substitution' sequenceType='amino acid' />.
+                for unknown. Example:{' '}
+                <ExampleMutation
+                    referenceGenome={referenceGenome}
+                    mutationType='substitution'
+                    sequenceType='amino acid'
+                />
+                .
             </InfoParagraph>
             <InfoParagraph>
                 Insertions can be searched for in the same manner, they just need to have <b>ins_</b> appended to the
@@ -151,9 +167,7 @@ const AminoAcidMutationsInfo = () => {
     );
 };
 
-const InsertionWildcards = () => {
-    const referenceGenome = useContext(ReferenceGenomeContext);
-
+const InsertionWildcards = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     if (referenceGenome.nucleotideSequences.length === 0 && referenceGenome.genes.length === 0) {
         return null;
     }
@@ -220,9 +234,7 @@ const MultipleMutations = () => {
     );
 };
 
-const AnyMutation = () => {
-    const referenceGenome = useContext(ReferenceGenomeContext);
-
+const AnyMutation = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     return (
         <>
             <InfoHeadline2>Any Mutation</InfoHeadline2>

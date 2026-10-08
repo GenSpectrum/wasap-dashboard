@@ -7,17 +7,17 @@ describe('getSequenceType', () => {
         nucleotideSequences: [
             {
                 name: 'nuc1',
-                sequence: 'ACGT',
+                length: 4,
             },
         ],
         genes: [
             {
                 name: 'gene1',
-                sequence: 'ACGT',
+                length: 4,
             },
             {
                 name: 'gene2',
-                sequence: 'ACGT',
+                length: 4,
             },
         ],
     };
@@ -26,21 +26,21 @@ describe('getSequenceType', () => {
         nucleotideSequences: [
             {
                 name: 'nuc1',
-                sequence: 'ACGT',
+                length: 4,
             },
             {
                 name: 'nuc2',
-                sequence: 'ACGT',
+                length: 4,
             },
         ],
         genes: [
             {
                 name: 'gene1',
-                sequence: 'ACGT',
+                length: 4,
             },
             {
                 name: 'gene2',
-                sequence: 'ACGT',
+                length: 4,
             },
         ],
     };

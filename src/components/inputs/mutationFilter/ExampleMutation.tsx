@@ -1,18 +1,15 @@
-import { useContext } from 'react';
 import type { FC } from 'react';
 
-import { type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
+import { type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import type { SequenceType } from '../../../types/dashboardComponents';
-import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';
 
 type ExampleMutationProps = {
+    referenceGenome: ReferenceGenome;
     sequenceType: SequenceType;
     mutationType: 'substitution' | 'insertion';
 };
 
-export const ExampleMutation: FC<ExampleMutationProps> = ({ sequenceType, mutationType }) => {
-    const referenceGenome = useContext(ReferenceGenomeContext);
-
+export const ExampleMutation: FC<ExampleMutationProps> = ({ referenceGenome, sequenceType, mutationType }) => {
     return <b>{getExampleMutation(referenceGenome, sequenceType, mutationType)}</b>;
 };
 
