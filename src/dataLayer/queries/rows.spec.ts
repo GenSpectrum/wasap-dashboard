@@ -19,18 +19,9 @@ describe('readTotalCount', () => {
         expect(readTotalCount([{ n: 596520334 }])).toBe(596520334);
     });
 
-    test('sums n across one row per location, blank name included', () => {
-        expect(
-            readTotalCount([
-                { locationName: 'Zürich (ZH)', n: 596520334 },
-                { locationName: 'Basel (BS)', n: 12345 },
-                { locationName: '', n: 6 },
-            ]),
-        ).toBe(596532685);
-    });
-
-    test('no rows means no reads', () => {
-        expect(readTotalCount([])).toBe(0);
+    test('anything but one row throws', () => {
+        expect(() => readTotalCount([])).toThrow('one');
+        expect(() => readTotalCount([{ n: 1 }, { n: 2 }])).toThrow('one');
     });
 
     test('a non-count value throws and names the column', () => {
