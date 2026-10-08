@@ -16,8 +16,6 @@ export const DUMMY_LAPIS_URL = 'http://lapis.dummy';
 
 type MSWWorkerOrServer = SetupWorker | SetupServer;
 
-type ReferenceSequence = { name: string; sequence: string };
-type ReferenceGenome = { nucleotideSequences: ReferenceSequence[]; genes: ReferenceSequence[] };
 type LineageDefinition = Record<
     string,
     {
@@ -72,14 +70,6 @@ export class LapisRouteMocker {
 
     mockPostAggregatedMulti(cases: MockCase[]) {
         this.workerOrServer.use(http.post(`${DUMMY_LAPIS_URL}/sample/aggregated`, resolver(cases)));
-    }
-
-    mockReferenceGenome(response: ReferenceGenome, statusCode = 200) {
-        this.mockReferenceGenomeWithUrl(DUMMY_LAPIS_URL, response, statusCode);
-    }
-
-    mockReferenceGenomeWithUrl(lapisUrl: string, response: ReferenceGenome, statusCode = 200) {
-        this.workerOrServer.use(http.get(`${lapisUrl}/sample/referenceGenome`, resolver([{ statusCode, response }])));
     }
 
     mockLineageDefinition(fieldName: string, response: LineageDefinition, statusCode = 200) {

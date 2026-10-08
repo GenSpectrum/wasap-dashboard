@@ -4,7 +4,7 @@ import { type FC, useContext, useEffect, useMemo, useState } from 'react';
 import { getExampleMutation } from './ExampleMutation';
 import { MutationFilterInfo } from './mutation-filter-info';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
-import { type ReferenceGenome } from '../../../externalData/lapisApi/ReferenceGenome';
+import { type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import { type MutationsFilter, mutationType, type MutationType } from '../../../types/dashboardComponents';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
 import { ReferenceGenomeContext } from '../../ReferenceGenomeContext';

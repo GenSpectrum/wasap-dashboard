@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { type ReferenceGenome } from '../externalData/lapisApi/ReferenceGenome';
+import { type ReferenceGenome } from '../dataLayer/queries/referenceGenome';
 
 const UNINITIALIZED_SEQUENCE = '__uninitialized__';
 

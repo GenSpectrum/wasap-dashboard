@@ -33,9 +33,8 @@ const workerFixture = itBase.extend<{ mswWorker: never }>({
  * use like this:
  *
  *     it('...', async ({ routeMockers }) => {
- *         routeMockers.lapis.mockReferenceGenome({
- *             nucleotideSequences: [{ name: 'main', sequence: 'ATGC' }],
- *             genes: [],
+ *         routeMockers.lapis.mockLineageDefinition('pangoLineage', {
+ *             'JN.1': { parents: ['BA.2'], aliases: [] },
  *         });
  *         ...
  */

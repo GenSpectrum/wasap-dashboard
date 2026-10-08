@@ -2,10 +2,15 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { DUMMY_LAPIS_URL, type LapisRouteMocker } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
+import type { ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { GsApp } from '../../GsApp';
+
+const REFERENCE_GENOME: ReferenceGenome = {
+    nucleotideSequences: [{ name: 'main', length: 20000 }],
+    genes: [{ name: 'S', length: 20000 }],
+};
 
 describe('ManualAnalysisFilter', () => {
     const defaultPageState: WasapManualFilter = {
@@ -14,12 +19,11 @@ describe('ManualAnalysisFilter', () => {
         mutations: undefined,
     };
 
-    it('renders with nucleotide sequence type selected', async ({ routeMockers: { lapis } }) => {
-        setupLapisMocks(lapis);
+    it('renders with nucleotide sequence type selected', async () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -28,8 +32,7 @@ describe('ManualAnalysisFilter', () => {
         await expect.element(nucleotideRadio).toBeChecked();
     });
 
-    it('renders with amino acid sequence type selected', async ({ routeMockers: { lapis } }) => {
-        setupLapisMocks(lapis);
+    it('renders with amino acid sequence type selected', async () => {
         const mockSetPageState = vi.fn();
         const pageState: WasapManualFilter = {
             ...defaultPageState,
@@ -37,7 +40,7 @@ describe('ManualAnalysisFilter', () => {
         };
 
         const { getByLabelText } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -46,8 +49,7 @@ describe('ManualAnalysisFilter', () => {
         await expect.element(aminoAcidRadio).toBeChecked();
     });
 
-    it('clears mutations when changing sequence type', async ({ routeMockers: { lapis } }) => {
-        setupLapisMocks(lapis);
+    it('clears mutations when changing sequence type', async () => {
         const mockSetPageState = vi.fn();
         const pageState: WasapManualFilter = {
             ...defaultPageState,
@@ -56,7 +58,7 @@ describe('ManualAnalysisFilter', () => {
         };
 
         const { getByLabelText } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -71,14 +73,11 @@ describe('ManualAnalysisFilter', () => {
         });
     });
 
-    it('does not call setPageState when clicking the already selected sequence type', async ({
-        routeMockers: { lapis },
-    }) => {
-        setupLapisMocks(lapis);
+    it('does not call setPageState when clicking the already selected sequence type', async () => {
         const mockSetPageState = vi.fn();
 
         const { getByLabelText } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -89,14 +88,11 @@ describe('ManualAnalysisFilter', () => {
         expect(mockSetPageState).not.toHaveBeenCalled();
     });
 
-    it('calls setPageState with nucleotide mutation when entering and confirming A23T', async ({
-        routeMockers: { lapis },
-    }) => {
-        setupLapisMocks(lapis);
+    it('calls setPageState with nucleotide mutation when entering and confirming A23T', async () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -114,8 +110,7 @@ describe('ManualAnalysisFilter', () => {
         });
     });
 
-    it('calls setPageState with amino acid mutation when in amino acid mode', async ({ routeMockers: { lapis } }) => {
-        setupLapisMocks(lapis);
+    it('calls setPageState with amino acid mutation when in amino acid mode', async () => {
         const mockSetPageState = vi.fn();
         const pageState: WasapManualFilter = {
             ...defaultPageState,
@@ -123,7 +118,7 @@ describe('ManualAnalysisFilter', () => {
         };
 
         const { getByRole } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -141,12 +136,11 @@ describe('ManualAnalysisFilter', () => {
         });
     });
 
-    it('allows multiple mutations to be entered', async ({ routeMockers: { lapis } }) => {
-        setupLapisMocks(lapis);
+    it('allows multiple mutations to be entered', async () => {
         const mockSetPageState = vi.fn();
 
         const { getByRole } = render(
-            <GsApp lapis={DUMMY_LAPIS_URL}>
+            <GsApp referenceGenome={REFERENCE_GENOME}>
                 <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />
             </GsApp>,
         );
@@ -176,11 +170,3 @@ describe('ManualAnalysisFilter', () => {
         });
     });
 });
-
-function setupLapisMocks(lapisRouteMocker: LapisRouteMocker) {
-    const sequence = 'ATGC'.repeat(5000); // 20,000 base pairs
-    lapisRouteMocker.mockReferenceGenome({
-        nucleotideSequences: [{ name: 'main', sequence }],
-        genes: [{ name: 'S', sequence }],
-    });
-}
