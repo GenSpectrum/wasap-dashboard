@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import { getJson } from './getJson';
 import { collectionsRawResponseSchema, type CollectionRaw } from './types';
 import { getClientLogger } from '../../clientLogger';
 
@@ -11,22 +10,30 @@ const logger = getClientLogger('getCollections');
  *
  * @param covSpectrumApiBaseUrl The base URL of the CoV-Spectrum API (e.g., 'https://cov-spectrum.org/api/v2')
  * @param titleFilter Optional string to filter collections by title (case-insensitive substring match)
+ * @param signal Aborts the request
  * @returns A promise that resolves to an array of Collection objects
  * @throws Error if the request fails or response validation fails
  */
-export async function getCollections(covSpectrumApiBaseUrl: string, titleFilter?: string): Promise<CollectionRaw[]> {
+export async function getCollections(
+    covSpectrumApiBaseUrl: string,
+    titleFilter?: string,
+    signal?: AbortSignal,
+): Promise<CollectionRaw[]> {
     const url = `${covSpectrumApiBaseUrl}/resource/collection`;
 
-    let response;
+    let response: unknown;
     try {
-        response = await axios.get(url);
+        response = await getJson(url, signal);
     } catch (error) {
-        const message = `Failed to fetch collections: ${JSON.stringify(error)}`;
+        if (signal?.aborted === true) {
+            throw error;
+        }
+        const message = `Failed to fetch collections: ${error instanceof Error ? error.message : String(error)}`;
         logger.error(message);
-        throw new Error(message);
+        throw new Error(message, { cause: error });
     }
 
-    const parsedResponse = collectionsRawResponseSchema.safeParse(response.data);
+    const parsedResponse = collectionsRawResponseSchema.safeParse(response);
     if (parsedResponse.success) {
         // Sort by ID to ensure consistent ordering
         let collections = parsedResponse.data.sort((c1, c2) => c1.id - c2.id);
@@ -40,7 +47,7 @@ export async function getCollections(covSpectrumApiBaseUrl: string, titleFilter?
         return collections;
     }
 
-    const message = `Failed to parse collections response: ${JSON.stringify(parsedResponse.error)} (was ${JSON.stringify(response.data)})`;
+    const message = `Failed to parse collections response: ${JSON.stringify(parsedResponse.error)} (was ${JSON.stringify(response)})`;
     logger.error(message);
     throw new Error(message);
 }
