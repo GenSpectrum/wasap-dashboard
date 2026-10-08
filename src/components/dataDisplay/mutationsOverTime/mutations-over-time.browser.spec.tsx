@@ -8,7 +8,7 @@ import type { SiloSchema } from '../../../dataLayer/queries/schema';
 import { MutationAnnotationsContextProvider } from '../../MutationAnnotationsContext';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -27,10 +27,10 @@ function ndjson(rows: unknown[]): Response {
 
 /**
  * Routes the three SILO queries the component sends to canned NDJSON:
- *  - the date axis (`groupBy({n := count()}, {date})`) -> two day buckets
+ *  - the date axis (`group(by := {date}, aggs := {n := count()})`) -> two day buckets
  *  - the metadata `mutations(minProportion := 0.001, …)` call -> the two
  *    display mutations, each above the floor
- *  - one position-over-time query (`map({sym := main.at(P)}).groupBy({count := count()}, {date, sym})`)
+ *  - one position-over-time query (`map({sym := main.at(P)}).group(by := {date, sym}, aggs := {count := count()})`)
  *    per distinct position -> a symbol distribution per day, so every cell resolves
  *
  * Position 241: alt `T` = 90% of coverage in both buckets.
@@ -158,8 +158,8 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await vi.waitFor(() => expect(positionBodies()).toHaveLength(2));
 
         expect(positionBodies()).toEqual([
-            'default.map({sym := main.at(241)}).groupBy({count := count()}, {date, sym})',
-            'default.map({sym := main.at(3037)}).groupBy({count := count()}, {date, sym})',
+            'data.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+            'data.map({sym := main.at(3037)}).group(by := {date, sym}, aggs := {count := count()})',
         ]);
     });
 

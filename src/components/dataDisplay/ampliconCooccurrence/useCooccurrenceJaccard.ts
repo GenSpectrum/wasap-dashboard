@@ -19,7 +19,7 @@ export function useCooccurrenceJaccard(
         enabled: source !== undefined && clusters.length > 0,
         queryKey: ['cluster-jaccards', source, clusters],
         staleTime: Infinity,
-        queryFn: () => getClusterJaccards(source!, clusters),
+        queryFn: ({ signal }) => getClusterJaccards(source!, clusters, signal),
     });
 
     const jaccardIndices = useMemo(

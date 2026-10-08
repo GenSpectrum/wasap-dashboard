@@ -6,7 +6,7 @@ import { ConnectionProvider, useConnection, useSiloSchema } from './connection';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -27,9 +27,9 @@ describe('useConnection', () => {
         const { result } = renderHook(() => useConnection(), { wrapper });
 
         expect(result.current.url).toBe('https://silo.example.org/covid');
-        expect(result.current.table).toBe('default');
-        expect(result.current.root().render()).toBe('default');
-        expect(result.current.key).toEqual(['https://silo.example.org/covid', 'default']);
+        expect(result.current.table).toBe('data');
+        expect(result.current.root().render()).toBe('data');
+        expect(result.current.key).toEqual(['https://silo.example.org/covid', 'data']);
     });
 
     it('keeps the same Connection instance across re-renders while the inputs are unchanged', () => {

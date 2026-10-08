@@ -5,7 +5,7 @@
  * ```
  * filter(<scope>)
  *   .map({p241 := main.at(241), p670 := main.at(670), …})
- *   .groupBy({count := count()}, {<grouping columns>, p241, p670, …})
+ *   .group(by := {<grouping columns>, p241, p670, …}, aggs := {count := count()})
  * ```
  *
  * The amplicon co-occurrence reads it as it is (which mutations are on one read, by date); the
@@ -43,5 +43,5 @@ export function jointSymbolsQuery(
                 positions.map((position) => [positionColumn(position), field(sequenceName).at(position)]),
             ),
         )
-        .groupBy({ count: count() }, [...groupBy, ...positions.map(positionColumn)]);
+        .group({ count: count() }, [...groupBy, ...positions.map(positionColumn)]);
 }

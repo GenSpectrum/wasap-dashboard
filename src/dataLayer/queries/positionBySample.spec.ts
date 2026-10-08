@@ -4,7 +4,7 @@ import { positionBySampleQuery, readPositionBySample } from './positionBySample'
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -17,7 +17,7 @@ const schema: SiloSchema = {
 describe('positionBySampleQuery', () => {
     test('maps the symbol at one position, then groups by sample and sym, unfiltered', () => {
         expect(positionBySampleQuery(schema, 'main', 2083).render()).toBe(
-            'default.map({sym := main.at(2083)}).groupBy({count := count()}, {sampleId, sym})',
+            'data.map({sym := main.at(2083)}).group(by := {sampleId, sym}, aggs := {count := count()})',
         );
     });
 });

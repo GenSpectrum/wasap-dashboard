@@ -7,7 +7,7 @@ import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { SiloSchema } from '../../../dataLayer/queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -26,7 +26,7 @@ function ndjson(rows: unknown[]): Response {
 
 /**
  * Routes the SILO queries the component sends to canned NDJSON:
- *  - the date axis (`groupBy({n := count()}, {date}).orderBy(...)`) -> two day buckets, 1000 reads each
+ *  - the date axis (`group(by := {date}, aggs := {n := count()}).order(...)`) -> two day buckets, 1000 reads each
  *  - the coverage query per query (`... maybe(nucleotideEquals(position := P ...`) -> 1000/day
  *  - the count query per query (`nucleotideEquals(position := P ...`, no `maybe`) -> 900/day for 241, 100/day for 3037
  *
@@ -112,14 +112,14 @@ describe('QueriesOverTime (SILO)', () => {
 
         const bodies = () => fetchMock.mock.calls.map(([, init]) => (typeof init?.body === 'string' ? init.body : ''));
         const countQuery =
-            "default.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
+            "data.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
             "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
-            '.groupBy({n := count()}, {date})';
+            '.group(by := {date}, aggs := {n := count()})';
         const coverageQuery =
-            "default.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
+            "data.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
             "(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main') || " +
             "!maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))))" +
-            '.groupBy({n := count()}, {date})';
+            '.group(by := {date}, aggs := {n := count()})';
 
         await vi.waitFor(() => {
             expect(bodies()).toContain(countQuery);

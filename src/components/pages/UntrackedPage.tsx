@@ -20,7 +20,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
         setPageState,
     } = usePageState(pageStateHandler);
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
-    const { data, isPending, isError } = useUntrackedMutations(config, analysis);
+    const { data, isPending, error } = useUntrackedMutations(config, analysis);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
@@ -30,7 +30,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
     // Keyed on the clinical-LAPIS coordinates the query actually targets, not just 'cladeLineages'.
     const cladeLineageQueryResult = useQuery({
         queryKey: ['cladeLineages', true, lapisBaseUrl, cladeField, lineageField],
-        queryFn: () => getCladeLineages(lapisBaseUrl, cladeField, lineageField, true),
+        queryFn: ({ signal }) => getCladeLineages(lapisBaseUrl, cladeField, lineageField, true, signal),
     });
 
     return (
@@ -54,7 +54,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
                 </FilterSidebar>
             }
         >
-            <WasapResults data={data} isError={isError} isPending={isPending || isFilterPending}>
+            <WasapResults data={data} error={error} isPending={isPending || isFilterPending}>
                 {(displayMutations) => (
                     <MutationsResult
                         displayMutations={displayMutations}

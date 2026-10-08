@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import { getJson } from './getJson';
 import { collectionRawSchema, collectionVariantSchema, type Collection, type CollectionVariant } from './types';
 import { getClientLogger } from '../../clientLogger';
 
@@ -13,24 +12,32 @@ const logger = getClientLogger('getCollection');
  *
  * @param covSpectrumApiBaseUrl The base URL of the CoV-Spectrum API (e.g., 'https://cov-spectrum.org/api/v2')
  * @param id The ID of the collection to fetch
+ * @param signal Aborts the request
  * @returns A promise that resolves to a Collection object
  * @throws Error if the request fails or response validation fails
  */
-export async function getCollection(covSpectrumApiBaseUrl: string, id: number): Promise<Collection> {
+export async function getCollection(
+    covSpectrumApiBaseUrl: string,
+    id: number,
+    signal?: AbortSignal,
+): Promise<Collection> {
     const url = `${covSpectrumApiBaseUrl}/resource/collection/${id}`;
 
-    let response;
+    let response: unknown;
     try {
-        response = await axios.get(url);
+        response = await getJson(url, signal);
     } catch (error) {
-        const message = `Failed to fetch collection ${id}: ${JSON.stringify(error)}`;
+        if (signal?.aborted === true) {
+            throw error;
+        }
+        const message = `Failed to fetch collection ${id}: ${error instanceof Error ? error.message : String(error)}`;
         logger.error(message);
-        throw new Error(message);
+        throw new Error(message, { cause: error });
     }
 
-    const parsedResponse = collectionRawSchema.safeParse(response.data);
+    const parsedResponse = collectionRawSchema.safeParse(response);
     if (!parsedResponse.success) {
-        const message = `Failed to parse collection ${id} response: ${JSON.stringify(parsedResponse.error)} (was ${JSON.stringify(response.data)})`;
+        const message = `Failed to parse collection ${id} response: ${JSON.stringify(parsedResponse.error)} (was ${JSON.stringify(response)})`;
         logger.error(message);
         throw new Error(message);
     }

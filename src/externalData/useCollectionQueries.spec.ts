@@ -30,7 +30,7 @@ const unusedBaseConfigFields = {
     locationNameField: '',
     silo: {
         url: '',
-        table: 'default',
+        table: 'data',
         dateColumn: 'date',
         dateColumnIsDictionaryEncoded: true,
         samplingDateColumn: 'samplingDate',

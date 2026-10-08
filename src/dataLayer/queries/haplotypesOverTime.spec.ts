@@ -4,7 +4,7 @@ import { haplotypesOverTimeQuery, readHaplotypesOverTime } from './haplotypesOve
 import type { SiloSchema } from './schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -17,9 +17,9 @@ const schema: SiloSchema = {
 describe('haplotypesOverTimeQuery', () => {
     test('maps one symbol column per position, then groups by the date and all of them', () => {
         expect(haplotypesOverTimeQuery(schema, { locationName: 'Zürich (ZH)' }, 'main', [2000, 2100]).render()).toBe(
-            "default.filter(locationName = 'Zürich (ZH)')" +
+            "data.filter(locationName = 'Zürich (ZH)')" +
                 '.map({p2000 := main.at(2000), p2100 := main.at(2100)})' +
-                '.groupBy({count := count()}, {date, p2000, p2100})',
+                '.group(by := {date, p2000, p2100}, aggs := {count := count()})',
         );
     });
 });

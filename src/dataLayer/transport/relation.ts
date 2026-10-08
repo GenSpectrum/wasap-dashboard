@@ -9,20 +9,18 @@
  * - `offset(0)` is the relation unchanged.
  */
 
-import { field, int, num, record, renderArgs, set, type Args, type Expr } from './expression';
+import { Expr, field, int, num, PRECEDENCE, record, renderArgs, set, type Args } from './expression';
 
 /** Anything that can be sent. */
 export type Queryable = { render(): string };
 
 /**
- * Grouping columns.
+ * Grouping columns, by name: `{sampleId, batchId}`.
  *
- * Names where the columns already exist — `{sampleId, batchId}` — and
- * assignments where they are computed. The instance takes one form or the
- * other and not a mixture, so a list holding one assignment must be all
- * assignments, and an existing column then travels as `sampleId := sampleId`.
+ * The instance takes only names here, so a computed column is `map()`-ed first
+ * and then grouped by its name.
  */
-export type GroupColumns = readonly (Expr | string)[] | Readonly<Record<string, Expr>>;
+export type GroupColumns = readonly string[];
 
 export type MutationOptions = {
     minProportion?: number;
@@ -40,8 +38,9 @@ export type Relation = Queryable & {
     filter(predicate: Expr | undefined): Relation;
     map(assignments: Readonly<Record<string, Expr>>): Relation;
     project(columns: readonly (Expr | string)[]): Relation;
-    groupBy(aggregates: Readonly<Record<string, Expr>>, columns?: GroupColumns): Relation;
-    orderBy(...keys: readonly Expr[]): Relation;
+    /** Aggregates per group of `columns`; without columns, over the whole relation. */
+    group(aggregates: Readonly<Record<string, Expr>>, columns?: GroupColumns): Relation;
+    order(...keys: readonly Expr[]): Relation;
     /** Rows to skip. Zero appends nothing, and must precede any limit. */
     offset(count: number): Relation;
     /** Rows to keep. Ends the pipeline. */
@@ -70,9 +69,9 @@ function relation(text: string): Relation {
         filter: (predicate) => (predicate === undefined ? relation(text) : pipe('filter', [predicate])),
         map: (assignments) => pipe('map', [record(assignments)]),
         project: (columns) => pipe('project', [set(columns.map(asExpr))]),
-        groupBy: (aggregates, columns) =>
-            pipe('groupBy', columns === undefined ? [record(aggregates)] : [record(aggregates), groupColumns(columns)]),
-        orderBy: (...keys) => pipe('orderBy', [set(keys)]),
+        group: (aggregates, columns) =>
+            pipe('group', { by: columns === undefined ? NO_COLUMNS : groupColumns(columns), aggs: record(aggregates) }),
+        order: (...keys) => pipe('order', { by: set(keys) }),
         offset: (count) => {
             if (!Number.isInteger(count) || count < 0) {
                 throw new Error(`Not a row offset: ${count}`);
@@ -93,8 +92,11 @@ function relation(text: string): Relation {
     };
 }
 
+/** `by := {}`: one group, the whole relation. `group` requires `by`, so it is spelled out. */
+const NO_COLUMNS = new Expr(PRECEDENCE.atomic, '{}');
+
 function groupColumns(columns: GroupColumns): Expr {
-    return Array.isArray(columns) ? set(columns.map(asExpr)) : record(columns as Readonly<Record<string, Expr>>);
+    return set(columns.map((name) => field(name)));
 }
 
 function asExpr(column: Expr | string): Expr {

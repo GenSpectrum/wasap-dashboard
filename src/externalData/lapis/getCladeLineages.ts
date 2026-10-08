@@ -1,9 +1,5 @@
-import axios from 'axios';
-
-import { aggregatedResponse } from './types';
-import { getClientLogger } from '../../clientLogger';
-
-const logger = getClientLogger('getCladeLineages');
+import { lapisPost } from '../lapisApi/lapisApi';
+import { aggregatedResponse } from '../lapisApi/lapisTypes';
 
 /**
  * Finds the lineage definition belonging to clades, by looking for the lineage that is most
@@ -15,32 +11,17 @@ export async function getCladeLineages(
     cladeField: string,
     lineageField: string,
     withAsterisk = false,
+    signal?: AbortSignal,
 ): Promise<Record<string, string>> {
-    const url = `${baseUrl.replace(/\/$/, '')}/sample/aggregated`;
     const body = {
         fields: [cladeField, lineageField],
         orderBy: [cladeField, { field: 'count', type: 'descending' }],
     };
-
-    let response;
-    try {
-        response = await axios.post(url, body);
-    } catch (error) {
-        const message = `Failed to fetch clade lineages: ${JSON.stringify(error)}`;
-        logger.error(message);
-        throw new Error(message);
-    }
-
-    const parsedResponse = aggregatedResponse.safeParse(response.data);
-    if (!parsedResponse.success) {
-        const message = `Failed to parse clade lineages response: ${JSON.stringify(parsedResponse)} (was ${JSON.stringify(response.data)})`;
-        logger.error(message);
-        throw new Error(message);
-    }
+    const response = await lapisPost(baseUrl, '/sample/aggregated', body, aggregatedResponse, 'clade lineages', signal);
 
     const mapping: Record<string, string> = {};
 
-    for (const row of parsedResponse.data.data) {
+    for (const row of response.data) {
         const clade = row[cladeField];
         const lineage = row[lineageField];
 

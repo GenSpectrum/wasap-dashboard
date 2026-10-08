@@ -43,9 +43,11 @@ export function useVariantSignature(
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
         queryKey: ['variantSignature', config.genSpectrumOrganismName, analysis],
-        queryFn: () =>
-            fetchVariantSignature(config, analysis, lineageTree).catch((error: unknown) => {
-                logger.error(`Failed to fetch the variant signature: ${getErrorLogMessage(error)}`);
+        queryFn: ({ signal }) =>
+            fetchVariantSignature(config, analysis, lineageTree, signal).catch((error: unknown) => {
+                if (!signal.aborted) {
+                    logger.error(`Failed to fetch the variant signature: ${getErrorLogMessage(error)}`);
+                }
                 throw error;
             }),
         enabled: analysis.signatureType === 'computed' || analysis.lineage !== undefined,
@@ -56,18 +58,20 @@ export async function fetchVariantSignature(
     config: WasapPageConfigFor<'variant'>,
     analysis: WasapVariantFilter,
     lineageTree: LineageTree | undefined,
+    signal?: AbortSignal,
 ): Promise<VariantSignature> {
     switch (analysis.signatureType) {
         case 'computed':
-            return fetchComputedSignature(config, analysis);
+            return fetchComputedSignature(config, analysis, signal);
         case 'predefined':
-            return fetchPredefinedSignature(config, analysis, lineageTree);
+            return fetchPredefinedSignature(config, analysis, lineageTree, signal);
     }
 }
 
 async function fetchComputedSignature(
     config: WasapPageConfigFor<'variant'>,
     analysis: WasapVariantFilter,
+    signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {
     const mutationsWithScore = await getMutationsForVariant(
         config.clinicalLapis.lapisBaseUrl,
@@ -79,6 +83,7 @@ async function fetchComputedSignature(
         analysis.minCount,
         0,
         getLapisFilterForTimeFrame(analysis.timeFrame, config.clinicalLapis.dateField),
+        signal,
     );
     const displayed = mutationsWithScore.filter(({ jaccardIndex }) => jaccardIndex >= analysis.minJaccard);
     return {
@@ -92,6 +97,7 @@ async function fetchPredefinedSignature(
     config: WasapPageConfigFor<'variant'>,
     analysis: WasapVariantFilter,
     lineageTree: LineageTree | undefined,
+    signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {
     if (analysis.lineage === undefined) {
         throw new Error('No lineage selected for predefined variant mode.');
@@ -113,6 +119,7 @@ async function fetchPredefinedSignature(
         analysis.sequenceType,
         { [config.clinicalLapis.lineageField]: lineageForJaccard },
         getLapisFilterForTimeFrame(analysis.timeFrame, config.clinicalLapis.dateField),
+        signal,
     );
 
     if (jaccardByMutation.size === 0) {

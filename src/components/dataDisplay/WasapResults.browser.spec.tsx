@@ -4,12 +4,12 @@ import { render } from 'vitest-browser-react';
 import { WasapResults } from './WasapResults';
 import { it } from '../../../test-extend';
 
-const ERROR_TEXT = 'There was an error fetching the data to display.';
+const ERROR_TEXT = 'Oops! Something went wrong.';
 
 describe('WasapResults', () => {
     it('shows that it is loading, not an error, while the data is not there yet', async () => {
         const { getByLabelText, getByText } = render(
-            <WasapResults data={undefined} isError={false} isPending={true}>
+            <WasapResults data={undefined} error={null} isPending={true}>
                 {() => <div>Results</div>}
             </WasapResults>,
         );
@@ -20,7 +20,7 @@ describe('WasapResults', () => {
 
     it('shows the error once fetching the data has failed', async () => {
         const { getByText } = render(
-            <WasapResults data={undefined} isError={true} isPending={false}>
+            <WasapResults data={undefined} error={new Error('Backend not reachable')} isPending={false}>
                 {() => <div>Results</div>}
             </WasapResults>,
         );

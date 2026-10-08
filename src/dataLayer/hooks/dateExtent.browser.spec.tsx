@@ -8,7 +8,7 @@ import { useDateExtent } from './dateExtent';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
-    table: 'default',
+    table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
     groupingDate: 'date',
@@ -55,6 +55,6 @@ describe('useDateExtent', () => {
         expect(result.current.data).toEqual({ min: '2023-05-01', max: '2025-12-27' });
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('default.groupBy({n := count()}, {date}).orderBy({date.asc()})');
+        expect(init.body).toBe('data.group(by := {date}, aggs := {n := count()}).order(by := {date.asc()})');
     });
 });

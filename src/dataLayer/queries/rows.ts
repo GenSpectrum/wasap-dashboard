@@ -9,16 +9,12 @@ import { READS } from './catalogue';
 import type { SiloSchema } from './schema';
 import { readCount, readText, type RhydbRow } from '../transport/row';
 
-/**
- * The reads a total-count query's rows add up to.
- *
- * totalReadCountQuery groups by location rather than issuing a bare count (a
- * temporary workaround for a SILO performance bug — see its docstring), so
- * this sums across however many rows came back — one per location, every one
- * counted, none dropped for a blank name. Zero rows means zero reads.
- */
+/** The reads a total-count query counted, off its single row. */
 export function readTotalCount(rows: readonly RhydbRow[]): number {
-    return rows.reduce((total, row) => total + readCount(row, READS), 0);
+    if (rows.length !== 1) {
+        throw new Error(`Expected one total-count row, got ${rows.length}`);
+    }
+    return readCount(rows[0], READS);
 }
 
 export type NamedCount = { name: string; count: number };

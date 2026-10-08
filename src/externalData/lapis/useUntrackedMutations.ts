@@ -15,9 +15,11 @@ export function useUntrackedMutations(config: WasapPageConfigFor<'untracked'>, a
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
         queryKey: ['untrackedMutations', config.genSpectrumOrganismName, analysis],
-        queryFn: () =>
-            fetchUntrackedMutations(config, analysis).catch((error: unknown) => {
-                logger.error(`Failed to fetch the untracked mutations: ${getErrorLogMessage(error)}`);
+        queryFn: ({ signal }) =>
+            fetchUntrackedMutations(config, analysis, signal).catch((error: unknown) => {
+                if (!signal.aborted) {
+                    logger.error(`Failed to fetch the untracked mutations: ${getErrorLogMessage(error)}`);
+                }
                 throw error;
             }),
     });
@@ -26,6 +28,7 @@ export function useUntrackedMutations(config: WasapPageConfigFor<'untracked'>, a
 export async function fetchUntrackedMutations(
     config: WasapPageConfigFor<'untracked'>,
     analysis: WasapUntrackedFilter,
+    signal?: AbortSignal,
 ): Promise<string[]> {
     const variantsToExclude =
         analysis.excludeSet === 'custom'
@@ -35,6 +38,7 @@ export async function fetchUntrackedMutations(
                   config.clinicalLapis.cladeField,
                   config.clinicalLapis.lineageField,
                   true,
+                  signal,
               ).then((r) => Object.values(r));
     if (variantsToExclude === undefined) {
         return [];
@@ -50,10 +54,11 @@ export async function fetchUntrackedMutations(
                     },
                     0.8,
                     9,
+                    signal,
                 ),
             ),
         ).then((r) => r.flat()),
-        getMutations(config.lapisBaseUrl, analysis.sequenceType, undefined, 0.05, 5),
+        getMutations(config.lapisBaseUrl, analysis.sequenceType, undefined, 0.05, 5, signal),
     ]);
     return allMuts.filter((m) => !excludeMutations.includes(m));
 }

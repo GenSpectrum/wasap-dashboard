@@ -26,12 +26,14 @@ export function useCollectionQueries(
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
         queryKey: ['collectionQueries', config.genSpectrumOrganismName, source, collectionId],
-        queryFn: () => {
+        queryFn: ({ signal }) => {
             if (collectionId === undefined) {
                 throw Error('No collection selected');
             }
-            return fetchCollectionQueries(config, source, collectionId).catch((error: unknown) => {
-                logger.error(`Failed to fetch the collection ${collectionId}: ${getErrorLogMessage(error)}`);
+            return fetchCollectionQueries(config, source, collectionId, signal).catch((error: unknown) => {
+                if (!signal.aborted) {
+                    logger.error(`Failed to fetch the collection ${collectionId}: ${getErrorLogMessage(error)}`);
+                }
                 throw error;
             });
         },
@@ -43,24 +45,35 @@ export async function fetchCollectionQueries(
     config: WasapPageConfigFor<'collection'>,
     source: CollectionSource,
     collectionId: number,
+    signal?: AbortSignal,
 ): Promise<CollectionQueries> {
     if (source === COLLECTION_SOURCE.covSpectrum) {
         if (!config.covSpectrumCollectionSourceEnabled) {
             throw Error("Cannot fetch data, the 'covSpectrum' collection source is not enabled.");
         }
-        return fetchCovSpectrumCollectionQueries(config.lapisBaseUrl, config.collectionsApiBaseUrl, collectionId);
+        return fetchCovSpectrumCollectionQueries(
+            config.lapisBaseUrl,
+            config.collectionsApiBaseUrl,
+            collectionId,
+            signal,
+        );
     }
-    return fetchGenSpectrumCollectionQueries(config.lapisBaseUrl, collectionId);
+    return fetchGenSpectrumCollectionQueries(config.lapisBaseUrl, collectionId, signal);
 }
 
 async function fetchGenSpectrumCollectionQueries(
     lapisBaseUrl: string,
     collectionId: number,
+    signal: AbortSignal | undefined,
 ): Promise<CollectionQueries> {
-    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(collectionId));
+    const collection = await getGenSpectrumCollection(getApiServiceForClientside(), String(collectionId), signal);
 
     const { variantData, invalidVariants } = extractBackendVariantData(collection.variants);
-    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(lapisBaseUrl, variantData);
+    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(
+        lapisBaseUrl,
+        variantData,
+        signal,
+    );
     const allInvalidVariants = [...invalidVariants, ...parseInvalidVariants];
 
     return {
@@ -73,11 +86,16 @@ async function fetchCovSpectrumCollectionQueries(
     lapisBaseUrl: string,
     collectionsApiBaseUrl: string,
     collectionId: number,
+    signal: AbortSignal | undefined,
 ): Promise<CollectionQueries> {
-    const collection = await getCollection(collectionsApiBaseUrl, collectionId);
+    const collection = await getCollection(collectionsApiBaseUrl, collectionId, signal);
 
     const { variantData, invalidVariants } = extractCovSpectrumVariantData(collection.variants);
-    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(lapisBaseUrl, variantData);
+    const { queries, invalidVariants: parseInvalidVariants } = await parseAndBuildQueries(
+        lapisBaseUrl,
+        variantData,
+        signal,
+    );
     const allInvalidVariants = [...invalidVariants, ...parseInvalidVariants];
 
     return {
@@ -162,6 +180,7 @@ function extractBackendVariantData(variants: Variant[]): VariantExtractionResult
 async function parseAndBuildQueries(
     lapisBaseUrl: string,
     variantData: VariantQueryInput[],
+    signal: AbortSignal | undefined,
 ): Promise<{ queries: QueriesOverTimeQuery[]; invalidVariants: InvalidVariantInfo[] }> {
     const queries: QueriesOverTimeQuery[] = [];
     const invalidVariants: InvalidVariantInfo[] = [];
@@ -170,7 +189,7 @@ async function parseAndBuildQueries(
         return { queries, invalidVariants };
     }
 
-    const parseResults = await parseQuery(lapisBaseUrl, { queries: variantData.map((vd) => vd.queryString) });
+    const parseResults = await parseQuery(lapisBaseUrl, { queries: variantData.map((vd) => vd.queryString) }, signal);
 
     variantData.forEach(({ name, queryString, description }, index) => {
         const parseResult = parseResults[index];
