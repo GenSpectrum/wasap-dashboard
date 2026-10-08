@@ -12,6 +12,7 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
     protected parseAnalysis(search: URLSearchParams): WasapVariantFilter {
         const defaults = this.config.filterDefaults.variant;
         const includeSublineagesForJaccard = getStringFromSearch(search, 'includeSublineagesForJaccard');
+        const backgroundLineages = getStringFromSearch(search, 'backgroundLineages');
 
         return {
             mode: 'variant',
@@ -30,6 +31,12 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
                 includeSublineagesForJaccard !== undefined
                     ? includeSublineagesForJaccard !== 'false'
                     : defaults.includeSublineagesForJaccard,
+            backgroundLineages:
+                backgroundLineages === undefined
+                    ? (defaults.backgroundLineages ?? [])
+                    : backgroundLineages.split('|').filter((lineage) => lineage !== ''),
+            excludeNearlyFixed: getStringFromSearch(search, 'excludeNearlyFixed') !== 'false',
+            excludeDeletions: getStringFromSearch(search, 'excludeDeletions') !== 'false',
         };
     }
 
@@ -52,6 +59,17 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
             setSearchFromString(search, 'minCount', String(analysis.minCount));
             setSearchFromString(search, 'minJaccard', String(analysis.minJaccard));
             setSearchFromString(search, 'timeFrame', analysis.timeFrame);
+        }
+        // Only when not the default, but then even when empty, so that the default can be taken out.
+        const backgroundLineages = (analysis.backgroundLineages ?? []).join('|');
+        if (backgroundLineages !== (this.config.filterDefaults.variant.backgroundLineages ?? []).join('|')) {
+            search.set('backgroundLineages', backgroundLineages);
+        }
+        if (analysis.excludeNearlyFixed === false) {
+            setSearchFromString(search, 'excludeNearlyFixed', 'false');
+        }
+        if (analysis.excludeDeletions === false) {
+            setSearchFromString(search, 'excludeDeletions', 'false');
         }
     }
 }
