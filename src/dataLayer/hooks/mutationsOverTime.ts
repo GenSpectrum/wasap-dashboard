@@ -15,7 +15,7 @@
  */
 
 import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
@@ -87,6 +87,18 @@ export function useOverTimeMetadata(
     const normalized = normalizeFilter(filter);
     const sequenceNamesKey = sequenceNames === undefined ? undefined : [...sequenceNames].sort();
 
+    // `displayMutations` only picks from what the query returns, so it is applied in `select`:
+    // grids of different mutations over the same filter share one query.
+    const selectDisplayMutations = useCallback(
+        (metadata: OverTimeMetadata): OverTimeMetadata => ({
+            ...metadata,
+            overallMutations: applyDisplayMutations(metadata.overallMutations, displayMutations).sort((a, b) =>
+                sortSubstitutionsAndDeletions(a.mutation, b.mutation),
+            ),
+        }),
+        [displayMutations],
+    );
+
     // `schema` stands in for `connection.key` (same memoized SiloInstance);
     // `normalized`/`sequenceNamesKey` stand in for `filter`/`sequenceNames`
     // — they're pure, order-independent derivations of them, deliberately
@@ -101,8 +113,8 @@ export function useOverTimeMetadata(
             granularity,
             sequenceType,
             sequenceNamesKey,
-            displayMutations,
         ],
+        select: selectDisplayMutations,
         queryFn: async ({ signal }): Promise<OverTimeMetadata> => {
             // Date axis first: the "too many buckets" guard has to fire before the
             // (potentially expensive) mutations() scan.
@@ -123,10 +135,7 @@ export function useOverTimeMetadata(
                 )
                 .then((result) => readOverallMutations(result.rows));
 
-            const overallMutations = applyDisplayMutations(
-                toMutationEntries(mutationRows, sequenceType),
-                displayMutations,
-            ).sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation));
+            const overallMutations = toMutationEntries(mutationRows, sequenceType);
 
             return { requestedDateRanges, totalCountsByBucket, overallMutations };
         },
