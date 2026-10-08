@@ -2,13 +2,14 @@ import { setupWorker } from 'msw/browser';
 import '@testing-library/jest-dom/vitest';
 import { it as itBase } from 'vitest';
 
-import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker } from './routeMocker.ts';
+import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker, SiloRouteMocker } from './routeMocker.ts';
 
 export const worker = setupWorker();
 
 export const lapisRouteMocker = new LapisRouteMocker(worker);
 export const backendRouteMocker = new BackendRouteMocker(worker);
 export const covSpectrumRouteMocker = new CovSpectrumRouteMocker(worker);
+export const siloRouteMocker = new SiloRouteMocker(worker);
 
 const workerFixture = itBase.extend<{ mswWorker: never }>({
     mswWorker: [
@@ -43,6 +44,7 @@ export const it = workerFixture.extend<{
         lapis: LapisRouteMocker;
         backend: BackendRouteMocker;
         covSpectrum: CovSpectrumRouteMocker;
+        silo: SiloRouteMocker;
     };
 }>({
     routeMockers: [
@@ -52,6 +54,7 @@ export const it = workerFixture.extend<{
                 lapis: lapisRouteMocker,
                 backend: backendRouteMocker,
                 covSpectrum: covSpectrumRouteMocker,
+                silo: siloRouteMocker,
             });
 
             worker.resetHandlers();
