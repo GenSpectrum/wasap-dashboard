@@ -68,9 +68,10 @@ describe('getMutations', () => {
             500,
         );
 
-        await expect(getMutations(DUMMY_LAPIS_URL, 'nucleotide', undefined, 0.1, 1)).rejects.toThrow(
-            /Failed to fetch mutations/,
-        );
+        await expect(getMutations(DUMMY_LAPIS_URL, 'nucleotide', undefined, 0.1, 1)).rejects.toMatchObject({
+            name: 'UnknownLapisError',
+            status: 500,
+        });
     });
 
     test('should throw on unexpected response', async () => {
@@ -78,7 +79,7 @@ describe('getMutations', () => {
         lapisRouteMocker.mockPostNucleotideMutations({ minProportion: 0.1 }, { data: 'invalid' });
 
         await expect(getMutations(DUMMY_LAPIS_URL, 'nucleotide', undefined, 0.1, 1)).rejects.toThrow(
-            /Failed to parse mutations response/,
+            /Unexpected response from/,
         );
     });
 });

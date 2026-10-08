@@ -1,6 +1,7 @@
-import axios from 'axios';
 import dayjs from 'dayjs';
 import { z } from 'zod';
+
+import { lapisPost } from '../lapisApi/lapisApi';
 
 /** Where the clinical sequences are, and which lineage the Jaccard indices are of. */
 export type ClusterJaccardSource = {
@@ -37,6 +38,7 @@ const queriesOverTimeResponseSchema = z.object({
 export async function getClusterJaccards(
     source: ClusterJaccardSource,
     clusters: readonly (readonly string[])[],
+    signal?: AbortSignal,
 ): Promise<number[]> {
     const { lapisBaseUrl, lineageQuery, dateField, dateFrom } = source;
     const queries = [
@@ -46,13 +48,20 @@ export async function getClusterJaccards(
             return { countQuery: `${lineageQuery} & ${cluster}`, coverageQuery: cluster };
         }),
     ];
-    const response = await axios.post(`${lapisBaseUrl.replace(/\/$/, '')}/component/queriesOverTime`, {
-        filters: {},
-        queries,
-        dateRanges: [{ dateFrom: dateFrom ?? EARLIEST_DATE, dateTo: dayjs().format('YYYY-MM-DD') }],
-        dateField,
-    });
-    const counts = queriesOverTimeResponseSchema.parse(response.data).data.data.map(([range]) => range);
+    const response = await lapisPost(
+        lapisBaseUrl,
+        '/component/queriesOverTime',
+        {
+            filters: {},
+            queries,
+            dateRanges: [{ dateFrom: dateFrom ?? EARLIEST_DATE, dateTo: dayjs().format('YYYY-MM-DD') }],
+            dateField,
+        },
+        queriesOverTimeResponseSchema,
+        'the Jaccard indices of the clusters',
+        signal,
+    );
+    const counts = response.data.data.map(([range]) => range);
 
     const lineageCount = counts[0].count;
     return counts.slice(1).map(({ count: both, coverage: withCluster }) => {

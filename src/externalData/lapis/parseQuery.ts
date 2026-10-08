@@ -1,10 +1,7 @@
-import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../../clientLogger';
 import { siloFilterExpressionSchema } from '../../dataLayer/queries';
-
-const logger = getClientLogger('parseQuery');
+import { lapisPost } from '../lapisApi/lapisApi';
 
 const parsedQueryResultSuccessSchema = z.object({
     type: z.literal('success'),
@@ -39,27 +36,21 @@ export type ParseQueryRequest = {
  *
  * @param lapisUrl The base API URL
  * @param request
+ * @param signal Aborts the request
  * @returns Array of parsed query results (success or failure for each query)
  */
-export async function parseQuery(lapisUrl: string, request: ParseQueryRequest): Promise<ParsedQueryResult[]> {
-    const url = `${lapisUrl}/query/parse`;
-    const body = request;
-
-    let response;
-    try {
-        response = await axios.post(url, body);
-    } catch (error) {
-        const message = `Failed to make parse queries API request: ${JSON.stringify(error)}`;
-        logger.error(message);
-        throw new Error(message);
-    }
-
-    const parsedResponse = queryParseResponseSchema.safeParse(response.data);
-    if (!parsedResponse.success) {
-        const message = `Failed to parse API response: ${JSON.stringify(parsedResponse.error)} (was ${JSON.stringify(response.data)})`;
-        logger.error(message);
-        throw new Error(message);
-    }
-
-    return parsedResponse.data.data;
+export async function parseQuery(
+    lapisUrl: string,
+    request: ParseQueryRequest,
+    signal?: AbortSignal,
+): Promise<ParsedQueryResult[]> {
+    const response = await lapisPost(
+        lapisUrl,
+        '/query/parse',
+        request,
+        queryParseResponseSchema,
+        'the parsed queries',
+        signal,
+    );
+    return response.data;
 }

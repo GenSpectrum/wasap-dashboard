@@ -45,9 +45,10 @@ describe('getCladeLineages', () => {
             500,
         );
 
-        await expect(getCladeLineages(DUMMY_LAPIS_URL, cladeField, lineageField)).rejects.toThrow(
-            /Failed to fetch clade lineages/,
-        );
+        await expect(getCladeLineages(DUMMY_LAPIS_URL, cladeField, lineageField)).rejects.toMatchObject({
+            name: 'UnknownLapisError',
+            status: 500,
+        });
     });
 
     test('should throw on unexpected response shape', async () => {
@@ -61,7 +62,7 @@ describe('getCladeLineages', () => {
         );
 
         await expect(getCladeLineages(DUMMY_LAPIS_URL, cladeField, lineageField)).rejects.toThrow(
-            /Failed to parse clade lineages response/,
+            /Unexpected response from/,
         );
     });
 

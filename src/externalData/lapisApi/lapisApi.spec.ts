@@ -21,7 +21,7 @@ describe('fetchAggregated', () => {
         await expect(result).rejects.toMatchObject({
             status: 400,
             problemDetail: error,
-            message: 'Bad Request: Unknown field: foo',
+            message: '400 Bad Request: Unknown field: foo',
         });
     });
 
@@ -40,7 +40,7 @@ describe('fetchAggregated', () => {
         await expect(fetchAggregated('https://lapis.example.org', {})).rejects.toMatchObject({
             name: 'UnknownLapisError',
             status: 404,
-            message: 'Not Found: <html>nope</html>',
+            message: '404 Not Found: <html>nope</html>',
         });
     });
 

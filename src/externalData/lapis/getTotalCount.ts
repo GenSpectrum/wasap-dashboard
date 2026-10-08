@@ -1,31 +1,20 @@
-import axios from 'axios';
 import { z } from 'zod';
 
-import { getClientLogger } from '../../clientLogger';
 import { type LapisFilter } from '../../types/dashboardComponents';
+import { lapisPost } from '../lapisApi/lapisApi';
 
 const lapisTotalCountSchema = z.object({
     data: z.tuple([z.object({ count: z.number() })]),
 });
 
-const logger = getClientLogger('getTotalCount');
-
-export async function getTotalCount(lapisUrl: string, lapisFilter: LapisFilter) {
-    let response;
-    try {
-        response = await axios.post(`${lapisUrl}/sample/aggregated`, lapisFilter);
-    } catch (error) {
-        const message = `Failed to fetch lapis aggregated data: ${JSON.stringify(error)}`;
-        logger.error(message);
-        throw new Error(message);
-    }
-
-    const parsedResponse = lapisTotalCountSchema.safeParse(response.data);
-    if (parsedResponse.success) {
-        return parsedResponse.data.data[0].count;
-    }
-
-    const message = `Failed to parse lapis aggregated data: ${JSON.stringify(parsedResponse)} (was ${JSON.stringify(response.data)})`;
-    logger.error(message);
-    throw new Error(message);
+export async function getTotalCount(lapisUrl: string, lapisFilter: LapisFilter, signal?: AbortSignal) {
+    const response = await lapisPost(
+        lapisUrl,
+        '/sample/aggregated',
+        lapisFilter,
+        lapisTotalCountSchema,
+        'the sequence count',
+        signal,
+    );
+    return response.data[0].count;
 }
