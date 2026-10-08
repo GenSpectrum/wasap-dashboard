@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 
+import { ErrorDisplay } from '../shared/error-display';
 import { LoadingDisplay } from '../shared/loading-display';
 
 /**
@@ -8,17 +9,17 @@ import { LoadingDisplay } from '../shared/loading-display';
  */
 export function WasapResults<Data>({
     data,
-    isError,
+    error,
     isPending,
     children,
 }: {
     data: Data | undefined;
-    isError: boolean;
+    error: Error | null;
     isPending: boolean;
     children: (data: Data) => ReactNode;
 }) {
-    if (isError) {
-        return <span>There was an error fetching the data to display.</span>;
+    if (error !== null) {
+        return <ErrorDisplay error={error} />;
     }
 
     if (isPending || data === undefined) {
