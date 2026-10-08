@@ -82,6 +82,11 @@ function coverageOf(value: ProportionValue): number {
     return value?.type === 'value' ? value.coverage : 0;
 }
 
+export type RowStyle = {
+    /** Classes of its table row, e.g. borders setting rows apart. */
+    className?: string;
+};
+
 export interface FeatureBandsProps<F> {
     rowLabelHeader: string;
     data: TemporalDataMap<F> | null;
@@ -102,6 +107,11 @@ export interface FeatureBandsProps<F> {
      * there is no Jaccard index column.
      */
     jaccardIndices?: Partial<Record<string, number>>;
+    /**
+     * How a row looks besides its values, by row label (see `FeatureRenderer.asString`): classes of
+     * its table row.
+     */
+    rowStyle?: (rowLabel: string) => RowStyle;
     /** One more column after the row label, by row label (see `FeatureRenderer.asString`). Not sortable. */
     extraColumn?: { header: string; render: (rowLabel: string) => ReactNode };
     /** How the rows are sorted, shown in the headers. The rows have to be given in this order already. */
@@ -122,6 +132,7 @@ export function FeatureBands<F>({
     meanProportions,
     jaccardIndices,
     extraColumn,
+    rowStyle,
     sort,
     onSortChange,
 }: FeatureBandsProps<F>) {
@@ -204,38 +215,42 @@ export function FeatureBands<F>({
                                       )}
                                   </tr>
                               ))
-                            : features.map((feature, rowIndex) => (
-                                  <tr key={featureRenderer.asString(feature)} className='divide-x divide-stone-200'>
-                                      <th className='px-2 font-medium whitespace-nowrap'>
-                                          {featureRenderer.renderRowLabel(feature)}
-                                      </th>
-                                      {extraColumn !== undefined && (
+                            : features.map((feature, rowIndex) => {
+                                  const label = featureRenderer.asString(feature);
+                                  const style = rowStyle?.(label);
+                                  return (
+                                      <tr key={label} className={`divide-x divide-stone-200 ${style?.className ?? ''}`}>
+                                          <th className='px-2 font-medium whitespace-nowrap'>
+                                              {featureRenderer.renderRowLabel(feature)}
+                                          </th>
+                                          {extraColumn !== undefined && (
+                                              <td className='px-2 text-center whitespace-nowrap'>
+                                                  {extraColumn.render(label)}
+                                              </td>
+                                          )}
                                           <td className='px-2 text-center whitespace-nowrap'>
-                                              {extraColumn.render(featureRenderer.asString(feature))}
+                                              {formatMeanProportion(meanProportions[label])}
                                           </td>
-                                      )}
-                                      <td className='px-2 text-center whitespace-nowrap'>
-                                          {formatMeanProportion(meanProportions[featureRenderer.asString(feature)])}
-                                      </td>
-                                      {jaccardIndices !== undefined && (
-                                          <td
-                                              className={`px-2 text-center whitespace-nowrap ${jaccardIndexShading(jaccardIndices[featureRenderer.asString(feature)])}`}
-                                          >
-                                              {formatJaccardIndex(jaccardIndices[featureRenderer.asString(feature)])}
+                                          {jaccardIndices !== undefined && (
+                                              <td
+                                                  className={`px-2 text-center whitespace-nowrap ${jaccardIndexShading(jaccardIndices[label])}`}
+                                              >
+                                                  {formatJaccardIndex(jaccardIndices[label])}
+                                              </td>
+                                          )}
+                                          <td className='p-0'>
+                                              <BandRow
+                                                  values={rows[rowIndex] ?? []}
+                                                  columns={columns}
+                                                  viewSettings={viewSettings}
+                                                  maxCoverage={maxCoverage}
+                                                  gradientId={`${gradientPrefix}-${rowIndex}`}
+                                                  rowIndex={rowIndex}
+                                              />
                                           </td>
-                                      )}
-                                      <td className='p-0'>
-                                          <BandRow
-                                              values={rows[rowIndex] ?? []}
-                                              columns={columns}
-                                              viewSettings={viewSettings}
-                                              maxCoverage={maxCoverage}
-                                              gradientId={`${gradientPrefix}-${rowIndex}`}
-                                              rowIndex={rowIndex}
-                                          />
-                                      </td>
-                                  </tr>
-                              ))}
+                                      </tr>
+                                  );
+                              })}
                         {!isLoading && features.length === 0 && (
                             <tr>
                                 <td colSpan={numberOfValueColumns + 2}>
