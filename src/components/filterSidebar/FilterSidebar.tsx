@@ -19,11 +19,13 @@ type FilterSidebarProps<Analysis extends WasapAnalysisFilter> = {
     setPageState: Dispatch<SetStateAction<WasapModeFilter<Analysis>>>;
     /** The filter fields of the mode, editing the draft. */
     children: (analysis: Analysis, setAnalysis: (analysis: Analysis) => void) => ReactNode;
+    /** Without, the mean proportion is not edited here (the mode doesn't have one: `hasMeanProportion`). */
+    withMeanProportion?: boolean;
 };
 
 /**
  * The panel next to the results of an analysis mode: the filter of the mode, the mean
- * proportion, and the button to apply them. What is edited is only applied with the button.
+ * proportion (unless `withMeanProportion` is false), and the button to apply them. What is edited is only applied with the button.
  */
 export function FilterSidebar<Analysis extends WasapAnalysisFilter>(props: FilterSidebarProps<Analysis>) {
     return (
@@ -47,6 +49,7 @@ function FilterSidebarWithDraft<Analysis extends WasapAnalysisFilter>({
     analysis,
     setPageState,
     children,
+    withMeanProportion = true,
 }: FilterSidebarProps<Analysis>) {
     const draft = useDraftFilter(analysis, base.meanProportion);
 
@@ -55,7 +58,9 @@ function FilterSidebarWithDraft<Analysis extends WasapAnalysisFilter>({
         // this column and get the same gap, without margins of their own.
         <div className='flex flex-col gap-6'>
             {children(draft.analysis, draft.setAnalysis)}
-            <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
+            {withMeanProportion && (
+                <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
+            )}
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}
                 newPageState={{ base: { ...base, meanProportion: draft.meanProportion }, analysis: draft.analysis }}

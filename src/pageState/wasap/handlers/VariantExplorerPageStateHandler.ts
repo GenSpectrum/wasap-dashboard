@@ -9,6 +9,9 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
         super(config, 'variant');
     }
 
+    // What isn't worth showing is left out by the mutations to exclude instead (`excludeNearlyFixed`, …).
+    protected readonly hasMeanProportion = false;
+
     protected parseAnalysis(search: URLSearchParams): WasapVariantFilter {
         const defaults = this.config.filterDefaults.variant;
         const includeSublineagesForJaccard = getStringFromSearch(search, 'includeSublineagesForJaccard');

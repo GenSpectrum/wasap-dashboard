@@ -94,6 +94,17 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(handler.toUrl(parse('excludeDeletions=false'))).toContain('excludeDeletions=false');
     });
 
+    it('has no mean proportion filter: drops one in the URL', () => {
+        const filter = handler.parsePageStateFromUrl(
+            new URL(
+                'http://example.com/wastewater/covid/variantExplorer?meanProportionLower=0.2&meanProportionUpper=0.7',
+            ).searchParams,
+        );
+
+        expect(filter.base.meanProportion).toEqual({ lower: 0, upper: 1 });
+        expect(handler.toUrl(filter)).not.toContain('meanProportion');
+    });
+
     it('converts numeric string parameters to numbers', () => {
         const url = '/wastewater/covid/variantExplorer?' + 'minProportion=0.5&' + 'minCount=10&' + 'minJaccard=0.6&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);

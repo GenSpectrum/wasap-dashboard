@@ -20,6 +20,9 @@ import { AmpliconCooccurrenceSection } from '../dataDisplay/ampliconCooccurrence
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../filterSidebar/filters/VariantExplorerFilter';
 
+/** No mutations are left out by their mean proportion here: the sidebar has the mutations to exclude instead. */
+const ALL_MEAN_PROPORTIONS = { min: 0, max: 1 };
+
 export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
     const pageStateHandler = useMemo(() => new VariantExplorerPageStateHandler(config), [config]);
     const {
@@ -57,10 +60,6 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
         base.granularity,
         analysis.sequenceType,
     );
-    const meanProportionInterval = useMemo(
-        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
-        [base.meanProportion.lower, base.meanProportion.upper],
-    );
     const { clinicalLapis } = config;
 
     const clinicalLapisProps = {
@@ -75,6 +74,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
         <ModePageLayout
             sidebar={
                 <FilterSidebar
+                    withMeanProportion={false}
                     pageStateHandler={pageStateHandler}
                     base={base}
                     analysis={analysis}
@@ -119,7 +119,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                                 filter={filter}
                                 granularity={base.granularity}
                                 sequenceType={analysis.sequenceType}
-                                meanProportionInterval={meanProportionInterval}
+                                meanProportionInterval={ALL_MEAN_PROPORTIONS}
                                 ampliconsByMutation={
                                     amplicons.data === undefined || analysis.sequenceType !== 'nucleotide'
                                         ? undefined
