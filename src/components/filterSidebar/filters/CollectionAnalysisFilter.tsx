@@ -75,7 +75,7 @@ function GenSpectrumCollectionSelect({
         isError,
     } = useQuery({
         queryKey: ['collections', organism],
-        queryFn: () => getGenSpectrumCollections(getApiServiceForClientside(), { organism }),
+        queryFn: ({ signal }) => getGenSpectrumCollections(getApiServiceForClientside(), { organism }, signal),
     });
 
     const firstCollectionId = collections?.[0]?.id;
@@ -132,7 +132,7 @@ function CovSpectrumCollectionSelect({
         isError,
     } = useQuery({
         queryKey: ['collections', collectionsApiBaseUrl, collectionTitleFilter],
-        queryFn: () => getCovSpectrumCollections(collectionsApiBaseUrl, collectionTitleFilter),
+        queryFn: ({ signal }) => getCovSpectrumCollections(collectionsApiBaseUrl, collectionTitleFilter, signal),
     });
 
     return (

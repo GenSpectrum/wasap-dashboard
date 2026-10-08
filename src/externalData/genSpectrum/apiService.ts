@@ -1,4 +1,3 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { type ZodSchema } from 'zod';
 
 import { getAppConfig } from '../../config/appConfig';
@@ -7,83 +6,72 @@ import { type ProblemDetail, problemDetailSchema } from '../../types/ProblemDeta
 const X_REQUEST_ID_HEADER = 'x-request-id';
 
 type EndpointParameters<Response> = {
+    /** The path below the base URL, like `/collections/7`. */
     url: string;
+    /** The query parameters; an array becomes the same parameter repeated. */
     requestParams?: Record<string, string | string[] | boolean | undefined>;
     schema: ZodSchema<Response>;
+    signal?: AbortSignal;
 };
 
-type EndpointParametersWithBody<Request, Response> = EndpointParameters<Response> & { data: Request };
-
 export class ApiService {
-    private readonly axiosInstance: AxiosInstance;
+    constructor(private readonly baseUrl: string) {}
 
-    constructor(baseURL: string) {
-        this.axiosInstance = axios.create({ baseURL, paramsSerializer: { indexes: null } });
-    }
-
-    public async get<Response>({ url, requestParams, schema }: EndpointParameters<Response>): Promise<Response> {
-        return this.handleRequest({ url, method: 'get', params: requestParams }, schema);
-    }
-
-    public async post<Request, Response>({
+    public async get<Response>({
         url,
-        data,
         requestParams,
         schema,
-    }: EndpointParametersWithBody<Request, Response>): Promise<Response> {
-        return this.handleRequest({ url, method: 'post', params: requestParams, data }, schema);
-    }
-
-    public async put<Request, Response>({
-        url,
-        data,
-        requestParams,
-        schema,
-    }: EndpointParametersWithBody<Request, Response>): Promise<Response> {
-        return this.handleRequest({ url, method: 'put', params: requestParams, data }, schema);
-    }
-
-    public async delete<Response>({ url, requestParams, schema }: EndpointParameters<Response>): Promise<Response> {
-        return this.handleRequest({ url, method: 'delete', params: requestParams }, schema);
-    }
-
-    private async handleRequest<Request, Response>(request: AxiosRequestConfig<Request>, schema: ZodSchema<Response>) {
+        signal,
+    }: EndpointParameters<Response>): Promise<Response> {
+        let response: globalThis.Response;
         try {
-            const response = await this.axiosInstance.request(request);
-            return schema.parse(response.data);
+            response = await fetch(this.urlOf(url, requestParams), { signal });
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response) {
-                    this.handleErrors(error.response);
-                }
-
-                if (error.code === axiosNotFoundError) {
-                    throw new BackendNotAvailable(error.config?.baseURL ?? '');
-                }
+            if (signal?.aborted === true) {
+                throw error;
             }
-            throw error;
+            throw new BackendNotAvailable(this.baseUrl, { cause: error });
         }
+        if (!response.ok) {
+            throw await responseError(response, url);
+        }
+        return schema.parse(await response.json());
     }
 
-    private handleErrors(response: AxiosResponse) {
-        if (response.status >= 300 || response.status < 200) {
-            const backendError = problemDetailSchema.safeParse(response.data);
-            if (backendError.success) {
-                throw new BackendError(
-                    backendError.data.detail ?? '(no detail)',
-                    response.status,
-                    backendError.data,
-                    response.config.url ?? '',
-                    response.headers[X_REQUEST_ID_HEADER],
-                );
+    private urlOf(path: string, requestParams: EndpointParameters<unknown>['requestParams']) {
+        const search = new URLSearchParams();
+        for (const [key, value] of Object.entries(requestParams ?? {})) {
+            for (const item of [value].flat()) {
+                if (item !== undefined) {
+                    search.append(key, String(item));
+                }
             }
-
-            throw new UnknownBackendError(response.statusText, response.status, response.config.url ?? '');
         }
+        const query = search.size > 0 ? `?${search}` : '';
+        return `${this.baseUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}${query}`;
     }
 }
 
-const axiosNotFoundError = 'ENOTFOUND';
+async function responseError(response: globalThis.Response, url: string) {
+    const text = await response.text();
+    let json: unknown;
+    try {
+        json = JSON.parse(text);
+    } catch {
+        json = undefined;
+    }
+    const backendError = problemDetailSchema.safeParse(json);
+    if (backendError.success) {
+        return new BackendError(
+            backendError.data.detail ?? '(no detail)',
+            response.status,
+            backendError.data,
+            url,
+            response.headers.get(X_REQUEST_ID_HEADER) ?? undefined,
+        );
+    }
+    return new UnknownBackendError(`${response.status} ${response.statusText}`.trim(), response.status, url);
+}
 
 export class BackendError extends Error {
     constructor(
@@ -110,8 +98,8 @@ export class UnknownBackendError extends Error {
 }
 
 export class BackendNotAvailable extends Error {
-    constructor(url: string) {
-        super(`Backend not available under ${url}`);
+    constructor(url: string, options?: ErrorOptions) {
+        super(`Backend not available under ${url}`, options);
         this.name = 'BackendNotAvailable';
     }
 }

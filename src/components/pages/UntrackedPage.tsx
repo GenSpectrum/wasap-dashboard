@@ -30,7 +30,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
     // Keyed on the clinical-LAPIS coordinates the query actually targets, not just 'cladeLineages'.
     const cladeLineageQueryResult = useQuery({
         queryKey: ['cladeLineages', true, lapisBaseUrl, cladeField, lineageField],
-        queryFn: () => getCladeLineages(lapisBaseUrl, cladeField, lineageField, true),
+        queryFn: ({ signal }) => getCladeLineages(lapisBaseUrl, cladeField, lineageField, true, signal),
     });
 
     return (

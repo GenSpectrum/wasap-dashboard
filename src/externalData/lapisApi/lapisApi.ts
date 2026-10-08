@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+
 import { lineageDefinitionResponseSchema } from './LineageDefinition';
 import { referenceGenomeResponse } from './ReferenceGenome';
 import { aggregatedResponse, type LapisBaseRequest, lapisError, problemDetail, type ProblemDetail } from './lapisTypes';
@@ -26,8 +28,23 @@ export class LapisError extends Error {
 }
 
 export async function fetchAggregated(lapisUrl: string, body: LapisBaseRequest, signal?: AbortSignal) {
+    return lapisPost(lapisUrl, '/sample/aggregated', body, aggregatedResponse, 'aggregated data', signal);
+}
+
+/**
+ * POSTs `body` as JSON to `path` of the LAPIS at `lapisUrl` and parses the answer with `schema`.
+ * Throws a `LapisError` or `UnknownLapisError` if the request fails.
+ */
+export async function lapisPost<T>(
+    lapisUrl: string,
+    path: string,
+    body: unknown,
+    schema: z.ZodType<T>,
+    requestedData: string,
+    signal?: AbortSignal,
+): Promise<T> {
     const response = await callLapis(
-        aggregatedEndpoint(lapisUrl),
+        `${lapisUrl.replace(/\/$/, '')}${path}`,
         {
             method: 'POST',
             headers: {
@@ -36,10 +53,18 @@ export async function fetchAggregated(lapisUrl: string, body: LapisBaseRequest, 
             body: JSON.stringify(body),
             signal,
         },
-        'aggregated data',
+        requestedData,
     );
 
-    return aggregatedResponse.parse(await response.json());
+    const parsed = schema.safeParse(await response.json());
+    if (!parsed.success) {
+        throw new UnknownLapisError(
+            `Unexpected response from ${response.url}: ${parsed.error.message}`,
+            response.status,
+            requestedData,
+        );
+    }
+    return parsed.data;
 }
 
 export async function fetchReferenceGenome(lapisUrl: string, signal?: AbortSignal) {
@@ -111,13 +136,13 @@ const handleErrors = async (response: Response, requestedData: string) => {
             try {
                 json = JSON.parse(text);
             } catch {
-                throw new UnknownLapisError(`${response.statusText}: ${text}`, response.status, requestedData);
+                throw new UnknownLapisError(`${statusLine(response)}: ${text}`, response.status, requestedData);
             }
 
             const lapisErrorResult = lapisError.safeParse(json);
             if (lapisErrorResult.success) {
                 throw new LapisError(
-                    withDetail(response.statusText, lapisErrorResult.data.error.detail),
+                    withDetail(statusLine(response), lapisErrorResult.data.error.detail),
                     response.status,
                     lapisErrorResult.data.error,
                     requestedData,
@@ -127,7 +152,7 @@ const handleErrors = async (response: Response, requestedData: string) => {
             const problemDetailResult = problemDetail.safeParse(json);
             if (problemDetailResult.success) {
                 throw new LapisError(
-                    withDetail(response.statusText, problemDetailResult.data.detail),
+                    withDetail(statusLine(response), problemDetailResult.data.detail),
                     response.status,
                     problemDetailResult.data,
                     requestedData,
@@ -135,20 +160,24 @@ const handleErrors = async (response: Response, requestedData: string) => {
             }
 
             throw new UnknownLapisError(
-                `${response.statusText}: ${JSON.stringify(json)}`,
+                `${statusLine(response)}: ${JSON.stringify(json)}`,
                 response.status,
                 requestedData,
             );
         }
-        throw new UnknownLapisError(`${response.statusText}: ${response.status}`, response.status, requestedData);
+        throw new UnknownLapisError(statusLine(response), response.status, requestedData);
     }
 };
+
+/** Like `500 Internal Server Error`; the status text is empty over HTTP/2. */
+function statusLine(response: Response) {
+    return `${response.status} ${response.statusText}`.trim();
+}
 
 function withDetail(statusText: string, detail: string | undefined) {
     return detail === undefined ? statusText : `${statusText}: ${detail}`;
 }
 
-const aggregatedEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/aggregated`;
 const referenceGenomeEndpoint = (lapisUrl: string) => `${lapisUrl}/sample/referenceGenome`;
 const lineageDefinitionEndpoint = (lapisUrl: string, lapisField: string) =>
     `${lapisUrl}/sample/lineageDefinition/${lapisField}`;

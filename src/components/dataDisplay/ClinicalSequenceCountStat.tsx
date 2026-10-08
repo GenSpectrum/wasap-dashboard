@@ -42,7 +42,7 @@ export const ClinicalSequenceCountStat: FC<ClinicalSequenceCountStatProps> = ({
         // `lineage`/`timeFrame` — without them in the key, switching organisms
         // without changing lineage or time frame would serve the stale count.
         queryKey: [queryKeyPrefix, lineage, analysis.timeFrame, clinicalLapisBaseUrl, lapisFilter],
-        queryFn: () => getTotalCount(clinicalLapisBaseUrl, lapisFilter),
+        queryFn: ({ signal }) => getTotalCount(clinicalLapisBaseUrl, lapisFilter, signal),
     });
 
     const isHighlighted = data !== undefined && data < warningThreshold;

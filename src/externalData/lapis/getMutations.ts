@@ -1,9 +1,8 @@
-import axios from 'axios';
 import { z } from 'zod';
 
 import { getTotalCount } from './getTotalCount';
-import { getClientLogger } from '../../clientLogger';
 import { type LapisFilter, type SequenceType } from '../../types/dashboardComponents';
+import { lapisPost } from '../lapisApi/lapisApi';
 
 const mutationsSchema = z.object({
     data: z.array(
@@ -13,8 +12,6 @@ const mutationsSchema = z.object({
         }),
     ),
 });
-
-const logger = getClientLogger('getMutations');
 
 /**
  * Return nucleotide or amino acid mutations matching certain filter criteria.
@@ -35,8 +32,9 @@ export async function getMutations(
     lapisFilter: LapisFilter | undefined,
     minProportion: number,
     minCount: number,
+    signal?: AbortSignal,
 ): Promise<string[]> {
-    return getMutationsInternal(lapisUrl, mutationType, lapisFilter, minProportion).then((data) =>
+    return getMutationsInternal(lapisUrl, mutationType, lapisFilter, minProportion, signal).then((data) =>
         data.filter((item) => item.count >= minCount).map((item) => item.mutation),
     );
 }
@@ -54,8 +52,9 @@ export async function getJaccardForMutations(
     mutationType: SequenceType,
     lineageFilter: LapisFilter,
     dateFilter: LapisFilter | undefined,
+    signal?: AbortSignal,
 ): Promise<Map<string, number>> {
-    return getMutationsForVariant(lapisUrl, mutationType, lineageFilter, 0, 0, 0, dateFilter).then(
+    return getMutationsForVariant(lapisUrl, mutationType, lineageFilter, 0, 0, 0, dateFilter, signal).then(
         (entries) => new Map(entries.map(({ mutation, jaccardIndex }) => [mutation, jaccardIndex])),
     );
 }
@@ -74,18 +73,19 @@ export async function getMutationsForVariant(
     minCount: number,
     minJaccardIndex: number,
     dateFilter: LapisFilter | undefined,
+    signal?: AbortSignal,
 ) {
     return Promise.all([
         // sequence counts WITH mutation and WITH lineage
-        getMutationsInternal(lapisUrl, mutationType, { ...lineageFilter, ...dateFilter }, minProportion).then((r) =>
-            r.filter((item) => item.count >= minCount),
+        getMutationsInternal(lapisUrl, mutationType, { ...lineageFilter, ...dateFilter }, minProportion, signal).then(
+            (r) => r.filter((item) => item.count >= minCount),
         ),
         // sequence counts WITH mutation (only)
-        getMutationsInternal(lapisUrl, mutationType, dateFilter, 0).then((r) =>
+        getMutationsInternal(lapisUrl, mutationType, dateFilter, 0, signal).then((r) =>
             Object.fromEntries(r.map((item) => [item.mutation, item.count])),
         ),
         // sequence count WITH lineage (only)
-        getTotalCount(lapisUrl, { ...lineageFilter, ...dateFilter }),
+        getTotalCount(lapisUrl, { ...lineageFilter, ...dateFilter }, signal),
     ]).then(([intersectionCounts, totalCounts, variantCount]) =>
         intersectionCounts
             .map(({ mutation, count }) => {
@@ -106,9 +106,9 @@ async function getMutationsInternal(
     mutationType: SequenceType,
     lapisFilter: LapisFilter | undefined,
     minProportion: number | undefined,
+    signal: AbortSignal | undefined,
 ): Promise<{ mutation: string; count: number }[]> {
     const endpoint = mutationType === 'nucleotide' ? 'nucleotideMutations' : 'aminoAcidMutations';
-    const url = `${lapisUrl.replace(/\/$/, '')}/sample/${endpoint}`;
 
     const body: Record<string, unknown> = {};
     Object.assign(body, lapisFilter);
@@ -116,21 +116,6 @@ async function getMutationsInternal(
         body.minProportion = minProportion;
     }
 
-    let response;
-    try {
-        response = await axios.post(url, body);
-    } catch (error) {
-        const message = `Failed to fetch mutations: ${JSON.stringify(error)}`;
-        logger.error(message);
-        throw new Error(message);
-    }
-
-    const parsedResponse = mutationsSchema.safeParse(response.data);
-    if (!parsedResponse.success) {
-        const message = `Failed to parse mutations response: ${JSON.stringify(parsedResponse)} (was ${JSON.stringify(response.data)})`;
-        logger.error(message);
-        throw new Error(message);
-    }
-
-    return parsedResponse.data.data;
+    const response = await lapisPost(lapisUrl, `/sample/${endpoint}`, body, mutationsSchema, 'mutations', signal);
+    return response.data;
 }
