@@ -45,6 +45,10 @@ describe('baseFilter', () => {
             expect(base.granularity).toBe('day');
         });
 
+        it('takes the default granularity for an unknown one, as from an old link', () => {
+            expect(parse('granularity=quarter').granularity).toBe('day');
+        });
+
         it('reads the location from the configured field', () => {
             const base = parseBaseFilter(
                 new URLSearchParams('site=Basel'),
