@@ -513,10 +513,12 @@ function BandRow({
                         >
                             {viewSettings.showPercentages && proportion !== undefined && (
                                 <span
-                                    className='invisible text-xs font-medium text-black @[2rem]:visible'
+                                    className='invisible text-[0.625rem] font-medium text-black @[1.25rem]:visible @[2rem]:text-xs'
                                     style={{ textShadow: PERCENTAGE_OUTLINE }}
                                 >
-                                    {formatProportion(proportion, 0)}
+                                    {/* A narrow column has room for the number only, smaller. */}
+                                    {(proportion * 100).toFixed(0)}
+                                    <span className='hidden @[2rem]:inline'>%</span>
                                 </span>
                             )}
                         </div>
