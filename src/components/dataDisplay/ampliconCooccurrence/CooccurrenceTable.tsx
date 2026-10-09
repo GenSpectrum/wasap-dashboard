@@ -306,9 +306,13 @@ function RowLabelTooltip({ row, belowMinJaccard }: { row: CooccurrenceRow; below
 
 /**
  * How many of its amplicon's mutations a cluster has, `3/4`, or any of, `≥3/4`: amber where it is
- * not all of them, so the incomplete clusters stand out from the complete ones.
+ * not all of them, so the incomplete clusters stand out from the complete ones. None for a single
+ * mutation, which its name says all about.
  */
 function ClusterSizeBadge({ row }: { row: CooccurrenceRow }) {
+    if (!isAnyOf(row) && row.cluster.length === 1) {
+        return null;
+    }
     const complete = !isAnyOf(row) && row.cluster.length === row.mutations.length;
     return (
         <span
