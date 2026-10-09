@@ -1,12 +1,13 @@
 /**
  * The symbol every read carries at one position, per sample, over the whole instance:
- * `map({sym := <seq>.at(<pos>)}).group(by := {<sampleId>, sym}, aggs := {count := count()})`.
+ * `map({<sampleId> := <sampleId>, sym := <seq>.at(<pos>)}).group(by := {<sampleId>, sym}, aggs := {count := count()})`.
  *
  * The same shape as `positionOverTimeQuery`, grouped by sample instead of date, and unfiltered.
  * Backs the overview's median amplicon coverage, one query per amplicon (~0.2 s each on covid,
  * all locations; about 1 s for all 96 amplicons together).
  */
 
+import { groupingColumnsPassThrough } from './groupingColumns';
 import type { SiloSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
@@ -15,7 +16,7 @@ import { readCount, readOptionalText, readText, type RhydbRow } from '../transpo
 
 export function positionBySampleQuery(schema: SiloSchema, sequenceName: string, position: number): Relation {
     return table(schema.table)
-        .map({ sym: field(sequenceName).at(position) })
+        .map({ ...groupingColumnsPassThrough([schema.sampleId]), sym: field(sequenceName).at(position) })
         .group({ count: count() }, [schema.sampleId, 'sym']);
 }
 

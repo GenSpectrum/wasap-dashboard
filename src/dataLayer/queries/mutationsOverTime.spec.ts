@@ -52,13 +52,13 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Zürich (ZH)')" +
-                '.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
     test('no location narrows nothing; amino acid uses the gene column', () => {
         expect(positionOverTimeQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
-            'data.map({sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',
+            'data.map({date := date, sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
@@ -86,7 +86,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Geneva')" +
-                '.map({sym := main.at(848)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
+                '.map({samplingDate := samplingDate, sym := main.at(848)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
         );
     });
 });

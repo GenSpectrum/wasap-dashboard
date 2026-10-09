@@ -17,7 +17,7 @@ const schema: SiloSchema = {
 describe('positionBySampleQuery', () => {
     test('maps the symbol at one position, then groups by sample and sym, unfiltered', () => {
         expect(positionBySampleQuery(schema, 'main', 2083).render()).toBe(
-            'data.map({sym := main.at(2083)}).group(by := {sampleId, sym}, aggs := {count := count()})',
+            'data.map({sampleId := sampleId, sym := main.at(2083)}).group(by := {sampleId, sym}, aggs := {count := count()})',
         );
     });
 });
