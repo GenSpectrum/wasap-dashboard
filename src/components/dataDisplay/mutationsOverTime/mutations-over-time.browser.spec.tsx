@@ -158,8 +158,8 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await vi.waitFor(() => expect(positionBodies()).toHaveLength(2));
 
         expect(positionBodies()).toEqual([
-            'data.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
-            'data.map({sym := main.at(3037)}).group(by := {date, sym}, aggs := {count := count()})',
+            'data.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+            'data.map({date := date, sym := main.at(3037)}).group(by := {date, sym}, aggs := {count := count()})',
         ]);
     });
 
