@@ -20,7 +20,7 @@ describe('symbolsBySampleQuery', () => {
 
         expect(symbolsBySampleQuery(schema, filter, 'main', [241, 670]).render()).toBe(
             "data.filter(locationName = 'Zürich (ZH)' && date >= '2026-05-01' && date <= '2026-08-31')" +
-                '.map({p241 := main.at(241), p670 := main.at(670)})' +
+                '.map({sampleId := sampleId, date := date, p241 := main.at(241), p670 := main.at(670)})' +
                 '.group(by := {sampleId, date, p241, p670}, aggs := {count := count()})',
         );
     });

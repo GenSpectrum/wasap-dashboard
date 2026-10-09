@@ -19,6 +19,7 @@
  */
 
 import { scoped, type SiloReadFilter } from './filter';
+import { groupingColumnsPassThrough } from './groupingColumns';
 import type { SiloSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
@@ -100,7 +101,8 @@ export type PositionTarget = {
 
 /**
  * The symbol every read carries at one position, per day:
- * `filter(location).map({sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`.
+ * `filter(location).map({<date> := <date>, sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`
+ * (the `<date>` pass-through is `groupingColumnsPassThrough`).
  *
  * The computed `sym` column is `.map()`-ed *before* `group`, and both
  * grouping columns are named bare rather than re-assigned inline
@@ -120,7 +122,10 @@ export function positionOverTimeQuery(
     target: PositionTarget,
 ): Relation {
     return scoped(schema, { locationName: filter.locationName })
-        .map({ sym: field(target.sequenceName).at(target.position) })
+        .map({
+            ...groupingColumnsPassThrough([schema.groupingDate]),
+            sym: field(target.sequenceName).at(target.position),
+        })
         .group({ count: count() }, [schema.groupingDate, 'sym']);
 }
 

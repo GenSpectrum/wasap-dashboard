@@ -4,7 +4,7 @@
  *
  * ```
  * filter(<scope>)
- *   .map({p241 := main.at(241), p670 := main.at(670), …})
+ *   .map({<grouping columns> := <grouping columns>, p241 := main.at(241), p670 := main.at(670), …})
  *   .group(by := {<grouping columns>, p241, p670, …}, aggs := {count := count()})
  * ```
  *
@@ -20,6 +20,7 @@
  */
 
 import { scoped, type SiloReadFilter } from './filter';
+import { groupingColumnsPassThrough } from './groupingColumns';
 import type { SiloSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
@@ -38,10 +39,11 @@ export function jointSymbolsQuery(
     groupBy: readonly string[],
 ): Relation {
     return scoped(schema, filter)
-        .map(
-            Object.fromEntries(
+        .map({
+            ...groupingColumnsPassThrough(groupBy),
+            ...Object.fromEntries(
                 positions.map((position) => [positionColumn(position), field(sequenceName).at(position)]),
             ),
-        )
+        })
         .group({ count: count() }, [...groupBy, ...positions.map(positionColumn)]);
 }
