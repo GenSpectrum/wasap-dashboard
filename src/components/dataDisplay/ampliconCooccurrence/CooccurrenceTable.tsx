@@ -233,17 +233,8 @@ function RowLabel({
                 <span
                     className={`iconify text-lg text-gray-500 ${isOpenable ? '' : 'invisible'} ${isOpen ? 'mdi--chevron-down' : 'mdi--chevron-right'}`}
                 />
-                {level === 0 ? (
-                    <>
-                        <span>Amplicon {row.amplicon.number}</span>
-                        <ClusterSizeBadge row={row} />
-                    </>
-                ) : (
-                    <>
-                        <ClusterSizeBadge row={row} />
-                        <ClusterName row={row} />
-                    </>
-                )}
+                {level === 0 ? <span>Amplicon {row.amplicon.number}</span> : <ClusterName row={row} />}
+                <ClusterSizeBadge row={row} />
             </div>
         </HoverTooltip>
     );
