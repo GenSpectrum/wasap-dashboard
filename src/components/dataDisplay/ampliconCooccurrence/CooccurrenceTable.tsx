@@ -220,22 +220,27 @@ function RowLabel({
     onToggle,
     belowMinJaccard,
 }: ShownRow & { isOpen: boolean; onToggle: () => void; belowMinJaccard: boolean }) {
-    const content = (
+    const label = (
+        <div
+            className={`flex min-w-60 items-center justify-start gap-1.5 text-left ${LEVEL_INDENT[level]} ${belowMinJaccard ? 'opacity-40' : ''}`}
+        >
+            <span
+                className={`iconify text-lg text-gray-500 ${isOpenable ? '' : 'invisible'} ${isOpen ? 'mdi--chevron-down' : 'mdi--chevron-right'}`}
+            />
+            {level === 0 ? <span>Amplicon {row.amplicon.number}</span> : <ClusterName row={row} />}
+            <ClusterSizeBadge row={row} />
+        </div>
+    );
+    const content = isSingle(row) ? (
+        label
+    ) : (
         <HoverTooltip
-            content={<RowLabelTooltip row={row} belowMinJaccard={belowMinJaccard} />}
+            content={<RowLabelTooltip row={row} />}
             placement='right'
             focusable={!isOpenable}
             className='w-full'
         >
-            <div
-                className={`flex min-w-60 items-center justify-start gap-1.5 text-left ${LEVEL_INDENT[level]} ${belowMinJaccard ? 'opacity-40' : ''}`}
-            >
-                <span
-                    className={`iconify text-lg text-gray-500 ${isOpenable ? '' : 'invisible'} ${isOpen ? 'mdi--chevron-down' : 'mdi--chevron-right'}`}
-                />
-                {level === 0 ? <span>Amplicon {row.amplicon.number}</span> : <ClusterName row={row} />}
-                <ClusterSizeBadge row={row} />
-            </div>
+            {label}
         </HoverTooltip>
     );
     return isOpenable ? (
@@ -257,42 +262,18 @@ const LOW_JACCARD_CELLS = 'bg-stone-200';
 const OPEN_BLOCK_TOP = 'border-t-2 border-t-stone-400';
 const OPEN_BLOCK_BOTTOM = 'border-b-2 border-b-stone-400';
 
-function RowLabelTooltip({ row, belowMinJaccard }: { row: CooccurrenceRow; belowMinJaccard: boolean }) {
-    const { amplicon, mutations, cluster, atLeast } = row;
-    const others = mutations.filter((mutation) => !cluster.includes(mutation));
-    const anyOf = isAnyOf(row);
+/** The row's mutations: a single one's label has it already. */
+function RowLabelTooltip({ row }: { row: CooccurrenceRow }) {
     return (
-        <div className='max-w-96 space-y-1'>
-            <div className='font-bold'>
-                {anyOf
-                    ? `Any ${atLeast} of the ${mutations.length} mutations in amplicon ${amplicon.number}`
-                    : `${cluster.length} of the ${mutations.length} mutations in amplicon ${amplicon.number}, together`}
-            </div>
-            <div className='text-gray-600'>
-                Insert {amplicon.insertStart.toLocaleString()}–{amplicon.insertEnd.toLocaleString()}, pool{' '}
-                {amplicon.pool}
-            </div>
-            <div className='font-mono text-sm'>
-                {cluster.map((mutation) => mutation.code).join(anyOf ? ', ' : ' + ')}
-            </div>
-            {others.length > 0 && (
-                <div className='text-gray-600'>
-                    Not part of it:{' '}
-                    <span className='font-mono'>{others.map((mutation) => mutation.code).join(', ')}</span>
-                </div>
-            )}
-            {belowMinJaccard && (
-                <div className='text-amber-800'>
-                    Below the minimum Jaccard index, shown to compare the other rows of the amplicon to.
-                </div>
-            )}
-            <div className='text-gray-600'>
-                The share of the reads with a call at all of the amplicon&apos;s mutation positions that carry at least{' '}
-                {anyOf ? `${atLeast} of these mutations` : 'these mutations'}. The Jaccard index is that of the variant
-                and the clinical sequences with {anyOf ? `at least ${atLeast}` : 'all'} of them.
-            </div>
+        <div className='max-w-96 font-mono text-sm'>
+            {row.cluster.map((mutation) => mutation.code).join(isAnyOf(row) ? ', ' : ' + ')}
         </div>
     );
+}
+
+/** Whether the row is that of a single mutation, rather than of a cluster of them. */
+function isSingle(row: CooccurrenceRow) {
+    return !isAnyOf(row) && row.cluster.length === 1;
 }
 
 /**
@@ -301,7 +282,7 @@ function RowLabelTooltip({ row, belowMinJaccard }: { row: CooccurrenceRow; below
  * mutation, which its name says all about.
  */
 function ClusterSizeBadge({ row }: { row: CooccurrenceRow }) {
-    if (!isAnyOf(row) && row.cluster.length === 1) {
+    if (isSingle(row)) {
         return null;
     }
     const complete = !isAnyOf(row) && row.cluster.length === row.mutations.length;
