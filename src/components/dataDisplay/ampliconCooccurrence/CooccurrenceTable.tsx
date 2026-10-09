@@ -264,11 +264,7 @@ const OPEN_BLOCK_BOTTOM = 'border-b-2 border-b-stone-400';
 
 /** The row's mutations: a single one's label has it already. */
 function RowLabelTooltip({ row }: { row: CooccurrenceRow }) {
-    return (
-        <div className='max-w-96 font-mono text-sm'>
-            {row.cluster.map((mutation) => mutation.code).join(isAnyOf(row) ? ', ' : ' + ')}
-        </div>
-    );
+    return <div className='max-w-96 font-mono text-sm'>{row.cluster.map((mutation) => mutation.code).join(' + ')}</div>;
 }
 
 /** Whether the row is that of a single mutation, rather than of a cluster of them. */
