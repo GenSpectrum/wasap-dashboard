@@ -264,6 +264,9 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     if (config.variantAnalysisModeEnabled) {
         result.push('variant');
     }
+    if (config.cooccurrenceAnalysisModeEnabled) {
+        result.push('cooccurrence');
+    }
     if (config.resistanceAnalysisModeEnabled) {
         result.push('resistance');
     }
@@ -275,9 +278,6 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     }
     if (config.collectionAnalysisModeEnabled) {
         result.push('collection');
-    }
-    if (config.cooccurrenceAnalysisModeEnabled) {
-        result.push('cooccurrence');
     }
     return result;
 }

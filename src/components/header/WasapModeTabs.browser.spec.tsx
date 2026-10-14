@@ -8,6 +8,7 @@ import { setAppConfigForTesting } from '../../config/appConfig';
 import {
     testConfig,
     testConfigWithCollection,
+    testConfigWithCooccurrence,
     testConfigWithDeconvolution,
 } from '../../pageState/wasap/wasapTestConfig';
 
@@ -50,6 +51,16 @@ describe('WasapModeTabs', () => {
 
         await expect.element(tabs.nth(1)).toHaveTextContent('Lineage Prevalence');
         expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/lineagePrevalence\?/);
+    });
+
+    it('has the Co-occurrence tab right after the Variant Explorer', async () => {
+        setAppConfigForTesting({ organisms: [testConfigWithCooccurrence] });
+        const { getByRole } = renderTabs();
+
+        const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
+
+        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
+        await expect.element(tabs.nth(2)).toHaveTextContent('Co-occurrence');
     });
 
     it('links the overview tab to the bare organism URL, with no search params', async () => {
