@@ -59,8 +59,8 @@ describe('baseFilter', () => {
             expect(base.locationNames).toEqual(['Basel']);
         });
 
-        it('reads several locations, one param each', () => {
-            expect(parse('locationName=Basel&locationName=Bern').locationNames).toEqual(['Basel', 'Bern']);
+        it('reads several locations from one list param', () => {
+            expect(parse('locationName=Basel|Bern').locationNames).toEqual(['Basel', 'Bern']);
         });
 
         it('reads an empty location as all locations, not the default one', () => {
@@ -139,7 +139,7 @@ describe('baseFilter', () => {
         });
 
         it('round-trips several locations', () => {
-            const query = 'locationName=Basel&locationName=Bern&samplingDate=Most+recent+90+days&granularity=day';
+            const query = 'locationName=Basel%7CBern&samplingDate=Most+recent+90+days&granularity=day';
 
             expect(serialize(parse(query))).toBe(query);
         });
