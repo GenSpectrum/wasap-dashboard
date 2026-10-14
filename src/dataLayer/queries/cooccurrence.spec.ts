@@ -29,7 +29,7 @@ describe('positionsCooccurrenceQuery', () => {
 
     test('narrows by the given filter, and amino acid targets use the gene column', () => {
         expect(
-            positionsCooccurrenceQuery(schema, { locationName: 'Zürich (ZH)' }, [
+            positionsCooccurrenceQuery(schema, { locationNames: ['Zürich (ZH)'] }, [
                 { sequenceName: 'S', position: 501 },
             ]).render(),
         ).toBe(
