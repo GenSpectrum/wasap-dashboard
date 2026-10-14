@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { afterEach, describe, expect, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { DatasetFilterPanel } from './DatasetFilterPanel';
@@ -77,27 +78,54 @@ function renderPanel(onChange = vi.fn()) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('DatasetFilterPanel', () => {
-    it('shows the location, and adds a ticked one right away', async () => {
+    it('applies the ticked locations when the dropdown is closed', async () => {
         const onChange = vi.fn();
         const { getByRole } = renderPanel(onChange);
 
         await getByRole('button', { name: DEFAULT_LOCATION }).click();
         await expect.element(getByRole('checkbox', { name: DEFAULT_LOCATION })).toBeChecked();
+        await getByRole('checkbox', { name: 'Bern (BE)' }).click();
         await getByRole('checkbox', { name: 'Basel (BS)' }).click();
-
-        // In the order of the options, not of the clicks.
-        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: ['Basel (BS)', DEFAULT_LOCATION] });
         await expect.element(getByRole('checkbox', { name: 'Basel (BS)' })).toBeChecked();
+        expect(onChange).not.toHaveBeenCalled();
+
+        await getByRole('button', { name: /Basel \(BS\), Bern \(BE\)/ }).click();
+
+        // Once, and in the order of the options, not of the clicks.
+        expect(onChange).toHaveBeenCalledOnce();
+        expect(onChange).toHaveBeenLastCalledWith({
+            ...dataset,
+            locationNames: ['Basel (BS)', 'Bern (BE)', DEFAULT_LOCATION],
+        });
+        await expect.element(getByRole('checkbox', { name: 'Basel (BS)' })).not.toBeInTheDocument();
     });
 
-    it('unticks a location', async () => {
+    it('applies the ticks on Escape and on a click outside', async () => {
+        const onChange = vi.fn();
+        const { getByRole, getByText } = renderPanel(onChange);
+
+        await getByRole('button', { name: DEFAULT_LOCATION }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await userEvent.keyboard('{Escape}');
+        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: ['Basel (BS)', DEFAULT_LOCATION] });
+        await expect.element(getByRole('button', { name: /Basel \(BS\)/ })).toHaveFocus();
+
+        await getByRole('button', { name: /Basel \(BS\)/ }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await getByText('Granularity').click();
+        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [DEFAULT_LOCATION] });
+    });
+
+    it('applies nothing when the ticks are as they were', async () => {
         const onChange = vi.fn();
         const { getByRole } = renderPanel(onChange);
 
         await getByRole('button', { name: DEFAULT_LOCATION }).click();
-        await getByRole('checkbox', { name: DEFAULT_LOCATION }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await userEvent.keyboard('{Escape}');
 
-        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [] });
+        expect(onChange).not.toHaveBeenCalled();
     });
 
     it('clears the selection, which shows as all locations', async () => {
@@ -106,9 +134,10 @@ describe('DatasetFilterPanel', () => {
 
         await getByRole('button', { name: DEFAULT_LOCATION }).click();
         await getByRole('button', { name: 'Clear' }).click();
-
-        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [] });
         await expect.element(getByText('All locations')).toBeVisible();
         await expect.element(getByRole('checkbox', { name: DEFAULT_LOCATION })).not.toBeChecked();
+        await userEvent.keyboard('{Escape}');
+
+        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [] });
     });
 });
