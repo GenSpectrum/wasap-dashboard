@@ -135,17 +135,13 @@ src/
   config/                   config.json loading + schema, per-organism types
   amplicons/                primer schemes: the `amplicons` config, BED parsing
   clientLogger.ts, types/, util/, styles/
-lollipop-service/           an HTTP service that runs LolliPop's deconvolution — Python, its own
-                            image, see lollipop-service/README.md
-lollipop/                   the deconvolution, a TypeScript port of LolliPop — GPL-licensed,
-                            see lollipop/README.md
+lollipop-service/           the service that computes the Lineage Prevalence page with
+                            LolliPop — Python, its own image, see lollipop-service/README.md
 ```
 
 ## License
 
-AGPL-3.0-only (see [`LICENSE`](LICENSE)), except [`lollipop/`](lollipop/), which is derived from
-[LolliPop](https://github.com/cbg-ethz/LolliPop) and licensed under the GPL-3.0-or-later like it (see
-[`lollipop/LICENSE.md`](lollipop/LICENSE.md)).
+AGPL-3.0-only (see [`LICENSE`](LICENSE)).
 
 ## Further reading
 
