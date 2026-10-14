@@ -178,7 +178,13 @@ export const untrackedAnalysisModeConfigSchema = z.union([
 export const cooccurrenceAnalysisModeConfigSchema = z.union([
     z.object({
         cooccurrenceAnalysisModeEnabled: z.literal(true),
-        filterDefaults: z.object({ cooccurrence: wasapCooccurrenceFilterSchema }),
+        // No default amplicon by its position: `cooccurrenceDefaultAmplicon` is that, by its number.
+        filterDefaults: z.object({ cooccurrence: wasapCooccurrenceFilterSchema.omit({ anchorPosition: true }) }),
+        /**
+         * The amplicon (by its number in the primer scheme) the mode opens with, when no amplicon
+         * (nor manual positions) is picked; none without. Only for nucleotides.
+         */
+        cooccurrenceDefaultAmplicon: z.number().int().positive().optional(),
     }),
     z.object({ cooccurrenceAnalysisModeEnabled: z.undefined().optional() }),
 ]);
@@ -264,6 +270,9 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     if (config.variantAnalysisModeEnabled) {
         result.push('variant');
     }
+    if (config.cooccurrenceAnalysisModeEnabled) {
+        result.push('cooccurrence');
+    }
     if (config.resistanceAnalysisModeEnabled) {
         result.push('resistance');
     }
@@ -275,9 +284,6 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     }
     if (config.collectionAnalysisModeEnabled) {
         result.push('collection');
-    }
-    if (config.cooccurrenceAnalysisModeEnabled) {
-        result.push('cooccurrence');
     }
     return result;
 }

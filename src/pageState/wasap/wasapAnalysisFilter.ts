@@ -180,6 +180,8 @@ export const wasapCooccurrenceFilterSchema = z.object({
     anchorPosition: z.string().optional(),
     /** Positions at or below this Shannon entropy (in bits) are left out as not variable enough. */
     entropyCutoff: z.number().min(0).optional(),
+    /** Patterns on less than this share of the reads (0 to 1) are left out; none are without. */
+    minShare: z.number().min(0).max(1).optional(),
     /**
      * EXPERIMENTAL: a panel of lineages (same concept as `wasapDeconvolutionFilterSchema`'s
      * `panel`) to check co-occurrence patterns against — which of them the panel already

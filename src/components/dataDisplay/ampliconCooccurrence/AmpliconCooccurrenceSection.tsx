@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
+import { type To } from 'react-router-dom';
 
 import { CooccurrenceTable } from './CooccurrenceTable';
 import { useCooccurrenceJaccard } from './useCooccurrenceJaccard';
 import { type AmpliconsConfig } from '../../../amplicons/ampliconsConfig';
 import { mutationsByAmplicon } from '../../../amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../../amplicons/primerBed';
+import { ampliconAnchor } from '../../../amplicons/samplingPositions';
 import { useAmplicons } from '../../../amplicons/useAmplicons';
 import {
     allRowsOf,
@@ -34,6 +36,8 @@ type SectionProps = {
     minJaccard: number;
     /** Where to get the Jaccard indices of the clusters from; none without. */
     jaccardSource: ClusterJaccardSource | undefined;
+    /** Where to open an amplicon in the co-occurrence mode, by a position in it; no links without. */
+    cooccurrenceModeLink?: (anchorPosition: string) => To;
 };
 
 /**
@@ -89,6 +93,7 @@ function Cooccurrences({
     candidateMutations,
     minJaccard,
     jaccardSource,
+    cooccurrenceModeLink,
     ampliconList,
     dateAxis,
 }: SectionProps & { ampliconList: Amplicon[]; dateAxis: DateAxis }) {
@@ -121,6 +126,14 @@ function Cooccurrences({
             : ampliconRows.flatMap((amplicon) => specificRows(amplicon, jaccardIndices, minJaccard) ?? []);
     }, [ampliconRows, isJaccardLoading, jaccardIndices, minJaccard]);
 
+    // The co-occurrence mode finds an amplicon by a position in it, the same one its amplicon picker takes.
+    const ampliconLink = useMemo(
+        () =>
+            cooccurrenceModeLink &&
+            ((amplicon: Amplicon) => cooccurrenceModeLink(ampliconAnchor(amplicon, ampliconList))),
+        [cooccurrenceModeLink, ampliconList],
+    );
+
     if (cooccurrence.error) {
         return <ErrorDisplay error={cooccurrence.error} />;
     }
@@ -144,6 +157,7 @@ function Cooccurrences({
             dateRanges={dateAxis.requestedDateRanges}
             jaccardIndices={jaccardIndices}
             minJaccard={minJaccard}
+            ampliconLink={ampliconLink}
         />
     );
 }

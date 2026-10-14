@@ -74,6 +74,7 @@
             "collectionTitleFilter": "wastewater",
             "defaultLocationName": "Zürich (ZH)",
             "clinicalSequenceCountWarningThreshold": 50,
+            "cooccurrenceDefaultAmplicon": 74,
             "filterDefaults": {
                 "manual": {
                     "mode": "manual",
@@ -115,7 +116,9 @@
                 },
                 "cooccurrence": {
                     "mode": "cooccurrence",
-                    "sequenceType": "nucleotide"
+                    "sequenceType": "nucleotide",
+                    "minShare": 0.001,
+                    "panel": ["NB.1.8.1", "XFG", "XFG.1", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"]
                 }
             }
         },

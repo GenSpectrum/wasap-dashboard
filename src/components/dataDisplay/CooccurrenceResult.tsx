@@ -17,7 +17,7 @@ export function CooccurrenceResult({
     base,
     analysis,
     filter,
-    meanProportionInterval,
+    minShare,
     lineageTree,
     manualModeLink,
     variantModeLink,
@@ -25,7 +25,8 @@ export function CooccurrenceResult({
     base: WasapBaseFilter;
     analysis: WasapCooccurrenceFilter;
     filter: SiloReadFilter;
-    meanProportionInterval: { min: number; max: number };
+    /** Only patterns on at least this share of the reads are shown. */
+    minShare: number;
     /** EXPERIMENTAL: enables the panel-of-lineages match, when the organism has a lineage tree. */
     lineageTree?: LineageTree;
     /** Opens a row's mutations in the manual mode, when it is enabled. */
@@ -38,7 +39,7 @@ export function CooccurrenceResult({
         sequenceType: analysis.sequenceType,
         granularity: base.granularity,
         pageSizes: [20, 50, 100, 250],
-        meanProportionInterval,
+        minShare,
         panel: analysis.panel,
         lineageTree,
         manualModeLink,

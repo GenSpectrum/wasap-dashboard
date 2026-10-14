@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 
 import { type Amplicon } from '../../../amplicons/primerBed';
-import { samplingPositions } from '../../../amplicons/samplingPositions';
+import { ampliconAnchor, samplingPositions } from '../../../amplicons/samplingPositions';
 import { useAmplicons } from '../../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
 import { codonAnchorFor } from '../../../genome/geneAnnotation';
@@ -20,8 +20,16 @@ import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
 import { RadioSelect } from '../../inputs/RadioSelect';
+import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { PositionFilter } from '../../inputs/positionFilter/position-filter';
+
+const MIN_SHARE_OPTIONS = [
+    { value: 0, label: '–', title: 'None' },
+    { value: 0.001, label: '0.1%' },
+    { value: 0.01, label: '1%' },
+    { value: 0.1, label: '10%' },
+];
 
 export function CooccurrenceFilter({
     pageState,
@@ -36,6 +44,8 @@ export function CooccurrenceFilter({
     lineageTree?: LineageTree;
 }) {
     const positionSource = effectivePositionSource(pageState);
+    const defaultPanel = config.filterDefaults.cooccurrence.panel ?? [];
+    const missingDefaultLineages = defaultPanel.filter((lineage) => !(pageState.panel ?? []).includes(lineage));
 
     return (
         <>
@@ -62,9 +72,7 @@ export function CooccurrenceFilter({
                     {config.amplicons !== undefined && pageState.sequenceType === 'nucleotide' ? (
                         <AmpliconSelect
                             amplicons={config.amplicons}
-                            toAnchor={(amplicon, allAmplicons) =>
-                                String(samplingPositions(amplicon, allAmplicons, 1)[0])
-                            }
+                            toAnchor={ampliconAnchor}
                             value={pageState.anchorPosition}
                             onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
                         />
@@ -125,8 +133,29 @@ export function CooccurrenceFilter({
                         onChange={(panel) => setPageState({ ...pageState, panel })}
                         placeholderText='Add a lineage'
                     />
+                    {defaultPanel.length > 0 && (
+                        <button
+                            type='button'
+                            className='hover:text-brand-700 mt-1 block cursor-pointer text-sm underline disabled:cursor-default disabled:text-gray-400 disabled:no-underline'
+                            disabled={missingDefaultLineages.length === 0}
+                            onClick={() =>
+                                setPageState({
+                                    ...pageState,
+                                    panel: [...(pageState.panel ?? []), ...missingDefaultLineages],
+                                })
+                            }
+                        >
+                            Include default panel
+                        </button>
+                    )}
                 </LabeledField>
             )}
+            <SegmentedSelect
+                label='Min. share'
+                value={pageState.minShare ?? 0}
+                options={MIN_SHARE_OPTIONS}
+                onChange={(minShare) => setPageState({ ...pageState, minShare })}
+            />
         </>
     );
 }

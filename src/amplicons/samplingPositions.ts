@@ -13,6 +13,14 @@ import { type Amplicon } from './primerBed';
 export const SAMPLING_POSITIONS_PER_AMPLICON = 1;
 
 /**
+ * The nucleotide position the co-occurrence mode finds an amplicon by (its `anchorPosition`): the
+ * middle of its core, where it is the only amplicon.
+ */
+export function ampliconAnchor(amplicon: Amplicon, allAmplicons: readonly Amplicon[]): string {
+    return String(samplingPositions(amplicon, allAmplicons, 1)[0]);
+}
+
+/**
  * The positions at which to measure how many reads an amplicon has, without knowing which amplicon
  * each read came from (SILO has no read start/end or amplicon column).
  *
