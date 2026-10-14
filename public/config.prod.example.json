@@ -1,5 +1,6 @@
 {
     "collectionsBackendUrl": "https://genspectrum.org/api",
+    "lollipopServiceUrl": "https://dashboard.wasap.genspectrum.org/lollipop",
     "organisms": [
         {
             "genSpectrumOrganismName": "covid",
