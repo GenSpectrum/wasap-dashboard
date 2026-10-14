@@ -4,6 +4,7 @@ import { ampliconsConfigSchema } from '../amplicons/ampliconsConfig';
 import { lineageTreeConfigSchema } from '../lineageTree/lineageTreeConfig';
 import {
     wasapCollectionFilterSchema,
+    wasapCooccurrenceFilterSchema,
     wasapDeconvolutionFilterSchema,
     wasapManualFilterSchema,
     wasapResistanceFilterSchema,
@@ -174,6 +175,14 @@ export const untrackedAnalysisModeConfigSchema = z.union([
     z.object({ untrackedAnalysisModeEnabled: z.undefined().optional() }),
 ]);
 
+export const cooccurrenceAnalysisModeConfigSchema = z.union([
+    z.object({
+        cooccurrenceAnalysisModeEnabled: z.literal(true),
+        filterDefaults: z.object({ cooccurrence: wasapCooccurrenceFilterSchema }),
+    }),
+    z.object({ cooccurrenceAnalysisModeEnabled: z.undefined().optional() }),
+]);
+
 /**
  * The CoV-Spectrum collection source, which an organism opts into independently of (and only
  * together with) the collection mode above.
@@ -240,7 +249,8 @@ export const wasapPageConfigSchema = wasapPageConfigBaseSchema
     .and(resistanceAnalysisModeConfigSchema)
     .and(untrackedAnalysisModeConfigSchema)
     .and(collectionAnalysisModeConfigSchema)
-    .and(deconvolutionAnalysisModeConfigSchema);
+    .and(deconvolutionAnalysisModeConfigSchema)
+    .and(cooccurrenceAnalysisModeConfigSchema);
 export type WasapPageConfig = z.infer<typeof wasapPageConfigSchema>;
 
 /**
@@ -266,6 +276,9 @@ export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode
     if (config.collectionAnalysisModeEnabled) {
         result.push('collection');
     }
+    if (config.cooccurrenceAnalysisModeEnabled) {
+        result.push('cooccurrence');
+    }
     return result;
 }
 
@@ -276,6 +289,7 @@ const MODE_ENABLED_FLAGS = {
     untracked: 'untrackedAnalysisModeEnabled',
     collection: 'collectionAnalysisModeEnabled',
     deconvolution: 'deconvolutionAnalysisModeEnabled',
+    cooccurrence: 'cooccurrenceAnalysisModeEnabled',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
 /**

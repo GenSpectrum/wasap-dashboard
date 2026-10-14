@@ -126,3 +126,17 @@ export const testConfigWithDeconvolution = {
         deconvolution: { mode: 'deconvolution', panel: ['XFG', 'NB.1.8.1'] },
     },
 } satisfies WasapPageConfig;
+
+/** Like `testConfig`, with the co-occurrence mode enabled. */
+export const testConfigWithCooccurrence = {
+    ...testConfig,
+    cooccurrenceAnalysisModeEnabled: true,
+    filterDefaults: {
+        ...testConfig.filterDefaults,
+        cooccurrence: {
+            mode: 'cooccurrence',
+            sequenceType: 'nucleotide',
+            positions: undefined,
+        },
+    },
+} satisfies WasapPageConfig;
