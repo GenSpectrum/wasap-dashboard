@@ -35,9 +35,13 @@ The order of `signatures` is the order of the result; `options` defaults to the
 ```
 
 `proportion` is the mean of the bootstrap rounds, `lower` and `upper` their quantiles for the
-confidence level. Invalid requests get a 422, too large ones a 413, and a 503 when too many
-deconvolutions are already running. The same request always gets the same answer, so results are
-cached.
+confidence level. Invalid requests get a 422, too large ones a 413 (and ones without a
+`Content-Length` a 411), and a 503 when too many deconvolutions are already running or one takes
+longer than the time limit. The same request always gets the same answer, whatever the order of its
+frequencies and mutations, so results are cached.
+
+If a process of the pool dies (killed for lack of memory, say), the pool is replaced, and the
+requests it was computing are retried on the new one.
 
 `GET /health` and `GET /version` (the LolliPop version) are there for monitoring. Interactive docs
 are at `/docs`.
@@ -51,10 +55,12 @@ Environment variables:
 | `LOLLIPOP_WORKERS`             | number of CPUs             | processes in the pool, one CPU each                                                |
 | `LOLLIPOP_WORKERS_PER_REQUEST` | unlimited, 25 in the image | processes one request's bootstrap is split between                                 |
 | `LOLLIPOP_MAX_REQUESTS`        | 16                         | different requests in progress (computed or waiting) before further ones get a 503 |
+| `LOLLIPOP_TIMEOUT`             | 300                        | seconds a request may take, waiting included, before it is given up with a 503     |
 | `LOLLIPOP_CACHE_SIZE`          | 256                        | results kept in memory                                                             |
-| `LOLLIPOP_MAX_FREQUENCIES`     | 200000                     | per request                                                                        |
+| `LOLLIPOP_MAX_BODY_BYTES`      | 10000000                   | per request, checked before reading it                                             |
+| `LOLLIPOP_MAX_FREQUENCIES`     | 100000                     | per request                                                                        |
 | `LOLLIPOP_MAX_LINEAGES`        | 50                         | per request                                                                        |
-| `LOLLIPOP_MAX_BOOTSTRAPS`      | 1000                       | per request                                                                        |
+| `LOLLIPOP_MAX_BOOTSTRAPS`      | 200                        | per request                                                                        |
 | `LOLLIPOP_CORS_ORIGINS`        | `*`                        | comma-separated origins allowed to call the service from a browser                 |
 
 `LOLLIPOP_WORKERS` counts the CPUs of the host, also in a container: when a container is

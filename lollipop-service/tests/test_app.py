@@ -1,6 +1,12 @@
+import os
+import signal
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 import pytest
 from fastapi.testclient import TestClient
 
+from lollipop_service import app as service
 from lollipop_service.app import _split, app
 
 REQUEST = {
@@ -56,10 +62,72 @@ def test_rejects_invalid_requests(client, change):
     assert client.post("/deconvolve", json={**REQUEST, **change}).status_code == 422
 
 
+def test_the_order_of_frequencies_and_mutations_doesnt_matter(client):
+    client.post("/deconvolve", json=REQUEST)
+    cached = len(app.state.runner.cache)
+    shuffled = {
+        **REQUEST,
+        "signatures": {"A": ["G200A", "C100T"], "B": ["C300T"]},
+        "frequencies": REQUEST["frequencies"][::-1],
+    }
+
+    client.post("/deconvolve", json=shuffled)
+
+    assert len(app.state.runner.cache) == cached
+
+
 def test_rejects_too_many_bootstraps(client):
     request = {**REQUEST, "options": {**REQUEST["options"], "bootstraps": 100_000}}
 
     assert client.post("/deconvolve", json=request).status_code == 413
+
+
+def test_rejects_large_bodies_before_reading_them(client, monkeypatch):
+    monkeypatch.setattr(service, "MAX_BODY_BYTES", 100)
+
+    assert client.post("/deconvolve", json=REQUEST).status_code == 413
+    assert client.post("/deconvolve", content=b"{}", headers={"Content-Length": ""}).status_code == 411
+
+
+def with_date(date):
+    return {**REQUEST, "frequencies": [{**f, "date": date} for f in REQUEST["frequencies"]]}
+
+
+def kill_a_process(pool):
+    os.kill(next(iter(pool._processes)), signal.SIGKILL)
+
+
+def test_replaces_the_pool_when_a_process_died(client):
+    pool = app.state.runner.pool
+    kill_a_process(pool)
+    while not pool._broken:
+        time.sleep(0.01)
+
+    assert client.post("/deconvolve", json=with_date("2026-08-01")).status_code == 200
+    assert app.state.runner.pool is not pool
+
+
+def test_retries_when_a_process_dies_during_a_deconvolution(client):
+    pool = app.state.runner.pool
+    request = {**with_date("2026-08-02"), "options": {**REQUEST["options"], "bootstraps": 200}}
+    with ThreadPoolExecutor(1) as thread:
+        response = thread.submit(client.post, "/deconvolve", json=request)
+        time.sleep(0.2)
+        kill_a_process(pool)
+
+        assert response.result().status_code == 200
+    assert app.state.runner.pool is not pool
+
+
+def test_gives_up_on_deconvolutions_that_take_too_long(client, monkeypatch):
+    pool = app.state.runner.pool
+    monkeypatch.setattr(service, "TIMEOUT", 0.01)
+
+    assert client.post("/deconvolve", json=with_date("2026-09-03")).status_code == 503
+    assert app.state.runner.pool is not pool
+
+    monkeypatch.undo()
+    assert client.post("/deconvolve", json=with_date("2026-09-04")).status_code == 200
 
 
 def test_allows_cross_origin_requests(client):

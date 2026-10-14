@@ -1,4 +1,4 @@
-FROM python:3.13-slim AS build
+FROM python:3.14-slim AS build
 COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /bin/uv
 # LolliPop is installed from its Git repository.
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
@@ -8,7 +8,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 COPY lollipop_service lollipop_service
 
-FROM python:3.13-slim
+FROM python:3.14-slim
 RUN useradd --system lollipop
 COPY --from=build /app /app
 WORKDIR /app
