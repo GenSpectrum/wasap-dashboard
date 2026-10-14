@@ -10,7 +10,7 @@ import { testConfig } from '../../pageState/wasap/wasapTestConfig';
 const handler = new ManualPageStateHandler(testConfig);
 
 const base: WasapBaseFilter = {
-    locationName: 'Basel',
+    locationNames: ['Basel'],
     samplingDate: { label: 'Most recent 90 days' },
     granularity: 'day',
     meanProportion: { lower: 0.05, upper: 0.95 },

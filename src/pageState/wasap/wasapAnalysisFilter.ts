@@ -197,7 +197,8 @@ export type WasapMeanProportion = {
  * `WasapModePageStateHandler`), not a `WasapPageConfig` default.
  */
 export type WasapBaseFilter = {
-    locationName?: string;
+    /** The locations whose reads are pooled. Empty means all locations. */
+    locationNames: string[];
     samplingDate?: DateRangeOption;
     granularity: TemporalGranularity;
     meanProportion: WasapMeanProportion;

@@ -44,7 +44,7 @@ export function parseDatasetFilter(
     const defaultSamplingDate: DateRangeOption = { label: DEFAULT_RECENT_DAYS_LABEL };
 
     return {
-        locationName: getStringFromSearch(search, config.locationNameField) ?? config.defaultLocationName,
+        locationNames: parseLocationNames(search, config.locationNameField, config.defaultLocationName),
         samplingDate: samplingDate ?? defaultSamplingDate,
         granularity: granularityParam.parse(search.get('granularity') ?? '')?.value ?? 'day',
     };
@@ -75,7 +75,7 @@ export function setDatasetFilterSearchParams(
     dataset: WasapDatasetFilter,
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
 ) {
-    setSearchFromString(search, config.locationNameField, dataset.locationName);
+    setSearchFromLocationNames(search, config.locationNameField, dataset.locationNames);
     // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
     // the URL re-resolves them against the dataset's current date range instead of
     // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
@@ -117,6 +117,28 @@ export function withDatasetFilter(
         }
     }
     return result;
+}
+
+/**
+ * The location param, once per location. A URL without it means the default location, so all
+ * locations — an empty selection — are written as the param with an empty value.
+ */
+function parseLocationNames(search: URLSearchParams, name: string, defaultLocationName: string): string[] {
+    const values = search.getAll(name);
+    if (values.length === 0) {
+        return [defaultLocationName];
+    }
+    return values.filter((value) => value !== '');
+}
+
+function setSearchFromLocationNames(search: URLSearchParams, name: string, locationNames: string[]) {
+    search.delete(name);
+    if (locationNames.length === 0) {
+        search.append(name, '');
+    }
+    for (const locationName of locationNames) {
+        search.append(name, locationName);
+    }
 }
 
 /**

@@ -21,7 +21,7 @@ describe('ManualPageStateHandler', () => {
 
         const filter = parse(query);
 
-        expect(filter.base.locationName).toBe('Zürich (ZH)');
+        expect(filter.base.locationNames).toEqual(['Zürich (ZH)']);
         expect(filter.base.granularity).toBe('day');
         expect(filter.analysis).toEqual({ mode: 'manual', sequenceType: 'nucleotide', mutations: undefined });
         expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);

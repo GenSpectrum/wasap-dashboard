@@ -35,7 +35,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     const signature = useVariantSignature(config, analysis, lineageTree);
     const backgroundLineages = useMemo(
         () =>

@@ -32,7 +32,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         setPageState,
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
         () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
@@ -68,10 +68,6 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 <Message>
                     The lineage tree, where the signatures of the lineages come from, could not be loaded.
                 </Message>
-            ) : base.locationName === undefined ? (
-                <NothingSelected title='No location selected'>
-                    The deconvolution estimates the lineages at one location. Please select one above.
-                </NothingSelected>
             ) : analysis.panel.length < 2 ? (
                 <NothingSelected title='Not enough lineages'>
                     Please select at least two lineages for the panel in the filter panel.

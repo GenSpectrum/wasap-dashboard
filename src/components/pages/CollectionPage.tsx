@@ -19,7 +19,7 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     const { data, isPending, error } = useCollectionQueries(config, analysis.source, analysis.collectionId);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
