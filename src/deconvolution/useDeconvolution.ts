@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { skipToken, useQuery } from '@tanstack/react-query';
 
-import { type DeconvolutionInput, type DeconvolutionResult } from '../../lollipop';
+import { fetchDeconvolution, type DeconvolutionInput, type DeconvolutionResult } from './lollipopService';
+import { getAppConfig } from '../config/appConfig';
 
 export type DeconvolutionState =
     | { status: 'idle' }
@@ -9,30 +10,27 @@ export type DeconvolutionState =
     | { status: 'error'; error: string };
 
 /**
- * The deconvolution of the input, computed in a worker. A new input cancels the computation of
- * the previous one.
+ * The deconvolution of the input, computed by the LolliPop service. A new input cancels the request
+ * for the previous one.
  */
 export function useDeconvolution(input: DeconvolutionInput | undefined): DeconvolutionState {
-    const [state, setState] = useState<DeconvolutionState>({ status: 'idle' });
+    const serviceUrl = getAppConfig().lollipopServiceUrl;
+    const query = useQuery({
+        queryKey: ['deconvolution', serviceUrl, input],
+        queryFn:
+            input === undefined || serviceUrl === undefined
+                ? skipToken
+                : ({ signal }) => fetchDeconvolution(serviceUrl, input, signal),
+        staleTime: Infinity,
+        // A request takes up to a minute, and the service caches what it computed.
+        retry: false,
+    });
 
-    useEffect(() => {
-        if (input === undefined) {
-            setState({ status: 'idle' });
-            return;
-        }
-        setState({ status: 'running' });
-        const worker = new Worker(new URL('./deconvolution.worker.ts', import.meta.url), { type: 'module' });
-        worker.onmessage = (event: MessageEvent<DeconvolutionResult>) => {
-            setState({ status: 'done', result: event.data });
-            worker.terminate();
-        };
-        worker.onerror = (event) => {
-            setState({ status: 'error', error: event.message });
-            worker.terminate();
-        };
-        worker.postMessage(input);
-        return () => worker.terminate();
-    }, [input]);
-
-    return state;
+    if (input === undefined) {
+        return { status: 'idle' };
+    }
+    if (query.error) {
+        return { status: 'error', error: query.error.message };
+    }
+    return query.data === undefined ? { status: 'running' } : { status: 'done', result: query.data };
 }

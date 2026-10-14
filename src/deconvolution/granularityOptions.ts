@@ -1,4 +1,4 @@
-import { DEFAULT_DECONVOLUTION_OPTIONS, type DeconvolutionOptions } from '../../lollipop';
+import { DEFAULT_DECONVOLUTION_OPTIONS, type DeconvolutionOptions } from './lollipopService';
 import { type TemporalGranularity } from '../types/dashboardComponents';
 
 /** By week (or month, …), how much the neighbouring week counts in a week's estimate. */

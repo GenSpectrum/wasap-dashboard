@@ -147,7 +147,7 @@ export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
 
 /**
  * A panel of lineages, whose prevalences are estimated from the mutation frequencies by kernel
- * deconvolution (see `lollipop/`): the "Lineage Prevalence" page. The lineages are named like
+ * deconvolution (by the LolliPop service, see `lollipop-service/`): the "Lineage Prevalence" page. The lineages are named like
  * in the lineage tree, where their signatures come from.
  */
 export const wasapDeconvolutionFilterSchema = z.object({

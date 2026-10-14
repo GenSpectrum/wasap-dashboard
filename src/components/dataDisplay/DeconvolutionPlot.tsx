@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
 import { UNDETERMINED_COLOR } from './lineageColors';
-import { UNDETERMINED, type DeconvolutionResult } from '../../../lollipop';
+import { UNDETERMINED, type DeconvolutionResult } from '../../deconvolution/lollipopService';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { parseDateStringToTemporal } from '../../util/temporalClass';
 
