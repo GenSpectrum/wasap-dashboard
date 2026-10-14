@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, type To } from 'react-router-dom';
 
+import { type Amplicon } from '../../../amplicons/primerBed';
 import {
     allRowsOf,
     cooccurrenceTableData,
@@ -25,6 +27,8 @@ type TableProps = {
     jaccardIndices: Partial<Record<string, number>> | undefined;
     /** The row of all the mutations is greyed out below it: it is only there to compare the others to. */
     minJaccard: number;
+    /** Where to open an amplicon elsewhere (the co-occurrence mode); no links without. */
+    ampliconLink?: (amplicon: Amplicon) => To;
 };
 
 const PAGE_SIZES = [20, 50, 100, 250];
@@ -70,7 +74,7 @@ function shownRows(node: TreeNode, openLabels: ReadonlySet<string>, level = 0): 
  * mutations. A row per amplicon, of all of its mutations, which opens up to its other rows below
  * it. The sort and the pages go by the amplicons' rows, so an amplicon's rows stay under it.
  */
-export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJaccard }: TableProps) {
+export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJaccard, ampliconLink }: TableProps) {
     const gridState = useOverTimeGridState(PAGE_SIZES);
     const [{ showEmptyDates }] = useBandViewSettings();
     // The labels of the rows opened up: of amplicons, and of any `k` of their mutations.
@@ -139,6 +143,7 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
                         {...shown}
                         isOpen={openLabels.has(label)}
                         onToggle={() => toggle(label)}
+                        link={shown.level === 0 ? ampliconLink?.(shown.row.amplicon) : undefined}
                         belowMinJaccard={
                             shown.level === 0 &&
                             jaccardIndices !== undefined &&
@@ -166,7 +171,7 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
                 );
             },
         }),
-        [shownByLabel, rowByLabel, jaccardIndices, minJaccard, openLabels, toggle],
+        [shownByLabel, rowByLabel, jaccardIndices, minJaccard, openLabels, toggle, ampliconLink],
     );
 
     const rowStyle = useMemo(() => {
@@ -210,7 +215,7 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
 /**
  * The label of a row: an amplicon's, or one of the rows it opens up to, indented by how deep it is.
  * One that opens up to others is a button with a chevron; the others leave its room blank, so the
- * rows line up.
+ * rows line up. An amplicon's has a link next to it, to open it elsewhere (where there is one).
  */
 function RowLabel({
     row,
@@ -219,7 +224,8 @@ function RowLabel({
     isOpen,
     onToggle,
     belowMinJaccard,
-}: ShownRow & { isOpen: boolean; onToggle: () => void; belowMinJaccard: boolean }) {
+    link,
+}: ShownRow & { isOpen: boolean; onToggle: () => void; belowMinJaccard: boolean; link: To | undefined }) {
     const label = (
         <div
             className={`flex min-w-60 items-center justify-start gap-1.5 text-left ${LEVEL_INDENT[level]} ${belowMinJaccard ? 'opacity-40' : ''}`}
@@ -243,12 +249,30 @@ function RowLabel({
             {label}
         </HoverTooltip>
     );
-    return isOpenable ? (
+    const labelElement = isOpenable ? (
         <button type='button' className='mr-2 block w-full cursor-pointer' aria-expanded={isOpen} onClick={onToggle}>
             {content}
         </button>
     ) : (
         <div className='mr-2 w-full'>{content}</div>
+    );
+    if (link === undefined) {
+        return labelElement;
+    }
+    // Next to the label, not in it: a link can't be inside the button that opens the row up.
+    return (
+        <div className='flex w-full items-center'>
+            {labelElement}
+            <Link
+                className='btn btn-xs mr-2 gap-0'
+                to={link}
+                aria-label={`See amplicon ${row.amplicon.number} in the co-occurrence mode`}
+                title={`See amplicon ${row.amplicon.number} in the co-occurrence mode`}
+            >
+                <span className='iconify mdi--magnify' />
+                <span className='iconify mdi--arrow-right' />
+            </Link>
+        </div>
     );
 }
 
