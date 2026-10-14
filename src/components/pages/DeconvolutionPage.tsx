@@ -64,6 +64,12 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 </div>
             }
         >
+            <div role='alert' className='alert alert-warning text-sm'>
+                <span>
+                    <strong>Experimental:</strong> the lineage prevalence estimates are a work in progress, and the
+                    numbers might be incorrect.
+                </span>
+            </div>
             {lineageTree === undefined ? (
                 <Message>
                     The lineage tree, where the signatures of the lineages come from, could not be loaded.
