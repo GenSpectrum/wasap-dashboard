@@ -44,7 +44,9 @@ describe('useTotalReadCount', () => {
         const fetchMock = vi.fn().mockResolvedValue(ndjson([{ n: 596520334 }]));
         vi.stubGlobal('fetch', fetchMock);
 
-        const { result } = renderHook(() => useTotalReadCount({ locationName: 'Basel (BS)' }), { wrapper: wrapper() });
+        const { result } = renderHook(() => useTotalReadCount({ locationNames: ['Basel (BS)'] }), {
+            wrapper: wrapper(),
+        });
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toBe(596520334);

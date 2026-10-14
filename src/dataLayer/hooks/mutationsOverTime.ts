@@ -221,7 +221,7 @@ export function useMutationsOverTimePage(
 ): MutationsOverTimePage {
     const connection = useConnection();
     const schema = useSiloSchema();
-    const location = normalizeFilter(filter).locationName;
+    const { locationNames } = normalizeFilter(filter);
 
     const targets = useMemo(
         () => positionTargets(visibleMutationCodes, sequenceType, schemaNucleotideSequence),
@@ -237,14 +237,14 @@ export function useMutationsOverTimePage(
                 'silo',
                 'over-time-position',
                 ...connection.key,
-                location ?? null,
+                locationNames ?? null,
                 target.sequenceName,
                 target.position,
             ],
             staleTime: Infinity,
             queryFn: async ({ signal }: { signal: AbortSignal }): Promise<PositionOverTimeRow[]> => {
                 const { rows } = await connection.query(
-                    positionOverTimeQuery(schema, { locationName: location }, target),
+                    positionOverTimeQuery(schema, { locationNames }, target),
                     `Over-time position ${target.sequenceName}:${target.position}`,
                     { signal },
                 );

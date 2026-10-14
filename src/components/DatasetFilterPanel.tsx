@@ -1,15 +1,13 @@
-import { useState } from 'react';
-
 import { type WasapPageConfig } from '../config/wasapPageConfig';
 import { type WasapDatasetFilter } from '../pageState/wasap/wasapAnalysisFilter';
 import { recentDaysDateRangeOptions } from '../util/recentDaysDateRangeOptions';
 import { DynamicDateFilter } from './inputs/DynamicDateFilter';
 import { LabeledField } from './inputs/LabeledField';
+import { LocationMultiSelect } from './inputs/LocationMultiSelect';
 import { RadioSelect } from './inputs/RadioSelect';
-import { TextFilter } from './inputs/textFilter/text-filter';
 
 /**
- * Selects the dataset that is analyzed: location, dates and how they are
+ * Selects the dataset that is analyzed: locations, dates and how they are
  * grouped. It is the same for all the analysis modes, and changes apply right away.
  */
 export function DatasetFilterPanel({
@@ -21,30 +19,16 @@ export function DatasetFilterPanel({
     value: WasapDatasetFilter;
     onChange: (value: WasapDatasetFilter) => void;
 }) {
-    // Clearing the location is only a step towards picking another one. It is not applied, since a
-    // URL without a location means the default location, which would fill the field again right away.
-    // So the field stays empty until a location is picked (or the location in the URL changes).
-    const [clearedLocation, setClearedLocation] = useState<{ from: string | undefined }>();
-    const isLocationCleared = clearedLocation !== undefined && clearedLocation.from === value.locationName;
-
     return (
         // The date column is the widest: the select and the two dates of the date filter are in one row, which
         // needs about 24rem. The flex bases are what the columns wrap at on a narrow page.
         <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-4 p-6'>
             <div className='min-w-0 flex-[1_1_11rem]'>
-                <LabeledField label='Sampling location'>
-                    <TextFilter
-                        placeholderText='Sampling location'
+                <LabeledField label='Sampling locations'>
+                    <LocationMultiSelect
                         field={config.locationNameField}
-                        onInputChange={({ locationName }) => {
-                            if (locationName === undefined) {
-                                setClearedLocation({ from: value.locationName });
-                                return;
-                            }
-                            setClearedLocation(undefined);
-                            onChange({ ...value, locationName });
-                        }}
-                        value={isLocationCleared ? undefined : value.locationName}
+                        value={value.locationNames}
+                        onChange={(locationNames) => onChange({ ...value, locationNames })}
                     />
                 </LabeledField>
             </div>

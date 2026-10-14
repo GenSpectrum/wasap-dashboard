@@ -28,7 +28,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
         setPageState,
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],

@@ -26,7 +26,7 @@ describe('ampliconPositionsQuery', () => {
         expect(
             ampliconPositionsQuery(
                 schema,
-                { locationName: 'Basel (BS)' },
+                { locationNames: ['Basel (BS)'] },
                 { sequenceName: 'S', position: 501 },
                 'amino acid',
             ).render(),

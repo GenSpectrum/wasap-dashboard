@@ -21,7 +21,7 @@ describe('CooccurrencePageStateHandler', () => {
 
         const filter = parse(query);
 
-        expect(filter.base.locationName).toBe('Zürich (ZH)');
+        expect(filter.base.locationNames).toEqual(['Zürich (ZH)']);
         expect(filter.analysis).toEqual({ mode: 'cooccurrence', sequenceType: 'nucleotide', positions: undefined });
         expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });

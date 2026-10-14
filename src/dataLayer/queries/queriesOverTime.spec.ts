@@ -108,7 +108,7 @@ describe('countOverTimeQuery / coverageOverTimeQuery', () => {
     const node: SiloFilterExpression = { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' };
 
     test('count: the query, scoped, grouped by the dictionary date column', () => {
-        expect(countOverTimeQuery(schema, { locationName: 'Zürich (ZH)' }, node).render()).toBe(
+        expect(countOverTimeQuery(schema, { locationNames: ['Zürich (ZH)'] }, node).render()).toBe(
             "data.filter(locationName = 'Zürich (ZH)' && " +
                 "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
                 '.group(by := {date}, aggs := {n := count()})',

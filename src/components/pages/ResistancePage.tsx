@@ -17,7 +17,7 @@ export function ResistancePage({ config }: { config: WasapPageConfigFor<'resista
         setPageState,
     } = usePageState(pageStateHandler);
     const { resistanceData } = useWasapLayoutContext();
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     const displayMutations = useMemo(
         () => resistanceData.displayMutationsBySet[analysis.resistanceSet] ?? [],
         [resistanceData, analysis.resistanceSet],

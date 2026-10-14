@@ -64,7 +64,7 @@ describe('useQueriesOverTime', () => {
         stubSilo();
         const { result, rerender } = renderHook(
             ({ locationName }: { locationName: string }) =>
-                useQueriesOverTime({ locationName, samplingDateFrom: '2026-06-01' }, 'day', queries),
+                useQueriesOverTime({ locationNames: [locationName], samplingDateFrom: '2026-06-01' }, 'day', queries),
             { wrapper: wrapper(), initialProps: { locationName: 'Zürich' } },
         );
         const count = () => {
