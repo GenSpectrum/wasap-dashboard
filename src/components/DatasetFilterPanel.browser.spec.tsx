@@ -111,29 +111,4 @@ describe('DatasetFilterPanel', () => {
         await expect.element(getByText('All locations')).toBeVisible();
         await expect.element(getByRole('checkbox', { name: DEFAULT_LOCATION })).not.toBeChecked();
     });
-
-    it('selects all locations', async () => {
-        const onChange = vi.fn();
-        const { getByRole } = renderPanel(onChange);
-
-        await getByRole('button', { name: DEFAULT_LOCATION }).click();
-        await getByRole('button', { name: 'Select all' }).click();
-
-        expect(onChange).toHaveBeenLastCalledWith({
-            ...dataset,
-            locationNames: ['Basel (BS)', 'Bern (BE)', DEFAULT_LOCATION],
-        });
-    });
-
-    it('selects all locations that match the search', async () => {
-        const onChange = vi.fn();
-        const { getByRole } = renderPanel(onChange);
-
-        await getByRole('button', { name: DEFAULT_LOCATION }).click();
-        await getByRole('textbox', { name: 'Search locations' }).fill('ba');
-        await expect.element(getByRole('checkbox', { name: 'Bern (BE)' })).not.toBeInTheDocument();
-        await getByRole('button', { name: 'Select all' }).click();
-
-        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: ['Basel (BS)', DEFAULT_LOCATION] });
-    });
 });

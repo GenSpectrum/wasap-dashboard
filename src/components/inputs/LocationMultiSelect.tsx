@@ -13,7 +13,7 @@ export type LocationMultiSelectProps = {
 };
 
 /**
- * A dropdown of all locations with a checkbox each, a search field and "Select all" / "Clear".
+ * A dropdown of all locations with a checkbox each, a search field and "Clear".
  * Every tick applies right away. Nothing ticked means every location, which the button shows
  * as "All locations", so that an empty selection is never mistaken for none.
  */
@@ -85,9 +85,6 @@ function LocationDropdown({
         change(next);
     };
 
-    // With a search term, "Select all" adds what matches it, which is what the user sees.
-    const selectAll = () => change(new Set([...selected, ...visibleOptions.map(({ name }) => name)]));
-
     return (
         <div
             ref={rootRef}
@@ -125,9 +122,6 @@ function LocationDropdown({
                             onChange={(event) => setSearch(event.target.value)}
                             autoFocus
                         />
-                        <button type='button' className='btn btn-ghost btn-xs' onClick={selectAll}>
-                            Select all
-                        </button>
                         <button
                             type='button'
                             className='btn btn-ghost btn-xs'
