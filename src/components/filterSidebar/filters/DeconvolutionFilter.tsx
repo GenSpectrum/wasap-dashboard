@@ -1,5 +1,6 @@
 import { type LineageTree } from '../../../lineageTree/lineageTree';
 import { type WasapDeconvolutionFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { LineagePanelInfo } from '../../InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 
@@ -14,7 +15,7 @@ export function DeconvolutionFilter({
     lineageTree: LineageTree;
 }) {
     return (
-        <LabeledField label='Panel of lineages'>
+        <LabeledField label='Panel of lineages' info={<LineagePanelInfo />}>
             <LineageTreeCombobox
                 lineageTree={lineageTree}
                 multiSelect={true}
