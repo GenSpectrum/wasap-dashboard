@@ -140,8 +140,9 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
         <p className='px-2 pt-2 pb-1 text-sm text-gray-600'>
             Amplicon <span className='font-mono font-medium text-black'>{amplicon.start.toLocaleString()}</span>
             &ndash;<span className='font-mono font-medium text-black'>{amplicon.end.toLocaleString()}</span> (
-            {(amplicon.end - amplicon.start + 1).toLocaleString()} bp) &middot; {diversePositions.length} of{' '}
-            {positionsByEntropy.length} positions exceed {entropyCutoff} bits of entropy.
+            {(amplicon.end - amplicon.start + 1).toLocaleString()} {sequenceType === 'nucleotide' ? 'bp' : 'aa'})
+            &middot; {diversePositions.length} of {positionsByEntropy.length} positions exceed {entropyCutoff} bits of
+            entropy.
         </p>
     );
 
