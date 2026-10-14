@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 import pytest
 
-from lollipop_service.deconvolution import deconvolve
+from lollipop_service.deconvolution import aggregate, deconvolve, fit_rounds
 from lollipop_service.models import DEFAULT_OPTIONS, DeconvolutionRequest, MutationFrequency
 
 SIGNATURES = {
@@ -69,6 +69,13 @@ def test_bootstrap_intervals_contain_the_mean_and_are_reproducible():
             assert estimate.lower <= estimate.proportion <= estimate.upper
     assert any(estimate.lower < estimate.upper for date in response.dates for estimate in date.estimates)
     assert deconvolve(request) == response
+
+
+def test_rounds_fitted_in_parts_give_the_same_result():
+    request = mixture_request({"A": 0.5, "B": 0.5}, days=6, bootstraps=7, noise=0.05)
+    parts = fit_rounds(request, 0, 3) + fit_rounds(request, 3, 1) + fit_rounds(request, 4, 3)
+
+    assert aggregate(request, parts) == deconvolve(request)
 
 
 def test_without_informative_mutations_there_are_no_dates():

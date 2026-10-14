@@ -46,15 +46,15 @@ are at `/docs`.
 
 Environment variables:
 
-| Variable                   | Default        | Meaning                                                            |
-| -------------------------- | -------------- | ------------------------------------------------------------------ |
-| `LOLLIPOP_WORKERS`         | number of CPUs | deconvolutions running in parallel, one process each               |
-| `LOLLIPOP_MAX_QUEUED`      | 2 × workers    | requests waiting for a worker before further ones get a 503        |
-| `LOLLIPOP_CACHE_SIZE`      | 256            | results kept in memory                                             |
-| `LOLLIPOP_MAX_FREQUENCIES` | 200000         | per request                                                        |
-| `LOLLIPOP_MAX_LINEAGES`    | 50             | per request                                                        |
-| `LOLLIPOP_MAX_BOOTSTRAPS`  | 1000           | per request                                                        |
-| `LOLLIPOP_CORS_ORIGINS`    | `*`            | comma-separated origins allowed to call the service from a browser |
+| Variable                   | Default        | Meaning                                                                      |
+| -------------------------- | -------------- | ---------------------------------------------------------------------------- |
+| `LOLLIPOP_WORKERS`         | number of CPUs | processes the rounds of a bootstrap are split between                        |
+| `LOLLIPOP_MAX_QUEUED`      | 8              | requests waiting behind the one being computed before further ones get a 503 |
+| `LOLLIPOP_CACHE_SIZE`      | 256            | results kept in memory                                                       |
+| `LOLLIPOP_MAX_FREQUENCIES` | 200000         | per request                                                                  |
+| `LOLLIPOP_MAX_LINEAGES`    | 50             | per request                                                                  |
+| `LOLLIPOP_MAX_BOOTSTRAPS`  | 1000           | per request                                                                  |
+| `LOLLIPOP_CORS_ORIGINS`    | `*`            | comma-separated origins allowed to call the service from a browser           |
 
 ## Development
 

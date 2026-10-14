@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from lollipop_service.app import app
+from lollipop_service.app import _split, app
 
 REQUEST = {
     "signatures": {"A": ["C100T", "G200A"], "B": ["C300T"]},
@@ -71,3 +71,8 @@ def test_allows_cross_origin_requests(client):
 def test_health_and_version(client):
     assert client.get("/health").json() == {"status": "ok"}
     assert client.get("/version").json() == {"lollipop": "0.5.3"}
+
+
+def test_split():
+    assert _split(10, 3) == [(0, 4), (4, 3), (7, 3)]
+    assert _split(2, 4) == [(0, 1), (1, 1)]

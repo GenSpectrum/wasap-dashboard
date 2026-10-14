@@ -1,9 +1,9 @@
 """
 The HTTP API: `POST /deconvolve` runs a deconvolution and answers with its result, synchronously.
 
-A deconvolution takes from seconds to minutes and holds a CPU, so they run in a pool of
-`LOLLIPOP_WORKERS` processes; when `LOLLIPOP_MAX_QUEUED` more are waiting, further requests get a
-503. Every visitor of a dashboard page sends the same request, so results are cached, and a request
+A deconvolution's bootstrap takes from seconds to minutes, so its rounds are split up between a
+pool of `LOLLIPOP_WORKERS` processes. Requests take turns in the pool; when `LOLLIPOP_MAX_QUEUED`
+are waiting behind the one being computed, further requests get a 503. Every visitor of a dashboard page sends the same request, so results are cached, and a request
 that is already running is joined instead of run twice.
 """
 
@@ -19,7 +19,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from threadpoolctl import threadpool_limits
 
-from .deconvolution import deconvolve
+from .deconvolution import aggregate, fit_rounds
 from .models import DeconvolutionRequest, DeconvolutionResponse
 
 
@@ -28,7 +28,7 @@ def _setting(name: str, default: int) -> int:
 
 
 WORKERS = _setting("WORKERS", os.cpu_count() or 1)
-MAX_QUEUED = _setting("MAX_QUEUED", 2 * WORKERS)
+MAX_QUEUED = _setting("MAX_QUEUED", 8)
 CACHE_SIZE = _setting("CACHE_SIZE", 256)
 MAX_FREQUENCIES = _setting("MAX_FREQUENCIES", 200_000)
 MAX_LINEAGES = _setting("MAX_LINEAGES", 50)
@@ -54,13 +54,23 @@ class Runner:
             self.cache.move_to_end(key)
             return self.cache[key]
         if key not in self.running:
-            if len(self.running) >= WORKERS + MAX_QUEUED:
+            if len(self.running) > MAX_QUEUED:
                 raise HTTPException(503, "Too many deconvolutions are running, please try again later.")
-            future = asyncio.get_running_loop().run_in_executor(self.executor, deconvolve, request)
+            future = asyncio.ensure_future(self._deconvolve(request))
             self.running[key] = future
             future.add_done_callback(lambda done: self._finished(key, done))
         # Shielded: a client that disconnects mustn't cancel the run for the others waiting on it.
         return await asyncio.shield(self.running[key])
+
+    async def _deconvolve(self, request: DeconvolutionRequest) -> DeconvolutionResponse:
+        loop = asyncio.get_running_loop()
+        parts = await asyncio.gather(
+            *(
+                loop.run_in_executor(self.executor, fit_rounds, request, first, count)
+                for first, count in _split(request.options.bootstraps, WORKERS)
+            )
+        )
+        return aggregate(request, [fit for part in parts for fit in part])
 
     def _finished(self, key: str, future: asyncio.Future[DeconvolutionResponse]) -> None:
         del self.running[key]
@@ -68,6 +78,13 @@ class Runner:
             self.cache[key] = future.result()
             if len(self.cache) > CACHE_SIZE:
                 self.cache.popitem(last=False)
+
+
+def _split(rounds: int, parts: int) -> list[tuple[int, int]]:
+    """`rounds` split into at most `parts` runs of consecutive rounds, as `(first, count)`."""
+    size, rest = divmod(rounds, parts)
+    counts = [size + (i < rest) for i in range(parts)]
+    return [(sum(counts[:i]), count) for i, count in enumerate(counts) if count > 0]
 
 
 @asynccontextmanager

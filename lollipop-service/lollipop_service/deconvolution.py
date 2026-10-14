@@ -2,7 +2,8 @@
 LolliPop's `deconvolute` command with a bootstrap preset, for a single location and without files:
 the request becomes a tally table, which goes through the CLI's preprocessing, its bootstrap
 (`_deconvolute_bootstrap` in `lollipop/cli/deconvolute.py`) and its aggregation into a mean and
-quantiles per date and variant.
+quantiles per date and variant. The rounds of the bootstrap can be fitted in parts (`fit_rounds`)
+and aggregated together (`aggregate`), with the same result as `deconvolve`.
 """
 
 import lollipop as ll
@@ -17,22 +18,33 @@ SEED = 1
 
 
 def deconvolve(request: DeconvolutionRequest) -> DeconvolutionResponse:
+    return aggregate(request, fit_rounds(request, 0, request.options.bootstraps))
+
+
+def fit_rounds(request: DeconvolutionRequest, first: int, count: int) -> list[pd.DataFrame]:
+    """
+    The fits of the bootstrap rounds `first` to `first + count`: the same as if all the rounds ran in
+    one go, so that they can be split up and run in parallel.
+    """
     lineages = list(request.signatures)
     variants = [*lineages, UNDETERMINED]
-    response = DeconvolutionResponse(variants=variants, dates=[])
     if not request.frequencies:
-        return response
-
+        return []
     tally = _preprocess(_tally(request), lineages)
     if tally.empty:
-        return response
+        return []
 
     options = request.options
     bootstrap = options.bootstraps > 1
+    mutations = tally["mutations"].unique()
     np.random.seed(SEED)
+    # Each round of `resample_mutations` draws once, the same number of indices; drawing them for
+    # the rounds before `first` gets the generator to where they would have left it.
+    for _ in range(first if bootstrap else 0):
+        np.random.randint(0, high=len(mutations) // 2, size=len(mutations) // 2)
     rounds = []
-    for _ in range(options.bootstraps):
-        resampled = ll.resample_mutations(tally, tally["mutations"].unique())[0] if bootstrap else tally
+    for _ in range(count):
+        resampled = ll.resample_mutations(tally, mutations)[0] if bootstrap else tally
         fit = ll.KernelDeconv(
             resampled[variants],
             resampled["frac"],
@@ -43,8 +55,16 @@ def deconvolve(request: DeconvolutionRequest) -> DeconvolutionResponse:
             confint=ll.NullConfint(),
         ).deconv_all(min_tol=options.min_tol)
         rounds.append(fit.fitted)
+    return rounds
 
-    lower_quantile = (1 - options.confidence_level) / 2
+
+def aggregate(request: DeconvolutionRequest, rounds: list[pd.DataFrame]) -> DeconvolutionResponse:
+    """The CLI's aggregation of the rounds: their mean and quantiles per date and variant."""
+    variants = [*request.signatures, UNDETERMINED]
+    response = DeconvolutionResponse(variants=variants, dates=[])
+    if not rounds:
+        return response
+    lower_quantile = (1 - request.options.confidence_level) / 2
     for date, fits in pd.concat(rounds).groupby(level=0, sort=True):
         # Rounds that drew none of a date's informative mutations fit nothing there.
         fits = fits[np.isfinite(fits[variants]).all(axis=1)]
