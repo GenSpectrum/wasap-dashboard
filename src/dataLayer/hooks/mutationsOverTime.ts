@@ -54,7 +54,7 @@ import { readNamedCounts } from '../queries/rows';
 import { type Connection } from '../transport/connection';
 
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
-const MAX_GRID_COLUMNS = 200;
+export const MAX_GRID_COLUMNS = 200;
 
 /** The symbol that means "the read did not call anything here". */
 export function unknownSymbol(sequenceType: OverTimeSequenceType): string {
@@ -517,7 +517,7 @@ export function removeEmptyDatesUnlessShown(
 }
 
 /** The filter with its sampling-date window narrowed to the span the buckets cover. */
-function withDateBounds(filter: SiloReadFilter, requestedDateRanges: TemporalClass[]): SiloReadFilter {
+export function withDateBounds(filter: SiloReadFilter, requestedDateRanges: TemporalClass[]): SiloReadFilter {
     if (requestedDateRanges.length === 0) {
         return filter;
     }
