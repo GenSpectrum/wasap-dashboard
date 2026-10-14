@@ -73,6 +73,7 @@
             "collectionTitleFilter": "wastewater",
             "defaultLocationName": "Zürich (ZH)",
             "clinicalSequenceCountWarningThreshold": 50,
+            "cooccurrenceDefaultAmplicon": 74,
             "filterDefaults": {
                 "manual": {
                     "mode": "manual",
