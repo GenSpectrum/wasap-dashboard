@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 
 import { type Amplicon } from '../../../amplicons/primerBed';
-import { samplingPositions } from '../../../amplicons/samplingPositions';
+import { ampliconAnchor, samplingPositions } from '../../../amplicons/samplingPositions';
 import { useAmplicons } from '../../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
 import { codonAnchorFor } from '../../../genome/geneAnnotation';
@@ -72,9 +72,7 @@ export function CooccurrenceFilter({
                     {config.amplicons !== undefined && pageState.sequenceType === 'nucleotide' ? (
                         <AmpliconSelect
                             amplicons={config.amplicons}
-                            toAnchor={(amplicon, allAmplicons) =>
-                                String(samplingPositions(amplicon, allAmplicons, 1)[0])
-                            }
+                            toAnchor={ampliconAnchor}
                             value={pageState.anchorPosition}
                             onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
                         />
