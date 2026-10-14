@@ -64,7 +64,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 </div>
             }
         >
-            <div role='alert' className='alert alert-warning text-sm'>
+            <div role='alert' className='alert border-amber-300 bg-amber-100 text-sm text-amber-950'>
                 <span>
                     <strong>Experimental:</strong> the lineage prevalence estimates are a work in progress, and the
                     numbers might be incorrect.
