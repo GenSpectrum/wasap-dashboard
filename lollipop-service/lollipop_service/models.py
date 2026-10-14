@@ -43,7 +43,8 @@ DEFAULT_OPTIONS = DeconvolutionOptions(bandwidth=10, min_tol=1e-3, f_scale=0.01,
 
 
 class DeconvolutionRequest(CamelModel):
-    # The mutations of each lineage of the panel; the order of the panel is the order of the result.
+    # The mutations of each lineage of the panel; the order of the panel is the order of the result,
+    # while the order of the mutations and frequencies doesn't matter.
     signatures: dict[str, list[Mutation]] = Field(min_length=2)
     frequencies: list[MutationFrequency]
     options: DeconvolutionOptions = DEFAULT_OPTIONS
@@ -55,7 +56,13 @@ class DeconvolutionRequest(CamelModel):
         reserved = {UNDETERMINED, "date", "pos", "base", "frac", "mutations", "resample_value"}
         if clashes := reserved & set(signatures):
             raise ValueError(f"these can't be names of lineages: {', '.join(sorted(clashes))}")
-        return signatures
+        # In a set order, like the frequencies: the same data is the same request, for the cache.
+        return {lineage: sorted(set(mutations)) for lineage, mutations in signatures.items()}
+
+    @field_validator("frequencies")
+    @classmethod
+    def sorted_frequencies(cls, frequencies: list[MutationFrequency]) -> list[MutationFrequency]:
+        return sorted(frequencies, key=lambda f: (f.date, f.mutation, f.frac))
 
 
 class Estimate(CamelModel):
