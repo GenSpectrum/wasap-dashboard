@@ -94,7 +94,9 @@ docker compose up --build
 ```
 
 Serves the app at `http://localhost:8080`, and the LolliPop service
-([`lollipop-service/`](lollipop-service/README.md)) at `http://localhost:8000`.
+([`lollipop-service/`](lollipop-service/README.md)), which the Lineage
+Prevalence page needs, at `http://localhost:8000` (the `lollipopServiceUrl` of
+the example config). Without a `lollipopServiceUrl`, that page is left out.
 `docker-compose.yml` bind-mounts
 `./config.json` into the built image, so editing it and restarting the
 container is enough to point the same image at different data — no rebuild

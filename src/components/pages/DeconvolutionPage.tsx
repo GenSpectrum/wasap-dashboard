@@ -3,12 +3,12 @@ import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
-import { informativeMutations, type DeconvolutionOptions } from '../../../lollipop';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { MIN_COVERAGE, useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
 import { lineageSignatures } from '../../deconvolution/lineageSignatures';
+import { informativeMutations, type DeconvolutionOptions } from '../../deconvolution/lollipopService';
 import { poolFrequencies } from '../../deconvolution/poolFrequencies';
 import { useDeconvolution } from '../../deconvolution/useDeconvolution';
 import { type LineageTree } from '../../lineageTree/lineageTree';
