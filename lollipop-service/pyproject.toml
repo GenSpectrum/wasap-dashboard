@@ -1,0 +1,27 @@
+[project]
+name = "lollipop-service"
+version = "0.1.0"
+description = "An HTTP service that runs LolliPop's deconvolution for the W-ASAP dashboard"
+license = "AGPL-3.0-only"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    # LolliPop isn't on PyPI (the `lollipop` there is an unrelated package).
+    "lollipop @ git+https://github.com/cbg-ethz/LolliPop@v0.5.3",
+    # LolliPop 0.5.3 predates pandas 3, which breaks parts of it.
+    "pandas>=2.2,<3",
+    "threadpoolctl>=3.5",
+]
+
+[dependency-groups]
+dev = ["httpx>=0.28", "pytest>=8.3", "ruff>=0.11"]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = ["I", "B", "UP"]
