@@ -3,6 +3,9 @@ import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
+import { type Amplicon } from '../../amplicons/primerBed';
+import { ampliconAnchor } from '../../amplicons/samplingPositions';
+import { useAmplicons } from '../../amplicons/useAmplicons';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
@@ -21,18 +24,53 @@ function isNothingSelected(analysis: WasapCooccurrenceFilter): boolean {
         : (analysis.positions?.length ?? 0) === 0;
 }
 
+/** Whether the config's default amplicon is to be picked: when nothing else is (exported for tests). */
+export function usesDefaultAmplicon(analysis: WasapCooccurrenceFilter, defaultAmplicon: number | undefined): boolean {
+    return (
+        defaultAmplicon !== undefined &&
+        analysis.sequenceType === 'nucleotide' &&
+        effectivePositionSource(analysis) === 'amplicon' &&
+        isNothingSelected(analysis)
+    );
+}
+
+/** The analysis with the default amplicon picked, if it is in the primer scheme (exported for tests). */
+export function withDefaultAmplicon(
+    analysis: WasapCooccurrenceFilter,
+    defaultAmplicon: number,
+    amplicons: Amplicon[],
+): WasapCooccurrenceFilter {
+    const amplicon = amplicons.find(({ number }) => number === defaultAmplicon);
+    return amplicon === undefined ? analysis : { ...analysis, anchorPosition: ampliconAnchor(amplicon, amplicons) };
+}
+
+/**
+ * The analysis with the config's default amplicon picked, when nothing else is; pending while the
+ * primer scheme loads, to find the amplicon in.
+ */
+function useWithDefaultAmplicon(analysis: WasapCooccurrenceFilter, config: WasapPageConfigFor<'cooccurrence'>) {
+    const defaultAmplicon = config.cooccurrenceDefaultAmplicon;
+    const usesDefault = usesDefaultAmplicon(analysis, defaultAmplicon);
+    const amplicons = useAmplicons(usesDefault ? config.amplicons : undefined);
+
+    return useMemo(
+        () =>
+            usesDefault && defaultAmplicon !== undefined && amplicons.data !== undefined
+                ? { analysis: withDefaultAmplicon(analysis, defaultAmplicon, amplicons.data), isPending: false }
+                : { analysis, isPending: usesDefault && amplicons.isPending },
+        [analysis, usesDefault, defaultAmplicon, amplicons.data, amplicons.isPending],
+    );
+}
+
 export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'cooccurrence'> }) {
     const pageStateHandler = useMemo(() => new CooccurrencePageStateHandler(config), [config]);
     const {
-        pageState: { base, analysis },
+        pageState: { base, analysis: urlAnalysis },
         setPageState,
     } = usePageState(pageStateHandler);
+    const { analysis, isPending: isDefaultAmpliconPending } = useWithDefaultAmplicon(urlAnalysis, config);
     const { lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
-    const meanProportionInterval = useMemo(
-        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
-        [base.meanProportion.lower, base.meanProportion.upper],
-    );
 
     // Opens a row's mutations in the manual mode, to see them over time there.
     const manualModeLink = isModeEnabled(config, 'manual')
@@ -58,6 +96,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
         <ModePageLayout
             sidebar={
                 <FilterSidebar
+                    withMeanProportion={false}
                     pageStateHandler={pageStateHandler}
                     base={base}
                     analysis={analysis}
@@ -74,7 +113,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
                 </FilterSidebar>
             }
         >
-            {isNothingSelected(analysis) ? (
+            {isDefaultAmpliconPending ? undefined : isNothingSelected(analysis) ? (
                 <NothingSelected title='No positions selected'>
                     {effectivePositionSource(analysis) === 'amplicon'
                         ? 'Please pick an amplicon in the filter panel — its variable positions are found automatically.'
@@ -85,7 +124,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
                     base={base}
                     analysis={analysis}
                     filter={filter}
-                    meanProportionInterval={meanProportionInterval}
+                    minShare={analysis.minShare ?? 0}
                     lineageTree={lineageTree}
                     manualModeLink={manualModeLink}
                     variantModeLink={variantModeLink}

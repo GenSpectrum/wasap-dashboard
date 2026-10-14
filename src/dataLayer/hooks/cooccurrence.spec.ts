@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import {
     buildCooccurrenceMap,
     cooccurrenceTargets,
-    filterCooccurrenceByMeanProportion,
+    filterCooccurrenceByMinShare,
     sliceCooccurrenceRows,
 } from './cooccurrence';
 import { parseDateStringToTemporal } from '../../util/temporalClass';
@@ -121,15 +121,15 @@ describe('cooccurrenceTargets', () => {
     });
 });
 
-describe('filterCooccurrenceByMeanProportion', () => {
-    test('drops a pattern whose mean proportion falls below the interval', () => {
+describe('filterCooccurrenceByMinShare', () => {
+    test('drops a pattern on less than the min. share of the reads', () => {
         const rows: CooccurrenceRow[] = [
             { date: '2026-06-01', symbols: ['C', 'A'], count: 1 }, // 1/10 = 0.1
             { date: '2026-06-01', symbols: ['T', 'A'], count: 9 }, // 9/10 = 0.9
         ];
         const map = buildCooccurrenceMap(rows, [bucket('2026-06-01')], [10], granularity, positionLabels, 'N');
 
-        const filtered = filterCooccurrenceByMeanProportion(map, { min: 0.5, max: 1 }, false);
+        const filtered = filterCooccurrenceByMinShare(map, 0.5, false);
         expect(filtered.getFirstAxisKeys()).toEqual([{ symbols: { '241': 'T', '23403': 'A' } }]);
     });
 
@@ -144,7 +144,7 @@ describe('filterCooccurrenceByMeanProportion', () => {
             'N',
         );
 
-        const filtered = filterCooccurrenceByMeanProportion(map, { min: 0, max: 1 }, true);
+        const filtered = filterCooccurrenceByMinShare(map, 0, true);
         expect(filtered.getSecondAxisKeys()).toEqual([bucket('2026-06-01')]);
     });
 });
@@ -156,7 +156,7 @@ describe('sliceCooccurrenceRows', () => {
             { date: '2026-06-01', symbols: ['T', 'A'], count: 1 },
         ];
         const map = buildCooccurrenceMap(rows, [bucket('2026-06-01')], [2], granularity, positionLabels, 'N');
-        const view = filterCooccurrenceByMeanProportion(map, { min: 0, max: 1 }, false);
+        const view = filterCooccurrenceByMinShare(map, 0, false);
 
         const sliced = sliceCooccurrenceRows(view, [{ symbols: { '241': 'T', '23403': 'A' } }]);
         expect(sliced.getFirstAxisKeys()).toEqual([{ symbols: { '241': 'T', '23403': 'A' } }]);

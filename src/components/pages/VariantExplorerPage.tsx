@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
+import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
 import { ampliconNumbersByMutation } from '../../amplicons/mutationsByAmplicon';
 import { useAmplicons } from '../../amplicons/useAmplicons';
-import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { useSignatureWithoutBackground, type BackgroundLineage } from '../../dataLayer/hooks/backgroundMutations';
 import {
     getFromDateForTimeFrame,
@@ -13,8 +14,10 @@ import {
 } from '../../externalData/lapis/useVariantSignature';
 import { getLineageSignature } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
+import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { modePath } from '../../pageState/wasap/wasapModes';
 import { ClinicalSequenceCountStat } from '../dataDisplay/ClinicalSequenceCountStat';
 import { ExcludedMutations } from '../dataDisplay/ExcludedMutations';
 import { MutationsResult } from '../dataDisplay/MutationsResult';
@@ -37,6 +40,25 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     const signature = useVariantSignature(config, analysis, lineageTree);
+
+    // Opens an amplicon in the co-occurrence mode, to see all of its variable positions there, with
+    // the variant added to the mode's default panel, to tell which patterns are the variant's.
+    const variantName = analysis.signatureType === 'computed' ? analysis.variant : analysis.lineage;
+    const cooccurrenceModeLink = isModeEnabled(config, 'cooccurrence')
+        ? (anchorPosition: string): To => {
+              const defaultPanel = config.filterDefaults.cooccurrence.panel ?? [];
+              const panel =
+                  variantName === undefined || defaultPanel.includes(variantName)
+                      ? defaultPanel
+                      : [...defaultPanel, variantName];
+              const search = datasetFilterSearchParams(base, config);
+              search.set('sequenceType', 'nucleotide');
+              search.set('positionSource', 'amplicon');
+              search.set('anchorPosition', anchorPosition);
+              search.set('panel', panel.join('|'));
+              return { pathname: modePath(config.path, 'cooccurrence'), search: `?${search.toString()}` };
+          }
+        : undefined;
     const backgroundLineages = useMemo(
         () =>
             (analysis.backgroundLineages ?? []).flatMap((name): BackgroundLineage[] => {
@@ -137,6 +159,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                                     candidateMutations.length !== 0 && (
                                         <AmpliconCooccurrenceSection
                                             amplicons={config.amplicons}
+                                            cooccurrenceModeLink={cooccurrenceModeLink}
                                             filter={filter}
                                             granularity={base.granularity}
                                             candidateMutations={candidateMutations}

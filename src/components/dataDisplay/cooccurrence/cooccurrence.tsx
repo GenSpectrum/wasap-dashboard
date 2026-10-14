@@ -6,7 +6,7 @@ import { useAmpliconAnchor, labelFor, selectDiversePositions } from '../../../da
 import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import {
     cooccurrenceTargets,
-    filterCooccurrenceByMeanProportion,
+    filterCooccurrenceByMinShare,
     useCooccurrence,
 } from '../../../dataLayer/hooks/cooccurrence';
 import { lineagePanelSymbols, matchingPanelLineages } from '../../../dataLayer/hooks/lineagePanelMatch';
@@ -27,8 +27,8 @@ type CooccurrenceBaseProps = {
     filter: SiloReadFilter;
     sequenceType: SequenceType;
     granularity: TemporalGranularity;
-    /** Only patterns whose mean proportion over the time range lies within this interval are shown. */
-    meanProportionInterval: { min: number; max: number };
+    /** Only patterns on at least this share of the reads over the time range are shown. */
+    minShare: number;
     pageSizes: number[];
     /** EXPERIMENTAL: a panel of lineages to match co-occurrence patterns against; see `lineagePanelMatch`. */
     panel?: string[];
@@ -140,8 +140,9 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
         <p className='px-2 pt-2 pb-1 text-sm text-gray-600'>
             Amplicon <span className='font-mono font-medium text-black'>{amplicon.start.toLocaleString()}</span>
             &ndash;<span className='font-mono font-medium text-black'>{amplicon.end.toLocaleString()}</span> (
-            {(amplicon.end - amplicon.start + 1).toLocaleString()} bp) &middot; {diversePositions.length} of{' '}
-            {positionsByEntropy.length} positions exceed {entropyCutoff} bits of entropy.
+            {(amplicon.end - amplicon.start + 1).toLocaleString()} {sequenceType === 'nucleotide' ? 'bp' : 'aa'})
+            &middot; {diversePositions.length} of {positionsByEntropy.length} positions exceed {entropyCutoff} bits of
+            entropy.
         </p>
     );
 
@@ -253,8 +254,8 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
     // Date axis collapsed to a single total per pattern — `hideGaps` (dropping empty date
     // columns) has no effect on a sum, so the mean-proportion filter runs date-column-agnostic.
     const filteredView = useMemo(
-        () => filterCooccurrenceByMeanProportion(data, originalComponentProps.meanProportionInterval, false),
-        [data, originalComponentProps.meanProportionInterval],
+        () => filterCooccurrenceByMinShare(data, originalComponentProps.minShare, false),
+        [data, originalComponentProps.minShare],
     );
 
     const patternShares: PatternShare[] = useMemo(() => {

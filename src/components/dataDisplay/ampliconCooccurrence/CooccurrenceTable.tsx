@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, type To } from 'react-router-dom';
 
+import { type Amplicon } from '../../../amplicons/primerBed';
 import {
     allRowsOf,
     cooccurrenceTableData,
@@ -8,7 +10,9 @@ import {
     type CooccurrenceRow,
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { Map2dView } from '../../../util/map2d';
+import { type Substitution } from '../../../util/mutations';
 import { type Temporal, type TemporalClass } from '../../../util/temporalClass';
+import { useMutationLinkProvider } from '../../MutationLinkTemplateContext';
 import { useBandViewSettings } from '../band-view-settings';
 import { type FeatureRenderer, type RowStyle } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels } from '../featureSort';
@@ -25,6 +29,8 @@ type TableProps = {
     jaccardIndices: Partial<Record<string, number>> | undefined;
     /** The row of all the mutations is greyed out below it: it is only there to compare the others to. */
     minJaccard: number;
+    /** Where to open an amplicon elsewhere (the co-occurrence mode); no links without. */
+    ampliconLink?: (amplicon: Amplicon) => To;
 };
 
 const PAGE_SIZES = [20, 50, 100, 250];
@@ -70,7 +76,7 @@ function shownRows(node: TreeNode, openLabels: ReadonlySet<string>, level = 0): 
  * mutations. A row per amplicon, of all of its mutations, which opens up to its other rows below
  * it. The sort and the pages go by the amplicons' rows, so an amplicon's rows stay under it.
  */
-export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJaccard }: TableProps) {
+export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJaccard, ampliconLink }: TableProps) {
     const gridState = useOverTimeGridState(PAGE_SIZES);
     const [{ showEmptyDates }] = useBandViewSettings();
     // The labels of the rows opened up: of amplicons, and of any `k` of their mutations.
@@ -139,6 +145,7 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
                         {...shown}
                         isOpen={openLabels.has(label)}
                         onToggle={() => toggle(label)}
+                        link={shown.level === 0 ? ampliconLink?.(shown.row.amplicon) : undefined}
                         belowMinJaccard={
                             shown.level === 0 &&
                             jaccardIndices !== undefined &&
@@ -166,7 +173,7 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
                 );
             },
         }),
-        [shownByLabel, rowByLabel, jaccardIndices, minJaccard, openLabels, toggle],
+        [shownByLabel, rowByLabel, jaccardIndices, minJaccard, openLabels, toggle, ampliconLink],
     );
 
     const rowStyle = useMemo(() => {
@@ -209,8 +216,10 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
 
 /**
  * The label of a row: an amplicon's, or one of the rows it opens up to, indented by how deep it is.
- * One that opens up to others is a button with a chevron; the others leave its room blank, so the
- * rows line up.
+ * One that opens up to others does so on a click anywhere but on its link, and has a chevron (the
+ * button for the keyboard); the others leave its room blank, so the rows line up. Its name links
+ * to the row's mutations together on CoV-Spectrum, where there is a link for them. An amplicon's
+ * has a button next to it, to open it in the co-occurrence mode (where there is one).
  */
 function RowLabel({
     row,
@@ -219,15 +228,49 @@ function RowLabel({
     isOpen,
     onToggle,
     belowMinJaccard,
-}: ShownRow & { isOpen: boolean; onToggle: () => void; belowMinJaccard: boolean }) {
+    link,
+}: ShownRow & { isOpen: boolean; onToggle: () => void; belowMinJaccard: boolean; link: To | undefined }) {
+    const linkProvider = useMutationLinkProvider();
+    // "Any k" of the mutations is no list of mutations to look up.
+    const covSpectrumLink = isAnyOf(row)
+        ? undefined
+        : linkProvider({ code: row.cluster.map((mutation) => mutation.code).join(',') } as Substitution, 'nucleotide');
+    const name = level === 0 ? <span>Amplicon {row.amplicon.number}</span> : <ClusterName row={row} />;
+
     const label = (
         <div
             className={`flex min-w-60 items-center justify-start gap-1.5 text-left ${LEVEL_INDENT[level]} ${belowMinJaccard ? 'opacity-40' : ''}`}
         >
-            <span
-                className={`iconify text-lg text-gray-500 ${isOpenable ? '' : 'invisible'} ${isOpen ? 'mdi--chevron-down' : 'mdi--chevron-right'}`}
-            />
-            {level === 0 ? <span>Amplicon {row.amplicon.number}</span> : <ClusterName row={row} />}
+            {isOpenable ? (
+                <button
+                    type='button'
+                    className='flex cursor-pointer'
+                    aria-expanded={isOpen}
+                    aria-label={isOpen ? 'Hide the rows below' : 'Show the rows below'}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onToggle();
+                    }}
+                >
+                    <span
+                        className={`iconify text-lg text-gray-500 ${isOpen ? 'mdi--chevron-down' : 'mdi--chevron-right'}`}
+                    />
+                </button>
+            ) : (
+                <span className='iconify mdi--chevron-right invisible text-lg' />
+            )}
+            {covSpectrumLink === undefined ? (
+                name
+            ) : (
+                <a
+                    className='hover:text-brand-800 focus:ring-brand-300 underline focus:ring-2 focus:outline-none'
+                    href={covSpectrumLink}
+                    title='Open these mutations together on CoV-Spectrum'
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    {name}
+                </a>
+            )}
             <ClusterSizeBadge row={row} />
         </div>
     );
@@ -237,18 +280,37 @@ function RowLabel({
         <HoverTooltip
             content={<RowLabelTooltip row={row} />}
             placement='right'
-            focusable={!isOpenable}
+            focusable={!isOpenable && covSpectrumLink === undefined}
             className='w-full'
         >
             {label}
         </HoverTooltip>
     );
-    return isOpenable ? (
-        <button type='button' className='mr-2 block w-full cursor-pointer' aria-expanded={isOpen} onClick={onToggle}>
+    const labelElement = (
+        // The click to open the row up is for the mouse; the keyboard has the chevron's button.
+        <div
+            className={`mr-2 w-full ${isOpenable ? 'cursor-pointer' : ''}`}
+            onClick={isOpenable ? onToggle : undefined}
+        >
             {content}
-        </button>
-    ) : (
-        <div className='mr-2 w-full'>{content}</div>
+        </div>
+    );
+    if (link === undefined) {
+        return labelElement;
+    }
+    return (
+        <div className='flex w-full items-center'>
+            {labelElement}
+            <Link
+                className='btn btn-xs mr-2 gap-0'
+                to={link}
+                aria-label={`See amplicon ${row.amplicon.number} in the co-occurrence mode`}
+                title={`See amplicon ${row.amplicon.number} in the co-occurrence mode`}
+            >
+                <span className='iconify mdi--magnify' />
+                <span className='iconify mdi--arrow-right' />
+            </Link>
+        </div>
     );
 }
 
