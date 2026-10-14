@@ -54,4 +54,12 @@ describe('CooccurrencePageStateHandler', () => {
         expect(url).toContain('anchorPosition=23403');
         expect(url).toContain('entropyCutoff=0.5');
     });
+
+    it('round-trips the min. share, and has no mean proportion in the URL', () => {
+        const filter = parse('sequenceType=nucleotide&minShare=0.01&meanProportionLower=0.1');
+        expect(filter.analysis.minShare).toBe(0.01);
+        const url = handler.toUrl(filter);
+        expect(url).toContain('minShare=0.01');
+        expect(url).not.toContain('meanProportion');
+    });
 });

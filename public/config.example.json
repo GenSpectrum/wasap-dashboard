@@ -115,7 +115,8 @@
                 },
                 "cooccurrence": {
                     "mode": "cooccurrence",
-                    "sequenceType": "nucleotide"
+                    "sequenceType": "nucleotide",
+                    "minShare": 0.001
                 }
             }
         },

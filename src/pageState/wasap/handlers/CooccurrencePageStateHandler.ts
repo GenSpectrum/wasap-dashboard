@@ -9,12 +9,16 @@ export class CooccurrencePageStateHandler extends WasapModePageStateHandler<Wasa
         super(config, 'cooccurrence');
     }
 
+    // The min. share takes its place: the patterns' shares are what there is to filter by.
+    protected readonly hasMeanProportion = false;
+
     protected readonly params = {
         sequenceType: enumParam(sequenceTypeSchema),
         positionSource: optional(enumParam(positionSourceSchema)),
         positions: optional(listParam),
         anchorPosition: optional(stringParam),
         entropyCutoff: optional(numberParam({ min: 0 })),
+        minShare: optional(numberParam({ min: 0, max: 1 })),
         panel: optional(listParam),
     };
 
@@ -26,6 +30,7 @@ export class CooccurrencePageStateHandler extends WasapModePageStateHandler<Wasa
             positions: undefined,
             anchorPosition: undefined,
             entropyCutoff: undefined,
+            minShare: this.config.filterDefaults.cooccurrence.minShare,
             panel: undefined,
         };
     }

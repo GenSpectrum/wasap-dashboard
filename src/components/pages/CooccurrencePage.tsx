@@ -29,10 +29,6 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
-    const meanProportionInterval = useMemo(
-        () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
-        [base.meanProportion.lower, base.meanProportion.upper],
-    );
 
     // Opens a row's mutations in the manual mode, to see them over time there.
     const manualModeLink = isModeEnabled(config, 'manual')
@@ -58,6 +54,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
         <ModePageLayout
             sidebar={
                 <FilterSidebar
+                    withMeanProportion={false}
                     pageStateHandler={pageStateHandler}
                     base={base}
                     analysis={analysis}
@@ -85,7 +82,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
                     base={base}
                     analysis={analysis}
                     filter={filter}
-                    meanProportionInterval={meanProportionInterval}
+                    minShare={analysis.minShare ?? 0}
                     lineageTree={lineageTree}
                     manualModeLink={manualModeLink}
                     variantModeLink={variantModeLink}

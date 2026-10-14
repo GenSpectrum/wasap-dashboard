@@ -20,8 +20,16 @@ import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
 import { RadioSelect } from '../../inputs/RadioSelect';
+import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { PositionFilter } from '../../inputs/positionFilter/position-filter';
+
+const MIN_SHARE_OPTIONS = [
+    { value: 0, label: '–', title: 'None' },
+    { value: 0.001, label: '0.1%' },
+    { value: 0.01, label: '1%' },
+    { value: 0.1, label: '10%' },
+];
 
 export function CooccurrenceFilter({
     pageState,
@@ -127,6 +135,12 @@ export function CooccurrenceFilter({
                     />
                 </LabeledField>
             )}
+            <SegmentedSelect
+                label='Min. share'
+                value={pageState.minShare ?? 0}
+                options={MIN_SHARE_OPTIONS}
+                onChange={(minShare) => setPageState({ ...pageState, minShare })}
+            />
         </>
     );
 }

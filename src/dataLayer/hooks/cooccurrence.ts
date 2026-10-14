@@ -128,12 +128,12 @@ export function useCooccurrence(
 }
 
 /**
- * A view of `data` with patterns whose mean proportion falls outside
- * `proportionInterval` removed, and (if `hideGaps`) empty date columns dropped too.
+ * A view of `data` with patterns on less than `minShare` of the reads over the whole time range
+ * removed, and (if `hideGaps`) empty date columns dropped too.
  */
-export function filterCooccurrenceByMeanProportion(
+export function filterCooccurrenceByMinShare(
     data: CooccurrenceOverTimeDataMap,
-    proportionInterval: { min: number; max: number },
+    minShare: number,
     hideGaps: boolean,
 ): Map2dView<CooccurrencePattern, Temporal, ProportionValue> {
     const view = new Map2dView(data);
@@ -149,8 +149,8 @@ export function filterCooccurrenceByMeanProportion(
                 totalCoverage += value.coverage;
             }
         }
-        const meanProportion = totalCoverage > 0 ? totalCount / totalCoverage : 0;
-        return meanProportion < proportionInterval.min || meanProportion > proportionInterval.max;
+        const share = totalCoverage > 0 ? totalCount / totalCoverage : 0;
+        return share < minShare;
     });
 
     for (const pattern of patternsToRemove) {
