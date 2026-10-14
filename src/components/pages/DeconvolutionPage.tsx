@@ -10,7 +10,7 @@ import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
 import { lineageSignatures } from '../../deconvolution/lineageSignatures';
 import { informativeMutations, type DeconvolutionOptions } from '../../deconvolution/lollipopService';
 import { poolFrequencies } from '../../deconvolution/poolFrequencies';
-import { useDeconvolution } from '../../deconvolution/useDeconvolution';
+import { useDeconvolution, useLollipopVersion } from '../../deconvolution/useDeconvolution';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
@@ -239,6 +239,7 @@ function DeconvolutionInfo({
     options: DeconvolutionOptions;
 }) {
     const informative = new Set(informativeMutations(signatures));
+    const lollipopVersion = useLollipopVersion();
     return (
         <div className='w-[32rem] space-y-2 text-sm font-normal text-gray-700'>
             <p>
@@ -249,15 +250,16 @@ function DeconvolutionInfo({
                 band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
             </p>
             <p>
-                Computed like{' '}
+                Computed with{' '}
                 <a className='link' href='https://github.com/cbg-ethz/LolliPop'>
                     LolliPop
                 </a>
-                : a robust (soft L1) non-negative regression of the mutation frequencies of all samples on the
-                signatures of the lineages, with the samples weighted by a Gaussian kernel of their distance in time
-                (variance {Math.round(options.bandwidth)} days²), repeated {options.bootstraps} times with the mutations
-                resampled (a bootstrap). The line is the mean of the rounds, the band their 95% range. Frequencies are
-                counted at positions covered by at least {MIN_COVERAGE} reads.
+                {lollipopVersion !== undefined && ` ${lollipopVersion}`}: a robust (soft L1) non-negative regression of
+                the mutation frequencies of all samples on the signatures of the lineages, with the samples weighted by
+                a Gaussian kernel of their distance in time (variance {Math.round(options.bandwidth)} days²), repeated{' '}
+                {options.bootstraps} times with the mutations resampled (a bootstrap). The line is the mean of the
+                rounds, the band their 95% range. Frequencies are counted at positions covered by at least{' '}
+                {MIN_COVERAGE} reads.
             </p>
             <p>
                 The signatures are the nucleotide substitutions of the lineages in Nextclade&apos;s reference tree.

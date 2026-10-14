@@ -86,6 +86,15 @@ export async function fetchDeconvolution(
     return deconvolutionResultSchema.parse(await response.json());
 }
 
+/** The version of LolliPop the service runs, like `0.5.3`. */
+export async function fetchLollipopVersion(serviceUrl: string): Promise<string> {
+    const response = await fetch(`${serviceUrl.replace(/\/$/, '')}/version`);
+    if (!response.ok) {
+        throw new Error(`the LolliPop service answered ${response.status} ${response.statusText}`);
+    }
+    return z.object({ lollipop: z.string() }).parse(await response.json()).lollipop;
+}
+
 /** The mutations that tell the lineages of the panel apart: some lineages carry them, but not all. */
 export function informativeMutations(signatures: Record<string, readonly string[]>): string[] {
     const sets = Object.values(signatures).map((mutations) => new Set(mutations));
