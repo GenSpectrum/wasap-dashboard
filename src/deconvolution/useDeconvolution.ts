@@ -1,6 +1,11 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 
-import { fetchDeconvolution, type DeconvolutionInput, type DeconvolutionResult } from './lollipopService';
+import {
+    fetchDeconvolution,
+    fetchLollipopVersion,
+    type DeconvolutionInput,
+    type DeconvolutionResult,
+} from './lollipopService';
 import { getAppConfig } from '../config/appConfig';
 
 export type DeconvolutionState =
@@ -33,4 +38,14 @@ export function useDeconvolution(input: DeconvolutionInput | undefined): Deconvo
         return { status: 'error', error: query.error.message };
     }
     return query.data === undefined ? { status: 'running' } : { status: 'done', result: query.data };
+}
+
+/** The version of LolliPop the service runs, once it is known. */
+export function useLollipopVersion(): string | undefined {
+    const serviceUrl = getAppConfig().lollipopServiceUrl;
+    return useQuery({
+        queryKey: ['lollipopVersion', serviceUrl],
+        queryFn: serviceUrl === undefined ? skipToken : () => fetchLollipopVersion(serviceUrl),
+        staleTime: Infinity,
+    }).data;
 }
