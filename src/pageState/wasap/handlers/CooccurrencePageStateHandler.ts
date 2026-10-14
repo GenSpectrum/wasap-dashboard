@@ -31,7 +31,7 @@ export class CooccurrencePageStateHandler extends WasapModePageStateHandler<Wasa
             anchorPosition: undefined,
             entropyCutoff: undefined,
             minShare: this.config.filterDefaults.cooccurrence.minShare,
-            panel: undefined,
+            panel: this.config.filterDefaults.cooccurrence.panel,
         };
     }
 }

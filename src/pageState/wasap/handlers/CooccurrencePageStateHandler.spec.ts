@@ -62,4 +62,29 @@ describe('CooccurrencePageStateHandler', () => {
         expect(url).toContain('minShare=0.01');
         expect(url).not.toContain('meanProportion');
     });
+
+    describe('with a default panel in the config', () => {
+        const withPanel = new CooccurrencePageStateHandler({
+            ...testConfigWithCooccurrence,
+            filterDefaults: {
+                ...testConfigWithCooccurrence.filterDefaults,
+                cooccurrence: { ...testConfigWithCooccurrence.filterDefaults.cooccurrence, panel: ['XFG', 'XEC'] },
+            },
+        });
+        const parseWithPanel = (query: string) => withPanel.parsePageStateFromUrl(new URLSearchParams(query));
+
+        it('takes the panel from the config when it is not in the URL', () => {
+            expect(parseWithPanel('').analysis.panel).toEqual(['XFG', 'XEC']);
+        });
+
+        it('takes the panel from the URL over the default one', () => {
+            expect(parseWithPanel('panel=XFG%7CNB.1.8.1').analysis.panel).toEqual(['XFG', 'NB.1.8.1']);
+        });
+
+        it('keeps an emptied panel empty, rather than falling back to the default one', () => {
+            const filter = parseWithPanel('panel=');
+            expect(filter.analysis.panel).toBeUndefined();
+            expect(withPanel.parsePageStateFromUrl(withPanel.toSearchParams(filter)).analysis.panel).toBeUndefined();
+        });
+    });
 });

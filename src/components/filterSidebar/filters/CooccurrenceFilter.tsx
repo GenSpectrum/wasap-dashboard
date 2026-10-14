@@ -44,6 +44,8 @@ export function CooccurrenceFilter({
     lineageTree?: LineageTree;
 }) {
     const positionSource = effectivePositionSource(pageState);
+    const defaultPanel = config.filterDefaults.cooccurrence.panel ?? [];
+    const missingDefaultLineages = defaultPanel.filter((lineage) => !(pageState.panel ?? []).includes(lineage));
 
     return (
         <>
@@ -133,6 +135,21 @@ export function CooccurrenceFilter({
                         onChange={(panel) => setPageState({ ...pageState, panel })}
                         placeholderText='Add a lineage'
                     />
+                    {defaultPanel.length > 0 && (
+                        <button
+                            type='button'
+                            className='hover:text-brand-700 mt-1 block cursor-pointer text-sm underline disabled:cursor-default disabled:text-gray-400 disabled:no-underline'
+                            disabled={missingDefaultLineages.length === 0}
+                            onClick={() =>
+                                setPageState({
+                                    ...pageState,
+                                    panel: [...(pageState.panel ?? []), ...missingDefaultLineages],
+                                })
+                            }
+                        >
+                            Include default panel
+                        </button>
+                    )}
                 </LabeledField>
             )}
             <SegmentedSelect
