@@ -207,3 +207,16 @@ export function ExplorationModeInfo() {
         </InfoBlock>
     );
 }
+
+export function LineagePanelInfo() {
+    return (
+        <InfoBlock title='Panel of lineages'>
+            <p className='text-gray-700'>
+                The deconvolution explains each sample as a mix of the lineages in the panel, and only of those. Virus
+                of a lineage that is not in the panel is attributed to the panel lineages that resemble it most, so they
+                may show a high prevalence that isn&apos;t really there. With a panel that misses the lineages actually
+                circulating, the plot can be misleading.
+            </p>
+        </InfoBlock>
+    );
+}
