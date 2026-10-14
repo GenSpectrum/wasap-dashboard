@@ -10,7 +10,7 @@ export function useSiloReadFilter(locationName: string | undefined) {
     const { samplingDate, isSamplingDatePending } = useWasapLayoutContext();
 
     const filter: SiloReadFilter = {
-        ...(locationName && { locationName }),
+        ...(locationName && { locationNames: [locationName] }),
         ...(samplingDate.dateFrom && { samplingDateFrom: samplingDate.dateFrom }),
         ...(samplingDate.dateTo && { samplingDateTo: samplingDate.dateTo }),
     };

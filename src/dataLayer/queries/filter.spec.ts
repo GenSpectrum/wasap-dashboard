@@ -22,8 +22,14 @@ describe('filterExpression', () => {
     });
 
     test('a location match is an equality on the configured column, string-escaped', () => {
-        expect(render({ locationName: 'Genève (GE)' })).toBe("locationName = 'Genève (GE)'");
-        expect(render({ locationName: "O'Brien" })).toBe("locationName = 'O''Brien'");
+        expect(render({ locationNames: ['Genève (GE)'] })).toBe("locationName = 'Genève (GE)'");
+        expect(render({ locationNames: ["O'Brien"] })).toBe("locationName = 'O''Brien'");
+    });
+
+    test('several locations are a set membership', () => {
+        expect(render({ locationNames: ['Basel (BS)', 'Genève (GE)'] })).toBe(
+            "locationName.in({'Basel (BS)', 'Genève (GE)'})",
+        );
     });
 
     test('a date bound compares against the dictionary date column as a plain string', () => {
@@ -40,7 +46,7 @@ describe('filterExpression', () => {
 
     test('a full window is the two bounds and the location, in a fixed order', () => {
         expect(
-            render({ samplingDateTo: '2024-12-31', locationName: 'Zürich (ZH)', samplingDateFrom: '2024-01-01' }),
+            render({ samplingDateTo: '2024-12-31', locationNames: ['Zürich (ZH)'], samplingDateFrom: '2024-01-01' }),
         ).toBe("locationName = 'Zürich (ZH)' && date >= '2024-01-01' && date <= '2024-12-31'");
     });
 
@@ -52,11 +58,17 @@ describe('filterExpression', () => {
 
 describe('normalizeFilter', () => {
     test('drops undefined fields and fixes key order', () => {
-        expect(Object.keys(normalizeFilter({ samplingDateTo: '2024-12-31', locationName: 'x' }))).toEqual([
-            'locationName',
+        expect(Object.keys(normalizeFilter({ samplingDateTo: '2024-12-31', locationNames: ['x'] }))).toEqual([
+            'locationNames',
             'samplingDateTo',
         ]);
-        expect(normalizeFilter({ locationName: undefined })).toEqual({});
+        expect(normalizeFilter({ locationNames: undefined })).toEqual({});
+    });
+
+    test('sorts the locations and drops duplicates', () => {
+        expect(normalizeFilter({ locationNames: ['Zürich (ZH)', 'Basel (BS)', 'Zürich (ZH)'] })).toEqual({
+            locationNames: ['Basel (BS)', 'Zürich (ZH)'],
+        });
     });
 });
 
@@ -66,7 +78,7 @@ describe('scoped', () => {
     });
 
     test('a narrowed table is filtered', () => {
-        expect(scoped(schema, { locationName: 'Basel (BS)' }).render()).toBe(
+        expect(scoped(schema, { locationNames: ['Basel (BS)'] }).render()).toBe(
             "data.filter(locationName = 'Basel (BS)')",
         );
     });

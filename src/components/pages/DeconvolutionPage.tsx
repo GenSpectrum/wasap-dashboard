@@ -190,7 +190,7 @@ function DeconvolutionResults({
                 info={
                     <DeconvolutionInfo
                         sampleCount={sampleCount}
-                        locationName={filter.locationName}
+                        locationNames={filter.locationNames}
                         granularity={granularity}
                         signatures={signatures.signatures}
                         options={deconvolutionOptions(granularity)}
@@ -225,13 +225,13 @@ function PrevalenceLoading() {
 /** What the plot shows and how it is computed, for the help button of its panel. */
 function DeconvolutionInfo({
     sampleCount,
-    locationName,
+    locationNames,
     granularity,
     signatures,
     options,
 }: {
     sampleCount: number;
-    locationName: string | undefined;
+    locationNames: string[] | undefined;
     granularity: TemporalGranularity;
     signatures: Record<string, string[]>;
     options: DeconvolutionOptions;
@@ -240,10 +240,11 @@ function DeconvolutionInfo({
     return (
         <div className='w-[32rem] space-y-2 text-sm font-normal text-gray-700'>
             <p>
-                The share of each lineage of the panel among the virus at {locationName}, estimated from {sampleCount}{' '}
-                samples on the {informative.size} mutations that tell the lineages apart. Each point is an estimate for
-                a {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`};
-                the band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
+                The share of each lineage of the panel among the virus {locationsText(locationNames)}, estimated from{' '}
+                {sampleCount} samples on the {informative.size} mutations that tell the lineages apart. Each point is an
+                estimate for a{' '}
+                {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`}; the
+                band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
             </p>
             <p>
                 Computed like{' '}
@@ -273,4 +274,15 @@ function DeconvolutionInfo({
 
 function Message({ children }: { children: ReactNode }) {
     return <div className='border border-amber-300 bg-amber-50 p-3 text-sm'>{children}</div>;
+}
+
+/** Where the reads come from: "at Basel (BS)", "at Basel (BS) and Chur (GR)", or "at all locations". */
+function locationsText(locationNames: string[] | undefined): string {
+    if (locationNames === undefined) {
+        return 'at all locations, pooled';
+    }
+    if (locationNames.length === 1) {
+        return `at ${locationNames[0]}`;
+    }
+    return `at ${locationNames.slice(0, -1).join(', ')} and ${locationNames[locationNames.length - 1]}, pooled`;
 }

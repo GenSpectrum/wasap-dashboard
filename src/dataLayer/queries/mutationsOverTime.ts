@@ -118,10 +118,10 @@ export type PositionTarget = {
  */
 export function positionOverTimeQuery(
     schema: SiloSchema,
-    filter: Pick<SiloReadFilter, 'locationName'>,
+    filter: Pick<SiloReadFilter, 'locationNames'>,
     target: PositionTarget,
 ): Relation {
-    return scoped(schema, { locationName: filter.locationName })
+    return scoped(schema, { locationNames: filter.locationNames })
         .map({
             ...groupingColumnsPassThrough([schema.groupingDate]),
             sym: field(target.sequenceName).at(target.position),

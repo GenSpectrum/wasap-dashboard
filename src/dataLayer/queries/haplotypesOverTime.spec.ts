@@ -16,7 +16,7 @@ const schema: SiloSchema = {
 
 describe('haplotypesOverTimeQuery', () => {
     test('maps one symbol column per position, then groups by the date and all of them', () => {
-        expect(haplotypesOverTimeQuery(schema, { locationName: 'Zürich (ZH)' }, 'main', [2000, 2100]).render()).toBe(
+        expect(haplotypesOverTimeQuery(schema, { locationNames: ['Zürich (ZH)'] }, 'main', [2000, 2100]).render()).toBe(
             "data.filter(locationName = 'Zürich (ZH)')" +
                 '.map({date := date, p2000 := main.at(2000), p2100 := main.at(2100)})' +
                 '.group(by := {date, p2000, p2100}, aggs := {count := count()})',

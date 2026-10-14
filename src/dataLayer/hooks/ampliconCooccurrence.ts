@@ -23,7 +23,12 @@ import { type ProportionValue } from '../../components/dataDisplay/overTime/prop
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';
-import { haplotypesOverTimeQuery, readHaplotypesOverTime, type HaplotypeOverTimeRow } from '../queries';
+import {
+    haplotypesOverTimeQuery,
+    readHaplotypesOverTime,
+    type HaplotypeOverTimeRow,
+    type SiloReadFilter,
+} from '../queries';
 
 /** Reads with one particular set of the amplicon's mutations. */
 export type MutationCombination = {
@@ -53,7 +58,7 @@ function hasCooccurrence({ mutations }: AmpliconMutations): boolean {
 }
 
 export function useAmpliconCooccurrence(
-    locationName: string | undefined,
+    locationNames: SiloReadFilter['locationNames'],
     groups: AmpliconMutations[],
     dateRanges: TemporalClass[],
     granularity: TemporalGranularity,
@@ -73,14 +78,14 @@ export function useAmpliconCooccurrence(
                     'silo',
                     'haplotypes-over-time',
                     ...connection.key,
-                    locationName ?? null,
+                    locationNames ?? null,
                     schema.nucleotideSequence,
                     positions,
                 ],
                 staleTime: Infinity,
                 queryFn: async ({ signal }: { signal: AbortSignal }) => {
                     const { rows } = await connection.query(
-                        haplotypesOverTimeQuery(schema, { locationName }, schema.nucleotideSequence, positions),
+                        haplotypesOverTimeQuery(schema, { locationNames }, schema.nucleotideSequence, positions),
                         `Haplotypes over time at ${positions.join(', ')}`,
                         { signal },
                     );
