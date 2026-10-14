@@ -16,7 +16,7 @@ export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> })
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],

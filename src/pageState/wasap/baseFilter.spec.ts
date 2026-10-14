@@ -32,7 +32,7 @@ describe('baseFilter', () => {
         it('parses all fields', () => {
             const base = parse('locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week');
 
-            expect(base.locationName).toBe('Berlin');
+            expect(base.locationNames).toEqual(['Berlin']);
             expect(base.samplingDate).toEqual({ label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' });
             expect(base.granularity).toBe('week');
         });
@@ -40,7 +40,7 @@ describe('baseFilter', () => {
         it('defaults the fields that are missing from the URL', () => {
             const base = parse('');
 
-            expect(base.locationName).toBe('Zürich (ZH)');
+            expect(base.locationNames).toEqual(['Zürich (ZH)']);
             expect(base.samplingDate).toEqual({ label: DEFAULT_RECENT_DAYS_LABEL });
             expect(base.granularity).toBe('day');
         });
@@ -56,7 +56,15 @@ describe('baseFilter', () => {
                 defaultMeanProportion,
             );
 
-            expect(base.locationName).toBe('Basel');
+            expect(base.locationNames).toEqual(['Basel']);
+        });
+
+        it('reads several locations from one list param', () => {
+            expect(parse('locationName=Basel|Bern').locationNames).toEqual(['Basel', 'Bern']);
+        });
+
+        it('reads an empty location as all locations, not the default one', () => {
+            expect(parse('locationName=').locationNames).toEqual([]);
         });
     });
 
@@ -128,6 +136,18 @@ describe('baseFilter', () => {
                 'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7';
 
             expect(serialize(parse(query))).toBe(new URLSearchParams(query).toString());
+        });
+
+        it('round-trips several locations', () => {
+            const query = 'locationName=Basel%7CBern&samplingDate=Most+recent+90+days&granularity=day';
+
+            expect(serialize(parse(query))).toBe(query);
+        });
+
+        it('round-trips all locations', () => {
+            const query = 'locationName=&samplingDate=Most+recent+90+days&granularity=day';
+
+            expect(serialize(parse(query))).toBe(query);
         });
     });
 

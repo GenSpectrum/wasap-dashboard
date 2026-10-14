@@ -156,13 +156,55 @@ export const wasapDeconvolutionFilterSchema = z.object({
 });
 export type WasapDeconvolutionFilter = z.infer<typeof wasapDeconvolutionFilterSchema>;
 
+export const POSITION_SOURCE = {
+    manual: 'manual',
+    amplicon: 'amplicon',
+} as const;
+export const positionSourceSchema = z.enum([POSITION_SOURCE.manual, POSITION_SOURCE.amplicon]);
+export type PositionSource = z.infer<typeof positionSourceSchema>;
+
+export const wasapCooccurrenceFilterSchema = z.object({
+    mode: z.literal('cooccurrence'),
+    sequenceType: sequenceTypeSchema,
+    /** Where the positions to run co-occurrence over come from. Defaults to `amplicon`, see `effectivePositionSource`. */
+    positionSource: positionSourceSchema.optional(),
+    /**
+     * Bare sequence positions (no ref/alt symbol), like `501` (nucleotide) or `S:501`
+     * (amino acid) — see `parsePositionToken`. Used when `positionSource` is `manual`.
+     */
+    positions: z.array(z.string()).optional(),
+    /**
+     * A single bare position (same syntax as `positions`) whose amplicon is scanned for
+     * variable positions to run co-occurrence over. Used when `positionSource` is `amplicon`.
+     */
+    anchorPosition: z.string().optional(),
+    /** Positions at or below this Shannon entropy (in bits) are left out as not variable enough. */
+    entropyCutoff: z.number().min(0).optional(),
+    /**
+     * EXPERIMENTAL: a panel of lineages (same concept as `wasapDeconvolutionFilterSchema`'s
+     * `panel`) to check co-occurrence patterns against — which of them the panel already
+     * explains, and which prevalent combinations it doesn't.
+     */
+    panel: z.array(z.string()).optional(),
+});
+export type WasapCooccurrenceFilter = z.infer<typeof wasapCooccurrenceFilterSchema>;
+
+/** `entropyCutoff`'s value when the URL/config doesn't specify one. */
+export const DEFAULT_ENTROPY_CUTOFF_BITS = 0.5;
+
+/** `positionSource`'s value when the URL/config doesn't specify one — the single source of truth for that default. */
+export function effectivePositionSource(analysis: WasapCooccurrenceFilter): PositionSource {
+    return analysis.positionSource ?? POSITION_SOURCE.amplicon;
+}
+
 export type WasapAnalysisFilter =
     | WasapManualFilter
     | WasapVariantFilter
     | WasapResistanceFilter
     | WasapUntrackedFilter
     | WasapCollectionFilter
-    | WasapDeconvolutionFilter;
+    | WasapDeconvolutionFilter
+    | WasapCooccurrenceFilter;
 
 export const WASAP_ANALYSIS_MODE = {
     manual: 'manual',
@@ -171,6 +213,7 @@ export const WASAP_ANALYSIS_MODE = {
     untracked: 'untracked',
     collection: 'collection',
     deconvolution: 'deconvolution',
+    cooccurrence: 'cooccurrence',
 } as const;
 export const wasapAnalysisModeSchema = z.enum([
     WASAP_ANALYSIS_MODE.manual,
@@ -179,6 +222,7 @@ export const wasapAnalysisModeSchema = z.enum([
     WASAP_ANALYSIS_MODE.untracked,
     WASAP_ANALYSIS_MODE.collection,
     WASAP_ANALYSIS_MODE.deconvolution,
+    WASAP_ANALYSIS_MODE.cooccurrence,
 ]);
 export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
 
@@ -197,7 +241,8 @@ export type WasapMeanProportion = {
  * `WasapModePageStateHandler`), not a `WasapPageConfig` default.
  */
 export type WasapBaseFilter = {
-    locationName?: string;
+    /** The locations whose reads are pooled. Empty means all locations. */
+    locationNames: string[];
     samplingDate?: DateRangeOption;
     granularity: TemporalGranularity;
     meanProportion: WasapMeanProportion;

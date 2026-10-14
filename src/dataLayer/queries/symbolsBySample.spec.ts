@@ -16,7 +16,11 @@ const schema: SiloSchema = {
 
 describe('symbolsBySampleQuery', () => {
     test('scopes the reads, maps one column per position, then groups by sample, date and all of them', () => {
-        const filter = { locationName: 'Zürich (ZH)', samplingDateFrom: '2026-05-01', samplingDateTo: '2026-08-31' };
+        const filter = {
+            locationNames: ['Zürich (ZH)'] as [string],
+            samplingDateFrom: '2026-05-01',
+            samplingDateTo: '2026-08-31',
+        };
 
         expect(symbolsBySampleQuery(schema, filter, 'main', [241, 670]).render()).toBe(
             "data.filter(locationName = 'Zürich (ZH)' && date >= '2026-05-01' && date <= '2026-08-31')" +

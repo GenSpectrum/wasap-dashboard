@@ -11,6 +11,7 @@ const MODE_SEGMENTS = {
     untracked: 'untracked',
     collection: 'collection',
     deconvolution: 'lineagePrevalence',
+    cooccurrence: 'cooccurrence',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
 const MODE_LABELS = {
@@ -20,6 +21,7 @@ const MODE_LABELS = {
     untracked: 'Untracked Mutations',
     collection: 'Collection',
     deconvolution: 'Lineage Prevalence',
+    cooccurrence: 'Co-occurrence',
 } as const satisfies Record<WasapAnalysisMode, string>;
 
 export function modeToSegment(mode: WasapAnalysisMode): string {

@@ -16,3 +16,5 @@ export * from './jointSymbols';
 export * from './symbolsBySample';
 export * from './haplotypesOverTime';
 export * from './referenceGenome';
+export * from './cooccurrence';
+export * from './ampliconPositions';

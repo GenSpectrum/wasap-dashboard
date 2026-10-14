@@ -36,8 +36,11 @@ function dateComparand(schema: SiloSchema, value: string): Expr {
 }
 
 export const siloReadFilterSchema = z.object({
-    /** Exact match on the location-name column. */
-    locationName: z.string().optional(),
+    /**
+     * The locations whose reads are pooled, matched exactly on the location-name column. Absent
+     * means every location; never empty, which would match nothing.
+     */
+    locationNames: z.array(z.string()).nonempty().optional(),
     /** Inclusive lower bound on the sampling date, ISO `yyyy-mm-dd`. */
     samplingDateFrom: z.string().optional(),
     /** Inclusive upper bound on the sampling date, ISO `yyyy-mm-dd`. */
@@ -55,8 +58,10 @@ export type SiloReadFilter = z.infer<typeof siloReadFilterSchema>;
  */
 export function normalizeFilter(filter: SiloReadFilter): SiloReadFilter {
     const normalized: SiloReadFilter = {};
-    if (filter.locationName !== undefined) {
-        normalized.locationName = filter.locationName;
+    if (filter.locationNames !== undefined) {
+        // A set: the order it was picked in doesn't change the reads.
+        const [first, ...rest] = [...new Set(filter.locationNames)].sort();
+        normalized.locationNames = [first, ...rest];
     }
     if (filter.samplingDateFrom !== undefined) {
         normalized.samplingDateFrom = filter.samplingDateFrom;
@@ -78,7 +83,7 @@ export function normalizeFilter(filter: SiloReadFilter): SiloReadFilter {
  */
 export function filterExpression(schema: SiloSchema, filter: SiloReadFilter): Expr | undefined {
     return and(
-        filter.locationName === undefined ? undefined : field(schema.locationName).eq(str(filter.locationName)),
+        locationExpression(schema, filter.locationNames),
         filter.samplingDateFrom === undefined
             ? undefined
             : field(schema.groupingDate).gte(dateComparand(schema, filter.samplingDateFrom)),
@@ -86,6 +91,15 @@ export function filterExpression(schema: SiloSchema, filter: SiloReadFilter): Ex
             ? undefined
             : field(schema.groupingDate).lte(dateComparand(schema, filter.samplingDateTo)),
     );
+}
+
+/** One location as a plain comparison, as before there could be several. */
+function locationExpression(schema: SiloSchema, locationNames: SiloReadFilter['locationNames']): Expr | undefined {
+    if (locationNames === undefined) {
+        return undefined;
+    }
+    const column = field(schema.locationName);
+    return locationNames.length === 1 ? column.eq(str(locationNames[0])) : column.isIn(locationNames.map(str));
 }
 
 /**

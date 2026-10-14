@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { afterEach, describe, expect, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { DatasetFilterPanel } from './DatasetFilterPanel';
@@ -23,12 +24,11 @@ const schema: SiloSchema = {
 const DEFAULT_LOCATION = 'Zürich (ZH)';
 
 const dataset: WasapDatasetFilter = {
-    locationName: DEFAULT_LOCATION,
+    locationNames: [DEFAULT_LOCATION],
     samplingDate: { label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' },
     granularity: 'day',
 };
 
-/** Stands in for the URL: a filter without a location comes back with the default one, like when it is parsed. */
 function Harness({ onChange }: { onChange: (value: WasapDatasetFilter) => void }) {
     const [value, setValue] = useState(dataset);
 
@@ -38,7 +38,7 @@ function Harness({ onChange }: { onChange: (value: WasapDatasetFilter) => void }
             value={value}
             onChange={(newValue) => {
                 onChange(newValue);
-                setValue({ ...newValue, locationName: newValue.locationName ?? DEFAULT_LOCATION });
+                setValue(newValue);
             }}
         />
     );
@@ -53,6 +53,7 @@ function renderPanel(onChange = vi.fn()) {
                     [
                         { locationName: DEFAULT_LOCATION, n: 30 },
                         { locationName: 'Basel (BS)', n: 10 },
+                        { locationName: 'Bern (BE)', n: 20 },
                     ]
                         .map((row) => JSON.stringify(row))
                         .join('\n'),
@@ -77,51 +78,66 @@ function renderPanel(onChange = vi.fn()) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('DatasetFilterPanel', () => {
-    it('shows the location, and applies a new one right away', async () => {
+    it('applies the ticked locations when the dropdown is closed', async () => {
+        const onChange = vi.fn();
+        const { getByRole } = renderPanel(onChange);
+
+        await getByRole('button', { name: DEFAULT_LOCATION }).click();
+        await expect.element(getByRole('checkbox', { name: DEFAULT_LOCATION })).toBeChecked();
+        await getByRole('checkbox', { name: 'Bern (BE)' }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await expect.element(getByRole('checkbox', { name: 'Basel (BS)' })).toBeChecked();
+        expect(onChange).not.toHaveBeenCalled();
+
+        await getByRole('button', { name: /Basel \(BS\), Bern \(BE\)/ }).click();
+
+        // Once, and in the order of the options, not of the clicks.
+        expect(onChange).toHaveBeenCalledOnce();
+        expect(onChange).toHaveBeenLastCalledWith({
+            ...dataset,
+            locationNames: ['Basel (BS)', 'Bern (BE)', DEFAULT_LOCATION],
+        });
+        await expect.element(getByRole('checkbox', { name: 'Basel (BS)' })).not.toBeInTheDocument();
+    });
+
+    it('applies the ticks on Escape and on a click outside', async () => {
         const onChange = vi.fn();
         const { getByRole, getByText } = renderPanel(onChange);
 
-        await expect.element(getByRole('combobox').first()).toHaveValue(DEFAULT_LOCATION);
+        await getByRole('button', { name: DEFAULT_LOCATION }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await userEvent.keyboard('{Escape}');
+        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: ['Basel (BS)', DEFAULT_LOCATION] });
+        await expect.element(getByRole('button', { name: /Basel \(BS\)/ })).toHaveFocus();
 
-        // The list is filtered by what is in the field, so type to find the other one.
-        await getByRole('combobox').first().fill('Basel');
-        await getByText('Basel (BS)').click();
-
-        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationName: 'Basel (BS)' });
+        await getByRole('button', { name: /Basel \(BS\)/ }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await getByText('Granularity').click();
+        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [DEFAULT_LOCATION] });
     });
 
-    it('leaves the location field empty when it is cleared, so that another one can be picked', async () => {
+    it('applies nothing when the ticks are as they were', async () => {
         const onChange = vi.fn();
         const { getByRole } = renderPanel(onChange);
-        await expect.element(getByRole('combobox').first()).toHaveValue(DEFAULT_LOCATION);
 
-        await getByRole('button', { name: 'clear selection' }).first().click();
+        await getByRole('button', { name: DEFAULT_LOCATION }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await getByRole('checkbox', { name: 'Basel (BS)' }).click();
+        await userEvent.keyboard('{Escape}');
 
-        await expect.element(getByRole('combobox').first()).toHaveValue('');
         expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('applies the location that is picked after the field was cleared', async () => {
+    it('clears the selection, which shows as all locations', async () => {
         const onChange = vi.fn();
         const { getByRole, getByText } = renderPanel(onChange);
-        await expect.element(getByRole('combobox').first()).toHaveValue(DEFAULT_LOCATION);
-        await getByRole('button', { name: 'clear selection' }).first().click();
 
-        await getByRole('combobox').first().click();
-        await getByText('Basel (BS)').click();
+        await getByRole('button', { name: DEFAULT_LOCATION }).click();
+        await getByRole('button', { name: 'Clear' }).click();
+        await expect.element(getByText('All locations')).toBeVisible();
+        await expect.element(getByRole('checkbox', { name: DEFAULT_LOCATION })).not.toBeChecked();
+        await userEvent.keyboard('{Escape}');
 
-        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationName: 'Basel (BS)' });
-        await expect.element(getByRole('combobox').first()).toHaveValue('Basel (BS)');
-    });
-
-    it('shows the same location again when it is picked after clearing the field', async () => {
-        const { getByRole, getByText } = renderPanel();
-        await expect.element(getByRole('combobox').first()).toHaveValue(DEFAULT_LOCATION);
-        await getByRole('button', { name: 'clear selection' }).first().click();
-
-        await getByRole('combobox').first().click();
-        await getByText(DEFAULT_LOCATION).click();
-
-        await expect.element(getByRole('combobox').first()).toHaveValue(DEFAULT_LOCATION);
+        expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [] });
     });
 });

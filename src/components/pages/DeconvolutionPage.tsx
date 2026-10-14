@@ -32,7 +32,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         setPageState,
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationName);
+    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
         () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
@@ -64,14 +64,16 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 </div>
             }
         >
+            <div role='alert' className='alert border-amber-300 bg-amber-100 text-sm text-amber-950'>
+                <span>
+                    <strong>Experimental:</strong> the lineage prevalence estimates are a work in progress, and the
+                    numbers might be incorrect.
+                </span>
+            </div>
             {lineageTree === undefined ? (
                 <Message>
                     The lineage tree, where the signatures of the lineages come from, could not be loaded.
                 </Message>
-            ) : base.locationName === undefined ? (
-                <NothingSelected title='No location selected'>
-                    The deconvolution estimates the lineages at one location. Please select one above.
-                </NothingSelected>
             ) : analysis.panel.length < 2 ? (
                 <NothingSelected title='Not enough lineages'>
                     Please select at least two lineages for the panel in the filter panel.
@@ -190,7 +192,7 @@ function DeconvolutionResults({
                 info={
                     <DeconvolutionInfo
                         sampleCount={sampleCount}
-                        locationName={filter.locationName}
+                        locationNames={filter.locationNames}
                         granularity={granularity}
                         signatures={signatures.signatures}
                         options={deconvolutionOptions(granularity)}
@@ -225,13 +227,13 @@ function PrevalenceLoading() {
 /** What the plot shows and how it is computed, for the help button of its panel. */
 function DeconvolutionInfo({
     sampleCount,
-    locationName,
+    locationNames,
     granularity,
     signatures,
     options,
 }: {
     sampleCount: number;
-    locationName: string | undefined;
+    locationNames: string[] | undefined;
     granularity: TemporalGranularity;
     signatures: Record<string, string[]>;
     options: DeconvolutionOptions;
@@ -240,10 +242,11 @@ function DeconvolutionInfo({
     return (
         <div className='w-[32rem] space-y-2 text-sm font-normal text-gray-700'>
             <p>
-                The share of each lineage of the panel among the virus at {locationName}, estimated from {sampleCount}{' '}
-                samples on the {informative.size} mutations that tell the lineages apart. Each point is an estimate for
-                a {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`};
-                the band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
+                The share of each lineage of the panel among the virus {locationsText(locationNames)}, estimated from{' '}
+                {sampleCount} samples on the {informative.size} mutations that tell the lineages apart. Each point is an
+                estimate for a{' '}
+                {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`}; the
+                band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
             </p>
             <p>
                 Computed like{' '}
@@ -273,4 +276,15 @@ function DeconvolutionInfo({
 
 function Message({ children }: { children: ReactNode }) {
     return <div className='border border-amber-300 bg-amber-50 p-3 text-sm'>{children}</div>;
+}
+
+/** Where the reads come from: "at Basel (BS)", "at Basel (BS) and Chur (GR)", or "at all locations". */
+function locationsText(locationNames: string[] | undefined): string {
+    if (locationNames === undefined) {
+        return 'at all locations, pooled';
+    }
+    if (locationNames.length === 1) {
+        return `at ${locationNames[0]}`;
+    }
+    return `at ${locationNames.slice(0, -1).join(', ')} and ${locationNames[locationNames.length - 1]}, pooled`;
 }

@@ -98,7 +98,7 @@ function Cooccurrences({
     );
 
     const cooccurrence = useAmpliconCooccurrence(
-        normalizeFilter(filter).locationName,
+        normalizeFilter(filter).locationNames,
         groups,
         dateAxis.requestedDateRanges,
         granularity,

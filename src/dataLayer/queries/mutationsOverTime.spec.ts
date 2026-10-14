@@ -32,7 +32,7 @@ describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
         expect(
             overallMutationsQuery(
                 schema,
-                { locationName: 'Basel (BS)', samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-30' },
+                { locationNames: ['Basel (BS)'], samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-30' },
                 { sequenceType: 'amino acid', sequenceNames: ['S'] },
             ).render(),
         ).toBe(
@@ -47,7 +47,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
         expect(
             positionOverTimeQuery(
                 schema,
-                { locationName: 'Zürich (ZH)' },
+                { locationNames: ['Zürich (ZH)'] },
                 { sequenceName: 'main', position: 241 },
             ).render(),
         ).toBe(
@@ -81,7 +81,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
         expect(
             positionOverTimeQuery(
                 rsvSchema,
-                { locationName: 'Geneva' },
+                { locationNames: ['Geneva'] },
                 { sequenceName: 'main', position: 848 },
             ).render(),
         ).toBe(

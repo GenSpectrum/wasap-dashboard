@@ -4,7 +4,7 @@ import { type WasapPageConfig } from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { temporalGranularitySchema } from '../../types/dashboardComponents';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
-import { enumParam } from '../urlParams';
+import { enumParam, listParam } from '../urlParams';
 import { getStringFromSearch, setSearchFromDateRange, setSearchFromString } from '../urlSearchParams';
 
 const granularityParam = enumParam(temporalGranularitySchema);
@@ -44,7 +44,7 @@ export function parseDatasetFilter(
     const defaultSamplingDate: DateRangeOption = { label: DEFAULT_RECENT_DAYS_LABEL };
 
     return {
-        locationName: getStringFromSearch(search, config.locationNameField) ?? config.defaultLocationName,
+        locationNames: parseLocationNames(search, config.locationNameField, config.defaultLocationName),
         samplingDate: samplingDate ?? defaultSamplingDate,
         granularity: granularityParam.parse(search.get('granularity') ?? '')?.value ?? 'day',
     };
@@ -75,7 +75,7 @@ export function setDatasetFilterSearchParams(
     dataset: WasapDatasetFilter,
     config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
 ) {
-    setSearchFromString(search, config.locationNameField, dataset.locationName);
+    search.set(config.locationNameField, listParam.write(dataset.locationNames));
     // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
     // the URL re-resolves them against the dataset's current date range instead of
     // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
@@ -117,6 +117,15 @@ export function withDatasetFilter(
         }
     }
     return result;
+}
+
+/**
+ * The locations as one list param, like `Basel (BS)|Zürich (ZH)`. A URL without it means the
+ * default location, so all locations — an empty selection — are written as an empty value.
+ */
+function parseLocationNames(search: URLSearchParams, name: string, defaultLocationName: string): string[] {
+    const raw = search.get(name);
+    return raw === null ? [defaultLocationName] : (listParam.parse(raw)?.value ?? [defaultLocationName]);
 }
 
 /**

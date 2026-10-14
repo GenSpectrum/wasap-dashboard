@@ -23,7 +23,7 @@ const schema: SiloSchema = {
 describe('the Tier-1 read catalogue', () => {
     test('totalReadCountQuery is a bare count', () => {
         expect(totalReadCountQuery(schema).render()).toBe('data.group(by := {}, aggs := {n := count()})');
-        expect(totalReadCountQuery(schema, { locationName: 'Basel (BS)' }).render()).toBe(
+        expect(totalReadCountQuery(schema, { locationNames: ['Basel (BS)'] }).render()).toBe(
             "data.filter(locationName = 'Basel (BS)').group(by := {}, aggs := {n := count()})",
         );
     });

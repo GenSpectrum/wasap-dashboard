@@ -16,11 +16,11 @@ import { readCount, readOptionalText, readText, type RhydbRow } from '../transpo
 
 export function haplotypesOverTimeQuery(
     schema: SiloSchema,
-    filter: Pick<SiloReadFilter, 'locationName'>,
+    filter: Pick<SiloReadFilter, 'locationNames'>,
     sequenceName: string,
     positions: readonly number[],
 ): Relation {
-    return jointSymbolsQuery(schema, { locationName: filter.locationName }, sequenceName, positions, [
+    return jointSymbolsQuery(schema, { locationNames: filter.locationNames }, sequenceName, positions, [
         schema.groupingDate,
     ]);
 }

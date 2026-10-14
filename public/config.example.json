@@ -17,12 +17,14 @@
             "covSpectrumCollectionSourceEnabled": true,
             "collectionAnalysisModeEnabled": true,
             "deconvolutionAnalysisModeEnabled": true,
+            "cooccurrenceAnalysisModeEnabled": true,
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/covid/{{id}}",
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/tree.json",
                 "lineageAttribute": "Nextclade_pango",
                 "cladeAttribute": "clade_nextstrain",
-                "aliasKeyUrl": "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json"
+                "aliasKeyUrl": "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json",
+                "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/genome_annotation.gff3"
             },
             "resistanceMutationCollections": [
                 {
@@ -110,6 +112,10 @@
                 "deconvolution": {
                     "mode": "deconvolution",
                     "panel": ["NB.1.8.1", "XFG", "XFG.1", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"]
+                },
+                "cooccurrence": {
+                    "mode": "cooccurrence",
+                    "sequenceType": "nucleotide"
                 }
             }
         },
@@ -129,7 +135,8 @@
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-a/{{id}}",
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/tree.json",
-                "lineageAttribute": "clade_membership"
+                "lineageAttribute": "clade_membership",
+                "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
             "samplingDateField": "samplingDate",
@@ -210,7 +217,8 @@
             "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-b/{{id}}",
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/tree.json",
-                "lineageAttribute": "clade_membership"
+                "lineageAttribute": "clade_membership",
+                "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
             "samplingDateField": "samplingDate",

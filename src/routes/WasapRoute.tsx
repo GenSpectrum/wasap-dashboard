@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { getClientLogger } from '../clientLogger';
 import { NotFoundPage } from './NotFoundPage';
 import { CollectionPage } from '../components/pages/CollectionPage';
+import { CooccurrencePage } from '../components/pages/CooccurrencePage';
 import { DeconvolutionPage } from '../components/pages/DeconvolutionPage';
 import { ManualPage } from '../components/pages/ManualPage';
 import { OverviewPage } from '../components/pages/OverviewPage';
@@ -125,6 +126,8 @@ export function WasapModeRoute() {
             return isModeEnabled(config, 'collection') ? <CollectionPage config={config} /> : <NotFoundPage />;
         case 'deconvolution':
             return isModeEnabled(config, 'deconvolution') ? <DeconvolutionPage config={config} /> : <NotFoundPage />;
+        case 'cooccurrence':
+            return isModeEnabled(config, 'cooccurrence') ? <CooccurrencePage config={config} /> : <NotFoundPage />;
         case undefined:
             return <NotFoundPage />;
     }
