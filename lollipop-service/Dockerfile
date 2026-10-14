@@ -14,6 +14,8 @@ COPY --from=build /app /app
 WORKDIR /app
 ENV PATH=/app/.venv/bin:$PATH
 USER lollipop
+# See "Sizing" in README.md.
+ENV LOLLIPOP_WORKERS_PER_REQUEST=25
 EXPOSE 8000
 HEALTHCHECK CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 CMD ["uvicorn", "lollipop_service.app:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -46,15 +46,40 @@ are at `/docs`.
 
 Environment variables:
 
-| Variable                   | Default        | Meaning                                                                      |
-| -------------------------- | -------------- | ---------------------------------------------------------------------------- |
-| `LOLLIPOP_WORKERS`         | number of CPUs | processes the rounds of a bootstrap are split between                        |
-| `LOLLIPOP_MAX_QUEUED`      | 8              | requests waiting behind the one being computed before further ones get a 503 |
-| `LOLLIPOP_CACHE_SIZE`      | 256            | results kept in memory                                                       |
-| `LOLLIPOP_MAX_FREQUENCIES` | 200000         | per request                                                                  |
-| `LOLLIPOP_MAX_LINEAGES`    | 50             | per request                                                                  |
-| `LOLLIPOP_MAX_BOOTSTRAPS`  | 1000           | per request                                                                  |
-| `LOLLIPOP_CORS_ORIGINS`    | `*`            | comma-separated origins allowed to call the service from a browser           |
+| Variable                       | Default                    | Meaning                                                                            |
+| ------------------------------ | -------------------------- | ---------------------------------------------------------------------------------- |
+| `LOLLIPOP_WORKERS`             | number of CPUs             | processes in the pool, one CPU each                                                |
+| `LOLLIPOP_WORKERS_PER_REQUEST` | unlimited, 25 in the image | processes one request's bootstrap is split between                                 |
+| `LOLLIPOP_MAX_REQUESTS`        | 16                         | different requests in progress (computed or waiting) before further ones get a 503 |
+| `LOLLIPOP_CACHE_SIZE`          | 256                        | results kept in memory                                                             |
+| `LOLLIPOP_MAX_FREQUENCIES`     | 200000                     | per request                                                                        |
+| `LOLLIPOP_MAX_LINEAGES`        | 50                         | per request                                                                        |
+| `LOLLIPOP_MAX_BOOTSTRAPS`      | 1000                       | per request                                                                        |
+| `LOLLIPOP_CORS_ORIGINS`        | `*`                        | comma-separated origins allowed to call the service from a browser                 |
+
+`LOLLIPOP_WORKERS` counts the CPUs of the host, also in a container: when a container is
+limited to fewer CPUs, set it to that number.
+
+### Sizing
+
+The rounds of a request's bootstrap are split between `LOLLIPOP_WORKERS_PER_REQUEST` processes of
+the pool. The pool takes the parts in the order they come in: a request uses up to that many
+processes, and the rest of the pool computes other requests at the same time; when it is full,
+requests wait for their turn.
+
+Measured on a Ryzen 5 3600 (6 cores, 12 threads) with a real request (Zürich, 90 days, a panel of
+8 lineages, 2324 frequencies, 100 rounds): a round takes about 0.34 s, and a process's fixed cost
+for the request about 25 ms. The time falls about linearly with the processes, up to the physical
+cores; hyperthreads add nothing:
+
+| Workers | 1    | 2    | 3    | 4   | 6   | 8   | 12  |
+| ------- | ---- | ---- | ---- | --- | --- | --- | --- |
+| Time    | 34 s | 17 s | 12 s | 9 s | 7 s | 7 s | 7 s |
+
+So set `LOLLIPOP_WORKERS` to the physical cores the service may use. More than about 25 processes
+per request gain little — with 100 rounds, 25 do 4 each (about 1.5 s), 50 do 2 each — which is why
+the image caps a request at 25: on a large server (like 96 cores), about 4 requests are then
+computed side by side, at about 1.5 s each. Each process takes about 70 MB of memory.
 
 ## Development
 

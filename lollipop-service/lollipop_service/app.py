@@ -2,8 +2,11 @@
 The HTTP API: `POST /deconvolve` runs a deconvolution and answers with its result, synchronously.
 
 A deconvolution's bootstrap takes from seconds to minutes, so its rounds are split up between a
-pool of `LOLLIPOP_WORKERS` processes. Requests take turns in the pool; when `LOLLIPOP_MAX_QUEUED`
-are waiting behind the one being computed, further requests get a 503. Every visitor of a dashboard page sends the same request, so results are cached, and a request
+pool of `LOLLIPOP_WORKERS` processes, at most `LOLLIPOP_WORKERS_PER_REQUEST` of them per request:
+on a big pool, several requests are computed side by side, otherwise they take turns. When
+`LOLLIPOP_MAX_REQUESTS` are in progress, further requests get a 503.
+
+Every visitor of a dashboard page sends the same request, so results are cached, and a request
 that is already running is joined instead of run twice.
 """
 
@@ -28,7 +31,9 @@ def _setting(name: str, default: int) -> int:
 
 
 WORKERS = _setting("WORKERS", os.cpu_count() or 1)
-MAX_QUEUED = _setting("MAX_QUEUED", 8)
+# Unlimited by default; the image sets 25 (see "Sizing" in README.md).
+WORKERS_PER_REQUEST = _setting("WORKERS_PER_REQUEST", WORKERS)
+MAX_REQUESTS = _setting("MAX_REQUESTS", 16)
 CACHE_SIZE = _setting("CACHE_SIZE", 256)
 MAX_FREQUENCIES = _setting("MAX_FREQUENCIES", 200_000)
 MAX_LINEAGES = _setting("MAX_LINEAGES", 50)
@@ -54,7 +59,7 @@ class Runner:
             self.cache.move_to_end(key)
             return self.cache[key]
         if key not in self.running:
-            if len(self.running) > MAX_QUEUED:
+            if len(self.running) >= MAX_REQUESTS:
                 raise HTTPException(503, "Too many deconvolutions are running, please try again later.")
             future = asyncio.ensure_future(self._deconvolve(request))
             self.running[key] = future
@@ -67,7 +72,7 @@ class Runner:
         parts = await asyncio.gather(
             *(
                 loop.run_in_executor(self.executor, fit_rounds, request, first, count)
-                for first, count in _split(request.options.bootstraps, WORKERS)
+                for first, count in _split(request.options.bootstraps, min(WORKERS, WORKERS_PER_REQUEST))
             )
         )
         return aggregate(request, [fit for part in parts for fit in part])
