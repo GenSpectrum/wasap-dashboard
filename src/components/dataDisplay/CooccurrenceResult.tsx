@@ -1,6 +1,7 @@
 import { type To } from 'react-router-dom';
 
 import { Cooccurrence } from './cooccurrence/cooccurrence';
+import { type ClinicalLapisSource } from './cooccurrence/usePanelLineageJaccards';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import {
@@ -21,6 +22,7 @@ export function CooccurrenceResult({
     lineageTree,
     manualModeLink,
     variantModeLink,
+    clinicalLapis,
 }: {
     base: WasapBaseFilter;
     analysis: WasapCooccurrenceFilter;
@@ -33,6 +35,8 @@ export function CooccurrenceResult({
     manualModeLink?: (mutations: string[]) => To;
     /** Opens a panel-match lineage in the variant explorer, when it is enabled. */
     variantModeLink?: (lineage: string) => To;
+    /** The clinical sequences to compute the panel lineages' Jaccard indices in; none without. */
+    clinicalLapis?: ClinicalLapisSource;
 }) {
     const commonProps = {
         filter,
@@ -44,6 +48,7 @@ export function CooccurrenceResult({
         lineageTree,
         manualModeLink,
         variantModeLink,
+        clinicalLapis,
     };
 
     return effectivePositionSource(analysis) === 'amplicon' ? (

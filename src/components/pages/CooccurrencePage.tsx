@@ -128,6 +128,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
                     lineageTree={lineageTree}
                     manualModeLink={manualModeLink}
                     variantModeLink={variantModeLink}
+                    clinicalLapis={isModeEnabled(config, 'variant') ? config.clinicalLapis : undefined}
                 />
             )}
         </ModePageLayout>

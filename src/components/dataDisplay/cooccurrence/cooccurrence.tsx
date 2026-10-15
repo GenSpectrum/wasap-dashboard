@@ -2,6 +2,7 @@ import { Fragment, type FC, type ReactNode, useEffect, useMemo, useState } from 
 import { Link, type To } from 'react-router-dom';
 
 import { formatSymbol, type CooccurrenceOverTimeDataMap, type CooccurrencePattern } from './CooccurrenceOverTimeData';
+import { type ClinicalLapisSource, usePanelLineageJaccards } from './usePanelLineageJaccards';
 import { useAmpliconAnchor, labelFor, selectDiversePositions } from '../../../dataLayer/hooks/ampliconPositions';
 import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import {
@@ -37,6 +38,8 @@ type CooccurrenceBaseProps = {
     manualModeLink?: (mutations: string[]) => To;
     /** Opens a panel-match lineage in the variant explorer, when it is enabled. */
     variantModeLink?: (lineage: string) => To;
+    /** The clinical sequences to compute the panel lineages' Jaccard indices in; none without. */
+    clinicalLapis?: ClinicalLapisSource;
 };
 
 export type CooccurrenceProps =
@@ -226,6 +229,20 @@ type CooccurrenceWithDataProps = {
     lineageTree?: LineageTree;
 };
 
+/** A row of the table: the pinned reference row or a pattern of the page. */
+type ShownRow = {
+    rowKey: string;
+    /** `label -> symbol`. */
+    symbols: Record<string, string>;
+    count: number;
+    share: number;
+    isReference: boolean;
+    /** The row's own mutations; see `substitutionsOf`. */
+    substitutions: Substitution[];
+    /** The panel lineages carrying exactly the row's pattern; `undefined` without a panel to match. */
+    matches: string[] | undefined;
+};
+
 type PatternShare = { pattern: CooccurrencePattern; count: number; share: number; isReference: boolean };
 
 /**
@@ -315,6 +332,63 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
         return lineagePanelSymbols(lineageTree, panel, positionLabels, referenceSymbols, sequenceType);
     }, [panel, lineageTree, positionLabels, referenceSymbols, sequenceType]);
 
+    // The reference row (pinned on every page) and the page's rows, with what is shown of them.
+    const shownRows: ShownRow[] = useMemo(() => {
+        const shownRow = (
+            rowKey: string,
+            symbols: Record<string, string>,
+            count: number,
+            share: number,
+            isReference: boolean,
+        ): ShownRow => ({
+            rowKey,
+            symbols,
+            count,
+            share,
+            isReference,
+            substitutions: substitutionsOf(symbols, positionLabels, sequenceType, referenceSymbols),
+            matches:
+                panelSymbols === undefined ? undefined : matchingPanelLineages(panelSymbols, positionLabels, symbols),
+        });
+        return [
+            ...(referenceSymbols === undefined
+                ? []
+                : [
+                      shownRow(
+                          'reference-row',
+                          Object.fromEntries(positionLabels.map((label) => [label, referenceSymbols[label] ?? '?'])),
+                          referenceRow?.count ?? 0,
+                          referenceRow?.share ?? 0,
+                          true,
+                      ),
+                  ]),
+            ...pageRows.map(({ pattern, count, share }) => {
+                const symbols = Object.fromEntries(
+                    positionLabels.map((label) => [label, formatSymbol(pattern.symbols[label])]),
+                );
+                const rowKey = positionLabels.map((label) => symbols[label]).join('');
+                return shownRow(rowKey, symbols, count, share, false);
+            }),
+        ];
+    }, [referenceRow, pageRows, panelSymbols, positionLabels, sequenceType, referenceSymbols]);
+
+    // The Jaccard index of each shown row's exact panel matches and its mutations, in the clinical
+    // sequences. Only for the exact matches: the score ignores the row's reference positions and a
+    // lineage's extra mutations, so listing every panel lineage by its score (tried, from 0.1 on) put
+    // lineages next to patterns they don't carry, e.g. XFG next to LP.8's pattern, which XFG carries
+    // plus three more mutations of the amplicon. Might be worth playing with again: say, with the
+    // reference positions in the query, or without the sublineages of other panel lineages.
+    const jaccardRows = useMemo(
+        () =>
+            shownRows.map(({ rowKey, substitutions, matches }) => ({
+                rowKey,
+                codes: substitutions.map((substitution) => substitution.code),
+                lineages: matches ?? [],
+            })),
+        [shownRows],
+    );
+    const { jaccards, pendingLineages } = usePanelLineageJaccards(jaccardRows, originalComponentProps.clinicalLapis);
+
     // `getData` is typed to return a Promise so callers can fetch on demand; this data is
     // already in memory, so the wrapper has nothing to await.
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -332,32 +406,22 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
     // Reads, Share, CoV-Spectrum are always there; Panel match and Over time are conditional.
     const extraColumns = 3 + (panelSymbols ? 1 : 0) + (manualModeLink ? 1 : 0);
 
-    const renderRow = (
-        rowKey: string,
-        patternSymbols: Record<string, string>,
-        count: number,
-        share: number,
-        isReference: boolean,
-        pinned: boolean,
-    ) => {
-        const matches =
-            panelSymbols !== undefined
-                ? matchingPanelLineages(panelSymbols, positionLabels, patternSymbols)
-                : undefined;
-
-        // The row's own mutations — positions whose symbol differs from the reference, or every
-        // position if there's no reference to compare to (the manual position source).
-        const rowSubstitutions = positionLabels
-            .filter((label) => referenceSymbols?.[label] !== patternSymbols[label])
-            .map((label) => substitutionFor(label, patternSymbols[label], sequenceType, referenceSymbols))
-            .filter((substitution): substitution is Substitution => substitution !== null);
+    const renderRow = ({
+        rowKey,
+        symbols: patternSymbols,
+        count,
+        share,
+        isReference,
+        substitutions: rowSubstitutions,
+        matches,
+    }: ShownRow) => {
         const combinedLink =
             rowSubstitutions.length > 0
                 ? linkProvider({ code: rowSubstitutions.map((s) => s.code).join(',') } as Substitution, sequenceType)
                 : undefined;
 
         return (
-            <tr key={rowKey} className={`border-b border-stone-100 ${pinned ? 'bg-stone-100' : ''}`}>
+            <tr key={rowKey} className={`border-b border-stone-100 ${isReference ? 'bg-stone-100' : ''}`}>
                 {positionLabels.map((label) => {
                     const symbol = patternSymbols[label];
                     const isMutated = referenceSymbols !== undefined && symbol !== referenceSymbols[label];
@@ -396,21 +460,13 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                     <td className='px-2 py-1 whitespace-nowrap text-gray-700'>
                         {isReference ? (
                             <span className='italic'>Reference</span>
-                        ) : matches !== undefined && matches.length > 0 ? (
-                            matches.map((lineage, index) => (
-                                <Fragment key={lineage}>
-                                    {index > 0 && ', '}
-                                    {variantModeLink !== undefined ? (
-                                        <Link className='link' to={variantModeLink(lineage)}>
-                                            {lineage}
-                                        </Link>
-                                    ) : (
-                                        lineage
-                                    )}
-                                </Fragment>
-                            ))
                         ) : (
-                            '-'
+                            <PanelMatchCell
+                                matches={matches ?? []}
+                                jaccards={jaccards?.get(rowKey)}
+                                isJaccardLoading={(matches ?? []).some((lineage) => pendingLineages.has(lineage))}
+                                variantModeLink={variantModeLink}
+                            />
                         )}
                     </td>
                 )}
@@ -461,7 +517,18 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                             <th className='px-2 py-1 text-right font-medium whitespace-nowrap'>Reads</th>
                             <th className='px-2 py-1 text-right font-medium whitespace-nowrap'>Share</th>
                             {panelSymbols && (
-                                <th className='px-2 py-1 text-left font-medium whitespace-nowrap'>Panel match</th>
+                                <th
+                                    className='px-2 py-1 text-left font-medium whitespace-nowrap'
+                                    title={
+                                        'Panel lineages carrying exactly this pattern' +
+                                        (jaccards === undefined
+                                            ? ''
+                                            : ', with the Jaccard index of their clinical sequences and those ' +
+                                              "carrying all of the row's mutations")
+                                    }
+                                >
+                                    Panel match
+                                </th>
                             )}
                             <th className='px-2 py-1 text-left font-medium whitespace-nowrap'>CoV-Spectrum</th>
                             {manualModeLink && (
@@ -470,24 +537,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {referenceSymbols !== undefined &&
-                            renderRow(
-                                'reference-row',
-                                Object.fromEntries(
-                                    positionLabels.map((label) => [label, referenceSymbols[label] ?? '?']),
-                                ),
-                                referenceRow?.count ?? 0,
-                                referenceRow?.share ?? 0,
-                                true,
-                                true,
-                            )}
-                        {pageRows.map(({ pattern, count, share }) => {
-                            const rowKey = positionLabels.map((label) => formatSymbol(pattern.symbols[label])).join('');
-                            const patternSymbols = Object.fromEntries(
-                                positionLabels.map((label) => [label, formatSymbol(pattern.symbols[label])]),
-                            );
-                            return renderRow(rowKey, patternSymbols, count, share, false, false);
-                        })}
+                        {shownRows.map(renderRow)}
                         {pageRows.length === 0 && (
                             <tr>
                                 <td colSpan={positionLabels.length + extraColumns} className='px-2 py-4 text-center'>
@@ -522,3 +572,65 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
         </div>
     );
 };
+
+/**
+ * The panel lineages matching a row exactly, by their Jaccard index (highest first) and with it,
+ * once known.
+ */
+const PanelMatchCell: FC<{
+    matches: string[];
+    jaccards: ReadonlyMap<string, number> | undefined;
+    isJaccardLoading: boolean;
+    variantModeLink?: (lineage: string) => To;
+}> = ({ matches, jaccards, isJaccardLoading, variantModeLink }) => {
+    // Those without an index yet (loading, or failed) last, in panel order.
+    const listed = [...matches].sort((a, b) => (jaccards?.get(b) ?? -1) - (jaccards?.get(a) ?? -1));
+
+    if (listed.length === 0) {
+        return '-';
+    }
+    return (
+        <>
+            {listed.map((lineage, index) => {
+                const jaccard = jaccards?.get(lineage);
+                return (
+                    <Fragment key={lineage}>
+                        {index > 0 && ', '}
+                        {variantModeLink !== undefined ? (
+                            <Link className='link' to={variantModeLink(lineage)}>
+                                {lineage}
+                            </Link>
+                        ) : (
+                            lineage
+                        )}
+                        {jaccard !== undefined && (
+                            <span
+                                className='ml-1 font-mono text-xs text-gray-500'
+                                title={`Jaccard index of ${lineage} and the sequences with all of this row's mutations`}
+                            >
+                                ({jaccard.toFixed(2)})
+                            </span>
+                        )}
+                    </Fragment>
+                );
+            })}
+            {isJaccardLoading && <span className='loading loading-dots loading-xs ml-1' />}
+        </>
+    );
+};
+
+/**
+ * A row's own mutations — positions whose symbol differs from the reference, or every position if
+ * there's no reference to compare to (the manual position source).
+ */
+function substitutionsOf(
+    patternSymbols: Record<string, string>,
+    positionLabels: readonly string[],
+    sequenceType: SequenceType,
+    referenceSymbols: Record<string, string | undefined> | undefined,
+): Substitution[] {
+    return positionLabels
+        .filter((label) => referenceSymbols?.[label] !== patternSymbols[label])
+        .map((label) => substitutionFor(label, patternSymbols[label], sequenceType, referenceSymbols))
+        .filter((substitution): substitution is Substitution => substitution !== null);
+}

@@ -24,7 +24,8 @@ export function SegmentedSelect<T extends string | number>({
 
     return (
         <LabeledField label={label}>
-            <div className='flex text-sm'>
+            {/* `isolate`: the picked segment's z-index stays inside, under dropdowns opening over it. */}
+            <div className='isolate flex text-sm'>
                 {options.map((option, index) => {
                     const isChecked = value === option.value;
                     return (
