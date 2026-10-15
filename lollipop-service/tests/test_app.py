@@ -55,6 +55,8 @@ def test_repeated_requests_are_answered_from_the_cache(client):
         {"signatures": {"A": ["C100-"], "B": ["C300T"]}},
         {"frequencies": [{"date": "2026-09-01", "mutation": "C100T", "frac": 1.5}]},
         {"frequencies": [{"date": "1 Sept", "mutation": "C100T", "frac": 0.5}]},
+        {"frequencies": [{"date": "0001-01-01", "mutation": "C100T", "frac": 0.5}]},
+        {"frequencies": [{"date": "9999-01-01", "mutation": "C100T", "frac": 0.5}]},
         {"options": {**REQUEST["options"], "bootstraps": 0}},
     ],
 )
