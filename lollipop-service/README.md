@@ -87,6 +87,29 @@ per request gain little — with 100 rounds, 25 do 4 each (about 1.5 s), 50 do 2
 the image caps a request at 25: on a large server (like 96 cores), about 4 requests are then
 computed side by side, at about 1.5 s each. Each process takes about 70 MB of memory.
 
+## Deployment
+
+CI builds the image on every push to `main` and `prod`, like the dashboard's, and publishes it as
+`ghcr.io/genspectrum/wasap-dashboard-lollipop-service`, tagged with the branch (`main`, `prod`),
+`latest` (for `main`) and `sha-<commit>`.
+
+```sh
+docker run -d --restart unless-stopped -p 8000:8000 ghcr.io/genspectrum/wasap-dashboard-lollipop-service:prod
+```
+
+- The service keeps no state but its cache, so it needs no volumes, and it runs one Uvicorn
+  process: the deconvolutions run in its own pool of processes. Don't start several Uvicorn
+  workers or replicas on one machine, they would each have a pool of the size of the machine.
+- It makes no assumptions about where it is hosted. Behind a reverse proxy under a path, like
+  `https://example.org/lollipop/`, the proxy has to strip the path before forwarding, so that the
+  service sees `/deconvolve`.
+- Set the proxy's timeout above `LOLLIPOP_TIMEOUT` (300 s), so that a slow request gets the
+  service's 503 rather than the proxy's.
+- Set `LOLLIPOP_CORS_ORIGINS` to the dashboard's origin to allow only it, and `LOLLIPOP_WORKERS`
+  when the container gets fewer CPUs than the host has (see [Sizing](#sizing)). Memory: about
+  70 MB per worker, plus the cache.
+- The image has a health check on `GET /health`.
+
 ## Development
 
 With [uv](https://docs.astral.sh/uv/):
