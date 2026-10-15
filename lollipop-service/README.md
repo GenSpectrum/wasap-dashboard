@@ -37,7 +37,9 @@ The order of `signatures` is the order of the result; `options` defaults to the
 `proportion` is the mean of the bootstrap rounds, `lower` and `upper` their quantiles for the
 confidence level. Invalid requests get a 422, too large ones a 413 (and ones without a
 `Content-Length` a 411), and a 503 when too many deconvolutions are already running or one takes
-longer than the time limit. The same request always gets the same answer, whatever the order of its
+longer than the time limit. Requests that would take longer than the time limit even on an idle
+pool get a 413 right away: their time is estimated from the number of dates, lineages and
+frequencies, and the kernel's bandwidth (calibrated on the machine of [Sizing](#sizing)). The same request always gets the same answer, whatever the order of its
 frequencies and mutations, so results are cached.
 
 If a process of the pool dies (killed for lack of memory, say), the pool is replaced, and the

@@ -6,8 +6,10 @@ quantiles per date and variant. The rounds of the bootstrap can be fitted in par
 and aggregated together (`aggregate`), with the same result as `deconvolve`.
 """
 
+import bisect
 import math
 import time
+from collections import Counter
 
 import lollipop as ll
 import numpy as np
@@ -18,6 +20,13 @@ from .models import UNDETERMINED, DateEstimates, DeconvolutionRequest, Deconvolu
 # The CLI's `--seed` never reaches the global generator that `resample_mutations` draws from; seeded
 # here, the same request always gets the same intervals.
 SEED = 1
+
+# The seconds a round takes, as measured on a Ryzen 5 3600 with random frequencies (real ones
+# converge faster): per date and variant, per row of a date's window and variant², and per row
+# that the kernel is computed for (all of them, for each date). See `estimate_round_seconds`.
+SECONDS_PER_DATE = 9e-4
+SECONDS_PER_WINDOW_ROW = 1.6e-8
+SECONDS_PER_ROW = 3.4e-8
 
 
 class DeadlineExceeded(Exception):
@@ -78,6 +87,36 @@ def fit_rounds(request: DeconvolutionRequest, first: int, count: int, deadline: 
         ).deconv_all(min_tol=options.min_tol)
         rounds.append(fit.fitted)
     return rounds
+
+
+def estimate_round_seconds(request: DeconvolutionRequest) -> float:
+    """
+    Roughly how long a round of the bootstrap takes, within a factor of about 1.5 on the measured
+    machine: each date is fitted to the rows within its kernel's window (weights of at least
+    `min_tol`), with a parameter per variant (and a numerical Jacobian, hence variants²), after
+    computing the kernel for every row. The rows are the frequencies and their complements.
+    """
+    options = request.options
+    variants = len(request.signatures) + 1
+    rows_per_day = Counter(f.date.toordinal() for f in request.frequencies)
+    days = sorted(rows_per_day)
+    cumulative = [0]
+    for day in days:
+        cumulative.append(cumulative[-1] + 2 * rows_per_day[day])
+    if options.min_tol > 0:
+        # The Gaussian kernel is exp(-distance² / 2 / bandwidth).
+        reach = math.sqrt(-2 * options.bandwidth * math.log(options.min_tol))
+    else:
+        reach = math.inf
+    window_rows = sum(
+        cumulative[bisect.bisect_right(days, day + reach)] - cumulative[bisect.bisect_left(days, day - reach)]
+        for day in days
+    )
+    return (
+        SECONDS_PER_DATE * len(days) * variants
+        + SECONDS_PER_WINDOW_ROW * window_rows * variants**2
+        + SECONDS_PER_ROW * cumulative[-1] * len(days)
+    )
 
 
 def aggregate(request: DeconvolutionRequest, rounds: list[pd.DataFrame]) -> DeconvolutionResponse:

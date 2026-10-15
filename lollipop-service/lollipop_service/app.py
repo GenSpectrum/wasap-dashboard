@@ -10,7 +10,8 @@ A pool whose process died (killed for lack of memory, say) is unusable, so it is
 requests it was computing get another go on the new one. A request that takes longer than
 `LOLLIPOP_TIMEOUT` seconds is given up: its processes stop at the next date they would fit, and
 only if they haven't after another `LOLLIPOP_TIMEOUT`, the pool is replaced, the only other way to
-stop them.
+stop them. Requests that would take longer than that anyway are turned away right away, by an
+estimate of their cost.
 
 Every visitor of a dashboard page sends the same request, so results are cached, and a request
 that is already running is joined instead of run twice.
@@ -33,7 +34,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from threadpoolctl import threadpool_limits
 
-from .deconvolution import DeadlineExceeded, aggregate, fit_rounds
+from .deconvolution import DeadlineExceeded, aggregate, estimate_round_seconds, fit_rounds
 from .models import DeconvolutionRequest, DeconvolutionResponse
 
 logger = logging.getLogger(__name__)
@@ -181,6 +182,12 @@ def _split(rounds: int, parts: int) -> list[tuple[int, int]]:
     return [(sum(counts[:i]), count) for i, count in enumerate(counts) if count > 0]
 
 
+def estimate_seconds(request: DeconvolutionRequest) -> float:
+    """Roughly how long a request takes on an idle pool with a core per process: its part with the most rounds."""
+    rounds = max(count for _, count in _split(request.options.bootstraps, min(WORKERS, WORKERS_PER_REQUEST)))
+    return estimate_round_seconds(request) * rounds
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.runner = Runner()
@@ -216,6 +223,11 @@ async def post_deconvolve(request: DeconvolutionRequest) -> DeconvolutionRespons
         raise HTTPException(413, f"At most {MAX_LINEAGES} lineages are allowed.")
     if request.options.bootstraps > MAX_BOOTSTRAPS:
         raise HTTPException(413, f"At most {MAX_BOOTSTRAPS} bootstrap rounds are allowed.")
+    seconds = estimate_seconds(request)
+    if seconds > TIMEOUT:
+        raise HTTPException(
+            413, f"The deconvolution would take about {seconds:.0f} s, longer than the limit of {TIMEOUT} s."
+        )
     return await app.state.runner.run(request)
 
 

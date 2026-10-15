@@ -142,6 +142,7 @@ def test_stops_deconvolutions_that_take_too_long(client, monkeypatch):
     runner = app.state.runner
     pool = runner.pool
     monkeypatch.setattr(service, "TIMEOUT", 0.5)
+    monkeypatch.setattr(service, "estimate_seconds", lambda request: 0)
 
     assert client.post("/deconvolve", json=slow_request("2026-09-03")).status_code == 503
     # The processes stop by themselves, the pool is kept.
@@ -167,6 +168,15 @@ def test_replaces_the_pool_when_processes_dont_stop(client, monkeypatch):
 
     monkeypatch.undo()
     assert client.post("/deconvolve", json=with_date("2026-09-06")).status_code == 200
+
+
+def test_rejects_requests_that_would_take_too_long(client, monkeypatch):
+    monkeypatch.setattr(service, "TIMEOUT", 1e-6)
+
+    response = client.post("/deconvolve", json=with_date("2026-09-07"))
+
+    assert response.status_code == 413
+    assert "would take about" in response.json()["detail"]
 
 
 def test_allows_cross_origin_requests(client):
