@@ -41,7 +41,9 @@ longer than the time limit. The same request always gets the same answer, whatev
 frequencies and mutations, so results are cached.
 
 If a process of the pool dies (killed for lack of memory, say), the pool is replaced, and the
-requests it was computing are retried on the new one.
+requests it was computing are retried on the new one. A request that is given up at the time limit
+stops its processes at the next date they would fit, so the others go on; only if they haven't
+stopped after another time limit, the pool is replaced.
 
 `GET /health` and `GET /version` (the LolliPop version) are there for monitoring. Interactive docs
 are at `/docs`.

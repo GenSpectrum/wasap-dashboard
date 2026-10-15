@@ -8,8 +8,9 @@ on a big pool, several requests are computed side by side, otherwise they take t
 
 A pool whose process died (killed for lack of memory, say) is unusable, so it is replaced, and the
 requests it was computing get another go on the new one. A request that takes longer than
-`LOLLIPOP_TIMEOUT` seconds is given up, and its pool replaced as well: that is the only way to stop
-its processes.
+`LOLLIPOP_TIMEOUT` seconds is given up: its processes stop at the next date they would fit, and
+only if they haven't after another `LOLLIPOP_TIMEOUT`, the pool is replaced, the only other way to
+stop them.
 
 Every visitor of a dashboard page sends the same request, so results are cached, and a request
 that is already running is joined instead of run twice.
@@ -20,8 +21,9 @@ import hashlib
 import logging
 import multiprocessing
 import os
+import time
 from collections import OrderedDict
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import Future, ProcessPoolExecutor
 from concurrent.futures.process import BrokenProcessPool
 from contextlib import asynccontextmanager
 from importlib.metadata import version
@@ -31,7 +33,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from threadpoolctl import threadpool_limits
 
-from .deconvolution import aggregate, fit_rounds
+from .deconvolution import DeadlineExceeded, aggregate, fit_rounds
 from .models import DeconvolutionRequest, DeconvolutionResponse
 
 logger = logging.getLogger(__name__)
@@ -73,6 +75,7 @@ class Runner:
         self.pool = _new_pool()
         self.cache: OrderedDict[str, DeconvolutionResponse] = OrderedDict()
         self.running: dict[str, asyncio.Future[DeconvolutionResponse]] = {}
+        self.watches: set[asyncio.Task[None]] = set()
 
     async def start(self) -> None:
         """Starts the processes, so that the first request doesn't wait for them."""
@@ -97,32 +100,56 @@ class Runner:
         return await asyncio.shield(self.running[key])
 
     async def _deconvolve(self, request: DeconvolutionRequest) -> DeconvolutionResponse:
-        loop = asyncio.get_running_loop()
         parts = _split(request.options.bootstraps, min(WORKERS, WORKERS_PER_REQUEST))
-        pool = self.pool
-        try:
-            async with asyncio.timeout(TIMEOUT):
-                for _ in range(2):
-                    pool = self.pool
-                    try:
-                        # Raises right away if the pool is known to be broken; otherwise its futures do.
-                        futures = [loop.run_in_executor(pool, fit_rounds, request, *part) for part in parts]
-                        fits = await asyncio.gather(*futures, return_exceptions=True)
-                    except BrokenProcessPool as error:
-                        fits = [error]
-                    if not any(isinstance(fit, BrokenProcessPool) for fit in fits):
-                        break
-                    self._replace(pool, "a process of the pool died")
-                else:
-                    raise HTTPException(503, "The deconvolution failed, please try again later.")
-        except TimeoutError:
-            self._replace(pool, f"a deconvolution took longer than {TIMEOUT} s")
-            raise HTTPException(503, f"The deconvolution took longer than {TIMEOUT} s.") from None
+        deadline = time.time() + TIMEOUT
+        for _ in range(2):
+            pool = self.pool
+            fits = await self._fit(pool, request, parts, deadline)
+            if not any(isinstance(fit, BrokenProcessPool) for fit in fits):
+                break
+            self._replace(pool, "a process of the pool died")
+        else:
+            raise HTTPException(503, "The deconvolution failed, please try again later.")
+        if any(isinstance(fit, DeadlineExceeded) for fit in fits):
+            raise HTTPException(503, f"The deconvolution took longer than {TIMEOUT} s.")
         for fit in fits:
             if isinstance(fit, BaseException):
                 raise fit
         # In a thread: for large requests, it takes seconds.
         return await asyncio.to_thread(aggregate, request, [fit for part in fits for fit in part])
+
+    async def _fit(self, pool: ProcessPoolExecutor, request: DeconvolutionRequest, parts, deadline: float) -> list:
+        """The fits of the parts on the pool, or what they raised; a `DeadlineExceeded` at the deadline."""
+        try:
+            futures = [pool.submit(fit_rounds, request, *part, deadline) for part in parts]
+        except BrokenProcessPool as error:
+            # Raised right away if the pool is known to be broken; otherwise its futures do.
+            return [error]
+        _, pending = await asyncio.wait(
+            [asyncio.wrap_future(future) for future in futures], timeout=max(0, deadline - time.time())
+        )
+        if pending:
+            # Still waiting for their turn, behind other requests, or running until their next date.
+            for future in futures:
+                future.cancel()
+            self._watch(pool, futures)
+            return [DeadlineExceeded()]
+        return [_outcome(future) for future in futures]
+
+    def _watch(self, pool: ProcessPoolExecutor, futures: list[Future]) -> None:
+        """
+        Replaces the pool if a given-up request's processes don't stop. Every request's do by its
+        deadline, plus the time to fit a date, so those still waiting for a process get one by then.
+        """
+
+        async def watch() -> None:
+            _, running = await asyncio.wait([asyncio.wrap_future(future) for future in futures], timeout=TIMEOUT)
+            if running:
+                self._replace(pool, f"a deconvolution didn't stop {TIMEOUT} s after its time limit")
+
+        task = asyncio.create_task(watch())
+        self.watches.add(task)
+        task.add_done_callback(self.watches.discard)
 
     def _replace(self, pool: ProcessPoolExecutor, reason: str) -> None:
         # Once, whichever of the requests on the old pool gets here first.
@@ -138,6 +165,13 @@ class Runner:
             self.cache[key] = future.result()
             if len(self.cache) > CACHE_SIZE:
                 self.cache.popitem(last=False)
+
+
+def _outcome(future: Future):
+    if future.cancelled():
+        # By the shutdown of a broken pool.
+        return BrokenProcessPool("cancelled with its pool")
+    return future.exception() or future.result()
 
 
 def _split(rounds: int, parts: int) -> list[tuple[int, int]]:

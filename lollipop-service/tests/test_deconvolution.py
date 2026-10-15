@@ -3,7 +3,12 @@ import datetime
 import numpy as np
 import pytest
 
-from lollipop_service.deconvolution import aggregate, deconvolve, fit_rounds
+from lollipop_service.deconvolution import (
+    DeadlineExceeded,
+    aggregate,
+    deconvolve,
+    fit_rounds,
+)
 from lollipop_service.models import DEFAULT_OPTIONS, DeconvolutionRequest, MutationFrequency
 
 SIGNATURES = {
@@ -87,3 +92,10 @@ def test_without_informative_mutations_there_are_no_dates():
 
     assert deconvolve(shared).dates == []
     assert deconvolve(shared.model_copy(update={"frequencies": []})).dates == []
+
+
+def test_gives_up_after_the_deadline():
+    request = mixture_request({"A": 0.5, "B": 0.5}, days=6, bootstraps=7)
+
+    with pytest.raises(DeadlineExceeded):
+        fit_rounds(request, 0, 7, deadline=0)

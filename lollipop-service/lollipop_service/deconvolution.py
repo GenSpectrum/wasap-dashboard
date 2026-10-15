@@ -6,6 +6,9 @@ quantiles per date and variant. The rounds of the bootstrap can be fitted in par
 and aggregated together (`aggregate`), with the same result as `deconvolve`.
 """
 
+import math
+import time
+
 import lollipop as ll
 import numpy as np
 import pandas as pd
@@ -17,14 +20,32 @@ from .models import UNDETERMINED, DateEstimates, DeconvolutionRequest, Deconvolu
 SEED = 1
 
 
+class DeadlineExceeded(Exception):
+    pass
+
+
+class _KernelDeconv(ll.KernelDeconv):
+    """Gives up between the dates of `deconv_all` once `deadline`, a `time.time()`, has passed."""
+
+    def __init__(self, *args, deadline: float, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.deadline = deadline
+
+    def deconv(self, *args, **kwargs):
+        if time.time() > self.deadline:
+            raise DeadlineExceeded()
+        return super().deconv(*args, **kwargs)
+
+
 def deconvolve(request: DeconvolutionRequest) -> DeconvolutionResponse:
     return aggregate(request, fit_rounds(request, 0, request.options.bootstraps))
 
 
-def fit_rounds(request: DeconvolutionRequest, first: int, count: int) -> list[pd.DataFrame]:
+def fit_rounds(request: DeconvolutionRequest, first: int, count: int, deadline: float = math.inf) -> list[pd.DataFrame]:
     """
     The fits of the bootstrap rounds `first` to `first + count`: the same as if all the rounds ran in
-    one go, so that they can be split up and run in parallel.
+    one go, so that they can be split up and run in parallel. Raises `DeadlineExceeded` once the
+    `deadline` (a `time.time()`) has passed.
     """
     lineages = list(request.signatures)
     variants = [*lineages, UNDETERMINED]
@@ -45,7 +66,7 @@ def fit_rounds(request: DeconvolutionRequest, first: int, count: int) -> list[pd
     rounds = []
     for _ in range(count):
         resampled = ll.resample_mutations(tally, mutations)[0] if bootstrap else tally
-        fit = ll.KernelDeconv(
+        fit = _KernelDeconv(
             resampled[variants],
             resampled["frac"],
             resampled["date"],
@@ -53,6 +74,7 @@ def fit_rounds(request: DeconvolutionRequest, first: int, count: int) -> list[pd
             kernel=ll.GaussianKernel(bandwidth=options.bandwidth),
             reg=ll.RobustReg(f_scale=options.f_scale),
             confint=ll.NullConfint(),
+            deadline=deadline,
         ).deconv_all(min_tol=options.min_tol)
         rounds.append(fit.fitted)
     return rounds
