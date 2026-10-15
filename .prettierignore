@@ -3,3 +3,6 @@ node_modules
 package-lock.json
 # verbatim license text
 lollipop/LICENSE.md
+# the Python environment of the LolliPop service
+lollipop-service/.venv
+lollipop-service/.pytest_cache

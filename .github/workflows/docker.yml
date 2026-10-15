@@ -5,12 +5,17 @@ on:
         branches: [main, prod]
     workflow_dispatch:
 
-env:
-    IMAGE_NAME: ghcr.io/${{ github.repository }}
-
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                include:
+                    - image: ghcr.io/${{ github.repository }}
+                      context: .
+                      target: ${{ github.ref == 'refs/heads/prod' && 'prod' || 'app' }}
+                    - image: ghcr.io/${{ github.repository }}-lollipop-service
+                      context: lollipop-service
         permissions:
             contents: read
             packages: write
@@ -24,15 +29,15 @@ jobs:
             - uses: docker/metadata-action@v5
               id: meta
               with:
-                  images: ${{ env.IMAGE_NAME }}
+                  images: ${{ matrix.image }}
                   tags: |
                       type=ref,event=branch
                       type=sha
                       type=raw,value=latest,enable={{is_default_branch}}
             - uses: docker/build-push-action@v6
               with:
-                  context: .
-                  target: ${{ github.ref == 'refs/heads/prod' && 'prod' || 'app' }}
+                  context: ${{ matrix.context }}
+                  target: ${{ matrix.target }}
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}

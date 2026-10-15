@@ -93,7 +93,9 @@ cp public/config.example.json config.json   # then edit config.json
 docker compose up --build
 ```
 
-Serves the app at `http://localhost:8080`. `docker-compose.yml` bind-mounts
+Serves the app at `http://localhost:8080`, and the LolliPop service
+([`lollipop-service/`](lollipop-service/README.md)) at `http://localhost:8000`.
+`docker-compose.yml` bind-mounts
 `./config.json` into the built image, so editing it and restarting the
 container is enough to point the same image at different data — no rebuild
 needed.
@@ -101,7 +103,8 @@ needed.
 CI publishes the image to `ghcr.io/genspectrum/wasap-dashboard` on every push
 to `main`, so `--build` above can be swapped for `image:
 ghcr.io/genspectrum/wasap-dashboard:latest` in `docker-compose.yml` to skip
-building locally.
+building locally. The LolliPop service's image is published next to it, as
+`ghcr.io/genspectrum/wasap-dashboard-lollipop-service`, with the same tags.
 
 ## Source layout
 
@@ -130,6 +133,8 @@ src/
   config/                   config.json loading + schema, per-organism types
   amplicons/                primer schemes: the `amplicons` config, BED parsing
   clientLogger.ts, types/, util/, styles/
+lollipop-service/           an HTTP service that runs LolliPop's deconvolution — Python, its own
+                            image, see lollipop-service/README.md
 lollipop/                   the deconvolution, a TypeScript port of LolliPop — GPL-licensed,
                             see lollipop/README.md
 ```
