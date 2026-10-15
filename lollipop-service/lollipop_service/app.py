@@ -121,7 +121,8 @@ class Runner:
         for fit in fits:
             if isinstance(fit, BaseException):
                 raise fit
-        return aggregate(request, [fit for part in fits for fit in part])
+        # In a thread: for large requests, it takes seconds.
+        return await asyncio.to_thread(aggregate, request, [fit for part in fits for fit in part])
 
     def _replace(self, pool: ProcessPoolExecutor, reason: str) -> None:
         # Once, whichever of the requests on the old pool gets here first.
