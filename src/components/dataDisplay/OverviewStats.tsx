@@ -3,7 +3,6 @@ import type { FC, ReactNode } from 'react';
 import { useSiloSchema } from '../../dataLayer/hooks/connection';
 import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
 import { useDistinctCount } from '../../dataLayer/hooks/distinctCount';
-import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
 import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
 import { useTotalReadCount } from '../../dataLayer/hooks/totalReadCount';
 
@@ -52,13 +51,13 @@ const BatchCount: FC = () => {
 };
 
 const SampleCount: FC = () => {
-    // One row per sample, so the count is simply the number of rows.
-    const { data, isPending, isError, error } = useSampleOverview();
+    const schema = useSiloSchema();
+    const { data, isPending, isError, error } = useDistinctCount(schema.sampleId);
 
     return (
         <Stat
             title='Samples'
-            value={isPending ? '…' : isError ? 'Error' : data.length.toLocaleString('en-us')}
+            value={isPending ? '…' : isError ? 'Error' : data.toLocaleString('en-us')}
             description={isError ? error.message : 'Across all locations'}
         />
     );
