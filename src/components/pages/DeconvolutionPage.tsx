@@ -4,11 +4,11 @@ import { type To } from 'react-router-dom';
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
-import { MIN_COVERAGE, useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
+import { useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
 import { lineageSignatures } from '../../deconvolution/lineageSignatures';
-import { informativeMutations, type DeconvolutionOptions } from '../../deconvolution/lollipopService';
+import { informativeMutations } from '../../deconvolution/lollipopService';
 import { poolFrequencies } from '../../deconvolution/poolFrequencies';
 import { useDeconvolution, useLollipopVersion } from '../../deconvolution/useDeconvolution';
 import { type LineageTree } from '../../lineageTree/lineageTree';
@@ -192,7 +192,6 @@ function DeconvolutionResults({
                         locationNames={filter.locationNames}
                         granularity={granularity}
                         signatures={signatures.signatures}
-                        options={deconvolutionOptions(granularity)}
                     />
                 }
             >
@@ -227,13 +226,11 @@ function DeconvolutionInfo({
     locationNames,
     granularity,
     signatures,
-    options,
 }: {
     sampleCount: number;
     locationNames: string[] | undefined;
     granularity: TemporalGranularity;
     signatures: Record<string, string[]>;
-    options: DeconvolutionOptions;
 }) {
     const informative = new Set(informativeMutations(signatures));
     const lollipopVersion = useLollipopVersion();
@@ -246,18 +243,7 @@ function DeconvolutionInfo({
                 {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`}; the
                 band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
             </p>
-            <p>
-                Computed with{' '}
-                <a className='link' href='https://github.com/cbg-ethz/LolliPop'>
-                    LolliPop
-                </a>
-                {lollipopVersion !== undefined && ` ${lollipopVersion}`}: a robust (soft L1) non-negative regression of
-                the mutation frequencies of all samples on the signatures of the lineages, with the samples weighted by
-                a Gaussian kernel of their distance in time (variance {Math.round(options.bandwidth)} days²), repeated{' '}
-                {options.bootstraps} times with the mutations resampled (a bootstrap). The line is the mean of the
-                rounds, the band their 95% range. Frequencies are counted at positions covered by at least{' '}
-                {MIN_COVERAGE} reads.
-            </p>
+            <p>Computed with LolliPop{lollipopVersion !== undefined && ` ${lollipopVersion}`}.</p>
         </div>
     );
 }
