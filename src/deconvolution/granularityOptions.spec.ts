@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { deconvolutionOptions } from './granularityOptions';
-import { DEFAULT_DECONVOLUTION_OPTIONS } from '../../lollipop';
+import { DEFAULT_DECONVOLUTION_OPTIONS } from './lollipopService';
 
 describe('deconvolutionOptions', () => {
     it("keeps LolliPop's preset by day", () => {
