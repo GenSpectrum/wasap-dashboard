@@ -258,17 +258,6 @@ function DeconvolutionInfo({
                 rounds, the band their 95% range. Frequencies are counted at positions covered by at least{' '}
                 {MIN_COVERAGE} reads.
             </p>
-            <p>
-                The signatures are the nucleotide substitutions of the lineages in Nextclade&apos;s reference tree.
-                Telling the lineages apart:{' '}
-                {Object.entries(signatures)
-                    .map(
-                        ([lineage, mutations]) =>
-                            `${lineage} ${mutations.filter((m) => informative.has(m)).length} of ${mutations.length}`,
-                    )
-                    .join(', ')}
-                .
-            </p>
         </div>
     );
 }
