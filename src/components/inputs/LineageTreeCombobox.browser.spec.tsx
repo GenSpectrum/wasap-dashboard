@@ -35,6 +35,23 @@ describe('LineageTreeCombobox', () => {
         expect(screen.getByText('A*').query()).toBeNull();
     });
 
+    it('leaves out the excluded lineages', async () => {
+        const screen = render(
+            <LineageTreeCombobox
+                lineageTree={lineageTree}
+                excludedLineages={['A.1', 'B']}
+                value={undefined}
+                onChange={vi.fn()}
+            />,
+        );
+
+        await screen.getByRole('combobox').click();
+
+        await expect.element(screen.getByText('A.1.1', { exact: true })).toBeInTheDocument();
+        expect(screen.getByRole('option').all()).toHaveLength(4);
+        expect(screen.getByText('B', { exact: true }).query()).toBeNull();
+    });
+
     it('calls onChange with the picked lineage', async () => {
         const onChange = vi.fn();
         const screen = render(<LineageTreeCombobox lineageTree={lineageTree} value={undefined} onChange={onChange} />);

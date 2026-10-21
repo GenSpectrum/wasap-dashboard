@@ -4,11 +4,11 @@ import { type To } from 'react-router-dom';
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
-import { MIN_COVERAGE, useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
+import { useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
 import { type SiloReadFilter } from '../../dataLayer/queries';
 import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
 import { lineageSignatures } from '../../deconvolution/lineageSignatures';
-import { informativeMutations, type DeconvolutionOptions } from '../../deconvolution/lollipopService';
+import { informativeMutations } from '../../deconvolution/lollipopService';
 import { poolFrequencies } from '../../deconvolution/poolFrequencies';
 import { useDeconvolution, useLollipopVersion } from '../../deconvolution/useDeconvolution';
 import { type LineageTree } from '../../lineageTree/lineageTree';
@@ -16,6 +16,7 @@ import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { effectivePanel } from '../../pageState/wasap/wasapAnalysisFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
@@ -33,10 +34,11 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const panel = useMemo(() => effectivePanel(config.deconvolutionPanel, analysis), [config, analysis]);
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
-        () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
-        [lineageTree, analysis.panel],
+        () => lineageColors(panel.filter((name) => lineageTree?.lineages.has(name) === true)),
+        [lineageTree, panel],
     );
     const lineageLink = isModeEnabled(config, 'variant')
         ? (lineage: string): To => {
@@ -50,10 +52,11 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
     return (
         <ModePageLayout
             sidebar={
-                // The panel is the only setting, so it is applied right away, without a button.
+                // The extra lineage is the only setting, so it is applied right away, without a button.
                 <div className='flex flex-col gap-6'>
                     {lineageTree !== undefined && (
                         <DeconvolutionFilter
+                            panel={config.deconvolutionPanel}
                             pageState={analysis}
                             setPageState={(newAnalysis) =>
                                 setPageState((pageState) => ({ ...pageState, analysis: newAnalysis }))
@@ -64,37 +67,31 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 </div>
             }
         >
-            <div role='alert' className='alert border-amber-300 bg-amber-100 text-sm text-amber-950'>
-                <span>
-                    <strong>Experimental:</strong> the lineage prevalence estimates are a work in progress, and the
-                    numbers might be incorrect.
-                </span>
-            </div>
             {lineageTree === undefined ? (
                 <Message>
                     The lineage tree, where the signatures of the lineages come from, could not be loaded.
                 </Message>
-            ) : analysis.panel.length < 2 ? (
+            ) : panel.length < 2 ? (
                 <NothingSelected title='Not enough lineages'>
-                    Please select at least two lineages for the panel in the filter panel.
+                    The panel of lineages needs at least two lineages.
                 </NothingSelected>
             ) : isFilterPending ? (
                 <PrevalenceLoading />
             ) : (
                 <DeconvolutionResults
                     lineageTree={lineageTree}
-                    panel={analysis.panel}
+                    panel={panel}
                     colors={colors}
                     filter={filter}
                     granularity={base.granularity}
                     lineageLink={lineageLink}
                 />
             )}
-            {lineageTree !== undefined && analysis.panel.length > 0 && (
+            {lineageTree !== undefined && panel.length > 0 && (
                 <TitledPanel title='Lineage tree'>
                     <LineagePanelTree
                         lineageTree={lineageTree}
-                        panel={analysis.panel}
+                        panel={panel}
                         colors={colors}
                         lineageLink={lineageLink}
                     />
@@ -195,7 +192,6 @@ function DeconvolutionResults({
                         locationNames={filter.locationNames}
                         granularity={granularity}
                         signatures={signatures.signatures}
-                        options={deconvolutionOptions(granularity)}
                     />
                 }
             >
@@ -230,13 +226,11 @@ function DeconvolutionInfo({
     locationNames,
     granularity,
     signatures,
-    options,
 }: {
     sampleCount: number;
     locationNames: string[] | undefined;
     granularity: TemporalGranularity;
     signatures: Record<string, string[]>;
-    options: DeconvolutionOptions;
 }) {
     const informative = new Set(informativeMutations(signatures));
     const lollipopVersion = useLollipopVersion();
@@ -249,29 +243,7 @@ function DeconvolutionInfo({
                 {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`}; the
                 band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
             </p>
-            <p>
-                Computed with{' '}
-                <a className='link' href='https://github.com/cbg-ethz/LolliPop'>
-                    LolliPop
-                </a>
-                {lollipopVersion !== undefined && ` ${lollipopVersion}`}: a robust (soft L1) non-negative regression of
-                the mutation frequencies of all samples on the signatures of the lineages, with the samples weighted by
-                a Gaussian kernel of their distance in time (variance {Math.round(options.bandwidth)} days²), repeated{' '}
-                {options.bootstraps} times with the mutations resampled (a bootstrap). The line is the mean of the
-                rounds, the band their 95% range. Frequencies are counted at positions covered by at least{' '}
-                {MIN_COVERAGE} reads.
-            </p>
-            <p>
-                The signatures are the nucleotide substitutions of the lineages in Nextclade&apos;s reference tree.
-                Telling the lineages apart:{' '}
-                {Object.entries(signatures)
-                    .map(
-                        ([lineage, mutations]) =>
-                            `${lineage} ${mutations.filter((m) => informative.has(m)).length} of ${mutations.length}`,
-                    )
-                    .join(', ')}
-                .
-            </p>
+            <p>Computed with LolliPop{lollipopVersion !== undefined && ` ${lollipopVersion}`}.</p>
         </div>
     );
 }

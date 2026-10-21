@@ -12,28 +12,22 @@ describe('DeconvolutionPageStateHandler', () => {
         expect(handler.getDefaultPageUrl()).toBe('/wastewater/covid/lineagePrevalence');
     });
 
-    it('takes the panel from the config when the URL has none', () => {
-        expect(parse('').analysis).toEqual({ mode: 'deconvolution', panel: ['XFG', 'NB.1.8.1'] });
+    it('has no extra lineage when the URL has none', () => {
+        expect(parse('').analysis).toEqual({ mode: 'deconvolution' });
     });
 
-    it('parses the panel from the URL', () => {
-        expect(parse('panel=LP.8.1|XEC').analysis.panel).toEqual(['LP.8.1', 'XEC']);
+    it('parses the extra lineage from the URL', () => {
+        expect(parse('extraLineage=LP.8.1').analysis.extraLineage).toBe('LP.8.1');
     });
 
-    it('keeps an emptied panel empty', () => {
-        const filter = parse('panel=LP.8.1');
-        const emptied = { ...filter, analysis: { ...filter.analysis, panel: [] } };
-
-        expect(parse(handler.toSearchParams(emptied).toString()).analysis.panel).toEqual([]);
-    });
-
-    it('round-trips the panel', () => {
-        expect(handler.toSearchParams(parse('panel=XFG|XEC')).get('panel')).toBe('XFG|XEC');
+    it('round-trips the extra lineage, and leaves it out of the URL when there is none', () => {
+        expect(handler.toSearchParams(parse('extraLineage=XEC')).get('extraLineage')).toBe('XEC');
+        expect(handler.toSearchParams(parse('')).has('extraLineage')).toBe(false);
     });
 
     it('has no mean proportion in the URL', () => {
-        expect(handler.toSearchParams(parse('panel=XFG&meanProportionLower=0.2')).has('meanProportionLower')).toBe(
-            false,
-        );
+        expect(
+            handler.toSearchParams(parse('extraLineage=XEC&meanProportionLower=0.2')).has('meanProportionLower'),
+        ).toBe(false);
     });
 });

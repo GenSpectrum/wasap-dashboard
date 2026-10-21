@@ -1,6 +1,6 @@
 /**
- * EXPERIMENTAL: which lineages of a configured panel (see `wasapDeconvolutionFilterSchema`'s
- * `panel`, same concept) carry the exact symbols a co-occurrence pattern has at the queried
+ * EXPERIMENTAL: which lineages of a configured panel (see the config's `deconvolutionPanel`,
+ * same concept) carry the exact symbols a co-occurrence pattern has at the queried
  * positions. Answers "is this prevalent combination one we already expect from the panel, or
  * something the panel doesn't explain" without a clinical LAPIS lookup — everything needed is
  * already in the lineage tree loaded for the deconvolution mode.

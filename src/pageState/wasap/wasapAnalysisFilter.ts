@@ -146,15 +146,22 @@ export const wasapCollectionFilterSchema = z.object({
 export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
 
 /**
- * A panel of lineages, whose prevalences are estimated from the mutation frequencies by kernel
- * deconvolution (by the LolliPop service, see `lollipop-service/`): the "Lineage Prevalence" page. The lineages are named like
- * in the lineage tree, where their signatures come from.
+ * The "Lineage Prevalence" page, which estimates the prevalences of a panel of lineages from the
+ * mutation frequencies by kernel deconvolution (by the LolliPop service, see `lollipop-service/`).
+ * The panel is fixed by the config (`deconvolutionPanel`); only a lineage can be added to it. The
+ * lineages are named like in the lineage tree, where their signatures come from.
  */
 export const wasapDeconvolutionFilterSchema = z.object({
     mode: z.literal('deconvolution'),
-    panel: z.array(z.string()),
+    /** A lineage added to the panel for the deconvolution, if any. */
+    extraLineage: z.string().optional(),
 });
 export type WasapDeconvolutionFilter = z.infer<typeof wasapDeconvolutionFilterSchema>;
+
+/** The lineages to deconvolve: the panel, and `extraLineage` if it isn't in the panel already. */
+export function effectivePanel(panel: string[], { extraLineage }: WasapDeconvolutionFilter): string[] {
+    return extraLineage === undefined || panel.includes(extraLineage) ? panel : [...panel, extraLineage];
+}
 
 export const POSITION_SOURCE = {
     manual: 'manual',
@@ -183,8 +190,8 @@ export const wasapCooccurrenceFilterSchema = z.object({
     /** Patterns on less than this share of the reads (0 to 1) are left out; none are without. */
     minShare: z.number().min(0).max(1).optional(),
     /**
-     * EXPERIMENTAL: a panel of lineages (same concept as `wasapDeconvolutionFilterSchema`'s
-     * `panel`) to check co-occurrence patterns against — which of them the panel already
+     * EXPERIMENTAL: a panel of lineages (same concept as the config's
+     * `deconvolutionPanel`) to check co-occurrence patterns against — which of them the panel already
      * explains, and which prevalent combinations it doesn't.
      */
     panel: z.array(z.string()).optional(),

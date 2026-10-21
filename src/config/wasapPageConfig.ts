@@ -5,7 +5,6 @@ import { lineageTreeConfigSchema } from '../lineageTree/lineageTreeConfig';
 import {
     wasapCollectionFilterSchema,
     wasapCooccurrenceFilterSchema,
-    wasapDeconvolutionFilterSchema,
     wasapManualFilterSchema,
     wasapResistanceFilterSchema,
     wasapUntrackedFilterSchema,
@@ -234,7 +233,8 @@ export const deconvolutionAnalysisModeConfigSchema = z.union([
     z.object({
         deconvolutionAnalysisModeEnabled: z.literal(true),
         lineageTree: lineageTreeConfigSchema,
-        filterDefaults: z.object({ deconvolution: wasapDeconvolutionFilterSchema }),
+        /** The lineages to deconvolve, named like in the lineage tree. Fixed: the page only adds one to them. */
+        deconvolutionPanel: z.array(z.string()),
     }),
     z.object({ deconvolutionAnalysisModeEnabled: z.undefined().optional() }),
 ]);

@@ -121,10 +121,7 @@ export const testConfigWithDeconvolution = {
     ...testConfig,
     deconvolutionAnalysisModeEnabled: true,
     lineageTree: { url: 'https://example.org/tree.json', lineageAttribute: 'Nextclade_pango' },
-    filterDefaults: {
-        ...testConfig.filterDefaults,
-        deconvolution: { mode: 'deconvolution', panel: ['XFG', 'NB.1.8.1'] },
-    },
+    deconvolutionPanel: ['XFG', 'NB.1.8.1'],
 } satisfies WasapPageConfig;
 
 /** Like `testConfig`, with the co-occurrence mode enabled. */
