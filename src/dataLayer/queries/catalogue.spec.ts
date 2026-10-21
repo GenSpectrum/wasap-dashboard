@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import {
-    batchCountQuery,
+    distinctCountQuery,
     sampleOverviewQuery,
     samplingDatesQuery,
     stringFieldValuesQuery,
@@ -52,7 +52,9 @@ describe('the Tier-1 read catalogue', () => {
         );
     });
 
-    test('batchCountQuery groups the whole table by batch, unfiltered', () => {
-        expect(batchCountQuery(schema).render()).toBe('data.group(by := {batchId}, aggs := {n := count()})');
+    test('distinctCountQuery groups the whole table by the column, then counts the groups', () => {
+        expect(distinctCountQuery(schema, 'sampleId').render()).toBe(
+            'data.group(by := {sampleId}, aggs := {n := count()}).group(by := {}, aggs := {n := count()})',
+        );
     });
 });
