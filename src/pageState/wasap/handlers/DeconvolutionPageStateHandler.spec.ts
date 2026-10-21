@@ -12,12 +12,8 @@ describe('DeconvolutionPageStateHandler', () => {
         expect(handler.getDefaultPageUrl()).toBe('/wastewater/covid/lineagePrevalence');
     });
 
-    it('takes the panel from the config, without an extra lineage when the URL has none', () => {
-        expect(parse('').analysis).toEqual({ mode: 'deconvolution', panel: ['XFG', 'NB.1.8.1'] });
-    });
-
-    it('ignores a panel in the URL', () => {
-        expect(parse('panel=LP.8.1|XEC').analysis.panel).toEqual(['XFG', 'NB.1.8.1']);
+    it('has no extra lineage when the URL has none', () => {
+        expect(parse('').analysis).toEqual({ mode: 'deconvolution' });
     });
 
     it('parses the extra lineage from the URL', () => {

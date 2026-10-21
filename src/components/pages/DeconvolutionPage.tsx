@@ -34,7 +34,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
-    const panel = useMemo(() => effectivePanel(analysis), [analysis]);
+    const panel = useMemo(() => effectivePanel(config.deconvolutionPanel, analysis), [config, analysis]);
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
         () => lineageColors(panel.filter((name) => lineageTree?.lineages.has(name) === true)),
@@ -56,6 +56,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 <div className='flex flex-col gap-6'>
                     {lineageTree !== undefined && (
                         <DeconvolutionFilter
+                            panel={config.deconvolutionPanel}
                             pageState={analysis}
                             setPageState={(newAnalysis) =>
                                 setPageState((pageState) => ({ ...pageState, analysis: newAnalysis }))

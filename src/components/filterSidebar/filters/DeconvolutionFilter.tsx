@@ -9,10 +9,12 @@ import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
  * tree that can be added to it.
  */
 export function DeconvolutionFilter({
+    panel,
     pageState,
     setPageState,
     lineageTree,
 }: {
+    panel: string[];
     pageState: WasapDeconvolutionFilter;
     setPageState: (newState: WasapDeconvolutionFilter) => void;
     lineageTree: LineageTree;
@@ -21,7 +23,7 @@ export function DeconvolutionFilter({
         <>
             <LabeledField label='Panel of lineages' info={<LineagePanelInfo />}>
                 <ul aria-label='Panel of lineages' className='flex flex-wrap gap-1'>
-                    {pageState.panel.map((lineage) => (
+                    {panel.map((lineage) => (
                         <li key={lineage} className='badge badge-outline'>
                             {lineage}
                         </li>

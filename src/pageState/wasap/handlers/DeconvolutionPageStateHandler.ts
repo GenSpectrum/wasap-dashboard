@@ -11,11 +11,10 @@ export class DeconvolutionPageStateHandler extends WasapModePageStateHandler<Was
     }
 
     protected readonly params = {
-        // The panel isn't in the URL: it is always the one of the config.
         extraLineage: optional(stringParam),
     };
 
     protected defaults(): WasapDeconvolutionFilter {
-        return { mode: 'deconvolution', panel: this.config.filterDefaults.deconvolution.panel };
+        return { mode: 'deconvolution' };
     }
 }
