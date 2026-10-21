@@ -24,7 +24,7 @@ export function DeconvolutionFilter({
             <LabeledField label='Panel of lineages' info={<LineagePanelInfo />}>
                 <ul aria-label='Panel of lineages' className='flex flex-wrap gap-1'>
                     {panel.map((lineage) => (
-                        <li key={lineage} className='badge badge-outline'>
+                        <li key={lineage} className='badge border-gray-300 bg-gray-50 text-gray-700'>
                             {lineage}
                         </li>
                     ))}
