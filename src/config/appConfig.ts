@@ -11,7 +11,7 @@ import { type WasapPageConfig, wasapPageConfigSchema } from './wasapPageConfig';
  * deployment with no `config.json` (or one that omits `organisms`) genuinely
  * serves zero wastewater dashboards (`WasapRoute` says so), rather than
  * silently falling back to GenSpectrum's own data. `public/config.example.json`
- * (+ the staging / local-dev example configs) are that data now, checked in
+ * (+ `public/config.prod.example.json`) are that data now, checked in
  * as *examples* to copy from, not defaults this module reaches for.
  *
  * This is the seam that `09-third-party-hosting.md` grows into: a self-hoster
