@@ -111,6 +111,30 @@ function eachDateBetween(from: string, to: string): string[] {
     return dates;
 }
 
+const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * A batch's colour index, from its own ID alone - so it stays put when other batches are added
+ * or drop out of the data, unlike numbering batches by their sorted position. Batch IDs start
+ * with their date (`20260206_2526545558`); the index is the number of weeks since the Unix epoch
+ * (not the week of the year, which would jump at every new year). Batches come roughly every two
+ * weeks and the palette has an odd number of colours, so neighbouring batches step through all of
+ * them before one repeats; only two batches in the same week share a colour. IDs without a date
+ * prefix fall back to a hash of the ID.
+ */
+export function batchColorIndex(batchId: string): number {
+    const match = /^(\d{4})(\d{2})(\d{2})_/.exec(batchId);
+    if (match !== null) {
+        const [year, month, day] = match.slice(1).map(Number);
+        return Math.floor(Date.UTC(year, month - 1, day) / MS_PER_WEEK);
+    }
+    let hash = 0;
+    for (let i = 0; i < batchId.length; i++) {
+        hash = (hash * 31 + batchId.charCodeAt(i)) >>> 0;
+    }
+    return hash;
+}
+
 export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) {
     const locations = useMemo(() => [...new Set(samples.map((sample) => sample.locationName))].sort(), [samples]);
 
@@ -121,15 +145,6 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
     const dates = useMemo(() => {
         const sampledDates = samples.map((sample) => sample.date).sort();
         return sampledDates.length === 0 ? [] : eachDateBetween(sampledDates[0], sampledDates[sampledDates.length - 1]);
-    }, [samples]);
-
-    // A batch's colour is fixed (the palette cycles, so two batches can share a hue once there
-    // are more than the palette has), by the sorted order of its ID - deterministic, unlike "the
-    // order batches were first seen while fetching", which the live reference tool's own
-    // (unavailable) source presumably uses instead.
-    const colorIndexByBatch = useMemo(() => {
-        const batchIds = [...new Set(samples.map((sample) => sample.batchId))].sort();
-        return new Map(batchIds.map((batchId, index) => [batchId, index]));
     }, [samples]);
 
     const byLocationAndDate = useMemo(() => {
@@ -268,7 +283,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                                         style={{
                                                             width: DAY_WIDTH_PX,
                                                             backgroundColor: singleGraphColorRGBAById(
-                                                                colorIndexByBatch.get(sample.batchId) ?? 0,
+                                                                batchColorIndex(sample.batchId),
                                                                 depthOpacity(sample.reads),
                                                             ),
                                                         }}
