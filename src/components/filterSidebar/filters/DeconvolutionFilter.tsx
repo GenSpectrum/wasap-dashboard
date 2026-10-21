@@ -4,7 +4,10 @@ import { LineagePanelInfo } from '../../InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 
-/** The panel of lineages to deconvolve, out of the lineages of the lineage tree. */
+/**
+ * The panel of lineages to deconvolve, which is fixed by the config, and a lineage of the lineage
+ * tree that can be added to it.
+ */
 export function DeconvolutionFilter({
     pageState,
     setPageState,
@@ -15,14 +18,24 @@ export function DeconvolutionFilter({
     lineageTree: LineageTree;
 }) {
     return (
-        <LabeledField label='Panel of lineages' info={<LineagePanelInfo />}>
-            <LineageTreeCombobox
-                lineageTree={lineageTree}
-                multiSelect={true}
-                value={pageState.panel}
-                onChange={(panel) => setPageState({ ...pageState, panel })}
-                placeholderText='Add a lineage'
-            />
-        </LabeledField>
+        <>
+            <LabeledField label='Panel of lineages' info={<LineagePanelInfo />}>
+                <ul aria-label='Panel of lineages' className='flex flex-wrap gap-1'>
+                    {pageState.panel.map((lineage) => (
+                        <li key={lineage} className='badge badge-outline'>
+                            {lineage}
+                        </li>
+                    ))}
+                </ul>
+            </LabeledField>
+            <LabeledField label='Additional lineage'>
+                <LineageTreeCombobox
+                    lineageTree={lineageTree}
+                    value={pageState.extraLineage}
+                    onChange={(extraLineage) => setPageState({ ...pageState, extraLineage })}
+                    placeholderText='Add a lineage'
+                />
+            </LabeledField>
+        </>
     );
 }

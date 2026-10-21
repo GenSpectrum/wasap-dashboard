@@ -16,6 +16,7 @@ import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
 import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { effectivePanel } from '../../pageState/wasap/wasapAnalysisFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { DeconvolutionPlot } from '../dataDisplay/DeconvolutionPlot';
@@ -33,10 +34,11 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const panel = useMemo(() => effectivePanel(analysis), [analysis]);
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
-        () => lineageColors(analysis.panel.filter((name) => lineageTree?.lineages.has(name) === true)),
-        [lineageTree, analysis.panel],
+        () => lineageColors(panel.filter((name) => lineageTree?.lineages.has(name) === true)),
+        [lineageTree, panel],
     );
     const lineageLink = isModeEnabled(config, 'variant')
         ? (lineage: string): To => {
@@ -50,7 +52,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
     return (
         <ModePageLayout
             sidebar={
-                // The panel is the only setting, so it is applied right away, without a button.
+                // The extra lineage is the only setting, so it is applied right away, without a button.
                 <div className='flex flex-col gap-6'>
                     {lineageTree !== undefined && (
                         <DeconvolutionFilter
@@ -74,27 +76,27 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
                 <Message>
                     The lineage tree, where the signatures of the lineages come from, could not be loaded.
                 </Message>
-            ) : analysis.panel.length < 2 ? (
+            ) : panel.length < 2 ? (
                 <NothingSelected title='Not enough lineages'>
-                    Please select at least two lineages for the panel in the filter panel.
+                    The panel of lineages needs at least two lineages.
                 </NothingSelected>
             ) : isFilterPending ? (
                 <PrevalenceLoading />
             ) : (
                 <DeconvolutionResults
                     lineageTree={lineageTree}
-                    panel={analysis.panel}
+                    panel={panel}
                     colors={colors}
                     filter={filter}
                     granularity={base.granularity}
                     lineageLink={lineageLink}
                 />
             )}
-            {lineageTree !== undefined && analysis.panel.length > 0 && (
+            {lineageTree !== undefined && panel.length > 0 && (
                 <TitledPanel title='Lineage tree'>
                     <LineagePanelTree
                         lineageTree={lineageTree}
-                        panel={analysis.panel}
+                        panel={panel}
                         colors={colors}
                         lineageLink={lineageLink}
                     />
