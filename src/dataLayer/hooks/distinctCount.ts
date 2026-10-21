@@ -1,5 +1,5 @@
 /**
- * `useBatchCount` — a Tier-1 SILO read, as a TanStack Query hook.
+ * `useDistinctCount` — a Tier-1 SILO read, as a TanStack Query hook.
  *
  * Reads the instance from context (`useConnection` / `useSiloSchema`), issues
  * one catalogue query, and hands back the parsed rows. Tier-1 reads are the
@@ -10,19 +10,21 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
-import { batchCountQuery } from '../queries';
+import { distinctCountQuery, readTotalCount } from '../queries';
 
-/** The number of distinct batches the instance holds. */
-export function useBatchCount(): UseQueryResult<number> {
+/** The number of distinct values of `column` the instance holds, e.g. batches or samples. */
+export function useDistinctCount(column: string): UseQueryResult<number> {
     const connection = useConnection();
     const schema = useSiloSchema();
     // `schema` stands in for `connection.key` (same memoized SiloInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
-        queryKey: ['silo', 'batch-count', ...connection.key],
+        queryKey: ['silo', 'distinct-count', ...connection.key, column],
         queryFn: async ({ signal }) => {
-            const { rows } = await connection.query(batchCountQuery(schema), 'Batch count', { signal });
-            return rows.length;
+            const { rows } = await connection.query(distinctCountQuery(schema, column), `Distinct ${column} count`, {
+                signal,
+            });
+            return readTotalCount(rows);
         },
     });
 }

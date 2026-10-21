@@ -1,8 +1,8 @@
 import type { FC, ReactNode } from 'react';
 
-import { useBatchCount } from '../../dataLayer/hooks/batchCount';
 import { useSiloSchema } from '../../dataLayer/hooks/connection';
 import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
+import { useDistinctCount } from '../../dataLayer/hooks/distinctCount';
 import { useSampleOverview } from '../../dataLayer/hooks/sampleOverview';
 import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
 import { useTotalReadCount } from '../../dataLayer/hooks/totalReadCount';
@@ -39,7 +39,8 @@ const LocationCount: FC = () => {
 };
 
 const BatchCount: FC = () => {
-    const { data, isPending, isError, error } = useBatchCount();
+    const schema = useSiloSchema();
+    const { data, isPending, isError, error } = useDistinctCount(schema.batchId);
 
     return (
         <Stat

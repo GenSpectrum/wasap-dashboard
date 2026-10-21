@@ -3,8 +3,8 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { useBatchCount } from './batchCount';
 import { ConnectionProvider } from './connection';
+import { useDistinctCount } from './distinctCount';
 import type { SiloSchema } from '../queries/schema';
 
 const schema: SiloSchema = {
@@ -39,33 +39,35 @@ function wrapper(): FC<PropsWithChildren> {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('useBatchCount', () => {
-    it('counts the rows, one per distinct batch, unfiltered', async () => {
-        const fetchMock = vi.fn().mockResolvedValue(
-            ndjson([
-                { batchId: 'B1', n: 100 },
-                { batchId: 'B2', n: 50 },
-                { batchId: 'B3', n: 75 },
-            ]),
-        );
+describe('useDistinctCount', () => {
+    it('reads the count of groups the server returns, unfiltered', async () => {
+        const fetchMock = vi.fn().mockResolvedValue(ndjson([{ n: 3 }]));
         vi.stubGlobal('fetch', fetchMock);
 
-        const { result } = renderHook(() => useBatchCount(), { wrapper: wrapper() });
+        const { result } = renderHook(() => useDistinctCount('batchId'), { wrapper: wrapper() });
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
         expect(result.current.data).toBe(3);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('data.group(by := {batchId}, aggs := {n := count()})');
+        expect(init.body).toBe(
+            'data.group(by := {batchId}, aggs := {n := count()}).group(by := {}, aggs := {n := count()})',
+        );
     });
 
-    it('no batches means zero', async () => {
-        const fetchMock = vi.fn().mockResolvedValue(ndjson([]));
+    it('caches each column separately', async () => {
+        const fetchMock = vi
+            .fn()
+            .mockResolvedValueOnce(ndjson([{ n: 3 }]))
+            .mockResolvedValueOnce(ndjson([{ n: 7 }]));
         vi.stubGlobal('fetch', fetchMock);
 
-        const { result } = renderHook(() => useBatchCount(), { wrapper: wrapper() });
+        const { result } = renderHook(() => [useDistinctCount('batchId'), useDistinctCount('sampleId')], {
+            wrapper: wrapper(),
+        });
 
-        await waitFor(() => expect(result.current.isSuccess).toBe(true));
-        expect(result.current.data).toBe(0);
+        await waitFor(() => expect(result.current.every((query) => query.isSuccess)).toBe(true));
+        expect(result.current.map((query) => query.data).sort()).toEqual([3, 7]);
+        expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 });
