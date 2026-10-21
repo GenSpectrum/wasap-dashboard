@@ -152,9 +152,18 @@ export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
  */
 export const wasapDeconvolutionFilterSchema = z.object({
     mode: z.literal('deconvolution'),
+    /** Fixed by the config: it can't be changed on the page, only `extraLineage` added to it. */
     panel: z.array(z.string()),
+    /** A lineage added to the panel for the deconvolution, if any. */
+    extraLineage: z.string().optional(),
 });
 export type WasapDeconvolutionFilter = z.infer<typeof wasapDeconvolutionFilterSchema>;
+
+/** The lineages to deconvolve: the panel, and `extraLineage` if it isn't in the panel already. */
+export function effectivePanel(analysis: WasapDeconvolutionFilter): string[] {
+    const { panel, extraLineage } = analysis;
+    return extraLineage === undefined || panel.includes(extraLineage) ? panel : [...panel, extraLineage];
+}
 
 export const POSITION_SOURCE = {
     manual: 'manual',

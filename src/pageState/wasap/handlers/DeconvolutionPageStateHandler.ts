@@ -1,6 +1,6 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { listParam } from '../../urlParams';
+import { optional, stringParam } from '../../urlParams';
 import { type WasapDeconvolutionFilter } from '../wasapAnalysisFilter';
 
 export class DeconvolutionPageStateHandler extends WasapModePageStateHandler<WasapDeconvolutionFilter> {
@@ -11,8 +11,8 @@ export class DeconvolutionPageStateHandler extends WasapModePageStateHandler<Was
     }
 
     protected readonly params = {
-        // An emptied panel is written as `panel=`, so that it doesn't fall back to the default one.
-        panel: listParam,
+        // The panel isn't in the URL: it is always the one of the config.
+        extraLineage: optional(stringParam),
     };
 
     protected defaults(): WasapDeconvolutionFilter {
