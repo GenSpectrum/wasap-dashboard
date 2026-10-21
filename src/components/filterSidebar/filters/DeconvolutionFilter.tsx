@@ -33,6 +33,7 @@ export function DeconvolutionFilter({
             <LabeledField label='Additional lineage'>
                 <LineageTreeCombobox
                     lineageTree={lineageTree}
+                    excludedLineages={panel}
                     value={pageState.extraLineage}
                     onChange={(extraLineage) => setPageState({ ...pageState, extraLineage })}
                     placeholderText='Add a lineage'

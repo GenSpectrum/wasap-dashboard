@@ -6,6 +6,8 @@ import { type LineageTree } from '../../lineageTree/lineageTree';
 type LineageTreeComboboxProps = {
     lineageTree: LineageTree;
     placeholderText?: string;
+    /** Lineages that aren't offered, like the ones that are already in a panel. */
+    excludedLineages?: string[];
 } & (
     | {
           multiSelect?: false;
@@ -23,8 +25,16 @@ type LineageTreeComboboxProps = {
  * Picks one lineage (or several, with `multiSelect`) of the lineage tree, by its exact name: no
  * wildcards like `BA.2*`, since the lineages of the tree are what is picked.
  */
-export function LineageTreeCombobox({ lineageTree, placeholderText, ...selection }: LineageTreeComboboxProps) {
-    const lineages = useMemo(() => sortedLineageNames(lineageTree), [lineageTree]);
+export function LineageTreeCombobox({
+    lineageTree,
+    placeholderText,
+    excludedLineages,
+    ...selection
+}: LineageTreeComboboxProps) {
+    const lineages = useMemo(() => {
+        const excluded = new Set(excludedLineages);
+        return sortedLineageNames(lineageTree).filter((lineage) => !excluded.has(lineage));
+    }, [lineageTree, excludedLineages]);
 
     // lineages that aren't in the tree (say, from an old URL) aren't shown as selected
     const multiValue = selection.multiSelect === true ? selection.value : undefined;
