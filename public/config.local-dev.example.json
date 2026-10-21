@@ -1,6 +1,6 @@
 {
     "collectionsBackendUrl": "https://staging.genspectrum.org/api",
-    "lollipopServiceUrl": "http://localhost:8000",
+    "lollipopServiceUrl": "https://dashboard.wasap.genspectrum.org/lollipop",
     "organisms": [
         {
             "genSpectrumOrganismName": "covid",
