@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { wasapPageConfigSchema } from './wasapPageConfig';
+import { type WasapPageConfig, wasapPageConfigSchema } from './wasapPageConfig';
 
 /**
  * Runtime configuration for the standalone app.
@@ -18,21 +18,36 @@ import { wasapPageConfigSchema } from './wasapPageConfig';
  * ships their own `config.json`.
  */
 
-const appConfigSchema = z.object({
-    /**
-     * Base URL of the GenSpectrum collections backend (resistance-mutation
-     * collections, predefined variants, `collection` mode). May be absolute or
-     * a same-origin path.
-     */
-    collectionsBackendUrl: z.string().min(1).default('https://genspectrum.org/api'),
-    /**
-     * Every wastewater dashboard this deployment serves, keyed by nothing —
-     * order is display order. `config/wastewaterOrganisms.ts` maps URL path
-     * segments (`covid`, `rsv-a`, …) onto entries of this array. No default:
-     * an absent or organisms-less config.json means zero dashboards.
-     */
-    organisms: z.array(wasapPageConfigSchema).default([]),
-});
+const appConfigSchema = z
+    .object({
+        /**
+         * Base URL of the GenSpectrum collections backend (resistance-mutation
+         * collections, predefined variants, `collection` mode). May be absolute or
+         * a same-origin path.
+         */
+        collectionsBackendUrl: z.string().min(1).default('https://genspectrum.org/api'),
+        /**
+         * Every wastewater dashboard this deployment serves, keyed by nothing —
+         * order is display order. `config/wastewaterOrganisms.ts` maps URL path
+         * segments (`covid`, `rsv-a`, …) onto entries of this array. No default:
+         * an absent or organisms-less config.json means zero dashboards.
+         */
+        organisms: z.array(wasapPageConfigSchema).default([]),
+        /**
+         * Base URL of the LolliPop service (`lollipop-service/`), which computes the deconvolution
+         * mode's estimates. Without it, that mode is off for every organism.
+         */
+        lollipopServiceUrl: z.string().min(1).optional(),
+    })
+    .transform((config) =>
+        config.lollipopServiceUrl === undefined
+            ? { ...config, organisms: config.organisms.map(withoutDeconvolution) }
+            : config,
+    );
+
+function withoutDeconvolution(organism: WasapPageConfig): WasapPageConfig {
+    return { ...organism, deconvolutionAnalysisModeEnabled: undefined };
+}
 
 export type AppConfig = z.infer<typeof appConfigSchema>;
 

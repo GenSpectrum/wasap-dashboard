@@ -94,7 +94,11 @@ docker compose up --build
 ```
 
 Serves the app at `http://localhost:8080`, and the LolliPop service
-([`lollipop-service/`](lollipop-service/README.md)) at `http://localhost:8000`.
+([`lollipop-service/`](lollipop-service/README.md)), which the Lineage
+Prevalence page needs, at `http://localhost:8000`. The example configs use the
+deployed service, `https://dashboard.wasap.genspectrum.org/lollipop`; set
+`lollipopServiceUrl` to `http://localhost:8000` to use the local one. Without a
+`lollipopServiceUrl`, that page is left out.
 `docker-compose.yml` bind-mounts
 `./config.json` into the built image, so editing it and restarting the
 container is enough to point the same image at different data — no rebuild
@@ -133,17 +137,13 @@ src/
   config/                   config.json loading + schema, per-organism types
   amplicons/                primer schemes: the `amplicons` config, BED parsing
   clientLogger.ts, types/, util/, styles/
-lollipop-service/           an HTTP service that runs LolliPop's deconvolution — Python, its own
-                            image, see lollipop-service/README.md
-lollipop/                   the deconvolution, a TypeScript port of LolliPop — GPL-licensed,
-                            see lollipop/README.md
+lollipop-service/           the service that computes the Lineage Prevalence page with
+                            LolliPop — Python, its own image, see lollipop-service/README.md
 ```
 
 ## License
 
-AGPL-3.0-only (see [`LICENSE`](LICENSE)), except [`lollipop/`](lollipop/), which is derived from
-[LolliPop](https://github.com/cbg-ethz/LolliPop) and licensed under the GPL-3.0-or-later like it (see
-[`lollipop/LICENSE.md`](lollipop/LICENSE.md)).
+AGPL-3.0-only (see [`LICENSE`](LICENSE)).
 
 ## Further reading
 

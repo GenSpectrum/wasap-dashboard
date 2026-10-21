@@ -27,7 +27,7 @@ function renderTabs(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
 
 describe('WasapModeTabs', () => {
     beforeEach(() => {
-        setAppConfigForTesting({ organisms: [testConfig] });
+        setAppConfigForTesting({ organisms: [testConfig], lollipopServiceUrl: undefined });
     });
 
     it('has an overview tab, then a tab for each enabled mode', async () => {
@@ -44,7 +44,10 @@ describe('WasapModeTabs', () => {
     });
 
     it('has the Lineage Prevalence tab right after the overview', async () => {
-        setAppConfigForTesting({ organisms: [testConfigWithDeconvolution] });
+        setAppConfigForTesting({
+            organisms: [testConfigWithDeconvolution],
+            lollipopServiceUrl: 'http://lollipop.test',
+        });
         const { getByRole } = renderTabs();
 
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
@@ -61,6 +64,16 @@ describe('WasapModeTabs', () => {
 
         await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
         await expect.element(tabs.nth(2)).toHaveTextContent('Co-occurrence');
+    });
+
+    it('leaves the Lineage Prevalence tab out without a LolliPop service', async () => {
+        setAppConfigForTesting({ organisms: [testConfigWithDeconvolution] });
+        const { getByRole } = renderTabs();
+
+        const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
+
+        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
+        expect(tabs.elements().map((tab) => tab.textContent)).not.toContain('Lineage Prevalence');
     });
 
     it('links the overview tab to the bare organism URL, with no search params', async () => {
