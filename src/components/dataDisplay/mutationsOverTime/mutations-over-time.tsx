@@ -3,7 +3,6 @@ import { type FC, useEffect, useMemo } from 'react';
 import { getFilteredMutationCodes, type ProportionInterval } from './getFilteredMutationCodes';
 import { useSiloSchema } from '../../../dataLayer/hooks/connection';
 import {
-    genesOf,
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
@@ -46,13 +45,12 @@ export const MutationsOverTime: FC<MutationsOverTimeProps> = (props) => {
 
 const MutationsOverTimeWithoutErrors: FC<MutationsOverTimeProps> = (props) => {
     const { filter, sequenceType, granularity, displayMutations, pageSizes } = props;
-    const sequenceNames = useMemo(() => genesOf(displayMutations, sequenceType), [displayMutations, sequenceType]);
 
     const {
         data: metadata,
         error: metadataError,
         isPending: metadataLoading,
-    } = useOverTimeMetadata(filter, granularity, sequenceType, sequenceNames, displayMutations);
+    } = useOverTimeMetadata(filter, granularity, sequenceType, displayMutations);
     const gridState = useOverTimeGridState(pageSizes);
 
     if (metadataLoading) {
@@ -89,10 +87,9 @@ const MutationsOverTimeWithMetadata: FC<{
         [overallMutations, meanProportionInterval],
     );
 
-    // A display mutation that the metadata query didn't return is in `overallMutations` with a
-    // count and proportion of 0 (see `applyDisplayMutations`), but that isn't a measurement: it is
-    // below the query's proportion floor, or no read covered it. Every mutation the query did
-    // return has a count, being above the floor. The filter above still takes the 0.
+    // A mutation without a single read carrying it, or without a read covering it, has a count
+    // and proportion of 0 in `overallMutations` (see `overallFromPositions`); it gets a dash
+    // rather than a proportion. The filter above still takes the 0.
     const meanProportions = useMemo(
         () =>
             Object.fromEntries(

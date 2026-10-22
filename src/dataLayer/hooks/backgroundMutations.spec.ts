@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
 
 import { withoutBackground } from './backgroundMutations';
-import { codeToEmptyEntry } from './mutationsOverTime';
+import { overallFromPositions } from './mutationsOverTime';
 
 function entry(code: string, proportion: number) {
-    return { ...codeToEmptyEntry(code)!, count: 1, proportion };
+    return { ...overallFromPositions([code], 'nucleotide', 'main', new Map())[0], count: 1, proportion };
 }
 
 const signature = {
