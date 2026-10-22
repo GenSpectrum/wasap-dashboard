@@ -30,16 +30,16 @@ describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
         );
     });
 
-    test('amino acid: aminoAcidMutations(), gene-restricted, over the shown span', () => {
+    test('amino acid: aminoAcidMutations(), over the shown span', () => {
         expect(
             overallMutationsQuery(
                 schema,
                 { locationNames: ['Basel (BS)'], samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-30' },
-                { sequenceType: 'amino acid', sequenceNames: ['S'] },
+                { sequenceType: 'amino acid' },
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Basel (BS)' && date >= '2026-06-01' && date <= '2026-06-30')" +
-                `.aminoAcidMutations(minProportion := 0.001, sequenceNames := {S}, fields := ${fields})`,
+                `.aminoAcidMutations(minProportion := 0.001, fields := ${fields})`,
         );
     });
 });

@@ -25,64 +25,47 @@ function ndjson(rows: unknown[]): Response {
     });
 }
 
+/** The symbols at each position per day. Position 5 isn't covered by any read. */
+const SYMBOLS_BY_POSITION: Record<number, { date: string; sym: string; count: number }[]> = {
+    // alt `T` = 90% of coverage in both buckets
+    241: [
+        { date: '2026-06-01', sym: 'T', count: 900 },
+        { date: '2026-06-01', sym: 'C', count: 100 },
+        { date: '2026-06-02', sym: 'T', count: 1800 },
+        { date: '2026-06-02', sym: 'C', count: 200 },
+    ],
+    // alt `T` = 10% of coverage in both buckets
+    3037: [
+        { date: '2026-06-01', sym: 'T', count: 100 },
+        { date: '2026-06-01', sym: 'C', count: 900 },
+        { date: '2026-06-02', sym: 'T', count: 200 },
+        { date: '2026-06-02', sym: 'C', count: 1800 },
+    ],
+};
+
 /**
- * Routes the three SILO queries the component sends to canned NDJSON:
+ * Routes the SILO queries the component sends to canned NDJSON:
  *  - the date axis (`group(by := {date}, aggs := {n := count()})`) -> two day buckets
- *  - the metadata `mutations(minProportion := 0.001, …)` call -> the two
- *    display mutations, each above the floor
- *  - one position-over-time query (`map({sym := main.at(P)}).group(by := {date, sym}, aggs := {count := count()})`)
- *    per distinct position -> a symbol distribution per day, so every cell resolves
- *
- * Position 241: alt `T` = 90% of coverage in both buckets.
- * Position 3037: alt `T` = 10% of coverage in both buckets.
+ *  - the positions of the display mutations, in one `unionall` with a `part := i` per position
+ *    -> `SYMBOLS_BY_POSITION`, tagged
  */
 function stubSilo() {
     const fetchMock = vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
         const q = typeof init?.body === 'string' ? init.body : '';
 
-        if (q.includes('main.at(241)')) {
+        const parts = [...q.matchAll(/main\.at\((\d+)\).*?part := (\d+)/g)];
+        if (parts.length > 0) {
             return Promise.resolve(
-                ndjson([
-                    { date: '2026-06-01', sym: 'T', count: 900 },
-                    { date: '2026-06-01', sym: 'C', count: 100 },
-                    { date: '2026-06-02', sym: 'T', count: 1800 },
-                    { date: '2026-06-02', sym: 'C', count: 200 },
-                ]),
-            );
-        }
-        if (q.includes('main.at(5)')) {
-            return Promise.resolve(ndjson([])); // not covered by any read
-        }
-        if (q.includes('main.at(3037)')) {
-            return Promise.resolve(
-                ndjson([
-                    { date: '2026-06-01', sym: 'T', count: 100 },
-                    { date: '2026-06-01', sym: 'C', count: 900 },
-                    { date: '2026-06-02', sym: 'T', count: 200 },
-                    { date: '2026-06-02', sym: 'C', count: 1800 },
-                ]),
-            );
-        }
-        if (q.includes('.mutations(') || q.includes('.aminoAcidMutations(')) {
-            return Promise.resolve(
-                ndjson([
-                    {
-                        mutationFrom: 'C',
-                        mutationTo: 'T',
-                        sequenceName: 'main',
-                        position: 241,
-                        count: 900,
-                        coverage: 1000,
-                    },
-                    {
-                        mutationFrom: 'C',
-                        mutationTo: 'T',
-                        sequenceName: 'main',
-                        position: 3037,
-                        count: 100,
-                        coverage: 1000,
-                    },
-                ]),
+                ndjson(
+                    parts.flatMap(([, position, part]) =>
+                        (SYMBOLS_BY_POSITION[Number(position)] ?? []).map(({ date, sym, count }) => ({
+                            day: date,
+                            sym,
+                            count,
+                            part: Number(part),
+                        })),
+                    ),
+                ),
             );
         }
         // date axis
@@ -146,30 +129,29 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await expect.element(screen.getByText('10%').first()).toBeInTheDocument();
     });
 
-    it('sends one position query per distinct position, over the sampling dates', async () => {
+    it('sends the positions in one query, which the grid takes its cells from too', async () => {
         const fetchMock = stubSilo();
-        renderOverTime();
+        const screen = renderOverTime();
 
-        const positionBodies = () =>
-            fetchMock.mock.calls
-                .map(([, init]) => (typeof init?.body === 'string' ? init.body : ''))
-                .filter((body) => body.includes('sym := main.at('));
+        const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
+        await expect.element(firstRow.getByRole('cell', { name: '90.0%' })).toBeInTheDocument();
+        // Time for the page to send queries of its own, if it did.
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
-        await vi.waitFor(() => expect(positionBodies()).toHaveLength(2));
-
-        expect(positionBodies()).toEqual([
-            "data.filter(date >= '2026-06-01' && date <= '2026-06-02')" +
-                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
-            "data.filter(date >= '2026-06-01' && date <= '2026-06-02')" +
-                '.map({date := date, sym := main.at(3037)}).group(by := {date, sym}, aggs := {count := count()})',
-        ]);
+        const positionBodies = fetchMock.mock.calls
+            .map(([, init]) => (typeof init?.body === 'string' ? init.body : ''))
+            .filter((body) => body.includes('sym := main.at('));
+        expect(positionBodies).toHaveLength(1);
+        expect(positionBodies[0]).toContain('.unionall(');
+        expect(positionBodies[0]).toContain("filter(day >= '2026-06-01' && day <= '2026-06-02')");
+        expect(positionBodies[0]).not.toContain('.mutations(');
     });
 
     it('shows the mean proportion of each mutation', async () => {
         stubSilo();
         const screen = renderOverTime();
 
-        // From the metadata: C241T 900/1000, C3037T 100/1000.
+        // Over both days: C241T 2700/3000, C3037T 300/3000.
         const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
         await expect.element(firstRow.getByRole('cell', { name: '90.0%' })).toBeInTheDocument();
         const secondRow = screen.getByRole('row').filter({ hasText: 'C3037T' });
@@ -216,7 +198,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
 
     it('shows a dash for a display mutation without a measured mean proportion', async () => {
         stubSilo();
-        // C5T isn't returned by the metadata query: below its proportion floor, or not covered.
+        // No read covers C5T.
         const screen = renderOverTime({ displayMutations: ['C5T', 'C241T', 'C3037T'] });
 
         const row = screen.getByRole('row').filter({ hasText: 'C5T' });
