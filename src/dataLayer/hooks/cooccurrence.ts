@@ -14,7 +14,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
-import { MAX_GRID_COLUMNS, buildDateAxis, withDateBounds } from './mutationsOverTime';
+import { MAX_GRID_COLUMNS, buildDateAxis } from './mutationsOverTime';
 import {
     CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
@@ -99,9 +99,8 @@ export function useCooccurrence(
                 return { data: new CooccurrenceOverTimeDataMap(), requestedDateRanges };
             }
 
-            const boundedFilter = withDateBounds(normalized, requestedDateRanges);
             const { rows } = await connection.query(
-                positionsCooccurrenceQuery(schema, boundedFilter, targets),
+                positionsCooccurrenceQuery(schema, normalized, targets),
                 'Co-occurrence',
                 { signal },
             );

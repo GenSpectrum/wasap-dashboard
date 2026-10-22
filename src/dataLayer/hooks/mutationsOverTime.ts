@@ -8,9 +8,9 @@
  *
  * `useMutationsOverTimePage` — the cells for the *visible page*: one
  * position-over-time query per distinct position of that page's mutations —
- * `group(by := {date, seq.at(pos)}, aggs := {count()})`, location-scoped, the whole date
- * range. Cached per position (`staleTime: Infinity`), so paging, filter changes
- * and revisits reuse whatever positions are already in hand. The count/coverage
+ * `group(by := {date, seq.at(pos)}, aggs := {count()})` over the filter. Cached per position
+ * and filter (`staleTime: Infinity`), so paging, granularity changes and revisits reuse whatever
+ * positions are already in hand. The count/coverage
  * matrix is a pure function of those rows (`buildMatrix`).
  */
 
@@ -128,10 +128,9 @@ export function useOverTimeMetadata(
                 signal,
             );
 
-            const boundedFilter = withDateBounds(normalized, requestedDateRanges);
             const mutationRows = await connection
                 .query(
-                    overallMutationsQuery(schema, boundedFilter, { sequenceType, sequenceNames }),
+                    overallMutationsQuery(schema, normalized, { sequenceType, sequenceNames }),
                     'Over-time mutations',
                     { signal },
                 )
@@ -221,7 +220,7 @@ export function useMutationsOverTimePage(
 ): MutationsOverTimePage {
     const connection = useConnection();
     const schema = useSiloSchema();
-    const { locationNames } = normalizeFilter(filter);
+    const normalized = normalizeFilter(filter);
 
     const targets = useMemo(
         () => positionTargets(visibleMutationCodes, sequenceType, schemaNucleotideSequence),
@@ -230,21 +229,22 @@ export function useMutationsOverTimePage(
 
     const positionRows = useQueries({
         combine: allQueryData,
-        // `schema` stands in for `connection.key` (same memoized SiloInstance).
+        // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for
+        // `filter`, so that equivalent filters share a cache entry.
         // eslint-disable-next-line @tanstack/query/exhaustive-deps
         queries: targets.map((target) => ({
             queryKey: [
                 'silo',
                 'over-time-position',
                 ...connection.key,
-                locationNames ?? null,
+                normalized,
                 target.sequenceName,
                 target.position,
             ],
             staleTime: Infinity,
             queryFn: async ({ signal }: { signal: AbortSignal }): Promise<PositionOverTimeRow[]> => {
                 const { rows } = await connection.query(
-                    positionOverTimeQuery(schema, { locationNames }, target),
+                    positionOverTimeQuery(schema, normalized, target),
                     `Over-time position ${target.sequenceName}:${target.position}`,
                     { signal },
                 );
@@ -514,18 +514,6 @@ export function removeEmptyDatesUnlessShown(
     const view = new Map2dView(data);
     removeEmptyDatesInPlace(view);
     return view;
-}
-
-/** The filter with its sampling-date window narrowed to the span the buckets cover. */
-export function withDateBounds(filter: SiloReadFilter, requestedDateRanges: TemporalClass[]): SiloReadFilter {
-    if (requestedDateRanges.length === 0) {
-        return filter;
-    }
-    return {
-        ...filter,
-        samplingDateFrom: requestedDateRanges[0].firstDay.toString(),
-        samplingDateTo: requestedDateRanges[requestedDateRanges.length - 1].lastDay.toString(),
-    };
 }
 
 function parseMutationCode(code: string): SubstitutionClass | DeletionClass | null {
