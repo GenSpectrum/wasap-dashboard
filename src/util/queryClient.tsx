@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 
+import { createSiloQueryClient } from '../dataLayer/hooks/connection';
+
 /**
- * The app-wide TanStack Query client.
- *
- * Every data read in the app goes through this — the resistance-data fetch
- * added in step 1c, and the `QueryClient` seam introduced in step 2. Defaults
- * are deliberately conservative; per-query overrides live with each hook.
+ * The app-wide TanStack Query client, of every data read but those from SILO (see
+ * `siloQueryClient`). Defaults are deliberately conservative; per-query overrides live
+ * with each hook.
  */
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -16,6 +16,13 @@ export const queryClient = new QueryClient({
         },
     },
 });
+
+/**
+ * The query client of the SILO reads, which `WasapLayout` hands to its `ConnectionProvider`. Kept here
+ * rather than in the provider, so that the results outlive the layout, which unmounts while another
+ * organism loads.
+ */
+export const siloQueryClient = createSiloQueryClient();
 
 export function DataProviders({ children }: { children: ReactNode }) {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

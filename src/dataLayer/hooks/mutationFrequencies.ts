@@ -9,11 +9,11 @@
  * reads (often PCR copies of one genome) is noise.
  */
 
-import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
+import { useSiloQueries } from './siloQuery';
 import {
     normalizeFilter,
     POSITIONS_PER_QUERY,
@@ -58,7 +58,7 @@ export function useMutationFrequencies(
         );
     }, [mutations]);
 
-    const symbols = useQueries({
+    const symbols = useSiloQueries({
         combine: allQueryData,
         queries: batches.map((positions) => {
             // `schema` stands in for `connection.key` (same memoized SiloInstance).

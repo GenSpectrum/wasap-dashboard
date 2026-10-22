@@ -9,10 +9,9 @@
  * ones worth co-occurrence.
  */
 
-import { useQuery } from '@tanstack/react-query';
-
 import { useConnection, useSiloSchema } from './connection';
 import { MAX_COOCCURRENCE_POSITIONS } from './cooccurrence';
+import { useSiloQuery } from './siloQuery';
 import { UserFacingError } from '../../components/shared/error-display';
 import { type SequenceType } from '../../types/dashboardComponents';
 import {
@@ -58,7 +57,7 @@ export function useAmpliconAnchor(
     const normalized = normalizeFilter(filter);
 
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const query = useQuery({
+    const query = useSiloQuery({
         queryKey: ['silo', 'amplicon-anchor', ...connection.key, normalized, sequenceType, anchor],
         enabled: anchor !== null,
         queryFn: async ({ signal }) => {

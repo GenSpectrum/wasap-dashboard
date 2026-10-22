@@ -7,9 +7,10 @@
  * `connection.query` directly (doc 04, "One mechanism").
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
+import { useSiloQuery } from './siloQuery';
 import { distinctCountQuery, readTotalCount } from '../queries';
 
 /** The number of distinct values of `column` the instance holds, e.g. batches or samples. */
@@ -18,7 +19,7 @@ export function useDistinctCount(column: string): UseQueryResult<number> {
     const schema = useSiloSchema();
     // `schema` stands in for `connection.key` (same memoized SiloInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useQuery({
+    return useSiloQuery({
         queryKey: ['silo', 'distinct-count', ...connection.key, column],
         queryFn: async ({ signal }) => {
             const { rows } = await connection.query(distinctCountQuery(schema, column), `Distinct ${column} count`, {

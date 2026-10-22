@@ -7,9 +7,10 @@
  * `connection.query` directly (doc 04, "One mechanism").
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
+import { useSiloQuery } from './siloQuery';
 import { readNamedCounts, stringFieldValuesQuery, type NamedCount } from '../queries';
 
 /**
@@ -22,7 +23,7 @@ export function useStringFieldOptions(field: string): UseQueryResult<NamedCount[
     const schema = useSiloSchema();
     // `schema` stands in for `connection.key` (same memoized SiloInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useQuery({
+    return useSiloQuery({
         queryKey: ['silo', 'string-field-options', ...connection.key, field],
         queryFn: async ({ signal }): Promise<NamedCount[]> => {
             const { rows } = await connection.query(stringFieldValuesQuery(schema, field), `Options for ${field}`, {

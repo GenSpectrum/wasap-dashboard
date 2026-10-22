@@ -12,12 +12,12 @@
  * between); each is sorted into the combination of the mutations it carries.
  */
 
-import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
+import { useSiloQueries } from './siloQuery';
 import { type AmpliconMutation, type AmpliconMutations } from '../../amplicons/mutationsByAmplicon';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
@@ -69,7 +69,7 @@ export function useAmpliconCooccurrence(
     const normalized = normalizeFilter(filter);
     const measured = useMemo(() => groups.filter(hasCooccurrence), [groups]);
 
-    const haplotypes = useQueries({
+    const haplotypes = useSiloQueries({
         combine: allQueryData,
         queries: measured.map((group) => {
             const positions = positionsOf(group.mutations);
