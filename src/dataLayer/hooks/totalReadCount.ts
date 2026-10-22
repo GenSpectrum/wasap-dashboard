@@ -7,9 +7,10 @@
  * `connection.query` directly (doc 04, "One mechanism").
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
+import { useSiloQuery } from './siloQuery';
 import { normalizeFilter, readTotalCount, totalReadCountQuery, type SiloReadFilter } from '../queries';
 
 /** Total reads the filter admits. Also the "is the instance answering" probe. */
@@ -21,7 +22,7 @@ export function useTotalReadCount(filter: SiloReadFilter = {}): UseQueryResult<n
     // `normalized` stands in for `filter` — a pure derivation of it,
     // deliberately used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useQuery({
+    return useSiloQuery({
         queryKey: ['silo', 'total-read-count', ...connection.key, normalized],
         queryFn: async ({ signal }) => {
             const { rows } = await connection.query(totalReadCountQuery(schema, normalized), 'Total read count', {

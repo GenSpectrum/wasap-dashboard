@@ -14,11 +14,12 @@
  * matrix is a pure function of those rows (`buildMatrix`).
  */
 
-import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
+import { useSiloQueries, useSiloQuery } from './siloQuery';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
@@ -105,7 +106,7 @@ export function useOverTimeMetadata(
     // — they're pure, order-independent derivations of them, deliberately
     // used instead so equivalent filters/sets share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useQuery({
+    return useSiloQuery({
         queryKey: [
             'silo',
             'over-time-metadata',
@@ -185,7 +186,7 @@ export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranula
 
     // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for `filter`.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useQuery({
+    return useSiloQuery({
         queryKey: ['silo', 'date-axis', ...connection.key, normalized, granularity],
         queryFn: ({ signal }) => fetchDateAxis(connection, schema, normalized, granularity, signal),
     });
@@ -227,7 +228,7 @@ export function useMutationsOverTimePage(
         [visibleMutationCodes, sequenceType, schemaNucleotideSequence],
     );
 
-    const positionRows = useQueries({
+    const positionRows = useSiloQueries({
         combine: allQueryData,
         // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for
         // `filter`, so that equivalent filters share a cache entry.

@@ -13,13 +13,13 @@
  * The samples' locations and dates come from the overview's sample list.
  */
 
-import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { useSampleOverview } from './sampleOverview';
+import { useSiloQueries } from './siloQuery';
 import { type Amplicon } from '../../amplicons/primerBed';
 import { samplingPositions } from '../../amplicons/samplingPositions';
 import {
@@ -73,7 +73,7 @@ export function useMedianAmpliconCoverage(amplicons: Amplicon[]): MedianAmplicon
         [amplicons],
     );
 
-    const positionRows = useQueries({
+    const positionRows = useSiloQueries({
         combine: allQueryData,
         queries: positions.map((position) => {
             // `schema` stands in for `connection.key` (same memoized SiloInstance).

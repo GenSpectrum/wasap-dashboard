@@ -6,15 +6,16 @@
  * open, so it is fetched once per instance.
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection } from './connection';
+import { useSiloQuery } from './siloQuery';
 import { readReferenceGenome, referenceGenomeQuery, type ReferenceGenome } from '../queries';
 
 /** The names and lengths of the instance's segments and genes. */
 export function useReferenceGenome(): UseQueryResult<ReferenceGenome> {
     const connection = useConnection();
-    return useQuery({
+    return useSiloQuery({
         queryKey: ['silo', 'reference-genome', ...connection.key],
         queryFn: async ({ signal }) => {
             const { rows } = await connection.query(referenceGenomeQuery(), 'Reference genome', { signal });

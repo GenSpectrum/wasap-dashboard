@@ -10,12 +10,12 @@
  * pure function of the folded counts (`buildQueriesMatrix`).
  */
 
-import { useQueries, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { buildDateAxis } from './mutationsOverTime';
+import { useSiloQueries, useSiloQuery } from './siloQuery';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { UserFacingError } from '../../components/shared/error-display';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
@@ -60,7 +60,7 @@ export function useQueriesOverTime(
     // `normalized` stands in for `filter` — a pure derivation of it,
     // deliberately used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const axis = useQuery({
+    const axis = useSiloQuery({
         queryKey: ['silo', 'queries-over-time-axis', ...connection.key, normalized, granularity],
         queryFn: async ({ signal }) => {
             const dateRows = await connection
@@ -80,7 +80,7 @@ export function useQueriesOverTime(
         },
     });
 
-    const dailyCounts = useQueries({
+    const dailyCounts = useSiloQueries({
         combine: allQueryData<QueryDailyCounts>,
         queries: queries.map((query) => ({
             queryKey: [
