@@ -16,7 +16,7 @@ import {
     type CooccurrenceRow,
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { useDateAxis, type DateAxis } from '../../../dataLayer/hooks/mutationsOverTime';
-import { normalizeFilter, type SiloReadFilter } from '../../../dataLayer/queries';
+import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { type ClusterJaccardSource } from '../../../externalData/lapis/getClusterJaccards';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { TitledPanel } from '../../shared/TitledPanel';
@@ -102,12 +102,7 @@ function Cooccurrences({
         [candidateMutations, ampliconList],
     );
 
-    const cooccurrence = useAmpliconCooccurrence(
-        normalizeFilter(filter).locationNames,
-        groups,
-        dateAxis.requestedDateRanges,
-        granularity,
-    );
+    const cooccurrence = useAmpliconCooccurrence(filter, groups, dateAxis.requestedDateRanges, granularity);
 
     const ampliconRows = useMemo(
         () => cooccurrence.data && cooccurrenceRows(cooccurrence.data, dateAxis.totalCountsByBucket),

@@ -22,6 +22,14 @@ describe('haplotypesOverTimeQuery', () => {
                 '.group(by := {date, p2000, p2100}, aggs := {count := count()})',
         );
     });
+
+    test('is narrowed to the sampling dates', () => {
+        expect(haplotypesOverTimeQuery(schema, { samplingDateFrom: '2026-06-03' }, 'main', [2000, 2100]).render()).toBe(
+            "data.filter(date >= '2026-06-03')" +
+                '.map({date := date, p2000 := main.at(2000), p2100 := main.at(2100)})' +
+                '.group(by := {date, p2000, p2100}, aggs := {count := count()})',
+        );
+    });
 });
 
 describe('readHaplotypesOverTime', () => {
