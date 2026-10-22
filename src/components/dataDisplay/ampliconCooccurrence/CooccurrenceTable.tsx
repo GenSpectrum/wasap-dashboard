@@ -14,7 +14,7 @@ import { type Substitution } from '../../../util/mutations';
 import { type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import { useMutationLinkProvider } from '../../MutationLinkTemplateContext';
 import { useBandViewSettings } from '../band-view-settings';
-import { type FeatureRenderer, type RowStyle } from '../feature-bands';
+import { LegendEntry, LegendSwatch, type FeatureRenderer, type RowStyle } from '../feature-bands';
 import { DEFAULT_FEATURE_SORT, sortRowLabels } from '../featureSort';
 import { HoverTooltip } from '../hover-tooltip';
 import { OverTimeGrid, proportionsByDate, useOverTimeGridState } from '../over-time-grid';
@@ -209,6 +209,14 @@ export function CooccurrenceTable({ amplicons, dateRanges, jaccardIndices, minJa
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}
             rowStyle={rowStyle}
+            jaccardLegend={
+                <>
+                    <LegendSwatch className={LOW_JACCARD_CELLS}>Below {formatLowJaccard(LOW_JACCARD)}</LegendSwatch>
+                    <LegendEntry marker={<span className={`font-medium ${BELOW_MIN_JACCARD_LABEL}`}>Amplicon</span>}>
+                        Below the min. Jaccard index ({minJaccard})
+                    </LegendEntry>
+                </>
+            }
             sort={sort}
         />
     );
@@ -239,7 +247,7 @@ function RowLabel({
 
     const label = (
         <div
-            className={`flex min-w-60 items-center justify-start gap-1.5 text-left ${LEVEL_INDENT[level]} ${belowMinJaccard ? 'opacity-40' : ''}`}
+            className={`flex min-w-60 items-center justify-start gap-1.5 text-left ${LEVEL_INDENT[level]} ${belowMinJaccard ? BELOW_MIN_JACCARD_LABEL : ''}`}
         >
             {isOpenable ? (
                 <button
@@ -320,6 +328,13 @@ function RowLabel({
  */
 const LOW_JACCARD = 0.3;
 const LOW_JACCARD_CELLS = 'bg-stone-200';
+/** An amplicon's label below the minimum Jaccard index of the filter is faded. */
+const BELOW_MIN_JACCARD_LABEL = 'opacity-40';
+
+/** Like `.3`, as the Jaccard index column shows it. */
+function formatLowJaccard(jaccardIndex: number) {
+    return String(jaccardIndex).replace(/^0\./, '.');
+}
 
 const OPEN_BLOCK_TOP = 'border-t-2 border-t-stone-400';
 const OPEN_BLOCK_BOTTOM = 'border-b-2 border-b-stone-400';
