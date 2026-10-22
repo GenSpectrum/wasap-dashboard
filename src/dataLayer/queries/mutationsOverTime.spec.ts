@@ -56,6 +56,19 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
         );
     });
 
+    test('is narrowed to the sampling dates', () => {
+        expect(
+            positionOverTimeQuery(
+                schema,
+                { samplingDateFrom: '2026-06-03', samplingDateTo: '2026-06-30' },
+                { sequenceName: 'main', position: 241 },
+            ).render(),
+        ).toBe(
+            "data.filter(date >= '2026-06-03' && date <= '2026-06-30')" +
+                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+        );
+    });
+
     test('no location narrows nothing; amino acid uses the gene column', () => {
         expect(positionOverTimeQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
             'data.map({date := date, sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',

@@ -14,8 +14,7 @@
  *   `positionOverTimeQuery` — one `map(sym := seq.at(pos)).group(count(), {date, sym})`
  *     per distinct position of the visible *page*: the full symbol distribution
  *     there, per day. `coverage = Σ count(known symbols)`,
- *     `count = Σ count(alt)`. No date filter — the whole range comes back and
- *     is bucketed client-side, so one cached result serves any window.
+ *     `count = Σ count(alt)`. Over the filter's dates, bucketed client-side.
  */
 
 import { scoped, type SiloReadFilter } from './filter';
@@ -101,7 +100,7 @@ export type PositionTarget = {
 
 /**
  * The symbol every read carries at one position, per day:
- * `filter(location).map({<date> := <date>, sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`
+ * `filter(location, dates).map({<date> := <date>, sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`
  * (the `<date>` pass-through is `groupingColumnsPassThrough`).
  *
  * The computed `sym` column is `.map()`-ed *before* `group`, and both
@@ -112,16 +111,11 @@ export type PositionTarget = {
  * This form parses and runs sub-second on both that version and covid's newer
  * one, so there's no per-instance branching.
  *
- * Location only — no date bounds — so the whole date range is returned and the
- * caller buckets it. `schema.groupingDate` is the dictionary date column where
+ * The caller buckets the days. `schema.groupingDate` is the dictionary date column where
  * the instance has one, else the `DATE32` column.
  */
-export function positionOverTimeQuery(
-    schema: SiloSchema,
-    filter: Pick<SiloReadFilter, 'locationNames'>,
-    target: PositionTarget,
-): Relation {
-    return scoped(schema, { locationNames: filter.locationNames })
+export function positionOverTimeQuery(schema: SiloSchema, filter: SiloReadFilter, target: PositionTarget): Relation {
+    return scoped(schema, filter)
         .map({
             ...groupingColumnsPassThrough([schema.groupingDate]),
             sym: field(target.sequenceName).at(target.position),

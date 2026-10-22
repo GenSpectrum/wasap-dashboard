@@ -146,7 +146,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await expect.element(screen.getByText('10%').first()).toBeInTheDocument();
     });
 
-    it('sends one position query per distinct position, location-scoped, no date bounds', async () => {
+    it('sends one position query per distinct position, over the sampling dates', async () => {
         const fetchMock = stubSilo();
         renderOverTime();
 
@@ -158,8 +158,10 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
         await vi.waitFor(() => expect(positionBodies()).toHaveLength(2));
 
         expect(positionBodies()).toEqual([
-            'data.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
-            'data.map({date := date, sym := main.at(3037)}).group(by := {date, sym}, aggs := {count := count()})',
+            "data.filter(date >= '2026-06-01' && date <= '2026-06-02')" +
+                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+            "data.filter(date >= '2026-06-01' && date <= '2026-06-02')" +
+                '.map({date := date, sym := main.at(3037)}).group(by := {date, sym}, aggs := {count := count()})',
         ]);
     });
 
