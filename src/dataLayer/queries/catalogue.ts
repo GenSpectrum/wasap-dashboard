@@ -68,10 +68,12 @@ export function sampleOverviewQuery(schema: SiloSchema): Relation {
 }
 
 /**
- * The number of distinct batches the instance holds, as one row per batch — the caller counts
- * the rows. Unfiltered, for the overview page's stats. Grouping the dictionary-encoded batch ID
- * column is as cheap as `stringFieldValuesQuery` above.
+ * The number of distinct values of a column, as a single row — the column is grouped, then the
+ * groups are counted, so only the count crosses the wire. Unfiltered, for the overview page's
+ * stats. `column` must be dictionary-encoded or indexed: grouping on one such column is cheap,
+ * while adding more columns to a group multiplies its cost, which is why the sample count doesn't
+ * read off `sampleOverviewQuery`.
  */
-export function batchCountQuery(schema: SiloSchema): Relation {
-    return table(schema.table).group(readCounts(), [schema.batchId]);
+export function distinctCountQuery(schema: SiloSchema, column: string): Relation {
+    return table(schema.table).group(readCounts(), [column]).group(readCounts());
 }

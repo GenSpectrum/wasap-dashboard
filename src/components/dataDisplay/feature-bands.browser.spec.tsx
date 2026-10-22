@@ -104,19 +104,20 @@ describe('FeatureBands', () => {
     });
 
     it('does not print the percentages by default', async () => {
-        const { getByText } = renderBands();
+        const { getByRole } = renderBands();
 
-        await expect.element(getByText('10%')).not.toBeInTheDocument();
+        await expect.element(getByRole('table').getByText('10%')).not.toBeInTheDocument();
     });
 
     it('prints the percentage of every bucket over the band when asked to', async () => {
         // In the data, every bucket has a coverage of 100, so the count is the percentage.
-        const { getByText } = renderBands({ viewSettings: { ...DEFAULT_BAND_VIEW_SETTINGS, showPercentages: true } });
+        const { getByRole } = renderBands({ viewSettings: { ...DEFAULT_BAND_VIEW_SETTINGS, showPercentages: true } });
 
-        await expect.element(getByText('10%')).toBeInTheDocument();
-        await expect.element(getByText('20%')).toBeInTheDocument();
-        await expect.element(getByText('30%')).toBeInTheDocument();
-        await expect.element(getByText('40%')).toBeInTheDocument();
+        const table = getByRole('table');
+        await expect.element(table.getByText('10%')).toBeInTheDocument();
+        await expect.element(table.getByText('20%')).toBeInTheDocument();
+        await expect.element(table.getByText('30%')).toBeInTheDocument();
+        await expect.element(table.getByText('40%')).toBeInTheDocument();
     });
 
     it('renders the mean proportion of each row between the row label and the bands', async () => {
@@ -138,11 +139,11 @@ describe('FeatureBands', () => {
     });
 
     it('renders the Jaccard index of each row between the row label and the bands', async () => {
-        const { getByRole, getByText } = renderBands({
+        const { getByRole } = renderBands({
             jaccardIndices: { 'S:A1T': 0.912, 'S:C2G': 0.5 },
         });
 
-        await expect.element(getByText('Jaccard index')).toBeVisible();
+        await expect.element(getByRole('table').getByText('Jaccard index')).toBeVisible();
 
         const firstRow = getByRole('row').filter({ hasText: 'S:A1T' });
         await expect.element(firstRow.getByRole('cell', { name: '.91' })).toBeVisible();
@@ -205,5 +206,63 @@ describe('FeatureBands', () => {
         await expect.element(getByText('S:A1T')).toBeVisible();
         expect(container.ownerDocument.querySelectorAll('[role="tooltip"]')).toHaveLength(0);
         expect(container.textContent).not.toContain('described');
+    });
+
+    it('shows the legend only while the mouse is over the legend button', async () => {
+        const { getByRole, getByTestId } = renderBands();
+
+        await expect.element(getByTestId('feature-bands-legend')).not.toBeInTheDocument();
+        await userEvent.hover(getByRole('button', { name: 'Legend' }));
+        await expect.element(getByTestId('feature-bands-legend')).toBeVisible();
+        await userEvent.unhover(getByRole('button', { name: 'Legend' }));
+        await expect.element(getByTestId('feature-bands-legend')).not.toBeInTheDocument();
+    });
+
+    it('explains the colours, the thickness and the hatching of the bands', async () => {
+        const { getByRole, getByTestId } = renderBands();
+
+        await userEvent.hover(getByRole('button', { name: 'Legend' }));
+        const legend = getByTestId('feature-bands-legend');
+        await expect.element(legend).toHaveTextContent('Share of the covering reads');
+        await expect.element(legend).toHaveTextContent('Covering reads (log scale)');
+        await expect.element(legend).toHaveTextContent('Reads, but none covering');
+        // Every bucket of the data is covered by 100 reads, the most on the page.
+        await expect.element(legend.getByText('100', { exact: true })).toBeVisible();
+        await expect.element(legend).not.toHaveTextContent('Jaccard index');
+        await expect.element(legend).not.toHaveTextContent('No reads');
+    });
+
+    it('draws the colour key at the colour scale of the bands', async () => {
+        const { getByRole, getByTestId } = renderBands({
+            viewSettings: { ...DEFAULT_BAND_VIEW_SETTINGS, colorScale: { color: 'indigo', root: 1 } },
+        });
+
+        await userEvent.hover(getByRole('button', { name: 'Legend' }));
+        const swatch = getByTestId('feature-bands-legend').getByText('50%').element().previousElementSibling!;
+        expect((swatch as HTMLElement).style.backgroundColor).toMatch(/, 0\.5\)$/);
+    });
+
+    it('adds the Jaccard index shading and empty dates to the legend where the bands have them', async () => {
+        const { getByRole, getByTestId } = renderBands({
+            jaccardIndices: { 'S:A1T': 0.9, 'S:C2G': 0.5 },
+            viewSettings: { ...DEFAULT_BAND_VIEW_SETTINGS, showEmptyDates: true },
+        });
+
+        await userEvent.hover(getByRole('button', { name: 'Legend' }));
+        const legend = getByTestId('feature-bands-legend');
+        await expect.element(legend).toHaveTextContent('Jaccard index');
+        await expect.element(legend).toHaveTextContent('≥ .8');
+        await expect.element(legend).toHaveTextContent('≥ .9');
+        await expect.element(legend).toHaveTextContent('No reads');
+    });
+
+    it("adds the caller's keys to the Jaccard index section of the legend", async () => {
+        const { getByRole, getByTestId } = renderBands({
+            jaccardIndices: { 'S:A1T': 0.9, 'S:C2G': 0.5 },
+            jaccardLegend: <span>greyed out</span>,
+        });
+
+        await userEvent.hover(getByRole('button', { name: 'Legend' }));
+        await expect.element(getByTestId('feature-bands-legend')).toHaveTextContent('greyed out');
     });
 });
