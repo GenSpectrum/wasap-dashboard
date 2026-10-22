@@ -215,5 +215,25 @@ export default tseslint.config(
             '@typescript-eslint/require-await': 'off',
         },
     },
+    {
+        // SILO reads go on the SILO query client (`dataLayer/hooks/siloQuery.ts`), which doesn't retry.
+        files: ['src/dataLayer/hooks/**/*.{ts,tsx}'],
+        // `lineageOptions` reads from LAPIS, not SILO.
+        ignores: ['src/dataLayer/hooks/siloQuery.ts', 'src/dataLayer/hooks/lineageOptions.ts', '**/*.spec.{ts,tsx}'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    paths: [
+                        {
+                            name: '@tanstack/react-query',
+                            importNames: ['useQuery', 'useQueries', 'useSuspenseQuery', 'useSuspenseQueries'],
+                            message: 'Use useSiloQuery / useSiloQueries from ./siloQuery for SILO reads.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
     { ...reactHooks.configs['recommended-latest'], ignores: ['**/*.fixture.ts'] },
 );
