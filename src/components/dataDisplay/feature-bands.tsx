@@ -6,6 +6,7 @@ import {
     useMemo,
     useRef,
     useState,
+    type CSSProperties,
     type ReactElement,
     type ReactNode,
     type RefObject,
@@ -15,7 +16,7 @@ import { type BandViewSettings } from './band-view-settings';
 import { getColorWithinScale } from './color-scale-selector';
 import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { formatProportion } from './formatProportion';
-import { FloatingTooltip } from './hover-tooltip';
+import { FloatingTooltip, HoverTooltip } from './hover-tooltip';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import { OverTimeGridTooltip } from './over-time-grid-tooltip';
 import { getProportion, type ProportionValue } from './overTime/proportionValue';
@@ -50,7 +51,7 @@ function getTooltipPlacement(rowIndex: number, rows: number, columnIndex: number
  * handful of reads is a thread and a deeply read bucket is wide whatever was found in it.
  *
  * Ported from the design in wastewater-analytics-experiment (MutationViolins.tsx), which
- * also has a legend and column windowing that are not here yet.
+ * also has column windowing that is not here yet.
  */
 
 /** Half the thickness, in pixels, of the band at its thickest bucket. */
@@ -116,6 +117,11 @@ export interface FeatureBandsProps<F> {
     rowStyle?: (rowLabel: string) => RowStyle;
     /** One more column after the row label, by row label (see `FeatureRenderer.asString`). Not sortable. */
     extraColumn?: { header: string; render: (rowLabel: string) => ReactNode };
+    /**
+     * More keys of the legend's Jaccard index section, e.g. for how `rowStyle` marks rows by their
+     * Jaccard index (see `LegendSwatch` and `LegendEntry`). Only shown with `jaccardIndices`.
+     */
+    jaccardLegend?: ReactNode;
     /** How the rows are sorted, shown in the headers. The rows have to be given in this order already. */
     sort: FeatureSort;
     /** Called with the new sort when a header is clicked. */
@@ -135,6 +141,7 @@ export function FeatureBands<F>({
     jaccardIndices,
     extraColumn,
     rowStyle,
+    jaccardLegend,
     sort,
     onSortChange,
 }: FeatureBandsProps<F>) {
@@ -274,9 +281,158 @@ export function FeatureBands<F>({
             )}
             {/* The table reaches the edges of the component, so its lines do; only this is padded. */}
             <div className='border-t border-stone-200 p-2'>
-                <Pagination {...pagination} />
+                <Pagination
+                    {...pagination}
+                    startContent={
+                        <div className='flex items-center gap-1'>
+                            {pagination.startContent}
+                            <LegendButton
+                                viewSettings={viewSettings}
+                                maxCoverage={maxCoverage}
+                                hasJaccardIndices={jaccardIndices !== undefined}
+                                jaccardLegend={jaccardLegend}
+                            />
+                        </div>
+                    }
+                />
             </div>
         </div>
+    );
+}
+
+/** Proportions the colour key shows, at the colour scale the bands are drawn with. */
+const LEGEND_PROPORTIONS = [0, 0.01, 0.1, 0.5, 1];
+/** Proportions of the swatches on the legend button, so it stands out among the icon buttons. */
+const BUTTON_PROPORTIONS = [0.1, 0.5, 1];
+/** Read counts the thickness key shows, wherever the most deeply read bucket leaves room for them. */
+const LEGEND_COVERAGES = [1, 10, 100, 1000, 10000, 100000];
+
+type LegendProps = {
+    viewSettings: BandViewSettings;
+    maxCoverage: number;
+    hasJaccardIndices: boolean;
+    jaccardLegend: ReactNode;
+};
+
+/** A button next to the view settings that shows the legend while the mouse is over it (or it has the focus). */
+function LegendButton(props: LegendProps) {
+    return (
+        <HoverTooltip content={<FeatureBandsLegend {...props} />} placement='top-start'>
+            <button type='button' className='btn btn-xs gap-1.5'>
+                <span className='flex gap-0.5' aria-hidden='true'>
+                    {BUTTON_PROPORTIONS.map((proportion) => (
+                        <span
+                            key={proportion}
+                            className='inline-block size-2.5 border border-stone-300'
+                            style={{ backgroundColor: getColorWithinScale(proportion, props.viewSettings.colorScale) }}
+                        />
+                    ))}
+                </span>
+                Legend
+            </button>
+        </HoverTooltip>
+    );
+}
+
+/**
+ * What the grid means: the shading of the Jaccard index its range (first, set apart), and of the
+ * bands, the fill is the proportion, the thickness the covering reads, the hatching a bucket whose
+ * reads don't cover the feature.
+ * The thickness is that of the bands on this page, which is scaled to its most deeply read bucket.
+ */
+function FeatureBandsLegend({ viewSettings, maxCoverage, hasJaccardIndices, jaccardLegend }: LegendProps) {
+    const coverages = [...LEGEND_COVERAGES.filter((coverage) => coverage * 2 < maxCoverage), maxCoverage];
+    return (
+        <div className='flex flex-col gap-3 text-xs text-stone-600' data-testid='feature-bands-legend'>
+            {hasJaccardIndices && (
+                <>
+                    <LegendGroup label='Jaccard index'>
+                        <LegendStep label='≥ .8'>
+                            <span className={`inline-block h-3 w-6 ${jaccardIndexShading(0.8)}`} />
+                        </LegendStep>
+                        <LegendStep label='≥ .9'>
+                            <span className={`inline-block h-3 w-6 ${jaccardIndexShading(0.9)}`} />
+                        </LegendStep>
+                    </LegendGroup>
+                    {jaccardLegend}
+                    {/* The Jaccard index is a column of its own, the rest is about the bands. */}
+                    <hr className='border-stone-200' />
+                </>
+            )}
+            <LegendGroup label='Share of the covering reads'>
+                {LEGEND_PROPORTIONS.map((proportion) => (
+                    <LegendStep key={proportion} label={formatProportion(proportion, 0)}>
+                        <span
+                            className='inline-block h-3 w-6 border border-stone-300'
+                            style={{ backgroundColor: getColorWithinScale(proportion, viewSettings.colorScale) }}
+                        />
+                    </LegendStep>
+                ))}
+            </LegendGroup>
+            {maxCoverage > 0 && (
+                <LegendGroup label='Covering reads (log scale)'>
+                    {coverages.map((coverage) => (
+                        <LegendStep key={coverage} label={coverage.toLocaleString('en-us')}>
+                            <span
+                                className='inline-block w-6 rounded-[50%] border border-black/30 bg-stone-200'
+                                style={{ height: `${coverageHalfThickness(coverage, maxCoverage) * 2}px` }}
+                            />
+                        </LegendStep>
+                    ))}
+                </LegendGroup>
+            )}
+            <LegendSwatch style={{ backgroundImage: NO_COVERAGE_HATCHING }}>Reads, but none covering</LegendSwatch>
+            {viewSettings.showEmptyDates && <LegendSwatch style={{ backgroundColor: 'white' }}>No reads</LegendSwatch>}
+        </div>
+    );
+}
+
+/** One key of the legend: what it stands for, above its swatches. */
+function LegendGroup({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <div className='flex flex-col gap-1'>
+            <span className='font-semibold text-stone-700'>{label}</span>
+            <div className='flex items-end gap-2'>{children}</div>
+        </div>
+    );
+}
+
+/** A key of the legend that is one swatch, with what it stands for next to it. */
+export function LegendSwatch({
+    style,
+    className = '',
+    children,
+}: {
+    style?: CSSProperties;
+    className?: string;
+    children: ReactNode;
+}) {
+    return (
+        <LegendEntry
+            marker={<span className={`inline-block h-3 w-6 border border-stone-300 ${className}`} style={style} />}
+        >
+            {children}
+        </LegendEntry>
+    );
+}
+
+/** A key of the legend that is one mark, e.g. a swatch or some styled text, with what it stands for next to it. */
+export function LegendEntry({ marker, children }: { marker: ReactNode; children: ReactNode }) {
+    return (
+        <span className='flex items-center gap-2'>
+            {marker}
+            <span className='font-semibold text-stone-700'>{children}</span>
+        </span>
+    );
+}
+
+/** One swatch of a key, with its value below it. */
+function LegendStep({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <span className='flex flex-col items-center justify-end gap-1'>
+            {children}
+            <span className='tabular-nums'>{label}</span>
+        </span>
     );
 }
 
