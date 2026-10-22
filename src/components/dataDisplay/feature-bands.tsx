@@ -388,7 +388,7 @@ function FeatureBandsLegend({ viewSettings, maxCoverage, hasJaccardIndices, jacc
 }
 
 /** One key of the legend: what it stands for, above its swatches. */
-function LegendGroup({ label, children }: { label: string; children: ReactNode }) {
+export function LegendGroup({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div className='flex flex-col gap-1'>
             <span className='font-semibold text-stone-700'>{label}</span>
@@ -427,7 +427,7 @@ export function LegendEntry({ marker, children }: { marker: ReactNode; children:
 }
 
 /** One swatch of a key, with its value below it. */
-function LegendStep({ label, children }: { label: string; children: ReactNode }) {
+export function LegendStep({ label, children }: { label: string; children: ReactNode }) {
     return (
         <span className='flex flex-col items-center justify-end gap-1'>
             {children}
@@ -490,7 +490,7 @@ export function jaccardIndexShading(jaccardIndex: number | undefined): string {
 }
 
 /** Like `.95`: the index is never above 1, so the leading zero says nothing and is left off. */
-function formatJaccardIndex(jaccardIndex: number | undefined) {
+export function formatJaccardIndex(jaccardIndex: number | undefined) {
     return jaccardIndex === undefined ? NO_VALUE : jaccardIndex.toPrecision(2).replace(/^0\./, '.');
 }
 

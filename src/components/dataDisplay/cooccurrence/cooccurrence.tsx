@@ -22,6 +22,8 @@ import { ErrorBoundary } from '../../shared/error-boundary';
 import { LoadingDisplay } from '../../shared/loading-display';
 import { NoDataDisplay } from '../../shared/no-data-display';
 import { CsvDownloadButton } from '../csv-download-button';
+import { formatJaccardIndex, jaccardIndexShading, LegendEntry, LegendGroup, LegendStep } from '../feature-bands';
+import { HoverTooltip } from '../hover-tooltip';
 import { Pagination } from '../pagination';
 
 type CooccurrenceBaseProps = {
@@ -559,6 +561,14 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                         setPageSize(newPageSize);
                         setPageIndex(0);
                     }}
+                    startContent={
+                        referenceSymbols !== undefined || jaccards !== undefined ? (
+                            <LegendButton
+                                hasReference={referenceSymbols !== undefined}
+                                hasJaccards={jaccards !== undefined}
+                            />
+                        ) : undefined
+                    }
                     endContent={
                         <CsvDownloadButton
                             className='btn btn-xs'
@@ -604,12 +614,10 @@ const PanelMatchCell: FC<{
                             lineage
                         )}
                         {jaccard !== undefined && (
-                            <span
-                                className='ml-1 font-mono text-xs text-gray-500'
+                            <JaccardBadge
+                                jaccard={jaccard}
                                 title={`Jaccard index of ${lineage} and the sequences with all of this row's mutations`}
-                            >
-                                ({jaccard.toFixed(2)})
-                            </span>
+                            />
                         )}
                     </Fragment>
                 );
@@ -618,6 +626,68 @@ const PanelMatchCell: FC<{
         </>
     );
 };
+
+/** A Jaccard index as a small badge, shaded like the Jaccard index columns of the band grids, grey below. */
+const JaccardBadge: FC<{ jaccard: number; title?: string }> = ({ jaccard, title }) => (
+    <span
+        className={`ml-1 rounded px-1 font-mono text-xs text-stone-700 ${jaccardIndexShading(jaccard) || 'bg-stone-100'}`}
+        title={title}
+    >
+        {formatJaccardIndex(jaccard)}
+    </span>
+);
+
+/** Example indices for the legend, one in each shade of `JaccardBadge`. */
+const LEGEND_JACCARDS = [
+    { jaccard: 0.5, label: '< .8' },
+    { jaccard: 0.85, label: '≥ .8' },
+    { jaccard: 0.95, label: '≥ .9' },
+];
+
+/** A button below the table that shows its legend while the mouse is over it (or it has the focus). */
+const LegendButton: FC<LegendProps> = (props) => (
+    <HoverTooltip content={<CooccurrenceLegend {...props} />} placement='top-start'>
+        <button type='button' className='btn btn-xs'>
+            Legend
+        </button>
+    </HoverTooltip>
+);
+
+type LegendProps = { hasReference: boolean; hasJaccards: boolean };
+
+/**
+ * What the symbols mean, when there's a reference to tell mutations by, and the Jaccard indices of
+ * the panel matches, once there are any.
+ */
+const CooccurrenceLegend: FC<LegendProps> = ({ hasReference, hasJaccards }) => (
+    <div className='flex flex-col gap-3 text-xs text-stone-600' data-testid='cooccurrence-legend'>
+        {hasReference && (
+            <>
+                <LegendEntry marker={<span className='font-mono font-semibold text-black underline'>T</span>}>
+                    Differs from the reference
+                </LegendEntry>
+                <LegendEntry marker={<span className='font-mono text-gray-400'>C</span>}>
+                    Same as the reference
+                </LegendEntry>
+            </>
+        )}
+        {hasReference && hasJaccards && <hr className='border-stone-200' />}
+        {hasJaccards && (
+            <>
+                <LegendGroup label='Jaccard index of a panel match'>
+                    {LEGEND_JACCARDS.map(({ jaccard, label }) => (
+                        <LegendStep key={label} label={label}>
+                            <JaccardBadge jaccard={jaccard} />
+                        </LegendStep>
+                    ))}
+                </LegendGroup>
+                <span className='max-w-64'>
+                    Of the lineage&apos;s clinical sequences and those with all of the row&apos;s mutations
+                </span>
+            </>
+        )}
+    </div>
+);
 
 /**
  * A row's own mutations — positions whose symbol differs from the reference, or every position if
