@@ -82,14 +82,25 @@ export function normalizeFilter(filter: SiloReadFilter): SiloReadFilter {
  * comparison), otherwise the `DATE32` column with a `::date` cast.
  */
 export function filterExpression(schema: SiloSchema, filter: SiloReadFilter): Expr | undefined {
+    return and(locationExpression(schema, filter.locationNames), dateRangeExpression(schema, filter));
+}
+
+/**
+ * The date bounds of a filter on its own, or `undefined` without any. Against `column` when the
+ * dates are in a column of another name (one `map()`-ed from `groupingDate`), else `groupingDate`.
+ */
+export function dateRangeExpression(
+    schema: SiloSchema,
+    filter: SiloReadFilter,
+    column: string = schema.groupingDate,
+): Expr | undefined {
     return and(
-        locationExpression(schema, filter.locationNames),
         filter.samplingDateFrom === undefined
             ? undefined
-            : field(schema.groupingDate).gte(dateComparand(schema, filter.samplingDateFrom)),
+            : field(column).gte(dateComparand(schema, filter.samplingDateFrom)),
         filter.samplingDateTo === undefined
             ? undefined
-            : field(schema.groupingDate).lte(dateComparand(schema, filter.samplingDateTo)),
+            : field(column).lte(dateComparand(schema, filter.samplingDateTo)),
     );
 }
 

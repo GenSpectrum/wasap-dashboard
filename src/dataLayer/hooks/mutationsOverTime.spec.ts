@@ -1,11 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
 import {
-    applyDisplayMutations,
     buildDateAxis,
     buildMatrix,
-    codeToEmptyEntry,
-    genesOf,
+    overallFromPositions,
     positionTargets,
     toMutationEntries,
 } from './mutationsOverTime';
@@ -57,57 +55,68 @@ describe('toMutationEntries', () => {
     });
 });
 
-describe('codeToEmptyEntry', () => {
-    test('parses a substitution code into a zero-count/zero-proportion entry', () => {
-        expect(codeToEmptyEntry('S:T19I')).toEqual({
-            type: 'substitution',
-            mutation: expect.objectContaining({ code: 'S:T19I' }),
-            count: 0,
-            proportion: 0,
-        });
+describe('overallFromPositions', () => {
+    const byPosition = new Map<string, PositionOverTimeRow[]>([
+        [
+            'main:241',
+            [
+                { date: '2026-06-01', sym: 'T', count: 90 },
+                { date: '2026-06-01', sym: 'C', count: 5 },
+                { date: '2026-06-02', sym: 'T', count: 3 },
+                { date: '2026-06-02', sym: 'C', count: 2 },
+                { date: '2026-06-02', sym: 'N', count: 50 },
+                { date: '2026-06-02', sym: null, count: 50 },
+            ],
+        ],
+        ['main:510', [{ date: '2026-06-01', sym: 'N', count: 7 }]],
+    ]);
+
+    test('sums the alt reads over the covering reads of every day', () => {
+        const [entry] = overallFromPositions(['C241T'], 'nucleotide', 'main', byPosition);
+        expect(entry).toMatchObject({ type: 'substitution', count: 93, proportion: 0.93 });
+        expect(entry.mutation.code).toBe('C241T');
     });
 
-    test('parses a deletion code into a zero-count/zero-proportion entry', () => {
-        expect(codeToEmptyEntry('G510-')).toEqual({
-            type: 'deletion',
-            mutation: expect.objectContaining({ code: 'G510-' }),
-            count: 0,
-            proportion: 0,
-        });
+    test('a deletion counts the `-` reads', () => {
+        const rows = new Map([
+            [
+                'main:510',
+                [
+                    { date: '2026-06-01', sym: '-', count: 1 },
+                    { date: '2026-06-01', sym: 'G', count: 3 },
+                ],
+            ],
+        ]);
+        expect(overallFromPositions(['G510-'], 'nucleotide', 'main', rows)).toMatchObject([
+            { type: 'deletion', count: 1, proportion: 0.25 },
+        ]);
     });
 
-    test('an unparseable code is null', () => {
-        expect(codeToEmptyEntry('not a mutation code')).toBeNull();
-    });
-});
-
-describe('applyDisplayMutations', () => {
-    const fetched = toMutationEntries(
-        [{ mutationFrom: 'C', mutationTo: 'T', sequenceName: 'main', position: 241, count: 90, coverage: 100 }],
-        'nucleotide',
-    );
-
-    test('without displayMutations, fetched entries pass through unchanged', () => {
-        expect(applyDisplayMutations(fetched, undefined)).toBe(fetched);
+    test('a position without covering reads, or without rows, is a zero, not dropped', () => {
+        expect(overallFromPositions(['G510A', 'C3037T'], 'nucleotide', 'main', byPosition)).toMatchObject([
+            { count: 0, proportion: 0 },
+            { count: 0, proportion: 0 },
+        ]);
     });
 
-    test('keeps a fetched entry, synthesizes a zero entry for a requested mutation the query missed', () => {
-        const result = applyDisplayMutations(fetched, ['C241T', 'G510-']);
-        expect(result.map((e) => e.mutation.code)).toEqual(['C241T', 'G510-']);
-        expect(result[0]).toBe(fetched[0]);
-        expect(result[1]).toMatchObject({ count: 0, proportion: 0 });
+    test('amino acid: looks up the gene of the code, X is not coverage', () => {
+        const rows = new Map([
+            [
+                'S:19',
+                [
+                    { date: '2026-06-01', sym: 'I', count: 8 },
+                    { date: '2026-06-01', sym: 'T', count: 2 },
+                    { date: '2026-06-01', sym: 'X', count: 30 },
+                ],
+            ],
+        ]);
+        expect(overallFromPositions(['S:T19I'], 'amino acid', 'main', rows)).toMatchObject([
+            { count: 8, proportion: 0.8 },
+        ]);
     });
 
-    test('drops a requested code that does not even parse as a mutation', () => {
-        expect(applyDisplayMutations([], ['not a mutation code'])).toEqual([]);
-    });
-});
-
-describe('genesOf', () => {
-    test('distinct genes of an AA display set, undefined for nucleotides or an open set', () => {
-        expect(genesOf(['S:T19I', 'S:K356T', 'ORF1a:L100F'], 'amino acid')).toEqual(['S', 'ORF1a']);
-        expect(genesOf(['C241T'], 'nucleotide')).toBeUndefined();
-        expect(genesOf(undefined, 'amino acid')).toBeUndefined();
+    test('drops a code that does not parse as a mutation', () => {
+        expect(overallFromPositions(['not a mutation code'], 'nucleotide', 'main', byPosition)).toEqual([]);
     });
 });
 
