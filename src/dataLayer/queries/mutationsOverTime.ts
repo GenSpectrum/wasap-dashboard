@@ -10,12 +10,15 @@
  *
  *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
  *     mutations get a grid row, and each one's proportion over the whole shown
- *     span (drives the "minimum proportion" filter across pages).
+ *     span (drives the "minimum proportion" filter across pages). Only where the
+ *     mutations aren't known in advance.
  *   `positionOverTimeQuery` — one `map(sym := seq.at(pos)).group(count(), {date, sym})`
  *     per distinct position of the visible *page*: the full symbol distribution
  *     there, per day. `coverage = Σ count(known symbols)`,
  *     `count = Σ count(alt)`. Over the filter's dates, bucketed client-side.
  *   `positionsOverTimeQuery` — the same for many positions in one `unionall`.
+ *     Where the mutations are known in advance, it answers both: the metadata
+ *     is their sums over the days.
  */
 
 import { dateRangeExpression, scoped, type SiloReadFilter } from './filter';
@@ -44,8 +47,6 @@ const OVERALL_MUTATION_FIELDS = [
 
 export type OverallMutationsOptions = {
     sequenceType: OverTimeSequenceType;
-    /** Restrict to specific sequence columns (genes / the nucleotide sequence); omit for all. */
-    sequenceNames?: readonly string[];
     /** Defaults to `OVER_TIME_MIN_PROPORTION`. */
     minProportion?: number;
 };
@@ -63,7 +64,6 @@ export function overallMutationsQuery(
 ): Relation {
     const args = {
         minProportion: options.minProportion ?? OVER_TIME_MIN_PROPORTION,
-        sequenceNames: options.sequenceNames,
         fields: OVERALL_MUTATION_FIELDS,
     };
     const relation = scoped(schema, filter);

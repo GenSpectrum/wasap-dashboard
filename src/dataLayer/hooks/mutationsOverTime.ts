@@ -4,21 +4,24 @@
  *
  * `useOverTimeMetadata` — the frame, and page-independent: the date axis +
  * per-bucket read totals, and the sorted mutation list with each row's overall
- * proportion. Two cheap queries.
+ * proportion. For a given list of mutations, the proportions are sums over the
+ * rows of all their positions, fetched in a few `unionall`s and put into the
+ * page's cache; otherwise they come from one `mutations()` call.
  *
  * `useMutationsOverTimePage` — the cells for the *visible page*: one
  * position-over-time query per distinct position of that page's mutations —
- * `group(by := {date, seq.at(pos)}, aggs := {count()})` over the filter. Cached per position
+ * `group(by := {date, seq.at(pos)}, aggs := {count()})` over the filter — unless the metadata
+ * already put it in the cache. Cached per position
  * and filter (`staleTime: Infinity`), so paging, granularity changes and revisits reuse whatever
  * positions are already in hand. The count/coverage
  * matrix is a pure function of those rows (`buildMatrix`).
  */
 
-import { type UseQueryResult } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
-import { useConnection, useSiloSchema } from './connection';
+import { useConnection, useSiloQueryClient, useSiloSchema } from './connection';
 import { useSiloQueries, useSiloQuery } from './siloQuery';
 import {
     BaseMutationOverTimeDataMap,
@@ -41,8 +44,10 @@ import {
     overallMutationsQuery,
     normalizeFilter,
     positionOverTimeQuery,
+    positionsOverTimeQuery,
     readOverallMutations,
     readPositionOverTime,
+    readPositionsOverTime,
     samplingDatesQuery,
     type OverallMutationRow,
     type OverTimeSequenceType,
@@ -70,8 +75,8 @@ export type OverTimeMetadata = {
     /** Total reads per bucket, index-aligned with `requestedDateRanges`. */
     totalCountsByBucket: number[];
     /**
-     * Mutations above the proportion floor, sorted. If `displayMutations` was given, this is
-     * exactly that set instead - see `applyDisplayMutations`.
+     * Mutations above the proportion floor, sorted. If `displayMutations` was given, exactly that
+     * set instead, each with its count and proportion over the filter (`overallFromPositions`).
      */
     overallMutations: SubstitutionOrDeletionEntry<Substitution, Deletion>[];
 };
@@ -80,29 +85,17 @@ export function useOverTimeMetadata(
     filter: SiloReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
-    sequenceNames: readonly string[] | undefined,
     displayMutations: string[] | undefined,
     enabled = true,
 ): UseQueryResult<OverTimeMetadata> {
     const connection = useConnection();
     const schema = useSiloSchema();
+    const queryClient = useSiloQueryClient();
     const normalized = normalizeFilter(filter);
-    const sequenceNamesKey = sequenceNames === undefined ? undefined : [...sequenceNames].sort();
-
-    // `displayMutations` only picks from what the query returns, so it is applied in `select`:
-    // grids of different mutations over the same filter share one query.
-    const selectDisplayMutations = useCallback(
-        (metadata: OverTimeMetadata): OverTimeMetadata => ({
-            ...metadata,
-            overallMutations: applyDisplayMutations(metadata.overallMutations, displayMutations).sort((a, b) =>
-                sortSubstitutionsAndDeletions(a.mutation, b.mutation),
-            ),
-        }),
-        [displayMutations],
-    );
+    const displayMutationsKey = displayMutations === undefined ? undefined : [...displayMutations].sort();
 
     // `schema` stands in for `connection.key` (same memoized SiloInstance);
-    // `normalized`/`sequenceNamesKey` stand in for `filter`/`sequenceNames`
+    // `normalized`/`displayMutationsKey` stand in for `filter`/`displayMutations`
     // — they're pure, order-independent derivations of them, deliberately
     // used instead so equivalent filters/sets share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -114,13 +107,12 @@ export function useOverTimeMetadata(
             normalized,
             granularity,
             sequenceType,
-            sequenceNamesKey,
+            displayMutationsKey,
         ],
         enabled,
-        select: selectDisplayMutations,
         queryFn: async ({ signal }): Promise<OverTimeMetadata> => {
             // Date axis first: the "too many buckets" guard has to fire before the
-            // (potentially expensive) mutations() scan.
+            // (potentially expensive) mutation queries.
             const { requestedDateRanges, totalCountsByBucket } = await fetchDateAxis(
                 connection,
                 schema,
@@ -129,12 +121,29 @@ export function useOverTimeMetadata(
                 signal,
             );
 
+            if (displayMutations !== undefined) {
+                const targets = positionTargets(displayMutations, sequenceType, schema.nucleotideSequence);
+                const rowsByPosition = await fetchPositionsOverTime(
+                    queryClient,
+                    connection,
+                    schema,
+                    normalized,
+                    targets,
+                    signal,
+                );
+                const overallMutations = overallFromPositions(
+                    displayMutations,
+                    sequenceType,
+                    schema.nucleotideSequence,
+                    rowsByPosition,
+                ).sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation));
+                return { requestedDateRanges, totalCountsByBucket, overallMutations };
+            }
+
             const mutationRows = await connection
-                .query(
-                    overallMutationsQuery(schema, normalized, { sequenceType, sequenceNames }),
-                    'Over-time mutations',
-                    { signal },
-                )
+                .query(overallMutationsQuery(schema, normalized, { sequenceType }), 'Over-time mutations', {
+                    signal,
+                })
                 .then((result) => readOverallMutations(result.rows));
 
             const overallMutations = toMutationEntries(mutationRows, sequenceType);
@@ -142,6 +151,60 @@ export function useOverTimeMetadata(
             return { requestedDateRanges, totalCountsByBucket, overallMutations };
         },
     });
+}
+
+/**
+ * Positions per `positionsOverTimeQuery`; more go in several, sent at once. The split hardly changes
+ * the time; it only keeps a long list from becoming one huge request and response.
+ */
+const POSITIONS_PER_QUERY = 64;
+
+/**
+ * The rows of every target, by `targetKey`: from the cache of the page's position queries
+ * (`positionQueryKey`) where they are in it, the others fetched in `positionsOverTimeQuery`s and
+ * put into that cache, so that the pages of the grid then need no queries of their own.
+ */
+async function fetchPositionsOverTime(
+    queryClient: QueryClient,
+    connection: Connection,
+    schema: SiloSchema,
+    filter: SiloReadFilter,
+    targets: readonly PositionTarget[],
+    signal: AbortSignal,
+): Promise<Map<string, PositionOverTimeRow[]>> {
+    const rowsByPosition = new Map<string, PositionOverTimeRow[]>();
+    const missing: PositionTarget[] = [];
+    for (const target of targets) {
+        const cached = queryClient.getQueryData<PositionOverTimeRow[]>(positionQueryKey(connection, filter, target));
+        if (cached === undefined) {
+            missing.push(target);
+        } else {
+            rowsByPosition.set(targetKey(target), cached);
+        }
+    }
+
+    const chunks = Array.from({ length: Math.ceil(missing.length / POSITIONS_PER_QUERY) }, (_, index) =>
+        missing.slice(index * POSITIONS_PER_QUERY, (index + 1) * POSITIONS_PER_QUERY),
+    );
+    await Promise.all(
+        chunks.map(async (chunk) => {
+            const { rows } = await connection.query(
+                positionsOverTimeQuery(schema, filter, chunk),
+                `Over-time positions (${chunk.length})`,
+                { signal },
+            );
+            readPositionsOverTime(rows, chunk.length).forEach((targetRows, index) => {
+                queryClient.setQueryData(positionQueryKey(connection, filter, chunk[index]), targetRows);
+                rowsByPosition.set(targetKey(chunk[index]), targetRows);
+            });
+        }),
+    );
+    return rowsByPosition;
+}
+
+/** The cache key of one position's rows over a (normalized) filter. */
+function positionQueryKey(connection: Connection, filter: SiloReadFilter, target: PositionTarget) {
+    return ['silo', 'over-time-position', ...connection.key, filter, target.sequenceName, target.position];
 }
 
 export type DateAxis = {
@@ -234,14 +297,7 @@ export function useMutationsOverTimePage(
         // `filter`, so that equivalent filters share a cache entry.
         // eslint-disable-next-line @tanstack/query/exhaustive-deps
         queries: targets.map((target) => ({
-            queryKey: [
-                'silo',
-                'over-time-position',
-                ...connection.key,
-                normalized,
-                target.sequenceName,
-                target.position,
-            ],
+            queryKey: positionQueryKey(connection, normalized, target),
             staleTime: Infinity,
             queryFn: async ({ signal }: { signal: AbortSignal }): Promise<PositionOverTimeRow[]> => {
                 const { rows } = await connection.query(
@@ -348,59 +404,42 @@ function segmentFor(sequenceName: string | null, sequenceType: OverTimeSequenceT
 }
 
 /**
- * Without `displayMutations`, `entries` passes through unchanged. With it, every requested
- * mutation gets a row: the fetched entry where there is one, otherwise a zero-count/
- * zero-proportion entry synthesized from the code itself (a mutation the floor excluded, or
- * that was never observed, still needs a row rather than silently disappearing - matches
- * dashboard-components' `queryOverallMutationData`/`codeToEmptyEntry`, which this was a
- * `filter()` short of).
+ * Every code of `mutationCodes` that parses, with its count and proportion summed over the rows of
+ * its position: the reads carrying it over the reads covering the position, as `mutations()` counts
+ * them. Without a covering read, both are 0.
  */
-export function applyDisplayMutations(
-    entries: SubstitutionOrDeletionEntry<Substitution, Deletion>[],
-    displayMutations: string[] | undefined,
-): SubstitutionOrDeletionEntry<Substitution, Deletion>[] {
-    if (displayMutations === undefined) {
-        return entries;
-    }
-    const byCode = new Map(entries.map((entry) => [entry.mutation.code, entry]));
-    return displayMutations
-        .map((code) => byCode.get(code) ?? codeToEmptyEntry(code))
-        .filter((entry): entry is SubstitutionOrDeletionEntry<Substitution, Deletion> => entry !== null);
-}
-
-/** A zero-count/zero-proportion row for a requested mutation code that the query didn't return. */
-export function codeToEmptyEntry(code: string): SubstitutionOrDeletionEntry<Substitution, Deletion> | null {
-    const deletion = DeletionClass.parse(code);
-    if (deletion !== null) {
-        return { type: 'deletion', mutation: deletion, count: 0, proportion: 0 };
-    }
-    const substitution = SubstitutionClass.parse(code);
-    if (substitution !== null) {
-        return { type: 'substitution', mutation: substitution, count: 0, proportion: 0 };
-    }
-    return null;
-}
-
-/**
- * The genes to restrict the metadata `mutations()` scan to, given a fixed
- * display set — `['S']` for Spike codes, `undefined` (all sequences) for
- * nucleotides or an open set. A big speed-up on that scan.
- */
-export function genesOf(
-    displayMutations: string[] | undefined,
+export function overallFromPositions(
+    mutationCodes: string[],
     sequenceType: OverTimeSequenceType,
-): readonly string[] | undefined {
-    if (sequenceType !== 'amino acid' || displayMutations === undefined) {
-        return undefined;
-    }
-    const genes = new Set<string>();
-    for (const code of displayMutations) {
-        const colon = code.indexOf(':');
-        if (colon > 0) {
-            genes.add(code.slice(0, colon));
+    nucleotideSequence: string,
+    rowsByPosition: ReadonlyMap<string, PositionOverTimeRow[]>,
+): SubstitutionOrDeletionEntry<Substitution, Deletion>[] {
+    const unknown = unknownSymbol(sequenceType);
+    return mutationCodes.flatMap((code): SubstitutionOrDeletionEntry<Substitution, Deletion>[] => {
+        const mutation = parseMutationCode(code);
+        if (mutation === null) {
+            return [];
         }
-    }
-    return genes.size === 0 ? undefined : [...genes];
+        const sequenceName = sequenceType === 'nucleotide' ? nucleotideSequence : mutation.segment;
+        const rows = rowsByPosition.get(`${sequenceName ?? ''}:${mutation.position}`) ?? [];
+        const alt = mutation.type === 'deletion' ? '-' : (mutation.substitutionValue ?? '');
+        let count = 0;
+        let coverage = 0;
+        for (const row of rows) {
+            if (row.sym !== null && row.sym !== unknown && row.sym !== '') {
+                coverage += row.count;
+                if (row.sym === alt) {
+                    count += row.count;
+                }
+            }
+        }
+        const proportion = coverage === 0 ? 0 : count / coverage;
+        return [
+            mutation.type === 'deletion'
+                ? { type: 'deletion', mutation, count, proportion }
+                : { type: 'substitution', mutation, count, proportion },
+        ];
+    });
 }
 
 /** One position-over-time query per distinct `(sequence, position)` among the codes. */

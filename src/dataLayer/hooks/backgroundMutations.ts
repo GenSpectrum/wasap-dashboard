@@ -8,7 +8,7 @@
 
 import { useMemo } from 'react';
 
-import { genesOf, useOverTimeMetadata } from './mutationsOverTime';
+import { useOverTimeMetadata } from './mutationsOverTime';
 import { type VariantSignature } from '../../externalData/lapis/useVariantSignature';
 import {
     type SubstitutionOrDeletionEntry,
@@ -43,9 +43,9 @@ export type SignatureWithoutBackground = VariantSignature & {
 };
 
 /**
- * The signature without its background mutations, once their mean proportions are in: from the
- * same query as the mutations over time take theirs from (`useOverTimeMetadata`), so it costs none
- * of its own. Nothing is asked for before there is a signature.
+ * The signature without its background mutations, once their mean proportions are in
+ * (`useOverTimeMetadata`, for all the candidates). The mutations over time then find the rows of
+ * their positions already fetched. Nothing is asked for before there is a signature.
  */
 export function useSignatureWithoutBackground(
     signature: VariantSignature | undefined,
@@ -56,12 +56,10 @@ export function useSignatureWithoutBackground(
     sequenceType: SequenceType,
 ): { data: SignatureWithoutBackground | undefined; error: Error | null; isPending: boolean } {
     const mutations = signature?.candidateMutations;
-    const sequenceNames = useMemo(() => genesOf(mutations, sequenceType), [mutations, sequenceType]);
     const metadata = useOverTimeMetadata(
         filter,
         granularity,
         sequenceType,
-        sequenceNames,
         mutations,
         signature !== undefined && signature.candidateMutations.length > 0,
     );
