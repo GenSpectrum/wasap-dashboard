@@ -17,6 +17,10 @@ export const queryClient = new QueryClient({
     },
 });
 
+// SILO requests retry on their own, and only what may not fail again (`query` in `dataLayer/transport/query.ts`):
+// a retry here would resend timeouts and invalid queries too, and multiply the retries of network failures.
+queryClient.setQueryDefaults(['silo'], { retry: false });
+
 export function DataProviders({ children }: { children: ReactNode }) {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
