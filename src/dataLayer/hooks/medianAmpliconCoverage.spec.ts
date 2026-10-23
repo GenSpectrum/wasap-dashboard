@@ -10,21 +10,18 @@ function sample(sampleId: string, locationName: string, date: string): SampleOve
 describe('sampleAmpliconCoverages', () => {
     test("takes the median over the amplicons of the reads that called a symbol at each one's position", () => {
         const samples = [sample('s1', 'Zürich', '2026-08-10'), sample('s2', 'Zürich', '2026-08-12')];
-        const rowsByAmplicon = [
-            [
-                { sampleId: 's1', sym: 'A', count: 90 },
-                { sampleId: 's1', sym: '-', count: 10 },
-                { sampleId: 's1', sym: 'N', count: 500 },
-                { sampleId: 's2', sym: 'C', count: 5 },
-            ],
-            [{ sampleId: 's1', sym: 'G', count: 40 }],
-            [
-                { sampleId: 's1', sym: 'T', count: 20 },
-                { sampleId: 's2', sym: 'N', count: 700 },
-            ],
+        const positions = [241, 1000, 2083];
+        const rows = [
+            { sampleId: 's1', sym: 'A', count: 90, position: 241 },
+            { sampleId: 's1', sym: '-', count: 10, position: 241 },
+            { sampleId: 's1', sym: 'N', count: 500, position: 241 },
+            { sampleId: 's2', sym: 'C', count: 5, position: 241 },
+            { sampleId: 's1', sym: 'G', count: 40, position: 1000 },
+            { sampleId: 's1', sym: 'T', count: 20, position: 2083 },
+            { sampleId: 's2', sym: 'N', count: 700, position: 2083 },
         ];
 
-        const coverages = sampleAmpliconCoverages(samples, rowsByAmplicon);
+        const coverages = sampleAmpliconCoverages(samples, positions, rows);
 
         // s1: 100, 40, 20 → 40; s2: 5, 0, 0 → 0
         expect(coverages.map(({ medianAmpliconReads }) => medianAmpliconReads)).toEqual([40, 0]);
