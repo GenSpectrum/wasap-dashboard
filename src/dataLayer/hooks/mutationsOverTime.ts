@@ -193,10 +193,18 @@ async function fetchPositionsOverTime(
                 `Over-time positions (${chunk.length})`,
                 { signal },
             );
-            readPositionsOverTime(rows, chunk.length).forEach((targetRows, index) => {
-                queryClient.setQueryData(positionQueryKey(connection, filter, chunk[index]), targetRows);
-                rowsByPosition.set(targetKey(chunk[index]), targetRows);
-            });
+            for (const target of chunk) {
+                rowsByPosition.set(targetKey(target), []);
+            }
+            for (const row of readPositionsOverTime(rows)) {
+                rowsByPosition.get(targetKey(row))?.push(row);
+            }
+            for (const target of chunk) {
+                queryClient.setQueryData(
+                    positionQueryKey(connection, filter, target),
+                    rowsByPosition.get(targetKey(target)),
+                );
+            }
         }),
     );
     return rowsByPosition;
