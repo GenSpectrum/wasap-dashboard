@@ -60,6 +60,17 @@ export function table(name: string): Relation {
     return relation(field(name).render());
 }
 
+/**
+ * The rows of every part, one after the other: `a.unionall(b).unionall(c)`. The parts must have the
+ * same columns, in the same order.
+ */
+export function unionall(parts: readonly Relation[]): Relation {
+    if (parts.length === 0) {
+        throw new Error('A union needs at least one part');
+    }
+    return parts.slice(1).reduce((union, part) => relation(`${union.render()}.unionall(${part.render()})`), parts[0]);
+}
+
 function relation(text: string): Relation {
     const pipe = (name: string, args?: Args): Relation => relation(`${text}.${name}(${renderArgs(args)})`);
 

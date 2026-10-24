@@ -11,10 +11,9 @@
  * component, over the already-fetched result.
  */
 
-import { useQuery } from '@tanstack/react-query';
-
 import { useConnection, useSiloSchema } from './connection';
-import { MAX_GRID_COLUMNS, buildDateAxis, withDateBounds } from './mutationsOverTime';
+import { MAX_GRID_COLUMNS, buildDateAxis } from './mutationsOverTime';
+import { useSiloQuery } from './siloQuery';
 import {
     CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
@@ -63,7 +62,7 @@ export function useCooccurrence(
     // `normalized` stands in for `filter` — a pure, order-independent derivation
     // of it, used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const query = useQuery({
+    const query = useSiloQuery({
         queryKey: ['silo', 'cooccurrence', ...connection.key, normalized, granularity, sequenceType, targets],
         queryFn: async ({
             signal,
@@ -99,9 +98,8 @@ export function useCooccurrence(
                 return { data: new CooccurrenceOverTimeDataMap(), requestedDateRanges };
             }
 
-            const boundedFilter = withDateBounds(normalized, requestedDateRanges);
             const { rows } = await connection.query(
-                positionsCooccurrenceQuery(schema, boundedFilter, targets),
+                positionsCooccurrenceQuery(schema, normalized, targets),
                 'Co-occurrence',
                 { signal },
             );

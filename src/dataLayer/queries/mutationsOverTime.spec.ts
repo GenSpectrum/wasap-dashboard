@@ -3,8 +3,10 @@ import { describe, expect, test } from 'vitest';
 import {
     overallMutationsQuery,
     positionOverTimeQuery,
+    positionsOverTimeQuery,
     readOverallMutations,
     readPositionOverTime,
+    readPositionsOverTime,
 } from './mutationsOverTime';
 import type { SiloSchema } from './schema';
 
@@ -28,16 +30,16 @@ describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
         );
     });
 
-    test('amino acid: aminoAcidMutations(), gene-restricted, over the shown span', () => {
+    test('amino acid: aminoAcidMutations(), over the shown span', () => {
         expect(
             overallMutationsQuery(
                 schema,
                 { locationNames: ['Basel (BS)'], samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-30' },
-                { sequenceType: 'amino acid', sequenceNames: ['S'] },
+                { sequenceType: 'amino acid' },
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Basel (BS)' && date >= '2026-06-01' && date <= '2026-06-30')" +
-                `.aminoAcidMutations(minProportion := 0.001, sequenceNames := {S}, fields := ${fields})`,
+                `.aminoAcidMutations(minProportion := 0.001, fields := ${fields})`,
         );
     });
 });
@@ -52,6 +54,19 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Zürich (ZH)')" +
+                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+        );
+    });
+
+    test('is narrowed to the sampling dates', () => {
+        expect(
+            positionOverTimeQuery(
+                schema,
+                { samplingDateFrom: '2026-06-03', samplingDateTo: '2026-06-30' },
+                { sequenceName: 'main', position: 241 },
+            ).render(),
+        ).toBe(
+            "data.filter(date >= '2026-06-03' && date <= '2026-06-30')" +
                 '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
@@ -119,5 +134,67 @@ describe('readers', () => {
             { date: '2026-06-01', sym: 'N', count: 50 },
             { date: '2026-06-02', sym: null, count: 7 },
         ]);
+    });
+});
+
+describe('positionsOverTimeQuery (many positions in one unionall)', () => {
+    const part = (position: number, index: number) =>
+        "data.filter(locationName = 'Zürich (ZH)')" +
+        `.map({date := date, sym := main.at(${position})}).group(by := {date, sym}, aggs := {count := count()})` +
+        `.map({day := date, part := ${index}})` +
+        ".filter(day >= '2026-06-03' && day <= '2026-06-30')" +
+        '.project({day, sym, count, part})';
+
+    test('filters by location in every part, by date after the group, and tags each part', () => {
+        expect(
+            positionsOverTimeQuery(
+                schema,
+                { locationNames: ['Zürich (ZH)'], samplingDateFrom: '2026-06-03', samplingDateTo: '2026-06-30' },
+                [
+                    { sequenceName: 'main', position: 241 },
+                    { sequenceName: 'main', position: 3037 },
+                ],
+            ).render(),
+        ).toBe(`${part(241, 0)}.unionall(${part(3037, 1)})`);
+    });
+
+    test('against a DATE32 grouping column the date bounds carry a ::date cast', () => {
+        expect(
+            positionsOverTimeQuery(
+                { ...schema, groupingDate: 'samplingDate', groupingDateIsDictionary: false },
+                { samplingDateFrom: '2026-06-03' },
+                [{ sequenceName: 'main', position: 241 }],
+            ).render(),
+        ).toBe(
+            'data.map({samplingDate := samplingDate, sym := main.at(241)})' +
+                '.group(by := {samplingDate, sym}, aggs := {count := count()})' +
+                ".map({day := samplingDate, part := 0}).filter(day >= '2026-06-03'::date)" +
+                '.project({day, sym, count, part})',
+        );
+    });
+
+    test('without dates or locations, nothing is filtered', () => {
+        expect(positionsOverTimeQuery(schema, {}, [{ sequenceName: 'S', position: 19 }]).render()).toBe(
+            'data.map({date := date, sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})' +
+                '.map({day := date, part := 0}).project({day, sym, count, part})',
+        );
+    });
+});
+
+describe('readPositionsOverTime', () => {
+    test('splits the rows by part', () => {
+        expect(
+            readPositionsOverTime(
+                [
+                    { day: '2026-06-03', sym: 'T', count: 5, part: 1 },
+                    { day: '2026-06-03', sym: null, count: 2, part: 0 },
+                ],
+                3,
+            ),
+        ).toEqual([[{ date: '2026-06-03', sym: null, count: 2 }], [{ date: '2026-06-03', sym: 'T', count: 5 }], []]);
+    });
+
+    test('a part beyond the targets is an error', () => {
+        expect(() => readPositionsOverTime([{ day: '2026-06-03', sym: 'T', count: 5, part: 2 }], 2)).toThrow();
     });
 });

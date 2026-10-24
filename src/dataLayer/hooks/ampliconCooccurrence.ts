@@ -12,12 +12,12 @@
  * between); each is sorted into the combination of the mutations it carries.
  */
 
-import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
+import { useSiloQueries } from './siloQuery';
 import { type AmpliconMutation, type AmpliconMutations } from '../../amplicons/mutationsByAmplicon';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
@@ -25,6 +25,7 @@ import { type Map2DContents } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';
 import {
     haplotypesOverTimeQuery,
+    normalizeFilter,
     readHaplotypesOverTime,
     type HaplotypeOverTimeRow,
     type SiloReadFilter,
@@ -58,34 +59,36 @@ function hasCooccurrence({ mutations }: AmpliconMutations): boolean {
 }
 
 export function useAmpliconCooccurrence(
-    locationNames: SiloReadFilter['locationNames'],
+    filter: SiloReadFilter,
     groups: AmpliconMutations[],
     dateRanges: TemporalClass[],
     granularity: TemporalGranularity,
 ): AmpliconCooccurrenceResult {
     const connection = useConnection();
     const schema = useSiloSchema();
+    const normalized = normalizeFilter(filter);
     const measured = useMemo(() => groups.filter(hasCooccurrence), [groups]);
 
-    const haplotypes = useQueries({
+    const haplotypes = useSiloQueries({
         combine: allQueryData,
         queries: measured.map((group) => {
             const positions = positionsOf(group.mutations);
-            // `schema` stands in for `connection.key` (same memoized SiloInstance).
+            // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for
+            // `filter`, so that equivalent filters share a cache entry.
             // eslint-disable-next-line @tanstack/query/exhaustive-deps
             return {
                 queryKey: [
                     'silo',
                     'haplotypes-over-time',
                     ...connection.key,
-                    locationNames ?? null,
+                    normalized,
                     schema.nucleotideSequence,
                     positions,
                 ],
                 staleTime: Infinity,
                 queryFn: async ({ signal }: { signal: AbortSignal }) => {
                     const { rows } = await connection.query(
-                        haplotypesOverTimeQuery(schema, { locationNames }, schema.nucleotideSequence, positions),
+                        haplotypesOverTimeQuery(schema, normalized, schema.nucleotideSequence, positions),
                         `Haplotypes over time at ${positions.join(', ')}`,
                         { signal },
                     );

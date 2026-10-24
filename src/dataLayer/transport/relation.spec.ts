@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import { and, field, str } from './expression';
 import { count, nucleotideEquals } from './functions';
-import { table } from './relation';
+import { table, unionall } from './relation';
 
 const main = field('main');
 
@@ -110,5 +110,30 @@ describe('the pipeline', () => {
         const scoped = table('data').filter(field('sampleId').eq(str('S1')));
         scoped.group({ n: count() });
         expect(scoped.render()).toBe("data.filter(sampleId = 'S1')");
+    });
+});
+
+describe('unionall', () => {
+    const part = (name: string) => table(name);
+
+    test('one part is that part', () => {
+        expect(unionall([part('a')]).render()).toBe('a');
+    });
+
+    test('more parts are chained', () => {
+        expect(unionall([part('a'), part('b')]).render()).toBe('a.unionall(b)');
+        expect(unionall([part('a'), part('b'), part('c')]).render()).toBe('a.unionall(b).unionall(c)');
+    });
+
+    test('the union pipes on', () => {
+        expect(
+            unionall([part('a'), part('b')])
+                .group({ n: count() })
+                .render(),
+        ).toBe('a.unionall(b).group(by := {}, aggs := {n := count()})');
+    });
+
+    test('no parts is an error', () => {
+        expect(() => unionall([])).toThrow();
     });
 });

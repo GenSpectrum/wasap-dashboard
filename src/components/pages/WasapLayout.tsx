@@ -9,6 +9,7 @@ import { type LineageTree } from '../../lineageTree/lineageTree';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
 import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { siloQueryClient } from '../../util/queryClient';
 import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
 import { MutationLinkTemplateContextProvider } from '../MutationLinkTemplateContext';
 import { SiloUnreachableWrapper } from '../SiloUnreachableWrapper';
@@ -48,7 +49,7 @@ export function WasapLayout({ config, resistanceData, lineageTree }: WasapLayout
     const schema = useMemo(() => siloSchema(config.silo), [config.silo]);
 
     return (
-        <ConnectionProvider url={config.silo.url} schema={schema}>
+        <ConnectionProvider url={config.silo.url} schema={schema} queryClient={siloQueryClient}>
             <SiloUnreachableWrapper>
                 <WasapLayoutConnected config={config} resistanceData={resistanceData} lineageTree={lineageTree} />
             </SiloUnreachableWrapper>

@@ -7,9 +7,10 @@
  * `connection.query` directly (doc 04, "One mechanism").
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type UseQueryResult } from '@tanstack/react-query';
 
 import { useConnection, useSiloSchema } from './connection';
+import { useSiloQuery } from './siloQuery';
 import { readSampleOverview, sampleOverviewQuery, type SampleOverview } from '../queries';
 
 /**
@@ -22,7 +23,7 @@ export function useSampleOverview(): UseQueryResult<SampleOverview[]> {
     const schema = useSiloSchema();
     // `schema` stands in for `connection.key` (same memoized SiloInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useQuery({
+    return useSiloQuery({
         queryKey: ['silo', 'sample-overview', ...connection.key],
         queryFn: async ({ signal }) => {
             const { rows } = await connection.query(sampleOverviewQuery(schema), 'Sample overview', { signal });

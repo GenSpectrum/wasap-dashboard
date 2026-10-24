@@ -3,8 +3,7 @@
  * mutations occur together on one read. Backs the amplicon co-occurrence, one query per amplicon
  * with its mutations' positions.
  *
- * A joint symbols query (`jointSymbolsQuery`) by date, scoped to the location only: the whole date
- * range comes back and is bucketed client-side. A few hundred ms for three positions on a
+ * A joint symbols query (`jointSymbolsQuery`) by date, bucketed client-side. A few hundred ms for three positions on a
  * location's data (covid, Zürich).
  */
 
@@ -16,13 +15,11 @@ import { readCount, readOptionalText, readText, type RhydbRow } from '../transpo
 
 export function haplotypesOverTimeQuery(
     schema: SiloSchema,
-    filter: Pick<SiloReadFilter, 'locationNames'>,
+    filter: SiloReadFilter,
     sequenceName: string,
     positions: readonly number[],
 ): Relation {
-    return jointSymbolsQuery(schema, { locationNames: filter.locationNames }, sequenceName, positions, [
-        schema.groupingDate,
-    ]);
+    return jointSymbolsQuery(schema, filter, sequenceName, positions, [schema.groupingDate]);
 }
 
 export type HaplotypeOverTimeRow = {
