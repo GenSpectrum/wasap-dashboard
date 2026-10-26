@@ -54,14 +54,35 @@ export const EXCLUDE_SET_NAME = {
 export const excludeSetNameSchema = z.enum([EXCLUDE_SET_NAME.predefined, EXCLUDE_SET_NAME.custom]);
 export type ExcludeSetName = z.infer<typeof excludeSetNameSchema>;
 
+export const MUTATION_SOURCE = {
+    list: 'list',
+    range: 'range',
+} as const;
+export const mutationSourceSchema = z.enum([MUTATION_SOURCE.list, MUTATION_SOURCE.range]);
+export type MutationSource = z.infer<typeof mutationSourceSchema>;
+
+/** At most this many positions in the position range of the manual mode. */
+export const MAX_POSITION_RANGE_LENGTH = 300;
+
 export const wasapManualFilterSchema = z.object({
     mode: z.literal('manual'),
     sequenceType: sequenceTypeSchema,
+    /** Where the mutations come from. Defaults to `list`, see `effectiveMutationSource`. */
+    mutationSource: mutationSourceSchema.optional(),
     /**
      * A list of mutations like A23T (nucleotide) or S:E44H (amino acid).
-     * The type of mutation should match the sequenceType.
+     * The type of mutation should match the sequenceType. Used when `mutationSource` is `list`.
      */
     mutations: z.array(z.string()).optional(),
+    /**
+     * The gene of the position range, for amino acids. Used when `mutationSource` is `range`,
+     * like `rangeStart` and `rangeLength`; see `effectivePositionRange` for their defaults.
+     */
+    rangeGene: z.string().optional(),
+    /** The first position of the range, 1-based. */
+    rangeStart: z.number().int().min(1).optional(),
+    /** The number of positions in the range. */
+    rangeLength: z.number().int().min(1).max(MAX_POSITION_RANGE_LENGTH).optional(),
 });
 export type WasapManualFilter = z.infer<typeof wasapManualFilterSchema>;
 
@@ -202,6 +223,10 @@ export type WasapCooccurrenceFilter = z.infer<typeof wasapCooccurrenceFilterSche
 export const DEFAULT_ENTROPY_CUTOFF_BITS = 0.5;
 
 /** `positionSource`'s value when the URL/config doesn't specify one — the single source of truth for that default. */
+export function effectiveMutationSource(analysis: WasapManualFilter): MutationSource {
+    return analysis.mutationSource ?? MUTATION_SOURCE.list;
+}
+
 export function effectivePositionSource(analysis: WasapCooccurrenceFilter): PositionSource {
     return analysis.positionSource ?? POSITION_SOURCE.amplicon;
 }
