@@ -5,7 +5,8 @@ import { Inset } from '../shared/Inset';
 /**
  * A pick of one of a few options as tabs, with the controls for the picked one in the panel
  * below: for a choice that decides which other controls there are. The picked tab opens into the
- * panel: it has no bottom border, which the other tabs draw instead. The tabs fill the width, each by its label.
+ * panel: it has no bottom border, which the other tabs draw instead. The tabs fill the width, each
+ * as wide as its label plus a share of the rest.
  */
 export function TabbedPanel<T extends string>({
     label,
