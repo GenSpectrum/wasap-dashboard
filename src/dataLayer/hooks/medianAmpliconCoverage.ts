@@ -9,17 +9,16 @@
  * it tells a sample whose proportions can be trusted from one where they can't.
  *
  * An amplicon's reads are counted at the middle of its core, like on the amplicon coverage page,
- * with one query per amplicon over the whole instance, grouped by sample (`positionBySampleQuery`).
+ * in one query over the whole instance, grouped by sample (`positionsBySampleQuery`).
  * The samples' locations and dates come from the overview's sample list.
  */
 
 import { useMemo } from 'react';
 
-import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { useSampleOverview } from './sampleOverview';
-import { useSiloQueries } from './siloQuery';
+import { useSiloQuery } from './siloQuery';
 import { type Amplicon } from '../../amplicons/primerBed';
 import { samplingPositions } from '../../amplicons/samplingPositions';
 import {
@@ -28,7 +27,12 @@ import {
     parseDateStringToTemporal,
     type TemporalClass,
 } from '../../util/temporalClass';
-import { positionBySampleQuery, readPositionBySample, type PositionBySampleRow, type SampleOverview } from '../queries';
+import {
+    positionsBySampleQuery,
+    readPositionsBySample,
+    type PositionBySampleRow,
+    type SampleOverview,
+} from '../queries';
 
 /** An amplicon with at least this many reads in a sample counts as having amplified in it. */
 export const AMPLIFIED_MIN_READS = 10;
@@ -73,59 +77,59 @@ export function useMedianAmpliconCoverage(amplicons: Amplicon[]): MedianAmplicon
         [amplicons],
     );
 
-    const positionRows = useSiloQueries({
-        combine: allQueryData,
-        queries: positions.map((position) => {
-            // `schema` stands in for `connection.key` (same memoized SiloInstance).
-            // eslint-disable-next-line @tanstack/query/exhaustive-deps
-            return {
-                queryKey: ['silo', 'position-by-sample', ...connection.key, schema.nucleotideSequence, position],
-                staleTime: Infinity,
-                queryFn: async ({ signal }: { signal: AbortSignal }) => {
-                    const { rows } = await connection.query(
-                        positionBySampleQuery(schema, schema.nucleotideSequence, position),
-                        `Position ${position} by sample`,
-                        { signal },
-                    );
-                    return readPositionBySample(rows, schema.sampleId);
-                },
-            };
-        }),
+    // `schema` stands in for `connection.key` (same memoized SiloInstance).
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    const positionRows = useSiloQuery({
+        queryKey: ['silo', 'positions-by-sample', ...connection.key, schema.nucleotideSequence, positions],
+        staleTime: Infinity,
+        queryFn: async ({ signal }) => {
+            if (positions.length === 0) {
+                return [];
+            }
+            const { rows } = await connection.query(
+                positionsBySampleQuery(schema, schema.nucleotideSequence, positions),
+                `${positions.length} amplicon positions by sample`,
+                { signal },
+            );
+            return readPositionsBySample(rows, schema.sampleId);
+        },
     });
 
     const error = samples.error ?? positionRows.error;
-    const rowsByAmplicon = positionRows.data;
+    const rows = positionRows.data;
 
     const data = useMemo(
         () =>
             samples.data &&
-            rowsByAmplicon &&
-            medianAmpliconCoverageGrid(sampleAmpliconCoverages(samples.data, rowsByAmplicon), rowsByAmplicon.length),
-        [samples.data, rowsByAmplicon],
+            rows &&
+            medianAmpliconCoverageGrid(sampleAmpliconCoverages(samples.data, positions, rows), positions.length),
+        [samples.data, positions, rows],
     );
 
     return { data, error: error ?? undefined };
 }
 
-/** Each sample's median amplicon reads, from one list of per-sample rows per amplicon (exported for tests). */
+/**
+ * Each sample's median amplicon reads, from the per-sample rows at each amplicon's position
+ * (exported for tests).
+ */
 export function sampleAmpliconCoverages(
     samples: readonly SampleOverview[],
-    rowsByAmplicon: readonly (readonly PositionBySampleRow[])[],
+    positions: readonly number[],
+    rows: readonly PositionBySampleRow[],
 ): SampleAmpliconCoverage[] {
     const unknown = unknownSymbol('nucleotide');
+    const ampliconIndex = new Map(positions.map((position, index) => [position, index]));
     const readsBySample = new Map(
-        samples.map((sample) => [sample.sampleId, new Array<number>(rowsByAmplicon.length).fill(0)]),
+        samples.map((sample) => [sample.sampleId, new Array<number>(positions.length).fill(0)]),
     );
-    rowsByAmplicon.forEach((rows, ampliconIndex) => {
-        for (const row of rows) {
-            if (row.sym !== null && row.sym !== '' && row.sym !== unknown) {
-                const reads = readsBySample.get(row.sampleId);
-                if (reads !== undefined) {
-                    reads[ampliconIndex] += row.count;
-                }
-            }
+    for (const row of rows) {
+        const reads = readsBySample.get(row.sampleId);
+        const index = ampliconIndex.get(row.position);
+        if (row.sym !== null && row.sym !== '' && row.sym !== unknown && reads !== undefined && index !== undefined) {
+            reads[index] += row.count;
         }
-    });
+    }
     return samples.map((sample) => {
         const reads = readsBySample.get(sample.sampleId)!;
         return {
