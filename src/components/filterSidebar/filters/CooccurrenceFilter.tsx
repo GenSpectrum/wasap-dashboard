@@ -19,9 +19,9 @@ import { parsePositionToken } from '../../../util/parsePositionToken';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
-import { RadioSelect } from '../../inputs/RadioSelect';
 import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
+import { TabbedPanel } from '../../inputs/TabbedPanel';
 import { PositionFilter } from '../../inputs/positionFilter/position-filter';
 
 const MIN_SHARE_OPTIONS = [
@@ -58,7 +58,7 @@ export function CooccurrenceFilter({
                     setPageState({ ...pageState, sequenceType, positions: undefined, anchorPosition: undefined });
                 }}
             />
-            <RadioSelect<PositionSource>
+            <TabbedPanel<PositionSource>
                 label='Positions from'
                 value={positionSource}
                 options={[
@@ -66,55 +66,56 @@ export function CooccurrenceFilter({
                     { value: POSITION_SOURCE.manual, label: 'Manual' },
                 ]}
                 onChange={(newSource) => setPageState({ ...pageState, positionSource: newSource })}
-            />
-            {positionSource === POSITION_SOURCE.amplicon ? (
-                <>
-                    {config.amplicons !== undefined && pageState.sequenceType === 'nucleotide' ? (
-                        <AmpliconSelect
-                            amplicons={config.amplicons}
-                            toAnchor={ampliconAnchor}
-                            value={pageState.anchorPosition}
-                            onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
+            >
+                {positionSource === POSITION_SOURCE.amplicon ? (
+                    <>
+                        {config.amplicons !== undefined && pageState.sequenceType === 'nucleotide' ? (
+                            <AmpliconSelect
+                                amplicons={config.amplicons}
+                                toAnchor={ampliconAnchor}
+                                value={pageState.anchorPosition}
+                                onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
+                            />
+                        ) : config.amplicons !== undefined &&
+                          pageState.sequenceType === 'amino acid' &&
+                          config.lineageTree?.genomeAnnotationUrl !== undefined ? (
+                            <AminoAcidAmpliconSelect
+                                amplicons={config.amplicons}
+                                genomeAnnotationUrl={config.lineageTree.genomeAnnotationUrl}
+                                value={pageState.anchorPosition}
+                                onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
+                            />
+                        ) : (
+                            <AnchorPositionInput
+                                sequenceType={pageState.sequenceType}
+                                value={pageState.anchorPosition}
+                                onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
+                            />
+                        )}
+                        <NumericInput
+                            label='Entropy cutoff (bits)'
+                            info={
+                                <p>
+                                    Only positions inside the detected amplicon whose Shannon entropy exceeds this
+                                    cutoff are used for co-occurrence. 0 bits means a position always carries the same
+                                    symbol; 1 bit means it&apos;s split roughly evenly between two symbols.
+                                </p>
+                            }
+                            value={pageState.entropyCutoff ?? DEFAULT_ENTROPY_CUTOFF_BITS}
+                            min={0}
+                            max={2}
+                            step={0.05}
+                            onChange={(entropyCutoff) => setPageState({ ...pageState, entropyCutoff })}
                         />
-                    ) : config.amplicons !== undefined &&
-                      pageState.sequenceType === 'amino acid' &&
-                      config.lineageTree?.genomeAnnotationUrl !== undefined ? (
-                        <AminoAcidAmpliconSelect
-                            amplicons={config.amplicons}
-                            genomeAnnotationUrl={config.lineageTree.genomeAnnotationUrl}
-                            value={pageState.anchorPosition}
-                            onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
-                        />
-                    ) : (
-                        <AnchorPositionInput
-                            sequenceType={pageState.sequenceType}
-                            value={pageState.anchorPosition}
-                            onChange={(anchorPosition) => setPageState({ ...pageState, anchorPosition })}
-                        />
-                    )}
-                    <NumericInput
-                        label='Entropy cutoff (bits)'
-                        info={
-                            <p>
-                                Only positions inside the detected amplicon whose Shannon entropy exceeds this cutoff
-                                are used for co-occurrence. 0 bits means a position always carries the same symbol; 1
-                                bit means it&apos;s split roughly evenly between two symbols.
-                            </p>
-                        }
-                        value={pageState.entropyCutoff ?? DEFAULT_ENTROPY_CUTOFF_BITS}
-                        min={0}
-                        max={2}
-                        step={0.05}
-                        onChange={(entropyCutoff) => setPageState({ ...pageState, entropyCutoff })}
+                    </>
+                ) : (
+                    <PositionFilter
+                        sequenceType={pageState.sequenceType}
+                        initialValue={pageState.positions}
+                        onPositionsChange={(positions) => setPageState({ ...pageState, positions })}
                     />
-                </>
-            ) : (
-                <PositionFilter
-                    sequenceType={pageState.sequenceType}
-                    initialValue={pageState.positions}
-                    onPositionsChange={(positions) => setPageState({ ...pageState, positions })}
-                />
-            )}
+                )}
+            </TabbedPanel>
             {lineageTree !== undefined && (
                 <LabeledField
                     label='Panel of lineages'

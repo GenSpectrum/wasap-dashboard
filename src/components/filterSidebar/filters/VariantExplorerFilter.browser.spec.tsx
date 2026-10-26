@@ -137,8 +137,7 @@ describe('VariantExplorerFilter', () => {
             />,
         );
 
-        const variantSourceSelect = page.getByRole('combobox').first();
-        await variantSourceSelect.selectOptions('predefined');
+        await page.getByRole('tab', { name: 'Nextclade' }).click();
 
         expect(mockSetPageState).toHaveBeenCalledWith({
             ...defaultPageState,
