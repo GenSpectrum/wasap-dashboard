@@ -11,8 +11,8 @@
  * component, over the already-fetched result.
  */
 
-import { useConnection, useSiloSchema } from './connection';
-import { MAX_GRID_COLUMNS, buildDateAxis } from './mutationsOverTime';
+import { useConnection, useSiloQueryClient, useSiloSchema } from './connection';
+import { fetchDateAxis } from './dateAxis';
 import { useSiloQuery } from './siloQuery';
 import {
     CooccurrenceOverTimeDataMap,
@@ -27,13 +27,11 @@ import {
     normalizeFilter,
     positionsCooccurrenceQuery,
     readCooccurrenceRows,
-    samplingDatesQuery,
     type CooccurrenceRow,
     type OverTimeSequenceType,
     type PositionTarget,
     type SiloReadFilter,
 } from '../queries';
-import { readNamedCounts } from '../queries/rows';
 
 /** Above this many positions the joint distribution is unwieldy and unverified; refuse it. */
 export const MAX_COOCCURRENCE_POSITIONS = 10;
@@ -56,11 +54,12 @@ export function useCooccurrence(
 ): CooccurrenceResult {
     const connection = useConnection();
     const schema = useSiloSchema();
+    const queryClient = useSiloQueryClient();
     const normalized = normalizeFilter(filter);
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance);
-    // `normalized` stands in for `filter` — a pure, order-independent derivation
-    // of it, used instead so equivalent filters share a cache entry.
+    // `schema` stands in for `connection.key` (same memoized SiloInstance), and `queryClient` is
+    // that of the same SiloInstance; `normalized` stands in for `filter` — a pure,
+    // order-independent derivation of it, used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     const query = useSiloQuery({
         queryKey: ['silo', 'cooccurrence', ...connection.key, normalized, granularity, sequenceType, targets],
@@ -79,20 +78,13 @@ export function useCooccurrence(
                 );
             }
 
-            const dateRows = await connection
-                .query(samplingDatesQuery(schema, normalized), 'Co-occurrence date axis', { signal })
-                .then((result) => readNamedCounts(result.rows, schema.groupingDate));
-
-            const { requestedDateRanges, totalCountsByBucket } = buildDateAxis(dateRows, granularity, filter);
-
-            if (requestedDateRanges.length > MAX_GRID_COLUMNS) {
-                throw new UserFacingError(
-                    'Too many dates',
-                    `The dataset would contain ${requestedDateRanges.length} date intervals. ` +
-                        `Please reduce the number to below ${MAX_GRID_COLUMNS} — narrow the sampling-date filter, ` +
-                        'or choose a coarser granularity.',
-                );
-            }
+            const { requestedDateRanges, totalCountsByBucket } = await fetchDateAxis(
+                queryClient,
+                connection,
+                schema,
+                normalized,
+                granularity,
+            );
 
             if (requestedDateRanges.length === 0) {
                 return { data: new CooccurrenceOverTimeDataMap(), requestedDateRanges };

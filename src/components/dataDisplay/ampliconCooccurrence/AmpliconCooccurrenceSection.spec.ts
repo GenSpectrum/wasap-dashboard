@@ -9,7 +9,7 @@ import {
     cooccurrenceRows,
     type AmpliconRows,
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
-import { buildDateAxis } from '../../../dataLayer/hooks/mutationsOverTime';
+import { buildDateAxis } from '../../../dataLayer/hooks/dateAxis';
 
 const amplicon: Amplicon = { chrom: 'ref', number: 7, pool: '1', start: 1, end: 400, insertStart: 30, insertEnd: 370 };
 const { requestedDateRanges } = buildDateAxis([{ name: '2026-06-01', count: 100 }], 'day', {});

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { buildDateAxis } from './mutationsOverTime';
+import { buildDateAxis } from './dateAxis';
 import { buildQueriesMatrix } from './queriesOverTime';
 import { getProportion } from '../../components/dataDisplay/overTime/proportionValue';
 import { type NamedCount } from '../queries/rows';
