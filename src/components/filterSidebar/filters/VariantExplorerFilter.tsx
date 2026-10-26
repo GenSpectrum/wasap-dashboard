@@ -43,73 +43,6 @@ export function VariantExplorerFilter({
         setPageState({ ...pageState, signatureType: newType });
     };
 
-    const computedSignature = (
-        <>
-            <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
-            <LabeledField label='Variant'>
-                <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                    <LineageFilter
-                        field={clinicalSequenceLapisLineageField}
-                        placeholderText='Variant'
-                        value={pageState.variant}
-                        onLineageChange={(lineages) => {
-                            setPageState({
-                                ...pageState,
-                                variant: lineages[clinicalSequenceLapisLineageField],
-                            });
-                        }}
-                        hideCounts={true}
-                    />
-                </LapisClientProvider>
-            </LabeledField>
-            <div className='mb-2'>
-                <NumericInput
-                    label='Min. proportion'
-                    value={pageState.minProportion}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onChange={(v) => setPageState({ ...pageState, minProportion: v })}
-                />
-            </div>
-            <div className='mb-2'>
-                <NumericInput
-                    label='Min. count'
-                    value={pageState.minCount}
-                    min={1}
-                    max={250}
-                    step={1}
-                    onChange={(v) => setPageState({ ...pageState, minCount: Math.round(v) })}
-                />
-            </div>
-            <div className='mb-2'>
-                <NumericInput
-                    label='Min. Jaccard index'
-                    value={pageState.minJaccard}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onChange={(v) => setPageState({ ...pageState, minJaccard: v })}
-                />
-            </div>
-            <LabeledField label='Time frame'>
-                <select
-                    className='select select-bordered'
-                    value={pageState.timeFrame}
-                    onChange={(e) => setPageState({ ...pageState, timeFrame: e.target.value as VariantTimeFrame })}
-                >
-                    <option value={VARIANT_TIME_FRAME.all}>{variantTimeFrameLabel(VARIANT_TIME_FRAME.all)}</option>
-                    <option value={VARIANT_TIME_FRAME.sixMonths}>
-                        Past {variantTimeFrameLabel(VARIANT_TIME_FRAME.sixMonths)}
-                    </option>
-                    <option value={VARIANT_TIME_FRAME.threeMonths}>
-                        Past {variantTimeFrameLabel(VARIANT_TIME_FRAME.threeMonths)}
-                    </option>
-                </select>
-            </LabeledField>
-        </>
-    );
-
     return (
         <>
             <SequenceTypeSelector
@@ -133,11 +66,25 @@ export function VariantExplorerFilter({
                             lineageTree={lineageTree}
                         />
                     ) : (
-                        computedSignature
+                        <ComputedSignature
+                            pageState={pageState}
+                            setPageState={setPageState}
+                            clinicalSequenceLapisBaseUrl={clinicalSequenceLapisBaseUrl}
+                            clinicalSequenceLapisLineageField={clinicalSequenceLapisLineageField}
+                        />
                     )}
                 </TabbedPanel>
             ) : (
-                pageState.signatureType === 'computed' && <Inset className='p-2'>{computedSignature}</Inset>
+                pageState.signatureType === 'computed' && (
+                    <Inset className='p-2'>
+                        <ComputedSignature
+                            pageState={pageState}
+                            setPageState={setPageState}
+                            clinicalSequenceLapisBaseUrl={clinicalSequenceLapisBaseUrl}
+                            clinicalSequenceLapisLineageField={clinicalSequenceLapisLineageField}
+                        />
+                    </Inset>
+                )
             )}
             {lineageTree !== undefined && (
                 <Inset className='p-2'>
@@ -235,6 +182,85 @@ function PredefinedSignature({
         </>
     );
 }
+function ComputedSignature({
+    pageState,
+    setPageState,
+    clinicalSequenceLapisBaseUrl,
+    clinicalSequenceLapisLineageField,
+}: {
+    pageState: WasapVariantFilter;
+    setPageState: (newState: WasapVariantFilter) => void;
+    clinicalSequenceLapisBaseUrl: string;
+    clinicalSequenceLapisLineageField: string;
+}) {
+    return (
+        <>
+            <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
+            <LabeledField label='Variant'>
+                <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
+                    <LineageFilter
+                        field={clinicalSequenceLapisLineageField}
+                        placeholderText='Variant'
+                        value={pageState.variant}
+                        onLineageChange={(lineages) => {
+                            setPageState({
+                                ...pageState,
+                                variant: lineages[clinicalSequenceLapisLineageField],
+                            });
+                        }}
+                        hideCounts={true}
+                    />
+                </LapisClientProvider>
+            </LabeledField>
+            <div className='mb-2'>
+                <NumericInput
+                    label='Min. proportion'
+                    value={pageState.minProportion}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    onChange={(v) => setPageState({ ...pageState, minProportion: v })}
+                />
+            </div>
+            <div className='mb-2'>
+                <NumericInput
+                    label='Min. count'
+                    value={pageState.minCount}
+                    min={1}
+                    max={250}
+                    step={1}
+                    onChange={(v) => setPageState({ ...pageState, minCount: Math.round(v) })}
+                />
+            </div>
+            <div className='mb-2'>
+                <NumericInput
+                    label='Min. Jaccard index'
+                    value={pageState.minJaccard}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    onChange={(v) => setPageState({ ...pageState, minJaccard: v })}
+                />
+            </div>
+            <LabeledField label='Time frame'>
+                <select
+                    className='select select-bordered'
+                    value={pageState.timeFrame}
+                    onChange={(e) => setPageState({ ...pageState, timeFrame: e.target.value as VariantTimeFrame })}
+                >
+                    <option value={VARIANT_TIME_FRAME.all}>{variantTimeFrameLabel(VARIANT_TIME_FRAME.all)}</option>
+                    <option value={VARIANT_TIME_FRAME.sixMonths}>
+                        Past {variantTimeFrameLabel(VARIANT_TIME_FRAME.sixMonths)}
+                    </option>
+                    <option value={VARIANT_TIME_FRAME.threeMonths}>
+                        Past {variantTimeFrameLabel(VARIANT_TIME_FRAME.threeMonths)}
+                    </option>
+                </select>
+            </LabeledField>
+        </>
+    );
+}
+
 type CheckboxWithTooltipProps = {
     checked: boolean;
     onChange: (checked: boolean) => void;
