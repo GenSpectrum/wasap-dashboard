@@ -40,26 +40,6 @@ export async function getMutations(
 }
 
 /**
- * Returns a map from mutation code to Jaccard index for all mutations observed in clinical
- * sequences belonging to the given lineage. Mutations not observed in the lineage are absent
- * from the map.
- *
- * Use this to annotate a pre-defined list of mutations with clinical Jaccard scores without
- * applying any proportion/count/threshold filtering.
- */
-export async function getJaccardForMutations(
-    lapisUrl: string,
-    mutationType: SequenceType,
-    lineageFilter: LapisFilter,
-    dateFilter: LapisFilter | undefined,
-    signal?: AbortSignal,
-): Promise<Map<string, number>> {
-    return getMutationsForVariant(lapisUrl, mutationType, lineageFilter, 0, 0, 0, dateFilter, signal).then(
-        (entries) => new Map(entries.map(({ mutation, jaccardIndex }) => [mutation, jaccardIndex])),
-    );
-}
-
-/**
  * Returns the list of mutations that are defining this variant, based on the given parameters.
  * The result also includes the Jaccard index for every mutation.
  *
