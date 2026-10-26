@@ -12,7 +12,7 @@
  */
 
 import { useConnection, useSiloSchema } from './connection';
-import { MAX_GRID_COLUMNS, buildDateAxis } from './mutationsOverTime';
+import { MAX_GRID_COLUMNS, buildDateAxis } from './dateAxis';
 import { useSiloQuery } from './siloQuery';
 import {
     CooccurrenceOverTimeDataMap,

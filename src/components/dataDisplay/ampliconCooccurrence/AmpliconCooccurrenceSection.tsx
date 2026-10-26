@@ -15,7 +15,7 @@ import {
     type AmpliconRows,
     type CooccurrenceRow,
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
-import { useDateAxis, type DateAxis } from '../../../dataLayer/hooks/mutationsOverTime';
+import { useDateAxis, type DateAxis } from '../../../dataLayer/hooks/dateAxis';
 import { type SiloReadFilter } from '../../../dataLayer/queries';
 import { type ClusterJaccardSource } from '../../../externalData/lapis/getClusterJaccards';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';

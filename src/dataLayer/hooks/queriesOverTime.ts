@@ -14,7 +14,7 @@ import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
 import { useConnection, useSiloSchema } from './connection';
-import { buildDateAxis } from './mutationsOverTime';
+import { buildDateAxis } from './dateAxis';
 import { useSiloQueries, useSiloQuery } from './siloQuery';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { UserFacingError } from '../../components/shared/error-display';
