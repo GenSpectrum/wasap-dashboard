@@ -55,6 +55,8 @@ def test_repeated_requests_are_answered_from_the_cache(client):
         {"signatures": {"A": ["C100-"], "B": ["C300T"]}},
         {"frequencies": [{"date": "2026-09-01", "mutation": "C100T", "frac": 1.5}]},
         {"frequencies": [{"date": "1 Sept", "mutation": "C100T", "frac": 0.5}]},
+        {"frequencies": [{"date": "0001-01-01", "mutation": "C100T", "frac": 0.5}]},
+        {"frequencies": [{"date": "9999-01-01", "mutation": "C100T", "frac": 0.5}]},
         {"options": {**REQUEST["options"], "bootstraps": 0}},
     ],
 )
@@ -119,15 +121,62 @@ def test_retries_when_a_process_dies_during_a_deconvolution(client):
     assert app.state.runner.pool is not pool
 
 
-def test_gives_up_on_deconvolutions_that_take_too_long(client, monkeypatch):
-    pool = app.state.runner.pool
-    monkeypatch.setattr(service, "TIMEOUT", 0.01)
+def slow_request(date):
+    """With rounds of many dates: a fraction of a second each, so that it runs for seconds."""
+    days = [f"2026-{month:02}-{day:02}" for month in (1, 2) for day in range(1, 29)]
+    return {
+        **REQUEST,
+        "frequencies": [{**f, "date": day} for f in REQUEST["frequencies"] for day in [date, *days]],
+        "options": {**REQUEST["options"], "bootstraps": 200},
+    }
 
-    assert client.post("/deconvolve", json=with_date("2026-09-03")).status_code == 503
-    assert app.state.runner.pool is not pool
+
+def wait_for(condition, seconds=10):
+    end = time.time() + seconds
+    while not condition() and time.time() < end:
+        time.sleep(0.05)
+    return condition()
+
+
+def test_stops_deconvolutions_that_take_too_long(client, monkeypatch):
+    runner = app.state.runner
+    pool = runner.pool
+    monkeypatch.setattr(service, "TIMEOUT", 0.5)
+    monkeypatch.setattr(service, "estimate_seconds", lambda request: 0)
+
+    assert client.post("/deconvolve", json=slow_request("2026-09-03")).status_code == 503
+    # The processes stop by themselves, the pool is kept.
+    assert wait_for(lambda: not runner.watches)
+    assert runner.pool is pool
 
     monkeypatch.undo()
     assert client.post("/deconvolve", json=with_date("2026-09-04")).status_code == 200
+
+
+def sleep(request, first, count, deadline):
+    time.sleep(60)
+
+
+def test_replaces_the_pool_when_processes_dont_stop(client, monkeypatch):
+    runner = app.state.runner
+    pool = runner.pool
+    monkeypatch.setattr(service, "TIMEOUT", 0.2)
+    monkeypatch.setattr(service, "fit_rounds", sleep)
+
+    assert client.post("/deconvolve", json=with_date("2026-09-05")).status_code == 503
+    assert wait_for(lambda: runner.pool is not pool)
+
+    monkeypatch.undo()
+    assert client.post("/deconvolve", json=with_date("2026-09-06")).status_code == 200
+
+
+def test_rejects_requests_that_would_take_too_long(client, monkeypatch):
+    monkeypatch.setattr(service, "TIMEOUT", 1e-6)
+
+    response = client.post("/deconvolve", json=with_date("2026-09-07"))
+
+    assert response.status_code == 413
+    assert "would take about" in response.json()["detail"]
 
 
 def test_allows_cross_origin_requests(client):

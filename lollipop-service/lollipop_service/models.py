@@ -16,10 +16,14 @@ class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, allow_inf_nan=False)
 
 
+# The dates pandas can represent (in nanoseconds), whole days only.
+Date = Annotated[datetime.date, Field(ge=datetime.date(1677, 9, 22), le=datetime.date(2262, 4, 10))]
+
+
 class MutationFrequency(CamelModel):
     """The frequency of a mutation in the reads of one sample (or of the samples of one date)."""
 
-    date: datetime.date
+    date: Date
     mutation: Mutation
     frac: float = Field(ge=0, le=1)
 
