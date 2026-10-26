@@ -36,13 +36,22 @@ const queriesOverTimeResponseSchema = z.object({
  * cluster: a few seconds for fifty clusters, against about four times that.
  *
  * The date range leaves out the sequences without a date, so these indices can be a little off
- * those of the single mutations, which take them in.
+ * those of `getMutationsForVariant`, which take them in.
  */
 export async function getClusterJaccards(
     source: ClusterJaccardSource,
     clusters: readonly ClusterQuery[],
     signal?: AbortSignal,
 ): Promise<number[]> {
+    return (await getClusterJaccardsWithLineageCount(source, clusters, signal)).jaccards;
+}
+
+/** `getClusterJaccards`, with the number of sequences of the lineage, which none of them are of when it is 0. */
+export async function getClusterJaccardsWithLineageCount(
+    source: ClusterJaccardSource,
+    clusters: readonly ClusterQuery[],
+    signal?: AbortSignal,
+): Promise<{ lineageCount: number; jaccards: number[] }> {
     const { lapisBaseUrl, lineageQuery, dateField, dateFrom } = source;
     const queries = [
         { countQuery: lineageQuery, coverageQuery: lineageQuery },
@@ -67,9 +76,10 @@ export async function getClusterJaccards(
     const counts = response.data.data.map(([range]) => range);
 
     const lineageCount = counts[0].count;
-    return counts.slice(1).map(({ count: both, coverage: withCluster }) => {
+    const jaccards = counts.slice(1).map(({ count: both, coverage: withCluster }) => {
         const union = lineageCount + withCluster - both;
         // https://en.wikipedia.org/wiki/Jaccard_index#Overview
         return union === 0 ? 0 : both / union;
     });
+    return { lineageCount, jaccards };
 }

@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
-import { getJaccardForMutations, getMutationsForVariant } from './getMutations';
+import { getClusterJaccardsWithLineageCount } from './getClusterJaccards';
+import { getMutationsForVariant } from './getMutations';
 import { getClientLogger } from '../../clientLogger';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { getLineageSignature, type LineageTree } from '../../lineageTree/lineageTree';
@@ -128,15 +129,21 @@ async function fetchPredefinedSignature(
     const mutations = analysis.sequenceType === 'nucleotide' ? signature.nucleotide : signature.aminoAcid;
 
     const lineageForJaccard = analysis.includeSublineagesForJaccard !== false ? `${lineage.name}*` : lineage.name;
-    const jaccardByMutation = await getJaccardForMutations(
-        config.clinicalLapis.lapisBaseUrl,
-        analysis.sequenceType,
-        { [config.clinicalLapis.lineageField]: lineageForJaccard },
-        getLapisFilterForTimeFrame(analysis.timeFrame, config.clinicalLapis.dateField),
+    // Each mutation as a cluster of its own: one small request for just these mutations, instead
+    // of the counts of all mutations of all the clinical sequences.
+    const { lineageCount, jaccards } = await getClusterJaccardsWithLineageCount(
+        {
+            lapisBaseUrl: config.clinicalLapis.lapisBaseUrl,
+            lineageQuery: `${config.clinicalLapis.lineageField}=${lineageForJaccard}`,
+            dateField: config.clinicalLapis.dateField,
+            dateFrom: getFromDateForTimeFrame(analysis.timeFrame),
+        },
+        mutations.map((mutation) => ({ codes: [mutation], atLeast: 1 })),
         signal,
     );
+    const jaccardByMutation = new Map(mutations.map((mutation, index) => [mutation, jaccards[index]]));
 
-    if (jaccardByMutation.size === 0) {
+    if (lineageCount === 0) {
         return { displayMutations: mutations, candidateMutations: mutations, lineageForJaccard };
     }
 

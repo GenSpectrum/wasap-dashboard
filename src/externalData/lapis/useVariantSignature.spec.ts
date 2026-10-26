@@ -140,12 +140,11 @@ describe('fetchVariantSignature', () => {
     });
 
     test('predefined signature: takes the mutations from the lineage tree and returns them with empty jaccard', async () => {
-        // Empty clinical LAPIS data → jaccard map is empty → mutations returned unfiltered
-        lapisRouteMocker.mockPostNucleotideMutationsMulti([
-            { body: { pangoLineage: 'XEC*', minProportion: 0 }, response: { data: [] } },
-            { body: { minProportion: 0 }, response: { data: [] } },
-        ]);
-        lapisRouteMocker.mockPostAggregated({ pangoLineage: 'XEC*' }, { data: [{ count: 0 }] });
+        // No clinical sequences of the lineage → no Jaccard indices → mutations returned unfiltered
+        lapisRouteMocker.mockPostQueriesOverTime(
+            jaccardRequest('pangoLineage=XEC*', ['A123T', 'G456C']),
+            jaccardResponse([0, 0], [0, 0], 0),
+        );
 
         const result = await fetchVariantSignature(
             config,
@@ -171,27 +170,10 @@ describe('fetchVariantSignature', () => {
     });
 
     test('predefined signature: filters mutations by jaccard and returns their jaccard indices', async () => {
-        lapisRouteMocker.mockPostNucleotideMutationsMulti([
-            {
-                body: { pangoLineage: 'XEC*', minProportion: 0 },
-                response: {
-                    data: [
-                        { mutation: 'A123T', count: 100 },
-                        { mutation: 'G456C', count: 10 },
-                    ],
-                },
-            },
-            {
-                body: { minProportion: 0 },
-                response: {
-                    data: [
-                        { mutation: 'A123T', count: 200 },
-                        { mutation: 'G456C', count: 200 },
-                    ],
-                },
-            },
-        ]);
-        lapisRouteMocker.mockPostAggregated({ pangoLineage: 'XEC*' }, { data: [{ count: 150 }] });
+        lapisRouteMocker.mockPostQueriesOverTime(
+            jaccardRequest('pangoLineage=XEC*', ['A123T', 'G456C']),
+            jaccardResponse([100, 10], [200, 200], 150),
+        );
 
         const result = await fetchVariantSignature(
             config,
@@ -220,11 +202,10 @@ describe('fetchVariantSignature', () => {
     });
 
     test('predefined signature: takes only the new mutations of the lineage with newMutationsOnly', async () => {
-        lapisRouteMocker.mockPostAminoAcidMutationsMulti([
-            { body: { pangoLineage: 'XEC', minProportion: 0 }, response: { data: [] } },
-            { body: { minProportion: 0 }, response: { data: [] } },
-        ]);
-        lapisRouteMocker.mockPostAggregated({ pangoLineage: 'XEC' }, { data: [{ count: 0 }] });
+        lapisRouteMocker.mockPostQueriesOverTime(
+            jaccardRequest('pangoLineage=XEC', ['S:F59S']),
+            jaccardResponse([0], [0], 0),
+        );
 
         const result = await fetchVariantSignature(
             config,
@@ -304,3 +285,28 @@ describe('getLapisFilterForTimeFrame', () => {
         expect(result).toEqual({ dateFrom: dayjs().subtract(3, 'month').format('YYYY-MM-DD') });
     });
 });
+
+/** The request for the Jaccard indices of a predefined signature's mutations, over all of the time. */
+function jaccardRequest(lineageQuery: string, mutations: string[]) {
+    return {
+        filters: {},
+        queries: [
+            { countQuery: lineageQuery, coverageQuery: lineageQuery },
+            ...mutations.map((mutation) => ({ countQuery: `${lineageQuery} & ${mutation}`, coverageQuery: mutation })),
+        ],
+        dateRanges: [{ dateFrom: '1900-01-01', dateTo: dayjs().format('YYYY-MM-DD') }],
+        dateField: 'date',
+    };
+}
+
+/** Its response: per mutation, the sequences of the lineage with it (`both`) and all with it (`withMutation`). */
+function jaccardResponse(both: number[], withMutation: number[], lineageCount: number) {
+    return {
+        data: {
+            data: [
+                [{ count: lineageCount, coverage: lineageCount }],
+                ...both.map((count, index) => [{ count, coverage: withMutation[index] }]),
+            ],
+        },
+    };
+}
