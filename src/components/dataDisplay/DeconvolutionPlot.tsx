@@ -35,7 +35,6 @@ export function DeconvolutionPlot({
     const [container, { width, height }] = useSize();
     const colorOf = (variant: string) => colors.get(variant) ?? UNDETERMINED_COLOR;
     const [hovered, setHovered] = useState<number | undefined>(undefined);
-    // By name, not by position: a new result can have other lineages, or fewer, while one is hovered.
     const [hoveredVariant, setHoveredVariant] = useState<string | undefined>(undefined);
 
     const days = result.dates.map(({ date }) => toDay(date));
