@@ -23,6 +23,7 @@
 
 import { dateRangeExpression, scoped, type SiloReadFilter } from './filter';
 import { groupingColumnsPassThrough } from './groupingColumns';
+import { type ReferenceSequence } from './referenceGenome';
 import type { SiloSchema } from './schema';
 import { field, int, str } from '../transport/expression';
 import { count } from '../transport/functions';
@@ -97,6 +98,14 @@ export function readOverallMutations(rows: readonly RhydbRow[]): OverallMutation
 export type PositionTarget = {
     sequenceName: string;
     position: number;
+};
+
+/** A run of positions in one segment or gene of the reference. */
+export type PositionRange = {
+    reference: ReferenceSequence;
+    /** 1-based. */
+    start: number;
+    length: number;
 };
 
 /**
