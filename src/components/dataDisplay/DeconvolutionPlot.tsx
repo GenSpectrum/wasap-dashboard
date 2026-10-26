@@ -35,7 +35,8 @@ export function DeconvolutionPlot({
     const [container, { width, height }] = useSize();
     const colorOf = (variant: string) => colors.get(variant) ?? UNDETERMINED_COLOR;
     const [hovered, setHovered] = useState<number | undefined>(undefined);
-    const [highlighted, setHighlighted] = useState<number | undefined>(undefined);
+    // By name, not by position: a new result can have other lineages, or fewer, while one is hovered.
+    const [hoveredVariant, setHoveredVariant] = useState<string | undefined>(undefined);
 
     const days = result.dates.map(({ date }) => toDay(date));
     const firstDay = days[0] ?? 0;
@@ -56,11 +57,13 @@ export function DeconvolutionPlot({
             ...estimates[variantIndex],
         })),
     }));
+    const highlightedSeries = series.find((s) => s.variant === hoveredVariant);
+    const highlighted = highlightedSeries?.variantIndex;
     // The highlighted lineage is drawn last, on top of the others.
     const drawOrder =
-        highlighted === undefined
+        highlightedSeries === undefined
             ? series
-            : [...series.filter((s) => s.variantIndex !== highlighted), series[highlighted]];
+            : [...series.filter((s) => s !== highlightedSeries), highlightedSeries];
     const opacity = (variantIndex: number) => (highlighted === undefined || highlighted === variantIndex ? 1 : 0.15);
 
     const hoveredDate = hovered === undefined ? undefined : result.dates[hovered];
@@ -212,12 +215,12 @@ export function DeconvolutionPlot({
                 )}
             </div>
             <figcaption className='mt-3 flex flex-wrap gap-x-5 gap-y-1'>
-                {series.map(({ variant, variantIndex, color }) => (
+                {series.map(({ variant, color }) => (
                     <span
                         key={variant}
                         className='flex cursor-default items-center gap-1.5 text-sm'
-                        onPointerEnter={() => setHighlighted(variantIndex)}
-                        onPointerLeave={() => setHighlighted(undefined)}
+                        onPointerEnter={() => setHoveredVariant(variant)}
+                        onPointerLeave={() => setHoveredVariant(undefined)}
                     >
                         <span className='inline-block h-2.5 w-2.5 rounded-full' style={{ backgroundColor: color }} />
                         <LegendLabel to={variant === UNDETERMINED ? undefined : lineageLink?.(variant)}>
