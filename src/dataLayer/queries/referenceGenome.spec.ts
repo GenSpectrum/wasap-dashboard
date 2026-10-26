@@ -7,7 +7,7 @@ describe('the reference genome', () => {
         expect(referenceGenomeQuery().render()).toBe('reference_genomes');
     });
 
-    test('keeps the name and length of each segment and gene, in the order sent', () => {
+    test('keeps the name, symbols and length of each segment and gene, in the order sent', () => {
         expect(
             readReferenceGenome([
                 { name: 'main', sequence: 'ACGTACGT', type: 'nucleotide' },
@@ -15,10 +15,10 @@ describe('the reference genome', () => {
                 { name: 'E', sequence: 'MY', type: 'amino_acid' },
             ]),
         ).toEqual({
-            nucleotideSequences: [{ name: 'main', length: 8 }],
+            nucleotideSequences: [{ name: 'main', sequence: 'ACGTACGT', length: 8 }],
             genes: [
-                { name: 'S', length: 4 },
-                { name: 'E', length: 2 },
+                { name: 'S', sequence: 'MFV*', length: 4 },
+                { name: 'E', sequence: 'MY', length: 2 },
             ],
         });
     });
