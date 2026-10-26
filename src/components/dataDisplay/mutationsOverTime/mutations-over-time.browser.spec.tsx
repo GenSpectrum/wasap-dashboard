@@ -46,23 +46,24 @@ const SYMBOLS_BY_POSITION: Record<number, { date: string; sym: string; count: nu
 /**
  * Routes the SILO queries the component sends to canned NDJSON:
  *  - the date axis (`group(by := {date}, aggs := {n := count()})`) -> two day buckets
- *  - the positions of the display mutations, in one `unionall` with a `part := i` per position
- *    -> `SYMBOLS_BY_POSITION`, tagged
+ *  - the positions of the display mutations, in one `unionall` -> `SYMBOLS_BY_POSITION`, each row
+ *    tagged with its position
  */
 function stubSilo() {
     const fetchMock = vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
         const q = typeof init?.body === 'string' ? init.body : '';
 
-        const parts = [...q.matchAll(/main\.at\((\d+)\).*?part := (\d+)/g)];
-        if (parts.length > 0) {
+        const positions = [...q.matchAll(/main\.at\((\d+)\)/g)].map(([, position]) => Number(position));
+        if (positions.length > 0) {
             return Promise.resolve(
                 ndjson(
-                    parts.flatMap(([, position, part]) =>
-                        (SYMBOLS_BY_POSITION[Number(position)] ?? []).map(({ date, sym, count }) => ({
+                    positions.flatMap((position) =>
+                        (SYMBOLS_BY_POSITION[position] ?? []).map(({ date, sym, count }) => ({
                             day: date,
                             sym,
                             count,
-                            part: Number(part),
+                            sequenceName: 'main',
+                            position,
                         })),
                     ),
                 ),

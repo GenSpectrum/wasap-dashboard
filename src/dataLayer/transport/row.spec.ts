@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { readCount, readIndex, readNumber, readOptionalText, readText, RhydbRowError } from './row';
+import { readCount, readNumber, readOptionalText, readText, RhydbRowError } from './row';
 
 describe('reading a row', () => {
     const row = { sampleId: 'S1', sym: null, n: 8120, proportion: 0.05, big: '9007199254740993' };
@@ -23,13 +23,6 @@ describe('reading a row', () => {
         expect(() => readCount({ n: -1 }, 'n')).toThrow(RhydbRowError);
         expect(() => readCount({ n: 1.5 }, 'n')).toThrow(RhydbRowError);
         expect(() => readCount({}, 'n')).toThrow(RhydbRowError);
-        expect(() => readCount({ n: -1 }, 'n')).toThrow(/expected a count/);
-    });
-
-    test('an index is a non-negative integer too', () => {
-        expect(readIndex({ part: 0 }, 'part')).toBe(0);
-        expect(readIndex({ part: 3 }, 'part')).toBe(3);
-        expect(() => readIndex({ part: -1 }, 'part')).toThrow(/expected an index/);
     });
 
     test('numbers, including ones an encoder sent as text to keep their precision', () => {

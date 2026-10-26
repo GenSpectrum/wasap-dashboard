@@ -24,10 +24,10 @@
 import { dateRangeExpression, scoped, type SiloReadFilter } from './filter';
 import { groupingColumnsPassThrough } from './groupingColumns';
 import type { SiloSchema } from './schema';
-import { field, int } from '../transport/expression';
+import { field, int, str } from '../transport/expression';
 import { count } from '../transport/functions';
 import { unionall, type Relation } from '../transport/relation';
-import { readCount, readIndex, readOptionalText, readText, type RhydbRow } from '../transport/row';
+import { readCount, readOptionalText, readText, type RhydbRow } from '../transport/row';
 
 export type OverTimeSequenceType = 'nucleotide' | 'amino acid';
 
@@ -143,12 +143,13 @@ export function readPositionOverTime(rows: readonly RhydbRow[], dateColumn: stri
 // --- many positions at once ------------------------------------------------
 
 /**
- * `positionOverTimeQuery` for each target, in one `unionall`, each row tagged with the index of its
- * target (`part`). With the same counts as `mutations()`, and much faster when the mutations are known.
+ * `positionOverTimeQuery` for each target, in one `unionall`, each row tagged with its target's
+ * `sequenceName` and `position`. With the same counts as `mutations()`, and much faster when the
+ * mutations are known.
  *
  * Each part is filtered by location only. The date bounds go on after the group, against the date
  * renamed to `day` so they aren't pushed back down: inside the parts, the instance evaluates the date
- * filter again for every part, one after the other. The `part` tag also goes on after the group, as
+ * filter again for every part, one after the other. The target tag also goes on after the group, as
  * grouping by a literal falls off the bitmap aggregation.
  *
  * TODO: filter the dates inside the parts, before the group, once the instance does that cheaply.
@@ -161,33 +162,31 @@ export function positionsOverTimeQuery(
 ): Relation {
     const location = scoped(schema, filter.locationNames === undefined ? {} : { locationNames: filter.locationNames });
     return unionall(
-        targets.map((target, index) =>
+        targets.map((target) =>
             location
                 .map({
                     ...groupingColumnsPassThrough([schema.groupingDate]),
                     sym: field(target.sequenceName).at(target.position),
                 })
                 .group({ count: count() }, [schema.groupingDate, 'sym'])
-                .map({ day: field(schema.groupingDate), part: int(index) })
+                .map({
+                    day: field(schema.groupingDate),
+                    sequenceName: str(target.sequenceName),
+                    position: int(target.position),
+                })
                 .filter(dateRangeExpression(schema, filter, 'day'))
-                .project(['day', 'sym', 'count', 'part']),
+                .project(['day', 'sym', 'count', 'sequenceName', 'position']),
         ),
     );
 }
 
-/** The rows of `positionsOverTimeQuery`, split back into one list per target. */
-export function readPositionsOverTime(rows: readonly RhydbRow[], targetCount: number): PositionOverTimeRow[][] {
-    const byTarget = Array.from({ length: targetCount }, (): PositionOverTimeRow[] => []);
-    for (const row of rows) {
-        const part = readIndex(row, 'part');
-        if (part >= targetCount) {
-            throw new Error(`Row for part ${part} of ${targetCount} positions`);
-        }
-        byTarget[part].push({
-            date: readText(row, 'day'),
-            sym: readOptionalText(row, 'sym'),
-            count: readCount(row, 'count'),
-        });
-    }
-    return byTarget;
+/** The rows of `positionsOverTimeQuery`, each with its target. */
+export function readPositionsOverTime(rows: readonly RhydbRow[]): (PositionOverTimeRow & PositionTarget)[] {
+    return rows.map((row) => ({
+        date: readText(row, 'day'),
+        sym: readOptionalText(row, 'sym'),
+        count: readCount(row, 'count'),
+        sequenceName: readText(row, 'sequenceName'),
+        position: readCount(row, 'position'),
+    }));
 }

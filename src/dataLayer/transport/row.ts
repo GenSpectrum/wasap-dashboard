@@ -50,18 +50,9 @@ export function readOptionalText(row: RhydbRow, column: string): string | null {
 
 /** A count of rows or reads: a non-negative integer. */
 export function readCount(row: RhydbRow, column: string): number {
-    return readNonNegativeInteger(row, column, 'a count');
-}
-
-/** A position in a list, like the part of a `unionall` a row came from: a non-negative integer. */
-export function readIndex(row: RhydbRow, column: string): number {
-    return readNonNegativeInteger(row, column, 'an index');
-}
-
-function readNonNegativeInteger(row: RhydbRow, column: string, expected: string): number {
     const value = readNumber(row, column);
     if (!Number.isInteger(value) || value < 0) {
-        throw new RhydbRowError(column, `expected ${expected}, got ${value}`);
+        throw new RhydbRowError(column, `expected a count, got ${value}`);
     }
     return value;
 }
