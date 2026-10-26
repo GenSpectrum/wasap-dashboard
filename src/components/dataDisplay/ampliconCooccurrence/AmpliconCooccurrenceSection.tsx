@@ -30,8 +30,11 @@ type SectionProps = {
     amplicons: AmpliconsConfig;
     filter: SiloReadFilter;
     granularity: TemporalGranularity;
-    /** All the variant's mutations, before the Jaccard threshold: the clusters are looked for among these. */
-    candidateMutations: string[];
+    /**
+     * All the variant's mutations, before the Jaccard threshold: the clusters are looked for among these.
+     * `undefined` while they are still loading.
+     */
+    candidateMutations: string[] | undefined;
     /** The clusters with a lower Jaccard index are left out (without a `jaccardSource`, none are). */
     minJaccard: number;
     /** Where to get the Jaccard indices of the clusters from; none without. */
@@ -46,21 +49,38 @@ type SectionProps = {
  * table: the clusters of them that reads carry together, over time, those specific enough to the
  * variant.
  */
-export function AmpliconCooccurrenceSection(props: SectionProps) {
+export function AmpliconCooccurrenceSection({ candidateMutations, ...props }: SectionProps) {
+    return (
+        <TitledPanel title='Co-occurrence within amplicons' info={<CooccurrenceInfo />} boxed={false}>
+            {candidateMutations === undefined ? (
+                <SectionLoading />
+            ) : (
+                <SectionContent {...props} candidateMutations={candidateMutations} />
+            )}
+        </TitledPanel>
+    );
+}
+
+function SectionContent(props: SectionProps & { candidateMutations: string[] }) {
     const amplicons = useAmplicons(props.amplicons);
     const dateAxis = useDateAxis(props.filter, props.granularity);
 
     const error = amplicons.error ?? dateAxis.error;
+    if (error) {
+        return <ErrorDisplay error={error} />;
+    }
+    if (amplicons.data === undefined || dateAxis.data === undefined) {
+        return <SectionLoading />;
+    }
+    return <Cooccurrences {...props} ampliconList={amplicons.data} dateAxis={dateAxis.data} />;
+}
+
+/** About as high as a short table, so that the page below doesn't jump as much once it is in. */
+function SectionLoading() {
     return (
-        <TitledPanel title='Co-occurrence within amplicons' info={<CooccurrenceInfo />} boxed={false}>
-            {error ? (
-                <ErrorDisplay error={error} />
-            ) : amplicons.data === undefined || dateAxis.data === undefined ? (
-                <LoadingDisplay />
-            ) : (
-                <Cooccurrences {...props} ampliconList={amplicons.data} dateAxis={dateAxis.data} />
-            )}
-        </TitledPanel>
+        <div className='h-48'>
+            <LoadingDisplay />
+        </div>
     );
 }
 
@@ -96,7 +116,7 @@ function Cooccurrences({
     cooccurrenceModeLink,
     ampliconList,
     dateAxis,
-}: SectionProps & { ampliconList: Amplicon[]; dateAxis: DateAxis }) {
+}: SectionProps & { candidateMutations: string[]; ampliconList: Amplicon[]; dateAxis: DateAxis }) {
     const { groups } = useMemo(
         () => mutationsByAmplicon(candidateMutations, ampliconList),
         [candidateMutations, ampliconList],
@@ -133,7 +153,7 @@ function Cooccurrences({
         return <ErrorDisplay error={cooccurrence.error} />;
     }
     if (shownAmplicons === undefined) {
-        return <LoadingDisplay />;
+        return <SectionLoading />;
     }
     if (shownAmplicons.length === 0) {
         return (

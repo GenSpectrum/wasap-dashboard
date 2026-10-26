@@ -2,10 +2,11 @@ import { AnnotatedMutation } from './annotated-mutation';
 import { BACKGROUND_MIN_PROPORTION, type ExcludedMutation } from '../../dataLayer/hooks/backgroundMutations';
 import { type SequenceType } from '../../types/dashboardComponents';
 import { TitledPanel } from '../shared/TitledPanel';
+import { LoadingDisplay } from '../shared/loading-display';
 
 type ExcludedMutationsProps = {
-    /** From `useSignatureWithoutBackground`. */
-    mutations: ExcludedMutation[];
+    /** From `useSignatureWithoutBackground`; `undefined` while they are still loading. */
+    mutations: ExcludedMutation[] | undefined;
     /** The background lineages picked, in their order; one without any of the variant's mutations says so. */
     backgroundLineages: readonly string[];
     sequenceType: SequenceType;
@@ -17,6 +18,15 @@ type ExcludedMutationsProps = {
  * are no background lineages.
  */
 export function ExcludedMutations({ mutations, backgroundLineages, sequenceType }: ExcludedMutationsProps) {
+    if (mutations === undefined) {
+        return (
+            <TitledPanel title='Excluded mutations' info={<ExcludedMutationsInfo />}>
+                <div className='h-24'>
+                    <LoadingDisplay />
+                </div>
+            </TitledPanel>
+        );
+    }
     if (mutations.length === 0 && backgroundLineages.length === 0) {
         return null;
     }
