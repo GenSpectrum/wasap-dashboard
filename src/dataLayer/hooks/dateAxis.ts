@@ -1,9 +1,12 @@
 /**
  * The date axis of a grid over time: its buckets for the filter and granularity, and the reads in
- * each.
+ * each. The reads per date are one SILO query, cached apart from the granularity
+ * (`samplingDateCountsQuery`), so that all the grids of a page, and of the modes with the same
+ * filter, ask for it once, and switching the granularity asks for nothing.
  */
 
-import { type UseQueryResult } from '@tanstack/react-query';
+import { queryOptions, type QueryClient, type UseQueryResult } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 import { useConnection, useSiloSchema } from './connection';
 import { useSiloQuery } from './siloQuery';
@@ -16,7 +19,7 @@ import {
     type TemporalClass,
 } from '../../util/temporalClass';
 import { normalizeFilter, samplingDatesQuery, type SiloReadFilter, type SiloSchema } from '../queries';
-import { readNamedCounts } from '../queries/rows';
+import { readNamedCounts, type NamedCount } from '../queries/rows';
 import { type Connection } from '../transport/connection';
 
 /** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
@@ -30,20 +33,56 @@ export type DateAxis = {
 };
 
 /**
- * The date buckets of a grid for the filter and granularity, and the reads in each. More buckets
- * than a grid can show is an error for the user (`MAX_GRID_COLUMNS`).
+ * The date buckets of a grid for the filter and granularity, and the reads in each. The reads per
+ * date come from the cache (`samplingDateCountsQuery`), whatever the granularity, so that the grids
+ * of a page ask SILO for them once between them.
  */
 export async function fetchDateAxis(
+    queryClient: QueryClient,
     connection: Connection,
     schema: SiloSchema,
     filter: SiloReadFilter,
     granularity: TemporalGranularity,
-    signal: AbortSignal,
 ): Promise<DateAxis> {
-    const dateRows = await connection
-        .query(samplingDatesQuery(schema, normalizeFilter(filter)), 'Over-time date axis', { signal })
-        .then((result) => readNamedCounts(result.rows, schema.groupingDate));
+    const dateRows = await queryClient.query(samplingDateCountsQuery(connection, schema, normalizeFilter(filter)));
+    return toDateAxis(dateRows, granularity, filter);
+}
 
+/** The date axis (`fetchDateAxis`) on its own, for a grid of something other than the mutations. */
+export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranularity): UseQueryResult<DateAxis> {
+    const connection = useConnection();
+    const schema = useSiloSchema();
+    const normalized = normalizeFilter(filter);
+
+    // Stable, so that the axis is only made again when it changes; an error of `toDateAxis` (too
+    // many buckets) becomes the query's. Of the filter, the axis only takes the dates.
+    const { samplingDateFrom, samplingDateTo } = normalized;
+    const select = useCallback(
+        (dateRows: NamedCount[]) => toDateAxis(dateRows, granularity, { samplingDateFrom, samplingDateTo }),
+        [granularity, samplingDateFrom, samplingDateTo],
+    );
+    return useSiloQuery({ ...samplingDateCountsQuery(connection, schema, normalized), select });
+}
+
+/**
+ * The query of the reads per sampling date for a (normalized) filter. The buckets of every
+ * granularity are made from these, so switching it asks SILO for nothing new.
+ */
+function samplingDateCountsQuery(connection: Connection, schema: SiloSchema, filter: SiloReadFilter) {
+    // `schema` stands in for `connection.key` (same memoized SiloInstance).
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    return queryOptions({
+        queryKey: ['silo', 'sampling-date-counts', ...connection.key, filter],
+        staleTime: Infinity,
+        queryFn: ({ signal }) =>
+            connection
+                .query(samplingDatesQuery(schema, filter), 'Over-time date axis', { signal })
+                .then((result) => readNamedCounts(result.rows, schema.groupingDate)),
+    });
+}
+
+/** The date axis of the reads per date; more buckets than a grid can show is an error for the user (`MAX_GRID_COLUMNS`). */
+function toDateAxis(dateRows: NamedCount[], granularity: TemporalGranularity, filter: SiloReadFilter): DateAxis {
     const dateAxis = buildDateAxis(dateRows, granularity, filter);
     if (dateAxis.requestedDateRanges.length > MAX_GRID_COLUMNS) {
         throw new UserFacingError(
@@ -56,26 +95,12 @@ export async function fetchDateAxis(
     return dateAxis;
 }
 
-/** The date axis (`fetchDateAxis`) on its own, for a grid of something other than the mutations. */
-export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranularity): UseQueryResult<DateAxis> {
-    const connection = useConnection();
-    const schema = useSiloSchema();
-    const normalized = normalizeFilter(filter);
-
-    // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for `filter`.
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
-        queryKey: ['silo', 'date-axis', ...connection.key, normalized, granularity],
-        queryFn: ({ signal }) => fetchDateAxis(connection, schema, normalized, granularity, signal),
-    });
-}
-
 /** The buckets in range and the reads in each (exported for tests). */
 export function buildDateAxis(
     dateRows: { name: string; count: number }[],
     granularity: TemporalGranularity,
     filter: SiloReadFilter,
-): { requestedDateRanges: TemporalClass[]; totalCountsByBucket: number[] } {
+): DateAxis {
     const countByBucket = new Map<string, number>();
     const bucketByKey = new Map<string, TemporalClass>();
     for (const { name, count } of dateRows) {

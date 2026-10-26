@@ -103,11 +103,11 @@ export function useOverTimeMetadata(
             // Date axis first: the "too many buckets" guard has to fire before the
             // (potentially expensive) mutation queries.
             const { requestedDateRanges, totalCountsByBucket } = await fetchDateAxis(
+                queryClient,
                 connection,
                 schema,
-                filter,
+                normalized,
                 granularity,
-                signal,
             );
 
             if (displayMutations !== undefined) {
