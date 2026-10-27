@@ -6,7 +6,7 @@ import { useQueriesOverTime } from '../../../dataLayer/hooks/analyses/queriesOve
 import { type RhydbFilterExpression, type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type TemporalGranularity } from '../../../types/domain';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
-import { type Temporal } from '../../../util/temporalClass';
+import { type Temporal } from '../../../util/temporal';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
 import { HoverTooltip } from '../../ui/HoverTooltip';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';

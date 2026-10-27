@@ -19,7 +19,7 @@ import { type ProportionValue, removeEmptyDatesInPlace } from '../../../componen
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
 import { type TemporalGranularity } from '../../../types/domain';
 import { Map2dView } from '../../../util/map2d';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
+import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporal';
 import {
     normalizeFilter,
     positionsCooccurrenceQuery,

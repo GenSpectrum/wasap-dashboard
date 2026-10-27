@@ -1,5 +1,5 @@
 import { Map2dBase, type Map2DContents } from '../../../../util/map2d';
-import type { Temporal } from '../../../../util/temporalClass';
+import type { Temporal } from '../../../../util/temporal';
 import { type ProportionValue, serializeTemporal } from '../../../overTime/proportionValue';
 
 /**

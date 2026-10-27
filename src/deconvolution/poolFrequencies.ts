@@ -1,7 +1,7 @@
 import { type MutationFrequency } from './lollipopService';
 import { type SampleMutationFrequency } from '../dataLayer/hooks/analyses/mutationFrequencies';
 import { type TemporalGranularity } from '../types/domain';
-import { parseDateStringToTemporal } from '../util/temporalClass';
+import { parseDateStringToTemporal } from '../util/temporal';
 
 /**
  * The frequencies to deconvolve at a granularity: by day, every sample as it is; coarser, the

@@ -1,5 +1,5 @@
 import { Map2dBase, Map2dView, type Map2DContents } from '../../../util/map2d';
-import { type Temporal } from '../../../util/temporalClass';
+import { type Temporal } from '../../../util/temporal';
 import { isInProportionInterval, type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
 import { removeEmptyDatesInPlace, type ProportionValue, serializeTemporal } from '../proportionValue';
 

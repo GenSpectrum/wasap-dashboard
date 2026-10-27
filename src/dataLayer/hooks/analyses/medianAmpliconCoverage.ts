@@ -24,7 +24,7 @@ import {
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
-} from '../../../util/temporalClass';
+} from '../../../util/temporal';
 import {
     positionsBySampleQuery,
     readPositionsBySample,

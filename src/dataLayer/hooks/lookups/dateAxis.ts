@@ -15,7 +15,7 @@ import {
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
-} from '../../../util/temporalClass';
+} from '../../../util/temporal';
 import { normalizeFilter, samplingDatesQuery, type RhydbReadFilter, type RhydbSchema } from '../../queries';
 import { readNamedCounts, type NamedCount } from '../../queries/rows';
 import { type Connection } from '../../transport/connection';
