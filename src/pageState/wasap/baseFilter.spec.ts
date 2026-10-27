@@ -8,7 +8,7 @@ import {
     withDatasetFilter,
 } from './baseFilter';
 import { type WasapBaseFilter } from './wasapAnalysisFilter';
-import { CustomDateRangeLabel } from '../../types/DateWindow';
+import { CUSTOM_DATE_RANGE_LABEL } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 
 const config = {
@@ -79,7 +79,7 @@ describe('baseFilter', () => {
 
         it('parses an open-ended custom range', () => {
             expect(parse('samplingDate=2024-01-01--').samplingDate).toEqual({
-                label: CustomDateRangeLabel,
+                label: CUSTOM_DATE_RANGE_LABEL,
                 dateFrom: '2024-01-01',
                 dateTo: undefined,
             });
@@ -98,7 +98,7 @@ describe('baseFilter', () => {
         it('knows which sampling dates still have to be resolved', () => {
             expect(isUnresolvedSamplingDate({ label: 'Most recent 90 days' })).toBe(true);
             expect(isUnresolvedSamplingDate({ label: 'Most recent 90 days', dateFrom: '2024-01-01' })).toBe(false);
-            expect(isUnresolvedSamplingDate({ label: CustomDateRangeLabel })).toBe(false);
+            expect(isUnresolvedSamplingDate({ label: CUSTOM_DATE_RANGE_LABEL })).toBe(false);
         });
     });
 

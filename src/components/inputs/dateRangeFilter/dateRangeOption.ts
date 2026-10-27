@@ -29,3 +29,8 @@ export const dateRangeValueSchema = z
     .nullable();
 
 export type DateRangeValue = z.infer<typeof dateRangeValueSchema>;
+
+export const CUSTOM_DATE_RANGE_LABEL = 'Custom';
+
+/** The "no restriction" date-range option label — deliberate, not the default (see doc on `DEFAULT_RECENT_DAYS_LABEL`). */
+export const ALL_TIMES_LABEL = 'All times';

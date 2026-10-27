@@ -1,7 +1,6 @@
 import { type WasapBaseFilter, type WasapDatasetFilter, type WasapMeanProportion } from './wasapAnalysisFilter';
-import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
-import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 import { temporalGranularitySchema } from '../../util/temporal';
 import { enumParam, listParam } from '../urlParams';
@@ -147,7 +146,7 @@ function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRa
     if (value.includes('--')) {
         const [from, to] = value.split('--').map((part) => part.trim());
         return {
-            label: CustomDateRangeLabel,
+            label: CUSTOM_DATE_RANGE_LABEL,
             dateFrom: from === '' ? undefined : from,
             dateTo: to === '' ? undefined : to,
         };
@@ -162,7 +161,7 @@ function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRa
  */
 export function isUnresolvedSamplingDate(samplingDate: DateRangeOption): boolean {
     return (
-        samplingDate.label !== CustomDateRangeLabel &&
+        samplingDate.label !== CUSTOM_DATE_RANGE_LABEL &&
         samplingDate.dateFrom === undefined &&
         samplingDate.dateTo === undefined
     );

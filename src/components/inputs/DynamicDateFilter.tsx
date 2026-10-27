@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 
 import { DateRangeFilter } from './dateRangeFilter/DateRangeFilter';
-import { type DateRangeOption } from './dateRangeFilter/dateRangeOption';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from './dateRangeFilter/dateRangeOption';
 import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
-import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**
@@ -33,7 +32,7 @@ export function DynamicDateFilter({
     // When the value has a "Custom" label, try to match it back to one of the generated options
     // by comparing dateFrom and dateTo. If there's a match, use that option's label instead of "Custom".
     const normalizedValue = useMemo(() => {
-        if (value?.label !== CustomDateRangeLabel) {
+        if (value?.label !== CUSTOM_DATE_RANGE_LABEL) {
             return value;
         }
 
@@ -46,7 +45,7 @@ export function DynamicDateFilter({
 
     // DateRangeFilter's `value` takes a preset's bare label, or the raw dates for a custom
     // range (never both) - collapse the resolved DateRangeOption into that shape.
-    const isCustom = normalizedValue?.label === CustomDateRangeLabel;
+    const isCustom = normalizedValue?.label === CUSTOM_DATE_RANGE_LABEL;
 
     return (
         <label>
