@@ -19,8 +19,8 @@ import { useConnection, useRhydbSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { useRhydbQuery } from './rhydbQuery';
 import { useSampleOverview } from './sampleOverview';
-import { type Amplicon } from '../../amplicons/primerBed';
-import { samplingPositions } from '../../amplicons/samplingPositions';
+import { type Amplicon } from '../../externalData/fileBased/amplicons/primerBed';
+import { samplingPositions } from '../../externalData/fileBased/amplicons/samplingPositions';
 import {
     generateAllInRange,
     getMinMaxTemporal,

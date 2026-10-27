@@ -9,8 +9,8 @@ import {
     type CooccurrenceRow,
 } from './ampliconCooccurrence';
 import { buildDateAxis } from './dateAxis';
-import { mutationsByAmplicon } from '../../amplicons/mutationsByAmplicon';
-import { type Amplicon } from '../../amplicons/primerBed';
+import { mutationsByAmplicon } from '../../externalData/fileBased/amplicons/mutationsByAmplicon';
+import { type Amplicon } from '../../externalData/fileBased/amplicons/primerBed';
 
 const amplicon: Amplicon = { chrom: 'ref', number: 7, pool: '1', start: 1, end: 400, insertStart: 30, insertEnd: 370 };
 

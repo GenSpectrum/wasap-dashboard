@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
-import { type Amplicon } from '../../../amplicons/primerBed';
 import {
     allRowsOf,
     cooccurrenceTableData,
@@ -9,6 +8,7 @@ import {
     type AmpliconRows,
     type CooccurrenceRow,
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
+import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { Map2dView } from '../../../util/map2d';
 import { type Substitution } from '../../../util/mutations';
 import { type Temporal, type TemporalClass } from '../../../util/temporalClass';

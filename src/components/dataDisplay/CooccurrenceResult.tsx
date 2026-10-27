@@ -3,7 +3,7 @@ import { type To } from 'react-router-dom';
 import { Cooccurrence } from './cooccurrence/cooccurrence';
 import { type ClinicalLapisSource } from './cooccurrence/usePanelLineageJaccards';
 import { type RhydbReadFilter } from '../../dataLayer/queries';
-import { type LineageTree } from '../../lineageTree/lineageTree';
+import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import {
     DEFAULT_ENTROPY_CUTOFF_BITS,
     effectivePositionSource,

@@ -5,10 +5,10 @@ import { getClusterJaccardsWithLineageCount } from './getClusterJaccards';
 import { getMutationsForVariant } from './getMutations';
 import { getClientLogger } from '../../clientLogger';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
-import { getLineageSignature, type LineageTree } from '../../lineageTree/lineageTree';
 import type { VariantTimeFrame, WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { type LapisFilter } from '../../types/dashboardComponents';
 import { getErrorLogMessage } from '../../util/getErrorLogMessage';
+import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
 
 const logger = getClientLogger('useVariantSignature');
 

@@ -1,5 +1,5 @@
 import { type Amplicon } from './primerBed';
-import { DeletionClass, SubstitutionClass } from '../util/mutations';
+import { DeletionClass, SubstitutionClass } from '../../../util/mutations';
 
 export type AmpliconMutation = SubstitutionClass | DeletionClass;
 

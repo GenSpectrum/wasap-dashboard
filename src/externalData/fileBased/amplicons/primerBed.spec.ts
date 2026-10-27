@@ -63,7 +63,10 @@ describe('parsePrimerBed', () => {
     });
 
     test('parses the vendored ARTIC v5.3.2 scheme into 96 amplicons', () => {
-        const text = readFileSync(resolve(__dirname, '../../public/primers/covid/ARTIC_v5.3.2/primer.bed'), 'utf8');
+        const text = readFileSync(
+            resolve(__dirname, '../../../../public/primers/covid/ARTIC_v5.3.2/primer.bed'),
+            'utf8',
+        );
 
         const amplicons = parsePrimerBed(text);
 

@@ -3,10 +3,10 @@ import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
-import { type Amplicon } from '../../amplicons/primerBed';
-import { ampliconAnchor } from '../../amplicons/samplingPositions';
-import { useAmplicons } from '../../amplicons/useAmplicons';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { type Amplicon } from '../../externalData/fileBased/amplicons/primerBed';
+import { ampliconAnchor } from '../../externalData/fileBased/amplicons/samplingPositions';
+import { useAmplicons } from '../../externalData/fileBased/amplicons/useAmplicons';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { CooccurrencePageStateHandler } from '../../pageState/wasap/handlers/CooccurrencePageStateHandler';

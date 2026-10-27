@@ -1,13 +1,13 @@
 import { useState, type CSSProperties, type MouseEvent } from 'react';
 
-import { type AmpliconsConfig } from '../../amplicons/ampliconsConfig';
-import { type Amplicon } from '../../amplicons/primerBed';
-import { useAmplicons } from '../../amplicons/useAmplicons';
 import {
     useMedianAmpliconCoverage,
     type MedianAmpliconCoverageGrid,
     type SampleAmpliconCoverage,
 } from '../../dataLayer/hooks/medianAmpliconCoverage';
+import { type AmpliconsConfig } from '../../externalData/fileBased/amplicons/ampliconsConfig';
+import { type Amplicon } from '../../externalData/fileBased/amplicons/primerBed';
+import { useAmplicons } from '../../externalData/fileBased/amplicons/useAmplicons';
 import { type TemporalClass } from '../../util/temporalClass';
 import { TitledPanel } from '../shared/TitledPanel';
 import { singleGraphColorRGBByName } from '../shared/charts/colors';

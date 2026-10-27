@@ -11,7 +11,7 @@ import { lineageSignatures } from '../../deconvolution/lineageSignatures';
 import { informativeMutations } from '../../deconvolution/lollipopService';
 import { poolFrequencies } from '../../deconvolution/poolFrequencies';
 import { useDeconvolution, useLollipopVersion } from '../../deconvolution/useDeconvolution';
-import { type LineageTree } from '../../lineageTree/lineageTree';
+import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';

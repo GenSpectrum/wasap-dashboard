@@ -18,8 +18,11 @@ import { allQueryData } from './allQueryData';
 import { useConnection, useRhydbSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { useRhydbQueries } from './rhydbQuery';
-import { type AmpliconMutation, type AmpliconMutations } from '../../amplicons/mutationsByAmplicon';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
+import {
+    type AmpliconMutation,
+    type AmpliconMutations,
+} from '../../externalData/fileBased/amplicons/mutationsByAmplicon';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';

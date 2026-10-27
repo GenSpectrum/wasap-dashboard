@@ -3,11 +3,6 @@ import { type To } from 'react-router-dom';
 
 import { CooccurrenceTable } from './CooccurrenceTable';
 import { useCooccurrenceJaccard } from './useCooccurrenceJaccard';
-import { type AmpliconsConfig } from '../../../amplicons/ampliconsConfig';
-import { mutationsByAmplicon } from '../../../amplicons/mutationsByAmplicon';
-import { type Amplicon } from '../../../amplicons/primerBed';
-import { ampliconAnchor } from '../../../amplicons/samplingPositions';
-import { useAmplicons } from '../../../amplicons/useAmplicons';
 import {
     allRowsOf,
     cooccurrenceRows,
@@ -17,6 +12,11 @@ import {
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { useDateAxis, type DateAxis } from '../../../dataLayer/hooks/dateAxis';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/ampliconsConfig';
+import { mutationsByAmplicon } from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
+import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
+import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
+import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
 import { type ClusterJaccardSource } from '../../../externalData/lapis/getClusterJaccards';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { TitledPanel } from '../../shared/TitledPanel';

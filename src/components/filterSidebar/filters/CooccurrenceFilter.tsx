@@ -1,12 +1,12 @@
 import { type FC, useState } from 'react';
 
-import { type Amplicon } from '../../../amplicons/primerBed';
-import { ampliconAnchor, samplingPositions } from '../../../amplicons/samplingPositions';
-import { useAmplicons } from '../../../amplicons/useAmplicons';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { codonAnchorFor } from '../../../genome/geneAnnotation';
-import { useGeneAnnotation } from '../../../genome/useGeneAnnotation';
-import { type LineageTree } from '../../../lineageTree/lineageTree';
+import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
+import { ampliconAnchor, samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
+import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
+import { codonAnchorFor } from '../../../externalData/fileBased/genome/geneAnnotation';
+import { useGeneAnnotation } from '../../../externalData/fileBased/genome/useGeneAnnotation';
+import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import {
     DEFAULT_ENTROPY_CUTOFF_BITS,
     POSITION_SOURCE,

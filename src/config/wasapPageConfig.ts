@@ -1,7 +1,7 @@
 import z from 'zod';
 
-import { ampliconsConfigSchema } from '../amplicons/ampliconsConfig';
-import { lineageTreeConfigSchema } from '../lineageTree/lineageTreeConfig';
+import { ampliconsConfigSchema } from '../externalData/fileBased/amplicons/ampliconsConfig';
+import { lineageTreeConfigSchema } from '../externalData/fileBased/lineageTree/lineageTreeConfig';
 import {
     wasapCollectionFilterSchema,
     wasapCooccurrenceFilterSchema,
