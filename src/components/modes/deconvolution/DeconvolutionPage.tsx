@@ -20,7 +20,7 @@ import { DeconvolutionPageStateHandler } from '../../../pageState/wasap/handlers
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
 import { effectivePanel } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { modePath } from '../../../pageState/wasap/wasapModes';
-import { type TemporalGranularity } from '../../../types/domain';
+import { type TemporalGranularity } from '../../../util/temporalClass';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { useWasapLayoutContext } from '../../layout/WasapLayout';

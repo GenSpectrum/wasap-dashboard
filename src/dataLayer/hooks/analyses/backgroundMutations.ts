@@ -10,8 +10,13 @@ import { useMemo } from 'react';
 
 import { useOverTimeMetadata } from './mutationsOverTime';
 import { type VariantSignature } from '../../../externalData/lapis/useVariantSignature';
-import { type SubstitutionOrDeletionEntry, type SequenceType, type TemporalGranularity } from '../../../types/domain';
-import { type Deletion, type Substitution } from '../../../util/mutations';
+import {
+    type Deletion,
+    type Substitution,
+    type SubstitutionOrDeletionEntry,
+    type SequenceType,
+} from '../../../util/mutations';
+import { type TemporalGranularity } from '../../../util/temporalClass';
 import { type RhydbReadFilter } from '../../queries';
 
 /** A mutation with at least this mean proportion over the time range is background. */

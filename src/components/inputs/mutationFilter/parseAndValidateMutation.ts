@@ -1,8 +1,14 @@
 import { type MutationFilterItem } from './MutationFilter';
 import { sequenceTypeFromSegment } from './sequenceTypeFromSegment';
 import type { ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
-import { type SequenceType, mutationType } from '../../../types/domain';
-import { DeletionClass, InsertionClass, type Mutation, SubstitutionClass } from '../../../util/mutations';
+import {
+    DeletionClass,
+    InsertionClass,
+    type Mutation,
+    SubstitutionClass,
+    type SequenceType,
+    mutationType,
+} from '../../../util/mutations';
 
 export const parseAndValidateMutation = (
     value: string,

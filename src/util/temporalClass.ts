@@ -1,11 +1,18 @@
 import dayjs from 'dayjs/esm';
 import advancedFormat from 'dayjs/esm/plugin/advancedFormat';
 import isoWeek from 'dayjs/esm/plugin/isoWeek';
-
-import type { TemporalGranularity } from '../types/domain';
+import z from 'zod';
 
 dayjs.extend(isoWeek);
 dayjs.extend(advancedFormat);
+
+export const temporalGranularitySchema = z.union([
+    z.literal('day'),
+    z.literal('week'),
+    z.literal('month'),
+    z.literal('year'),
+]);
+export type TemporalGranularity = z.infer<typeof temporalGranularitySchema>;
 
 /**
  * https://day.js.org/docs/en/plugin/advanced-format

@@ -1,5 +1,5 @@
 import { RadioSelect } from './RadioSelect';
-import { type SequenceType } from '../../types/domain';
+import { type SequenceType } from '../../util/mutations';
 
 export function SequenceTypeSelector({
     value,

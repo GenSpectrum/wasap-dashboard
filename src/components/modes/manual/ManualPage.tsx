@@ -13,7 +13,7 @@ import {
     MUTATION_SOURCE,
     type WasapManualFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type TemporalGranularity } from '../../../types/domain';
+import { type TemporalGranularity } from '../../../util/temporalClass';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';

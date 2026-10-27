@@ -1,4 +1,4 @@
-import { type SubstitutionOrDeletionOrInsertion } from '../types/domain';
+import z from 'zod';
 
 export interface Mutation {
     readonly position: number;
@@ -221,3 +221,42 @@ export class InsertionClass implements MutationClass {
         );
     }
 }
+
+export const sequenceTypeSchema = z.union([z.literal('nucleotide'), z.literal('amino acid')]);
+export type SequenceType = z.infer<typeof sequenceTypeSchema>;
+
+export type SubstitutionOrDeletion = 'substitution' | 'deletion';
+
+export type SubstitutionOrDeletionOrInsertion = SubstitutionOrDeletion | 'insertion';
+
+export type SubstitutionEntry<T extends Substitution = SubstitutionClass> = {
+    type: 'substitution';
+    mutation: T;
+    count: number;
+    proportion: number;
+};
+
+export type DeletionEntry<T extends Deletion = DeletionClass> = {
+    type: 'deletion';
+    mutation: T;
+    count: number;
+    proportion: number;
+};
+
+export type InsertionEntry<T extends Insertion = InsertionClass> = { type: 'insertion'; mutation: T; count: number };
+
+export type SubstitutionOrDeletionEntry<
+    S extends Substitution = SubstitutionClass,
+    D extends Deletion = DeletionClass,
+> = SubstitutionEntry<S> | DeletionEntry<D>;
+
+export type MutationEntry = SubstitutionEntry | DeletionEntry | InsertionEntry;
+
+export const mutationType = {
+    nucleotideMutations: 'nucleotideMutations',
+    nucleotideInsertions: 'nucleotideInsertions',
+    aminoAcidMutations: 'aminoAcidMutations',
+    aminoAcidInsertions: 'aminoAcidInsertions',
+} as const;
+
+export type MutationType = (typeof mutationType)[keyof typeof mutationType];

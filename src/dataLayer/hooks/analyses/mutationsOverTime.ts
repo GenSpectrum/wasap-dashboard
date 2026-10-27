@@ -26,10 +26,20 @@ import {
     type MutationOverTimeDataMap,
 } from '../../../components/overTime/mutationsOverTime/MutationOverTimeData';
 import { removeEmptyDatesInPlace, type ProportionValue } from '../../../components/overTime/proportionValue';
-import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../../types/domain';
 import { Map2dView, type Map2DContents } from '../../../util/map2d';
-import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../../util/mutations';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
+import {
+    DeletionClass,
+    SubstitutionClass,
+    type Deletion,
+    type Substitution,
+    type SubstitutionOrDeletionEntry,
+} from '../../../util/mutations';
+import {
+    parseDateStringToTemporal,
+    type Temporal,
+    type TemporalClass,
+    type TemporalGranularity,
+} from '../../../util/temporalClass';
 import {
     OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,

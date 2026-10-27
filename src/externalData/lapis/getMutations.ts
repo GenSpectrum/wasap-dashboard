@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
 import { getTotalCount } from './getTotalCount';
-import { type LapisFilter, type SequenceType } from '../../types/domain';
+import { type SequenceType } from '../../util/mutations';
 import { lapisPost } from '../lapisApi/lapisApi';
+import { type LapisFilter } from '../lapisApi/lapisTypes';
 
 const mutationsSchema = z.object({
     data: z.array(

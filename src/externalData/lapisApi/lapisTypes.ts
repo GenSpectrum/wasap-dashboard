@@ -43,3 +43,16 @@ export type ProblemDetail = z.infer<typeof problemDetail>;
 export const lapisError = z.object({
     error: problemDetail,
 });
+
+export const mutationsFilterSchema = z.object({
+    nucleotideMutations: z.array(z.string()),
+    aminoAcidMutations: z.array(z.string()),
+    nucleotideInsertions: z.array(z.string()),
+    aminoAcidInsertions: z.array(z.string()),
+});
+export type MutationsFilter = z.infer<typeof mutationsFilterSchema>;
+
+export const lapisFilterSchema = z
+    .record(z.union([z.string(), z.array(z.string()), z.number(), z.null(), z.boolean(), z.undefined()]))
+    .and(mutationsFilterSchema.partial());
+export type LapisFilter = z.infer<typeof lapisFilterSchema>;
