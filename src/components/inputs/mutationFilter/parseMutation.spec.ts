@@ -9,16 +9,19 @@ describe('parseMutation', () => {
         nucleotideSequences: [
             {
                 name: 'nuc1',
+                sequence: 'ACGT',
                 length: 4,
             },
         ],
         genes: [
             {
                 name: 'gene1',
+                sequence: 'ACGT',
                 length: 4,
             },
             {
                 name: 'gene2',
+                sequence: 'ACGT',
                 length: 4,
             },
         ],

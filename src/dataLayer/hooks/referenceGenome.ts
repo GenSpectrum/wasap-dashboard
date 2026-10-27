@@ -12,7 +12,7 @@ import { useConnection } from './connection';
 import { useSiloQuery } from './siloQuery';
 import { readReferenceGenome, referenceGenomeQuery, type ReferenceGenome } from '../queries';
 
-/** The names and lengths of the instance's segments and genes. */
+/** The names, symbols and lengths of the instance's segments and genes. */
 export function useReferenceGenome(): UseQueryResult<ReferenceGenome> {
     const connection = useConnection();
     return useSiloQuery({

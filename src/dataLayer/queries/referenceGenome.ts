@@ -3,15 +3,15 @@
  *
  * Every instance holds it in a `reference_genomes` table, one row per segment
  * or gene, next to the reads. The table has no column for the length, and the
- * language no function to compute it, so the sequences are fetched and only
- * their lengths kept.
+ * language no function to compute it, so the sequences are fetched and their
+ * lengths computed here.
  */
 
 import { table, type Queryable } from '../transport/relation';
 import { readText, RhydbRowError, type RhydbRow } from '../transport/row';
 
-/** A segment or gene of the reference, by name and length. Nothing reads its symbols. */
-export type ReferenceSequence = { name: string; length: number };
+/** A segment or gene of the reference: its name, its symbols, and their number. */
+export type ReferenceSequence = { name: string; sequence: string; length: number };
 
 export type ReferenceGenome = {
     nucleotideSequences: ReferenceSequence[];
@@ -28,7 +28,8 @@ export function referenceGenomeQuery(): Queryable {
 export function readReferenceGenome(rows: readonly RhydbRow[]): ReferenceGenome {
     const referenceGenome: ReferenceGenome = { nucleotideSequences: [], genes: [] };
     for (const row of rows) {
-        const sequence = { name: readText(row, 'name'), length: readText(row, 'sequence').length };
+        const symbols = readText(row, 'sequence');
+        const sequence = { name: readText(row, 'name'), sequence: symbols, length: symbols.length };
         const type = readText(row, 'type');
         switch (type) {
             case 'nucleotide':
