@@ -3,23 +3,23 @@ import { useParams } from 'react-router-dom';
 
 import { getClientLogger } from '../clientLogger';
 import { NotFoundPage } from './NotFoundPage';
-import { CollectionPage } from '../components/pages/CollectionPage';
-import { CooccurrencePage } from '../components/pages/CooccurrencePage';
-import { DeconvolutionPage } from '../components/pages/DeconvolutionPage';
-import { ManualPage } from '../components/pages/ManualPage';
-import { OverviewPage } from '../components/pages/OverviewPage';
-import { ResistancePage } from '../components/pages/ResistancePage';
-import { UntrackedPage } from '../components/pages/UntrackedPage';
-import { VariantExplorerPage } from '../components/pages/VariantExplorerPage';
-import { WasapLayout, useWasapLayoutContext } from '../components/pages/WasapLayout';
-import { LoadingDisplay } from '../components/shared/loading-display';
-import { NoDataDisplay } from '../components/shared/no-data-display';
+import { WasapLayout, useWasapLayoutContext } from '../components/layout/WasapLayout';
+import { CollectionPage } from '../components/modes/collection/CollectionPage';
+import { CooccurrencePage } from '../components/modes/cooccurrence/CooccurrencePage';
+import { DeconvolutionPage } from '../components/modes/deconvolution/DeconvolutionPage';
+import { ManualPage } from '../components/modes/manual/ManualPage';
+import { OverviewPage } from '../components/modes/overview/OverviewPage';
+import { ResistancePage } from '../components/modes/resistance/ResistancePage';
+import { UntrackedPage } from '../components/modes/untracked/UntrackedPage';
+import { VariantExplorerPage } from '../components/modes/variantExplorer/VariantExplorerPage';
+import { LoadingDisplay } from '../components/ui/LoadingDisplay';
+import { NoDataDisplay } from '../components/ui/NoDataDisplay';
 import { getAppConfig } from '../config/appConfig';
 import { isModeEnabled, type WasapPageConfig } from '../config/wasapPageConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
+import { fetchLineageTree } from '../externalData/fileBased/lineageTree/fetchLineageTree';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
 import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
-import { fetchLineageTree } from '../lineageTree/fetchLineageTree';
 import { segmentToMode } from '../pageState/wasap/wasapModes';
 import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
@@ -28,9 +28,8 @@ const logger = getClientLogger('WasapRoute');
 const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], displayMutationsBySet: {} };
 
 /**
- * The `/:organismPath` route. Replaces `Wasap.astro`: resolves
- * the per-organism config from the URL and fetches resistance-mutation data on the
- * client (Astro did this in page frontmatter), as well as the lineage tree. The page of the analysis mode
+ * The `/:organismPath` route: resolves the per-organism config from the URL and fetches
+ * resistance-mutation data, as well as the lineage tree. The page of the analysis mode
  * (see `WasapModeRoute`) is rendered inside the `WasapLayout`.
  */
 export function WasapRoute() {
@@ -54,8 +53,7 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
             try {
                 return await fetchResistanceData(config, getApiServiceForClientside());
             } catch (error) {
-                // Matches Wasap.astro: a resistance-data failure degrades to an
-                // empty set rather than failing the whole page.
+                // A resistance-data failure degrades to an empty set rather than failing the whole page.
                 logger.error(
                     `Failed to fetch resistance data for WASAP page (organism: ${config.genSpectrumOrganismName}): ${getErrorLogMessage(error)}`,
                 );

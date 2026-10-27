@@ -1,5 +1,5 @@
 import { RadioSelect } from './RadioSelect';
-import { type SequenceType } from '../../types/dashboardComponents';
+import { type SequenceType } from '../../types/domain';
 
 export function SequenceTypeSelector({
     value,

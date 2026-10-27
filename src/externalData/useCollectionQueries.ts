@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getClientLogger } from '../clientLogger';
-import { type QueriesOverTimeQuery } from '../components/dataDisplay/queriesOverTime/queries-over-time';
+import { type QueriesOverTimeQuery } from '../components/overTime/queriesOverTime/QueriesOverTime';
 import { type WasapPageConfigFor } from '../config/wasapPageConfig';
 import { validateGenomeOnly } from '../dataLayer/queries';
 import { getCollection } from './covSpectrum/getCollection';

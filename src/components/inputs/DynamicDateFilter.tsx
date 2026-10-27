@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
-import { DateRangeFilter } from './dateRangeFilter/date-range-filter';
+import { DateRangeFilter } from './dateRangeFilter/DateRangeFilter';
 import { type DateRangeOption } from './dateRangeFilter/dateRangeOption';
-import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
+import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
-import { LoadingDisplay } from '../shared/loading-display';
+import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**
  * Computes the available date-range options dynamically from the newest
@@ -49,9 +49,9 @@ export function DynamicDateFilter({
     const isCustom = normalizedValue?.label === CustomDateRangeLabel;
 
     return (
-        <label className='form-control'>
+        <label>
             <div className='label'>
-                <span className='label-text'>{label}</span>
+                <span>{label}</span>
             </div>
             {isPending ? (
                 <div className='h-20'>

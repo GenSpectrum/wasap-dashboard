@@ -1,10 +1,10 @@
 # Wastewater Analytics
 
 The GenSpectrum wastewater ("W‑ASAP") dashboards as a standalone **Vite + React
-SPA**, extracted from `GenSpectrum/dashboards` (an Astro app). Renders the
+SPA**, extracted from `GenSpectrum/dashboards`. Renders the
 `covid` / `rsvA` / `rsvB` wastewater dashboards — organism dropdown, six
 analysis modes (manual, variant, resistance, untracked, collection,
-co-occurrence), mutations-/queries-over-time grids — without Astro.
+co-occurrence), mutations-/queries-over-time grids.
 
 From a service to a tool: today this hosts _our_ data for _our_ users. The goal
 is a tool other people can point at their own data, in three run modes:
@@ -117,25 +117,35 @@ src/
   main.tsx, AppShell.tsx    entry point + top-level chrome (organism dropdown)
   routes/                   WasapRoute (fetches resistance data, wires per-organism config)
   pageState/wasap/          the page state of the mode pages: a handler per mode + the shared base filter
-  layouts/                  page layout wrappers
-  components/               the ported dashboard-components fork — filters,
-                             over-time grids, gs-* wrappers
+  components/
+    modes/<mode>/           what only one mode uses: its page, filter, results
+    layout/                 app shell, mode page layout, header, result states
+    filterSidebar/          the filter sidebar + shared field help texts
+    inputs/                 generic filter widgets
+    overTime/               over-time grids and their view settings
+    mutations/              mutation display, annotations, sorting
+    ui/                     generic UI: modal, tooltip, dropdown, errors, loading
   dataLayer/
     transport/               the SaneQL AST builder + RhyDB HTTP client (vendored
                              from wastewater-analytics-experiment): connection,
                              retry, concurrency limit
     queries/                 SaneQL query catalogue + RhydbReadFilter + per-organism
                              RhydbSchema (dict- vs. DATE32-encoded date columns)
-    hooks/                   the Tier-1 + over-time React Query hooks
+    hooks/                   the RhyDB React Query hooks: connection + query plumbing,
+      lookups/               small single-query reads (date extent, counts, options, …)
+      analyses/              the analysis hooks (mutations / queries over time,
+                             co-occurrence, amplicon coverage, …)
   query/                    legacy LAPIS-era serializer helpers, slimmed down
                              but still shared by the over-time views
                              (ProportionValue, getProportion, removeEmptyDatesInPlace)
-  externalData/             everything that talks to a remote HTTP API: clinical
+  externalData/             everything loaded from outside the app: clinical
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
                              collections
+    fileBased/              data loaded from static files: amplicons (primer
+                             BEDs), genome (Nextclade gene annotation),
+                             lineageTree (Nextclade tree.json, alias key)
   config/                   config.json loading + schema, per-organism types
-  amplicons/                primer schemes: the `amplicons` config, BED parsing
   clientLogger.ts, types/, util/, styles/
 lollipop-service/           the service that computes the Lineage Prevalence page with
                             LolliPop — Python, its own image, see lollipop-service/README.md

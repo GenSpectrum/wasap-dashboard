@@ -5,13 +5,13 @@ import { fetchVariantSignature, getLapisFilterForTimeFrame, isVariantSelected } 
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
 import type { WasapPageConfig } from '../../config/wasapPageConfig';
-import { buildLineageTree } from '../../lineageTree/lineageTree';
 import {
     SEQUENCE_TYPE,
     SIGNATURE_TYPE,
     VARIANT_TIME_FRAME,
     WASAP_ANALYSIS_MODE,
 } from '../../pageState/wasap/wasapAnalysisFilter';
+import { buildLineageTree } from '../fileBased/lineageTree/lineageTree';
 
 // these fields have no effect on data fetching, but need to be present to have a correct type.
 const unusedBaseConfigFields = {

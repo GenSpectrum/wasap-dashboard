@@ -218,8 +218,7 @@ export default tseslint.config(
     {
         // RhyDB reads go on the RhyDB query client (`dataLayer/hooks/rhydbQuery.ts`), which doesn't retry.
         files: ['src/dataLayer/hooks/**/*.{ts,tsx}'],
-        // `lineageOptions` reads from LAPIS, not RhyDB.
-        ignores: ['src/dataLayer/hooks/rhydbQuery.ts', 'src/dataLayer/hooks/lineageOptions.ts', '**/*.spec.{ts,tsx}'],
+        ignores: ['src/dataLayer/hooks/rhydbQuery.ts', '**/*.spec.{ts,tsx}'],
         rules: {
             'no-restricted-imports': [
                 'error',

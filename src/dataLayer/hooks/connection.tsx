@@ -1,18 +1,13 @@
 /**
  * The active RhyDB instance, in React context.
  *
- * One `Connection` (`dataLayer/transport/connection.ts`) per provider subtree: it
- * owns the transport, the CORS rules, the concurrency cap, the retry and the
- * logging, and every RhyDB read in `dataLayer/hooks/**` goes through it. The
- * provider also holds the query client of those reads (`createRhydbQueryClient`, `rhydbQuery.ts`). The
- * component tree never sees a URL — it calls the `dataLayer/hooks` hooks, which
- * call `useConnection()` / `useRhydbSchema()`.
+ * Each `ConnectionProvider` creates one `Connection` (`dataLayer/transport/connection.ts`)
+ * for its `url` and `schema`, and every component below it shares that connection.
+ * Every RhyDB read in `dataLayer/hooks/**` goes through it, so the CORS rules, the
+ * retry and the logging apply to all of them.
  *
- * wasap is multi-organism and keeps its per-organism coordinates in `src/`
- * (`WasapPageConfig`), so this provider takes `url` + `schema` as props; `src/`
- * mounts it with the values for the organism being viewed. Runtime instance
- * selection (`?rhydb=` override, settings panel) is layered on top in a later
- * phase (doc 04, sub-phase 6).
+ * The provider takes `url` + `schema` as props: each organism has its own RhyDB
+ * instance (`WasapPageConfig`).
  */
 
 import { QueryClient } from '@tanstack/react-query';
@@ -22,22 +17,6 @@ import type { RhydbSchema } from '../queries/schema';
 import { connect, type Connection } from '../transport/connection';
 
 type RhydbInstance = { connection: Connection; schema: RhydbSchema; queryClient: QueryClient };
-
-/**
- * The query client of RhyDB reads. It doesn't retry: a request retries on its own, and only what may not
- * fail again (`query` in `dataLayer/transport/query.ts`); a retry here would resend timeouts and invalid
- * queries too, and the requests of a query function that had already answered.
- */
-export function createRhydbQueryClient(): QueryClient {
-    return new QueryClient({
-        defaultOptions: {
-            queries: {
-                staleTime: 5 * 60 * 1000,
-                retry: false,
-            },
-        },
-    });
-}
 
 const RhydbInstanceContext = createContext<RhydbInstance | undefined>(undefined);
 
@@ -63,6 +42,20 @@ export function ConnectionProvider({
         [url, schema, queryClient],
     );
     return <RhydbInstanceContext.Provider value={value}>{children}</RhydbInstanceContext.Provider>;
+}
+
+/** The query client of RhyDB reads. */
+export function createRhydbQueryClient(): QueryClient {
+    return new QueryClient({
+        defaultOptions: {
+            queries: {
+                staleTime: 5 * 60 * 1000,
+                // Requests already retry themselves, only where that's safe (`query` in
+                // `dataLayer/transport/query.ts`). Retrying here would also resend timeouts and invalid queries.
+                retry: false,
+            },
+        },
+    });
 }
 
 function useRhydbInstance(): RhydbInstance {

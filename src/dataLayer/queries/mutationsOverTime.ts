@@ -1,12 +1,12 @@
 /**
- * The RhyDB queries behind `gs-mutations-over-time`.
+ * The RhyDB queries behind the mutations-over-time grid.
  *
  * There is no over-time / coverage primitive in SaneQL, and the batching
  * options don't hold (grouping by a `unionall` tag literal, or by the `DATE32`
  * column alongside a mapped `at()`, both time out — see
  * standalone-wasap/10-silo-over-time-findings.md). So the matrix is assembled
  * from **one symbol distribution per position, per day**, and the two queries
- * here back the two data hooks in `dataLayer/hooks/mutationsOverTime.ts`:
+ * here back the two data hooks in `dataLayer/hooks/analyses/mutationsOverTime.ts`:
  *
  *   `overallMutationsQuery` — one `mutations()` call for the *metadata*: which
  *     mutations get a grid row, and each one's proportion over the whole shown

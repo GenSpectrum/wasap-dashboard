@@ -2,7 +2,7 @@ import { type UseQueryResult } from '@tanstack/react-query';
 
 import { type WasapManualFilter } from './wasapAnalysisFilter';
 import { useRhydbSchema } from '../../dataLayer/hooks/connection';
-import { useReferenceGenome } from '../../dataLayer/hooks/referenceGenome';
+import { useReferenceGenome } from '../../dataLayer/hooks/lookups/referenceGenome';
 import { type PositionRange, type ReferenceGenome } from '../../dataLayer/queries';
 
 /** The length of the position range of the manual mode when none is picked. */

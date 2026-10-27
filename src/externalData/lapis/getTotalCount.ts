@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type LapisFilter } from '../../types/dashboardComponents';
+import { type LapisFilter } from '../../types/domain';
 import { lapisPost } from '../lapisApi/lapisApi';
 
 const lapisTotalCountSchema = z.object({

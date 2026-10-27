@@ -1,5 +1,5 @@
 import { LabeledField } from './LabeledField';
-import { MinMaxRangeSlider } from './min-max-range-slider';
+import { MinMaxRangeSlider } from './MinMaxRangeSlider';
 import type { WasapMeanProportion } from '../../pageState/wasap/wasapAnalysisFilter';
 
 /**
@@ -69,7 +69,7 @@ function ProportionInput({
 }) {
     return (
         <input
-            className={`input input-bordered w-full min-w-0 ${indicateError ? 'input-error' : ''}`}
+            className={`input w-full min-w-0 ${indicateError ? 'input-error' : ''}`}
             type='number'
             aria-label={`${label} mean proportion`}
             min={0}
