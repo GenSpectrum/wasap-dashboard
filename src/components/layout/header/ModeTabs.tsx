@@ -16,7 +16,7 @@ import { Modal } from '../../ui/Modal';
  * It is in the header, which sits above the routes, so it finds the organism and the dataset
  * filter in the URL itself. There are no tabs where no organism is open, like on the landing page.
  */
-export function WasapModeTabs() {
+export function ModeTabs() {
     const { organismPath } = useParams();
     const [searchParams] = useSearchParams();
     const config = resolveWasapConfig(organismPath);

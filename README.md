@@ -115,7 +115,7 @@ building locally. The LolliPop service's image is published next to it, as
 ```
 src/
   main.tsx, AppShell.tsx    entry point + top-level chrome (organism dropdown)
-  routes/                   WasapRoute (fetches resistance data, wires per-organism config)
+  routes/                   OrganismRoute (fetches resistance data, wires per-organism config)
   pageState/wasap/          the page state of the mode pages: a handler per mode + the shared base filter
   components/
     modes/<mode>/           what only one mode uses: its page, filter, results

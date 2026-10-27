@@ -9,7 +9,7 @@ import { type WasapPageConfig, wasapPageConfigSchema } from './wasapPageConfig';
  * `organisms` *is* the per-organism config — not a selector into hardcoded
  * data — and unlike `collectionsBackendUrl` it has **no built-in default**: a
  * deployment with no `config.json` (or one that omits `organisms`) genuinely
- * serves zero wastewater dashboards (`WasapRoute` says so), rather than
+ * serves zero wastewater dashboards (`OrganismRoute` says so), rather than
  * silently falling back to GenSpectrum's own data. `public/config.example.json`
  * (+ `public/config.prod.example.json`) are that data now, checked in
  * as *examples* to copy from, not defaults this module reaches for.

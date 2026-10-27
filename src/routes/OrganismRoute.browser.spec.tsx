@@ -2,7 +2,7 @@ import { MemoryRouter, Outlet, Route, Routes, useLocation } from 'react-router-d
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { WasapModeRoute } from './WasapRoute';
+import { ModeRoute } from './OrganismRoute';
 import { it } from '../../test-extend';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
 import { testConfig } from '../pageState/wasap/wasapTestConfig';
@@ -43,7 +43,7 @@ function renderRoutes(entry: string, config: WasapPageConfig = testConfig) {
             <Routes>
                 <Route path='/wastewater/covid' element={<Outlet context={{ config }} />}>
                     <Route index element={<div>The overview page</div>} />
-                    <Route path=':mode' element={<WasapModeRoute />} />
+                    <Route path=':mode' element={<ModeRoute />} />
                 </Route>
             </Routes>
         </MemoryRouter>,

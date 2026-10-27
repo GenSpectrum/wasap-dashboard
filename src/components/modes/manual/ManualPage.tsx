@@ -16,8 +16,8 @@ import {
 import { type TemporalGranularity } from '../../../util/temporal';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
+import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { WasapResults } from '../../layout/WasapResults';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
@@ -100,12 +100,12 @@ function ManualResult({
         );
     }
     return (
-        <WasapResults
+        <ModeResults
             data={rangeMutations.data}
             error={referenceGenome.error ?? rangeMutations.error}
             isPending={referenceGenome.isPending || rangeMutations.isPending}
         >
             {result}
-        </WasapResults>
+        </ModeResults>
     );
 }

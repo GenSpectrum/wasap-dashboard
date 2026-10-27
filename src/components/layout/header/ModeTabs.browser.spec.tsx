@@ -2,7 +2,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { WasapModeTabs } from './WasapModeTabs';
+import { ModeTabs } from './ModeTabs';
 import { it } from '../../../../test-extend';
 import { setAppConfigForTesting } from '../../../config/appConfig';
 import {
@@ -18,14 +18,14 @@ function renderTabs(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
     return render(
         <MemoryRouter initialEntries={[entry]}>
             <Routes>
-                <Route path='/wastewater/:organismPath/*' element={<WasapModeTabs />} />
-                <Route path='/' element={<WasapModeTabs />} />
+                <Route path='/wastewater/:organismPath/*' element={<ModeTabs />} />
+                <Route path='/' element={<ModeTabs />} />
             </Routes>
         </MemoryRouter>,
     );
 }
 
-describe('WasapModeTabs', () => {
+describe('ModeTabs', () => {
     beforeEach(() => {
         setAppConfigForTesting({ organisms: [testConfig], lollipopServiceUrl: undefined });
     });

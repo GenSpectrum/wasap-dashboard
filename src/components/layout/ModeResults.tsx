@@ -7,7 +7,7 @@ import { LoadingDisplay } from '../ui/LoadingDisplay';
  * The results of an analysis mode, once there are any. Until then it shows that
  * it is loading, or the error if the data could not be fetched.
  */
-export function WasapResults<Data>({
+export function ModeResults<Data>({
     data,
     error,
     isPending,

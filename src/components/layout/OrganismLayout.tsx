@@ -15,7 +15,7 @@ import { MutationAnnotationsContextProvider } from '../mutations/MutationAnnotat
 import { MutationLinkTemplateContextProvider } from '../mutations/MutationLinkTemplateContext';
 
 /** What the layout hands down to the page of an analysis mode. */
-export type WasapLayoutContext = {
+export type OrganismLayoutContext = {
     config: WasapPageConfig;
     resistanceData: ResistanceData;
     /** `undefined` if the organism has none configured, or it failed to load. */
@@ -29,7 +29,7 @@ export type WasapLayoutContext = {
     isSamplingDatePending: boolean;
 };
 
-type WasapLayoutProps = {
+type OrganismLayoutProps = {
     config: WasapPageConfig;
     resistanceData: ResistanceData;
     lineageTree: LineageTree | undefined;
@@ -42,8 +42,8 @@ type WasapLayoutProps = {
  */
 const rhydbQueryClient = createRhydbQueryClient();
 
-export function useWasapLayoutContext() {
-    return useOutletContext<WasapLayoutContext>();
+export function useOrganismLayoutContext() {
+    return useOutletContext<OrganismLayoutContext>();
 }
 
 /**
@@ -51,31 +51,31 @@ export function useWasapLayoutContext() {
  * when going from one mode to another: the connection to RhyDB and the dataset
  * filter of the URL. The page of the mode is rendered inside.
  */
-export function WasapLayout({ config, resistanceData, lineageTree }: WasapLayoutProps) {
+export function OrganismLayout({ config, resistanceData, lineageTree }: OrganismLayoutProps) {
     const schema = useMemo(() => rhydbSchema(config.rhydb), [config.rhydb]);
 
     return (
         <ConnectionProvider url={config.rhydb.url} schema={schema} queryClient={rhydbQueryClient}>
             <RhydbUnreachableWrapper>
-                <WasapLayoutConnected config={config} resistanceData={resistanceData} lineageTree={lineageTree} />
+                <OrganismLayoutConnected config={config} resistanceData={resistanceData} lineageTree={lineageTree} />
             </RhydbUnreachableWrapper>
         </ConnectionProvider>
     );
 }
 
 /**
- * Split out from `WasapLayout` because `useResolvedSamplingDate` reads the connection
- * via `useDateExtent`, which only works inside the `ConnectionProvider` `WasapLayout`
+ * Split out from `OrganismLayout` because `useResolvedSamplingDate` reads the connection
+ * via `useDateExtent`, which only works inside the `ConnectionProvider` `OrganismLayout`
  * itself renders (a component can't consume a context it creates).
  */
-function WasapLayoutConnected({ config, resistanceData, lineageTree }: WasapLayoutProps) {
+function OrganismLayoutConnected({ config, resistanceData, lineageTree }: OrganismLayoutProps) {
     const [searchParams, setSearchParams] = useSearchParams();
     const dataset = useMemo(() => parseDatasetFilter(searchParams, config), [searchParams, config]);
 
     // resolve a preset-label-only samplingDate (e.g. from a freshly loaded URL) into concrete dates
     const { samplingDate, isPending: isSamplingDatePending } = useResolvedSamplingDate(dataset.samplingDate);
 
-    const context: WasapLayoutContext = {
+    const context: OrganismLayoutContext = {
         config,
         resistanceData,
         lineageTree,

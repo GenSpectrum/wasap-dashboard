@@ -10,8 +10,8 @@ import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter'
 import { COLLECTION_SOURCE } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
+import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { WasapResults } from '../../layout/WasapResults';
 
 export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);
@@ -59,7 +59,7 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
                     Please select a collection from the filter panel.
                 </NothingSelected>
             ) : (
-                <WasapResults data={data} error={error} isPending={isPending || isFilterPending}>
+                <ModeResults data={data} error={error} isPending={isPending || isFilterPending}>
                     {(data) => (
                         <CollectionResult
                             data={data}
@@ -77,7 +77,7 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
                             }
                         />
                     )}
-                </WasapResults>
+                </ModeResults>
             )}
         </ModePageLayout>
     );

@@ -26,7 +26,7 @@ import { modePath } from '../../../pageState/wasap/wasapModes';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { useWasapLayoutContext } from '../../layout/WasapLayout';
+import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { ErrorDisplay } from '../../ui/ErrorDisplay';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
@@ -41,7 +41,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { lineageTree } = useWasapLayoutContext();
+    const { lineageTree } = useOrganismLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const signature = useVariantSignature(config, analysis, lineageTree);

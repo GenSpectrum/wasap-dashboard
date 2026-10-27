@@ -18,7 +18,7 @@ const router = createBrowserRouter(routes, {
 
 /**
  * The app-wide TanStack Query client, of every data read but those from RhyDB (which have their own,
- * see `WasapLayout`). Defaults are deliberately conservative; per-query overrides live with each hook.
+ * see `OrganismLayout`). Defaults are deliberately conservative; per-query overrides live with each hook.
  */
 const queryClient = new QueryClient({
     defaultOptions: {

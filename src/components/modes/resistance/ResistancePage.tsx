@@ -7,7 +7,7 @@ import { usePageState } from '../../../pageState/usePageState';
 import { ResistancePageStateHandler } from '../../../pageState/wasap/handlers/ResistancePageStateHandler';
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
 import { ModePageLayout } from '../../layout/ModePageLayout';
-import { useWasapLayoutContext } from '../../layout/WasapLayout';
+import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 export function ResistancePage({ config }: { config: WasapPageConfigFor<'resistance'> }) {
@@ -16,7 +16,7 @@ export function ResistancePage({ config }: { config: WasapPageConfigFor<'resista
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { resistanceData } = useWasapLayoutContext();
+    const { resistanceData } = useOrganismLayoutContext();
     const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const displayMutations = useMemo(
         () => resistanceData.displayMutationsBySet[analysis.resistanceSet] ?? [],

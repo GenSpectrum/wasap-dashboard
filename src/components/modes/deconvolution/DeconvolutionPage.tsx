@@ -23,7 +23,7 @@ import { modePath } from '../../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../../util/temporal';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { useWasapLayoutContext } from '../../layout/WasapLayout';
+import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 import { TitledPanel } from '../../ui/TitledPanel';
 
 export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deconvolution'> }) {
@@ -32,7 +32,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { lineageTree } = useWasapLayoutContext();
+    const { lineageTree } = useOrganismLayoutContext();
     const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const panel = useMemo(() => effectivePanel(config.deconvolutionPanel, analysis), [config, analysis]);
     // of the lineages that are in the tree, as only those get into the deconvolution

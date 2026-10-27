@@ -1,5 +1,5 @@
+import { ModeTabs } from './ModeTabs';
 import { OrganismSelect } from './OrganismSelect';
-import { WasapModeTabs } from './WasapModeTabs';
 
 /**
  * The header of every page: the title, the tabs to pick the analysis mode of the
@@ -14,7 +14,7 @@ export function AppHeader() {
                     <span className='text-xs text-gray-600'>Wastewater Dashboard</span>
                 </div>
                 <div className='justify-self-center'>
-                    <WasapModeTabs />
+                    <ModeTabs />
                 </div>
                 <div className='justify-self-end'>
                     <OrganismSelect />

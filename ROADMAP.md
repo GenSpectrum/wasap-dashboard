@@ -95,7 +95,7 @@ the areas they touch:
   is a config change or a code change — isn't decided. Resolve before the
   organism-selector/config shape hardens further.
 - **One config-parameterised dashboard vs. genuinely different dashboards per
-  organism?** The dashboard (`WasapLayout` and the page of each mode) is currently
+  organism?** The dashboard (`OrganismLayout` and the page of each mode) is currently
   parameterised by config. If organisms are meant to eventually get different modes/
   visualizations, note whether the current approach scales to that or is a
   knowingly deferred refactor — so nobody over-invests in generality it

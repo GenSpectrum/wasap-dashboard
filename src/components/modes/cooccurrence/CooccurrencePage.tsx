@@ -16,7 +16,7 @@ import { modePath } from '../../../pageState/wasap/wasapModes';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { useWasapLayoutContext } from '../../layout/WasapLayout';
+import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 
 function isNothingSelected(analysis: WasapCooccurrenceFilter): boolean {
     return effectivePositionSource(analysis) === 'amplicon'
@@ -69,7 +69,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
         setPageState,
     } = usePageState(pageStateHandler);
     const { analysis, isPending: isDefaultAmpliconPending } = useWithDefaultAmplicon(urlAnalysis, config);
-    const { lineageTree } = useWasapLayoutContext();
+    const { lineageTree } = useOrganismLayoutContext();
     const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
 
     // Opens a row's mutations in the manual mode, to see them over time there.

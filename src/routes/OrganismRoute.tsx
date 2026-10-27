@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { NotFoundPage } from './NotFoundPage';
-import { WasapLayout, useWasapLayoutContext } from '../components/layout/WasapLayout';
+import { OrganismLayout, useOrganismLayoutContext } from '../components/layout/OrganismLayout';
 import { CollectionPage } from '../components/modes/collection/CollectionPage';
 import { CooccurrencePage } from '../components/modes/cooccurrence/CooccurrencePage';
 import { DeconvolutionPage } from '../components/modes/deconvolution/DeconvolutionPage';
@@ -23,16 +23,16 @@ import { getClientLogger } from '../logging';
 import { getErrorLogMessage } from '../logging';
 import { segmentToMode } from '../pageState/wasap/wasapModes';
 
-const logger = getClientLogger('WasapRoute');
+const logger = getClientLogger('OrganismRoute');
 
 const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], displayMutationsBySet: {} };
 
 /**
  * The `/:organismPath` route: resolves the per-organism config from the URL and fetches
  * resistance-mutation data, as well as the lineage tree. The page of the analysis mode
- * (see `WasapModeRoute`) is rendered inside the `WasapLayout`.
+ * (see `ModeRoute`) is rendered inside the `OrganismLayout`.
  */
-export function WasapRoute() {
+export function OrganismRoute() {
     const { organismPath } = useParams();
     const config = resolveWasapConfig(organismPath);
 
@@ -40,10 +40,10 @@ export function WasapRoute() {
         return <NoDataDisplay message={`Organism '${organismPath}' doesn't exist or isn't configured.`} />;
     }
 
-    return <WasapDashboard config={config} />;
+    return <OrganismDashboard config={config} />;
 }
 
-function WasapDashboard({ config }: { config: WasapPageConfig }) {
+function OrganismDashboard({ config }: { config: WasapPageConfig }) {
     // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it (one
     // static config per organism).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -89,7 +89,7 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
     }
 
     return (
-        <WasapLayout
+        <OrganismLayout
             config={config}
             resistanceData={data ?? EMPTY_RESISTANCE_DATA}
             lineageTree={lineageTreeQuery.data ?? undefined}
@@ -98,8 +98,8 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
 }
 
 /** The index route of `/:organismPath`, and the landing page of the organism. */
-export function WasapOverviewRoute() {
-    const { config } = useWasapLayoutContext();
+export function OverviewRoute() {
+    const { config } = useOrganismLayoutContext();
     return <OverviewPage amplicons={config.amplicons} />;
 }
 
@@ -107,8 +107,8 @@ export function WasapOverviewRoute() {
  * The `/:organismPath/:mode` route: the page of the mode in the URL, or a 404 where the
  * segment isn't that of a mode this organism has enabled.
  */
-export function WasapModeRoute() {
-    const { config } = useWasapLayoutContext();
+export function ModeRoute() {
+    const { config } = useOrganismLayoutContext();
     const { mode: segment } = useParams();
 
     switch (segmentToMode(segment)) {
