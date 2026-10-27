@@ -1,6 +1,6 @@
 import { getJson } from './getJson';
 import { collectionsRawResponseSchema, type CollectionRaw } from './types';
-import { getClientLogger } from '../../clientLogger';
+import { getClientLogger } from '../../logging';
 
 const logger = getClientLogger('getCollections');
 

@@ -2,8 +2,8 @@ import { aliasKeySchema, parseRecombinantParents } from './aliasKey';
 import { buildLineageTree, type LineageTree } from './lineageTree';
 import type { LineageTreeConfig } from './lineageTreeConfig';
 import { nextcladeTreeSchema } from './nextcladeTree';
-import { getClientLogger } from '../../../clientLogger';
-import { getErrorLogMessage } from '../../../util/getErrorLogMessage';
+import { getClientLogger } from '../../../logging';
+import { getErrorLogMessage } from '../../../logging';
 
 const logger = getClientLogger('fetchLineageTree');
 

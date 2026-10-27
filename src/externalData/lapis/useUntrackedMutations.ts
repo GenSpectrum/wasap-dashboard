@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getCladeLineages } from './getCladeLineages';
 import { getMutations } from './getMutations';
-import { getClientLogger } from '../../clientLogger';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { getClientLogger } from '../../logging';
+import { getErrorLogMessage } from '../../logging';
 import type { WasapUntrackedFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { getErrorLogMessage } from '../../util/getErrorLogMessage';
 
 const logger = getClientLogger('useUntrackedMutations');
 

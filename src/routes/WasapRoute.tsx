@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
-import { getClientLogger } from '../clientLogger';
 import { NotFoundPage } from './NotFoundPage';
 import { WasapLayout, useWasapLayoutContext } from '../components/layout/WasapLayout';
 import { CollectionPage } from '../components/modes/collection/CollectionPage';
@@ -20,8 +19,9 @@ import { resolveWasapConfig } from '../config/wastewaterOrganisms';
 import { fetchLineageTree } from '../externalData/fileBased/lineageTree/fetchLineageTree';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
 import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
+import { getClientLogger } from '../logging';
+import { getErrorLogMessage } from '../logging';
 import { segmentToMode } from '../pageState/wasap/wasapModes';
-import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
 const logger = getClientLogger('WasapRoute');
 
