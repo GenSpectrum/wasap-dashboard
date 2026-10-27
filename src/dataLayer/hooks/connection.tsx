@@ -6,11 +6,8 @@
  * Every RhyDB read in `dataLayer/hooks/**` goes through it, so the CORS rules, the
  * retry and the logging apply to all of them.
  *
- * wasap is multi-organism and keeps its per-organism coordinates in `src/`
- * (`WasapPageConfig`), so this provider takes `url` + `schema` as props; `src/`
- * mounts it with the values for the organism being viewed. Runtime instance
- * selection (`?rhydb=` override, settings panel) is layered on top in a later
- * phase (doc 04, sub-phase 6).
+ * The provider takes `url` + `schema` as props: each organism has its own RhyDB
+ * instance (`WasapPageConfig`).
  */
 
 import { QueryClient } from '@tanstack/react-query';
