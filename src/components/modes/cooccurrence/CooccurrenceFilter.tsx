@@ -15,7 +15,6 @@ import {
     type WasapCooccurrenceFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type SequenceType } from '../../../types/domain';
-import { parsePositionToken } from '../../../util/parsePositionToken';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
@@ -23,6 +22,7 @@ import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
 import { PositionFilter } from '../../inputs/positionFilter/PositionFilter';
+import { parsePositionToken } from '../../inputs/positionFilter/parsePositionToken';
 
 const MIN_SHARE_OPTIONS = [
     { value: 0, label: '–', title: 'None' },
