@@ -6,7 +6,7 @@ import { CollectionAnalysisFilter } from './CollectionAnalysisFilter';
 import { DUMMY_BACKEND_URL } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
 import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
-import type { CollectionAnalysis } from '../../../pageState/wasap/analysisFilter';
+import type { CollectionAnalysis } from '../../../pageState/analysisFilter';
 
 vi.mock('../../../externalData/genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();

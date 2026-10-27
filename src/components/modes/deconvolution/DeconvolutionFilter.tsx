@@ -1,5 +1,5 @@
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
-import { type DeconvolutionAnalysis } from '../../../pageState/wasap/analysisFilter';
+import { type DeconvolutionAnalysis } from '../../../pageState/analysisFilter';
 import { LineagePanelInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';

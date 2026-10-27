@@ -7,7 +7,7 @@ import { backendRouteMocker, lapisRouteMocker, testServer } from '../../vitest.s
 import type { OrganismConfig } from '../config/organismConfig';
 import type { Collection } from './genSpectrum/Collection';
 import type * as ApiServiceModule from './genSpectrum/apiService';
-import { ANALYSIS_MODE } from '../pageState/wasap/analysisFilter';
+import { ANALYSIS_MODE } from '../pageState/analysisFilter';
 
 vi.mock('./genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();

@@ -7,12 +7,12 @@ import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismC
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
+import { effectivePositionSource, type CooccurrenceAnalysis } from '../../../pageState/analysisFilter';
+import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
+import { CooccurrencePageStateHandler } from '../../../pageState/handlers/CooccurrencePageStateHandler';
+import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { effectivePositionSource, type CooccurrenceAnalysis } from '../../../pageState/wasap/analysisFilter';
-import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
-import { CooccurrencePageStateHandler } from '../../../pageState/wasap/handlers/CooccurrencePageStateHandler';
-import { modePath } from '../../../pageState/wasap/modes';
-import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
+import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';

@@ -4,7 +4,7 @@ import { fetchUntrackedMutations } from './useUntrackedMutations';
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
 import type { OrganismConfig } from '../../config/organismConfig';
-import { EXCLUDE_SET_NAME, SEQUENCE_TYPE, ANALYSIS_MODE } from '../../pageState/wasap/analysisFilter';
+import { EXCLUDE_SET_NAME, SEQUENCE_TYPE, ANALYSIS_MODE } from '../../pageState/analysisFilter';
 
 // these fields have no effect on data fetching, but need to be present to have a correct type.
 const unusedBaseConfigFields = {

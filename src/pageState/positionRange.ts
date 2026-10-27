@@ -1,9 +1,9 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
 import { type ManualAnalysis } from './analysisFilter';
-import { useRhydbSchema } from '../../dataLayer/hooks/connection';
-import { useReferenceGenome } from '../../dataLayer/hooks/lookups/referenceGenome';
-import { type PositionRange, type ReferenceGenome } from '../../dataLayer/queries';
+import { useRhydbSchema } from '../dataLayer/hooks/connection';
+import { useReferenceGenome } from '../dataLayer/hooks/lookups/referenceGenome';
+import { type PositionRange, type ReferenceGenome } from '../dataLayer/queries';
 
 /** The length of the position range of the manual mode when none is picked. */
 export const DEFAULT_POSITION_RANGE_LENGTH = 50;

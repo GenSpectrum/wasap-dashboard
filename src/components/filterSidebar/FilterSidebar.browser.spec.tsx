@@ -3,9 +3,9 @@ import { render } from 'vitest-browser-react';
 
 import { FilterSidebar } from './FilterSidebar';
 import { it } from '../../../test-extend';
-import type { BaseFilter, ManualAnalysis } from '../../pageState/wasap/analysisFilter';
-import { ManualPageStateHandler } from '../../pageState/wasap/handlers/ManualPageStateHandler';
-import { testConfig } from '../../pageState/wasap/testConfig';
+import type { BaseFilter, ManualAnalysis } from '../../pageState/analysisFilter';
+import { ManualPageStateHandler } from '../../pageState/handlers/ManualPageStateHandler';
+import { testConfig } from '../../pageState/testConfig';
 
 const handler = new ManualPageStateHandler(testConfig);
 

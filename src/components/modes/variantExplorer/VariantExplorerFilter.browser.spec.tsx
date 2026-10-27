@@ -8,7 +8,7 @@ import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { type LapisRouteMocker } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
 import { buildLineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
-import type { VariantAnalysis } from '../../../pageState/wasap/analysisFilter';
+import type { VariantAnalysis } from '../../../pageState/analysisFilter';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
 

@@ -5,7 +5,7 @@ import { getMutations } from './getMutations';
 import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
-import type { UntrackedAnalysis } from '../../pageState/wasap/analysisFilter';
+import type { UntrackedAnalysis } from '../../pageState/analysisFilter';
 
 const logger = getClientLogger('useUntrackedMutations');
 

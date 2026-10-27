@@ -1,5 +1,5 @@
-import { useOrganismLayoutContext } from '../../components/layout/OrganismLayout';
-import { type RhydbReadFilter } from '../../dataLayer/queries';
+import { useOrganismLayoutContext } from '../components/layout/OrganismLayout';
+import { type RhydbReadFilter } from '../dataLayer/queries';
 
 /**
  * The filter to read the dataset of the page from RhyDB with: the locations (none for all), and the sampling

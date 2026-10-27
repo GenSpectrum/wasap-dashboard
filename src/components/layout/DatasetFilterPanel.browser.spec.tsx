@@ -8,7 +8,7 @@ import { DatasetFilterPanel } from './DatasetFilterPanel';
 import { it } from '../../../test-extend';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../dataLayer/queries/schema';
-import type { DatasetFilter } from '../../pageState/wasap/analysisFilter';
+import type { DatasetFilter } from '../../pageState/analysisFilter';
 
 const schema: RhydbSchema = {
     table: 'data',

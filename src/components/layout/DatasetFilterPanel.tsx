@@ -1,5 +1,5 @@
 import { type OrganismConfig } from '../../config/organismConfig';
-import { type DatasetFilter } from '../../pageState/wasap/analysisFilter';
+import { type DatasetFilter } from '../../pageState/analysisFilter';
 import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
 import { LabeledField } from '../inputs/LabeledField';

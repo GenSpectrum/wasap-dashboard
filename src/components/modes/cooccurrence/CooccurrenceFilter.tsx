@@ -13,7 +13,7 @@ import {
     effectivePositionSource,
     type PositionSource,
     type CooccurrenceAnalysis,
-} from '../../../pageState/wasap/analysisFilter';
+} from '../../../pageState/analysisFilter';
 import { type SequenceType } from '../../../util/mutations';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';

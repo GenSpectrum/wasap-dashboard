@@ -12,7 +12,7 @@ import { getLineageFields, type FilterObject, type Variant } from './genSpectrum
 import { getApiServiceForClientside } from './genSpectrum/apiService';
 import { getCollection as getGenSpectrumCollection } from './genSpectrum/getCollection';
 import { parseQuery } from './lapis/parseQuery';
-import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/wasap/analysisFilter';
+import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/analysisFilter';
 
 const logger = getClientLogger('useCollectionQueries');
 

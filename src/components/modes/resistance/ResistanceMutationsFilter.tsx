@@ -1,4 +1,4 @@
-import type { ResistanceAnalysis } from '../../../pageState/wasap/analysisFilter';
+import type { ResistanceAnalysis } from '../../../pageState/analysisFilter';
 import { RadioSelect } from '../../inputs/RadioSelect';
 
 export function ResistanceMutationsFilter({

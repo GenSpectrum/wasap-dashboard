@@ -2,8 +2,8 @@ import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { ApplyFilterButton } from './ApplyFilterButton';
 import { type PageStateHandler } from '../../pageState/PageStateHandler';
-import { type AnalysisFilter, type BaseFilter, type ModeFilter } from '../../pageState/wasap/analysisFilter';
-import { useDraftFilter } from '../../pageState/wasap/useDraftFilter';
+import { type AnalysisFilter, type BaseFilter, type ModeFilter } from '../../pageState/analysisFilter';
+import { useDraftFilter } from '../../pageState/useDraftFilter';
 import { MeanProportionField } from '../inputs/MeanProportionField';
 
 type FilterSidebarProps<Analysis extends AnalysisFilter> = {

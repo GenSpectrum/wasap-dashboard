@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { usesDefaultAmplicon, withDefaultAmplicon } from './CooccurrencePage';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
-import { type CooccurrenceAnalysis } from '../../../pageState/wasap/analysisFilter';
+import { type CooccurrenceAnalysis } from '../../../pageState/analysisFilter';
 
 function amplicon(number: number, insertStart: number, insertEnd: number): Amplicon {
     return { chrom: 'ref', number, pool: '1', start: insertStart - 20, end: insertEnd + 20, insertStart, insertEnd };

@@ -1,11 +1,11 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
-import { type OrganismConfigFor } from '../../../config/organismConfig';
-import { enumParam, stringParam } from '../../urlParams';
+import { type OrganismConfigFor } from '../../config/organismConfig';
 import {
     RESISTANCE_PROPORTION_RANGE,
     resistanceProportionRangeSchema,
     type ResistanceAnalysis,
 } from '../analysisFilter';
+import { enumParam, stringParam } from '../urlParams';
 
 export class ResistancePageStateHandler extends ModePageStateHandler<ResistanceAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'resistance'>) {

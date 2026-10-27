@@ -9,7 +9,7 @@ import {
     effectivePositionSource,
     type BaseFilter,
     type CooccurrenceAnalysis,
-} from '../../../pageState/wasap/analysisFilter';
+} from '../../../pageState/analysisFilter';
 
 /**
  * The co-occurrence bands of a mode that selects positions.

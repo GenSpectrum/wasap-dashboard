@@ -9,7 +9,7 @@ import {
     type SignatureType,
     type VariantTimeFrame,
     type VariantAnalysis,
-} from '../../../pageState/wasap/analysisFilter';
+} from '../../../pageState/analysisFilter';
 import { DefineClinicalSignatureInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';

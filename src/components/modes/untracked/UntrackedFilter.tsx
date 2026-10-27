@@ -1,7 +1,7 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
 import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
-import type { ExcludeSetName, UntrackedAnalysis } from '../../../pageState/wasap/analysisFilter';
+import type { ExcludeSetName, UntrackedAnalysis } from '../../../pageState/analysisFilter';
 import { KnownVariantsExclusionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';

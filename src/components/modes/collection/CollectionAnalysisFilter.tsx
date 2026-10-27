@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { getCollections as getCovSpectrumCollections } from '../../../externalData/covSpectrum/getCollections';
 import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
 import { getCollections as getGenSpectrumCollections } from '../../../externalData/genSpectrum/getCollections';
-import { COLLECTION_SOURCE, type CollectionAnalysis } from '../../../pageState/wasap/analysisFilter';
+import { COLLECTION_SOURCE, type CollectionAnalysis } from '../../../pageState/analysisFilter';
 import { CollectionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { RadioSelect } from '../../inputs/RadioSelect';

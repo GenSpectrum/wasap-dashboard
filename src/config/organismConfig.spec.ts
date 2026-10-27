@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { isModeEnabled } from './organismConfig';
-import { testConfig, testConfigWithCollection } from '../pageState/wasap/testConfig';
+import { testConfig, testConfigWithCollection } from '../pageState/testConfig';
 
 describe('isModeEnabled', () => {
     it('tells which modes are enabled', () => {

@@ -10,7 +10,7 @@ import {
     testConfigWithCollection,
     testConfigWithCooccurrence,
     testConfigWithDeconvolution,
-} from '../../../pageState/wasap/testConfig';
+} from '../../../pageState/testConfig';
 
 const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
 

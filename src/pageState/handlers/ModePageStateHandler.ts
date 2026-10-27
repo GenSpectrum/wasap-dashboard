@@ -1,6 +1,5 @@
-import { type OrganismConfig } from '../../../config/organismConfig';
-import { type PageStateHandler } from '../../PageStateHandler';
-import { parseUrlParams, type UrlParams, writeUrlParams } from '../../urlParams';
+import { type OrganismConfig } from '../../config/organismConfig';
+import { type PageStateHandler } from '../PageStateHandler';
 import { type AnalysisFilter, type ModeFilter } from '../analysisFilter';
 import {
     parseBaseFilter,
@@ -10,6 +9,7 @@ import {
 } from '../baseFilter';
 import { getDefaultMeanProportion } from '../defaultMeanProportion';
 import { modePath } from '../modes';
+import { parseUrlParams, type UrlParams, writeUrlParams } from '../urlParams';
 
 /**
  * The page state handler of one analysis mode page. The settings all modes have

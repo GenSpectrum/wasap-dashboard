@@ -1,5 +1,5 @@
 import { RESISTANCE_PROPORTION_RANGES } from './resistanceProportionRanges';
-import { type ResistanceProportionRange } from '../../../pageState/wasap/analysisFilter';
+import { type ResistanceProportionRange } from '../../../pageState/analysisFilter';
 
 /**
  * A tab per range of the mean proportion, with how many mutations are in it, attached to

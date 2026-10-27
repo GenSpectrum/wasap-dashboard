@@ -1,8 +1,8 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
-import { type OrganismConfigFor } from '../../../config/organismConfig';
-import { sequenceTypeSchema } from '../../../util/mutations';
-import { enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
+import { type OrganismConfigFor } from '../../config/organismConfig';
+import { sequenceTypeSchema } from '../../util/mutations';
 import { MAX_POSITION_RANGE_LENGTH, mutationSourceSchema, type ManualAnalysis } from '../analysisFilter';
+import { enumParam, listParam, numberParam, optional, stringParam } from '../urlParams';
 
 export class ManualPageStateHandler extends ModePageStateHandler<ManualAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'manual'>) {

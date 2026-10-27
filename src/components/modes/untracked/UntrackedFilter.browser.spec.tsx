@@ -7,7 +7,7 @@ import { render } from 'vitest-browser-react';
 import { UntrackedFilter } from './UntrackedFilter';
 import type { LapisRouteMocker } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
-import type { UntrackedAnalysis } from '../../../pageState/wasap/analysisFilter';
+import type { UntrackedAnalysis } from '../../../pageState/analysisFilter';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
 

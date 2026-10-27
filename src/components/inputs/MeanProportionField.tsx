@@ -1,6 +1,6 @@
 import { LabeledField } from './LabeledField';
 import { MinMaxRangeSlider } from './MinMaxRangeSlider';
-import type { MeanProportion } from '../../pageState/wasap/analysisFilter';
+import type { MeanProportion } from '../../pageState/analysisFilter';
 
 /**
  * Selects the interval that the mean proportion of a mutation (or query) over the

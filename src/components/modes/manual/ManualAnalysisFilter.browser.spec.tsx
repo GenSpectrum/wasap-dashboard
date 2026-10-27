@@ -8,7 +8,7 @@ import { DUMMY_RHYDB_URL } from '../../../../routeMocker';
 import { it, rhydbRouteMocker } from '../../../../test-extend';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../../dataLayer/queries/schema';
-import type { ManualAnalysis } from '../../../pageState/wasap/analysisFilter';
+import type { ManualAnalysis } from '../../../pageState/analysisFilter';
 
 const schema: RhydbSchema = {
     table: 'data',

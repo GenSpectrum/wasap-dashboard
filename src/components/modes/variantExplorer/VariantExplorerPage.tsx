@@ -18,11 +18,11 @@ import {
     isVariantSelected,
     useVariantSignature,
 } from '../../../externalData/lapis/useVariantSignature';
+import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
+import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
+import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
-import { VariantExplorerPageStateHandler } from '../../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
-import { modePath } from '../../../pageState/wasap/modes';
-import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
+import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';

@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-react';
 import { ModeRoute } from './OrganismRoute';
 import { it } from '../../test-extend';
 import type { OrganismConfig } from '../config/organismConfig';
-import { testConfig } from '../pageState/wasap/testConfig';
+import { testConfig } from '../pageState/testConfig';
 
 // the real pages need RhyDB; stand-ins that say which page it is are enough here
 /* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */

@@ -10,7 +10,7 @@ import {
     untrackedAnalysisSchema,
     variantAnalysisSchema,
     type AnalysisMode,
-} from '../pageState/wasap/analysisFilter';
+} from '../pageState/analysisFilter';
 
 /**
  * Resistance mutations defined in a collection, which is specified via the collection ID.

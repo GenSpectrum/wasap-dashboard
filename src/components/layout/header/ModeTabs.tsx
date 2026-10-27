@@ -2,8 +2,8 @@ import { NavLink, useParams, useSearchParams } from 'react-router-dom';
 
 import { enabledAnalysisModes } from '../../../config/organismConfig';
 import { resolveOrganismConfig } from '../../../config/wastewaterOrganisms';
-import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/wasap/baseFilter';
-import { modeLabel, modePath } from '../../../pageState/wasap/modes';
+import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/baseFilter';
+import { modeLabel, modePath } from '../../../pageState/modes';
 import { ExplorationModeInfo } from '../../filterSidebar/InfoBlocks';
 import { Modal } from '../../ui/Modal';
 

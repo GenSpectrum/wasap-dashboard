@@ -6,7 +6,7 @@ import { getMutationsForVariant } from './getMutations';
 import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
-import type { VariantTimeFrame, VariantAnalysis } from '../../pageState/wasap/analysisFilter';
+import type { VariantTimeFrame, VariantAnalysis } from '../../pageState/analysisFilter';
 import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
 import { type LapisFilter } from '../lapisApi/lapisTypes';
 

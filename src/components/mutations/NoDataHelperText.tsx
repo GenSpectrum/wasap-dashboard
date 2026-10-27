@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 
 import { OVER_TIME_MIN_PROPORTION } from '../../dataLayer/queries';
-import { effectiveMutationSource, MUTATION_SOURCE, type AnalysisFilter } from '../../pageState/wasap/analysisFilter';
+import { effectiveMutationSource, MUTATION_SOURCE, type AnalysisFilter } from '../../pageState/analysisFilter';
 
 /**
  * A note to the user to display when no mutations are selected due to the settings that they set in the filters.
