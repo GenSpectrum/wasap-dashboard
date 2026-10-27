@@ -35,6 +35,7 @@ import { Map2dView, type Map2DContents } from '../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';
 import {
+    OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,
     normalizeFilter,
     positionOverTimeQuery,
@@ -44,6 +45,7 @@ import {
     readPositionsOverTime,
     type OverallMutationRow,
     type OverTimeSequenceType,
+    type PositionRange,
     type PositionTarget,
     type PositionOverTimeRow,
     type SiloReadFilter,
@@ -202,6 +204,86 @@ async function fetchPositionsOverTime(
 /** The cache key of one position's rows over a (normalized) filter. */
 function positionQueryKey(connection: Connection, filter: SiloReadFilter, target: PositionTarget) {
     return ['silo', 'over-time-position', ...connection.key, filter, target.sequenceName, target.position];
+}
+
+/**
+ * The mutations at the positions of `range`: every symbol the filtered reads carry there other than
+ * the reference's, above `OVER_TIME_MIN_PROPORTION` over the filter. The rows are fetched as for a
+ * given list of mutations and put into the same cache, so the grid of the mutations needs no
+ * queries of its own.
+ */
+export function usePositionRangeMutations(
+    filter: SiloReadFilter,
+    sequenceType: OverTimeSequenceType,
+    range: PositionRange | undefined,
+): UseQueryResult<string[]> {
+    const connection = useConnection();
+    const schema = useSiloSchema();
+    const queryClient = useSiloQueryClient();
+    const normalized = normalizeFilter(filter);
+
+    // `schema` stands in for `connection.key`, `normalized` for `filter`, and the range by its
+    // sequence's name, start and length.
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    return useSiloQuery({
+        queryKey: [
+            'silo',
+            'position-range-mutations',
+            ...connection.key,
+            normalized,
+            sequenceType,
+            range?.reference.name,
+            range?.start,
+            range?.length,
+        ],
+        enabled: range !== undefined,
+        queryFn: async ({ signal }) => {
+            if (range === undefined) {
+                throw new Error('usePositionRangeMutations queryFn called with no range');
+            }
+            const targets = rangeTargets(range);
+            const rowsByPosition = await fetchPositionsOverTime(
+                queryClient,
+                connection,
+                schema,
+                normalized,
+                targets,
+                signal,
+            );
+            return mutationsInRange(range, sequenceType, schema.nucleotideSequence, rowsByPosition);
+        },
+    });
+}
+
+function rangeTargets(range: PositionRange): PositionTarget[] {
+    return Array.from({ length: range.length }, (_, index) => ({
+        sequenceName: range.reference.name,
+        position: range.start + index,
+    }));
+}
+
+/** The codes of the mutations of `usePositionRangeMutations`, from the rows of each position. */
+export function mutationsInRange(
+    range: PositionRange,
+    sequenceType: OverTimeSequenceType,
+    nucleotideSequence: string,
+    rowsByPosition: ReadonlyMap<string, PositionOverTimeRow[]>,
+): string[] {
+    const unknown = unknownSymbol(sequenceType);
+    const segmentPrefix = sequenceType === 'nucleotide' ? '' : `${range.reference.name}:`;
+    const candidates = rangeTargets(range).flatMap((target) => {
+        const ref = range.reference.sequence[target.position - 1];
+        const symbols = new Set(
+            (rowsByPosition.get(targetKey(target)) ?? [])
+                .map((row) => row.sym)
+                .filter((sym) => sym !== null && sym !== '' && sym !== unknown && sym !== ref),
+        );
+        return [...symbols].map((sym) => `${segmentPrefix}${ref}${target.position}${sym}`);
+    });
+    return overallFromPositions(candidates, sequenceType, nucleotideSequence, rowsByPosition)
+        .filter((entry) => entry.proportion >= OVER_TIME_MIN_PROPORTION)
+        .sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation))
+        .map((entry) => entry.mutation.code);
 }
 
 // --- page: the visible page's cells -----------------------------------------

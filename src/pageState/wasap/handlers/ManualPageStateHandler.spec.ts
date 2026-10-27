@@ -50,6 +50,24 @@ describe('ManualPageStateHandler', () => {
         expect(filter.analysis.mutations).toBeUndefined();
     });
 
+    it('round-trips a position range', () => {
+        const filter = parse('sequenceType=amino+acid&mutationSource=range&rangeGene=S&rangeStart=130&rangeLength=46');
+
+        expect(filter.analysis).toEqual({
+            mode: 'manual',
+            sequenceType: 'amino acid',
+            mutationSource: 'range',
+            rangeGene: 'S',
+            rangeStart: 130,
+            rangeLength: 46,
+        });
+        expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
+    });
+
+    it('ignores a range longer than allowed', () => {
+        expect(parse('mutationSource=range&rangeLength=301').analysis.rangeLength).toBeUndefined();
+    });
+
     it('takes the sequence type from the defaults of the config when it is not in the URL', () => {
         expect(parse('').analysis.sequenceType).toBe('nucleotide');
     });
