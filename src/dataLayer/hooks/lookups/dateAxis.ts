@@ -9,12 +9,12 @@ import { queryOptions, type QueryClient, type UseQueryResult } from '@tanstack/r
 import { useCallback } from 'react';
 
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { type TemporalGranularity } from '../../../types/domain';
 import {
     generateAllInRange,
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
+    type TemporalGranularity,
 } from '../../../util/temporal';
 import { normalizeFilter, samplingDatesQuery, type RhydbReadFilter, type RhydbSchema } from '../../queries';
 import { readNamedCounts, type NamedCount } from '../../queries/rows';

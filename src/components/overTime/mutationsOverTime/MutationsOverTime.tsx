@@ -8,8 +8,8 @@ import {
 } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
-import { type SequenceType, type TemporalGranularity } from '../../../types/domain';
-import { type Deletion, type Substitution } from '../../../util/mutations';
+import { type Deletion, type Substitution, type SequenceType } from '../../../util/mutations';
+import { type TemporalGranularity } from '../../../util/temporal';
 import { AnnotatedMutation } from '../../mutations/AnnotatedMutation';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';

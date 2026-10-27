@@ -2,7 +2,7 @@ import {
     BACKGROUND_MIN_PROPORTION,
     type ExcludedMutation,
 } from '../../../dataLayer/hooks/analyses/backgroundMutations';
-import { type SequenceType } from '../../../types/domain';
+import { type SequenceType } from '../../../util/mutations';
 import { AnnotatedMutation } from '../../mutations/AnnotatedMutation';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';

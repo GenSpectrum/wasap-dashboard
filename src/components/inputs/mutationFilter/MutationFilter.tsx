@@ -6,8 +6,14 @@ import { MutationFilterInfo } from './MutationFilterInfo';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
 import { useReferenceGenome } from '../../../dataLayer/hooks/lookups/referenceGenome';
 import { type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
-import { type MutationsFilter, mutationType, type MutationType } from '../../../types/domain';
-import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
+import { type MutationsFilter } from '../../../externalData/lapisApi/lapisTypes';
+import {
+    type DeletionClass,
+    type InsertionClass,
+    type SubstitutionClass,
+    mutationType,
+    type MutationType,
+} from '../../../util/mutations';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
 import { UserFacingError } from '../../ui/ErrorDisplay';
 import { singleGraphColorRGBByName } from '../../ui/charts/colors';

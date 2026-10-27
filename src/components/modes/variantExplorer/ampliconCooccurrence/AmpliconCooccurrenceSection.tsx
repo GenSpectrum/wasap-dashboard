@@ -18,7 +18,7 @@ import { type Amplicon } from '../../../../externalData/fileBased/amplicons/prim
 import { ampliconAnchor } from '../../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../../externalData/fileBased/amplicons/useAmplicons';
 import { type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
-import { type TemporalGranularity } from '../../../../types/domain';
+import { type TemporalGranularity } from '../../../../util/temporal';
 import { ErrorDisplay } from '../../../ui/ErrorDisplay';
 import { LoadingDisplay } from '../../../ui/LoadingDisplay';
 import { NoDataDisplay } from '../../../ui/NoDataDisplay';

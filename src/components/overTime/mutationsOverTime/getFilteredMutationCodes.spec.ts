@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getFilteredMutationCodes } from './getFilteredMutationCodes';
-import { type DeletionEntry, type SubstitutionEntry } from '../../../types/domain';
-import { type Deletion, type Substitution } from '../../../util/mutations';
+import { type Deletion, type Substitution, type DeletionEntry, type SubstitutionEntry } from '../../../util/mutations';
 
 describe('getFilteredMutationCodes', () => {
     it('should remove mutations where overall proportion is below filter', () => {

@@ -14,7 +14,7 @@ import {
     type PositionSource,
     type WasapCooccurrenceFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type SequenceType } from '../../../types/domain';
+import { type SequenceType } from '../../../util/mutations';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { type LapisFilter } from '../../types/domain';
 import { lapisPost } from '../lapisApi/lapisApi';
+import { type LapisFilter } from '../lapisApi/lapisTypes';
 
 const lapisTotalCountSchema = z.object({
     data: z.tuple([z.object({ count: z.number() })]),

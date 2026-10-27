@@ -4,7 +4,7 @@ import {
     type MutationSource,
     type WasapManualFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { mutationType, type MutationType } from '../../../types/domain';
+import { mutationType, type MutationType } from '../../../util/mutations';
 import { PositionRangeFilter } from '../../inputs/PositionRangeFilter';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
