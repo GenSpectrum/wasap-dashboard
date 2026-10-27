@@ -18,7 +18,7 @@ import { allQueryData } from './allQueryData';
 import { useConnection, useRhydbSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { useRhydbQueries } from './rhydbQuery';
-import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
+import { type ProportionValue } from '../../components/overTime/proportionValue';
 import {
     type AmpliconMutation,
     type AmpliconMutations,

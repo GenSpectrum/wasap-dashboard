@@ -4,7 +4,7 @@ import { computeInitialValues } from './computeInitialValues';
 import { DatePicker } from './date-picker';
 import { toYYYYMMDD } from './dateConversion';
 import { type DateRangeOption, type DateRangeValue } from './dateRangeOption';
-import { ErrorBoundary } from '../../shared/error-boundary';
+import { ErrorBoundary } from '../../ui/error-boundary';
 import { ClearableSelect } from '../clearable-select';
 
 const CUSTOM_OPTION = 'Custom';

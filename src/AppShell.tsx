@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
-import { AppHeader } from './components/header/AppHeader';
+import { AppHeader } from './components/layout/header/AppHeader';
 
 /**
  * The frame every route sits in: the header, and the routed content. Replaces

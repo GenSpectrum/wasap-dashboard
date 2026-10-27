@@ -9,20 +9,20 @@ import { testConfig } from '../pageState/wasap/wasapTestConfig';
 
 // the real pages need RhyDB; stand-ins that say which page it is are enough here
 /* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */
-vi.mock('../components/pages/ManualPage', () => ({ ManualPage: () => <ModePage mode='manual' /> }));
-vi.mock('../components/pages/VariantExplorerPage', () => ({
+vi.mock('../components/modes/manual/ManualPage', () => ({ ManualPage: () => <ModePage mode='manual' /> }));
+vi.mock('../components/modes/variantExplorer/VariantExplorerPage', () => ({
     VariantExplorerPage: () => <ModePage mode='variant' />,
 }));
-vi.mock('../components/pages/ResistancePage', () => ({
+vi.mock('../components/modes/resistance/ResistancePage', () => ({
     ResistancePage: () => <ModePage mode='resistance' />,
 }));
-vi.mock('../components/pages/UntrackedPage', () => ({
+vi.mock('../components/modes/untracked/UntrackedPage', () => ({
     UntrackedPage: () => <ModePage mode='untracked' />,
 }));
-vi.mock('../components/pages/CollectionPage', () => ({
+vi.mock('../components/modes/collection/CollectionPage', () => ({
     CollectionPage: () => <ModePage mode='collection' />,
 }));
-vi.mock('../components/pages/DeconvolutionPage', () => ({
+vi.mock('../components/modes/deconvolution/DeconvolutionPage', () => ({
     DeconvolutionPage: () => <ModePage mode='deconvolution' />,
 }));
 /* eslint-enable @typescript-eslint/naming-convention */

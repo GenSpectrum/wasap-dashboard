@@ -1,8 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
-import { ErrorBoundary } from '../shared/error-boundary';
-import { LoadingDisplay } from '../shared/loading-display';
+import { ErrorBoundary } from '../ui/error-boundary';
+import { LoadingDisplay } from '../ui/loading-display';
 
 export type LocationMultiSelectProps = {
     /** The column whose values are offered. */

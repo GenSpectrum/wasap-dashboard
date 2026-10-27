@@ -1,7 +1,7 @@
 import { useCombobox, useMultipleSelection } from 'downshift';
 import { type ReactNode, useMemo, useRef, useState } from 'react';
 
-import { DeleteIcon } from '../shared/icons/DeleteIcon';
+import { DeleteIcon } from '../ui/icons/DeleteIcon';
 
 export function DownshiftCombobox<Item>({
     allItems,

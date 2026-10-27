@@ -117,9 +117,14 @@ src/
   main.tsx, AppShell.tsx    entry point + top-level chrome (organism dropdown)
   routes/                   WasapRoute (fetches resistance data, wires per-organism config)
   pageState/wasap/          the page state of the mode pages: a handler per mode + the shared base filter
-  layouts/                  page layout wrappers
-  components/               the ported dashboard-components fork — filters,
-                             over-time grids, gs-* wrappers
+  components/
+    modes/<mode>/           what only one mode uses: its page, filter, results
+    layout/                 app shell, mode page layout, header, result states
+    filterSidebar/          the filter sidebar + shared field help texts
+    inputs/                 generic filter widgets (ported from dashboard-components)
+    overTime/               over-time grids and their view settings
+    mutations/              mutation display, annotations, sorting
+    ui/                     generic UI: modal, tooltip, dropdown, errors, loading
   dataLayer/
     transport/               the SaneQL AST builder + RhyDB HTTP client (vendored
                              from wastewater-analytics-experiment): connection,

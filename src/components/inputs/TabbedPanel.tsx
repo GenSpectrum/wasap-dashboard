@@ -1,6 +1,6 @@
 import { useId, type PropsWithChildren } from 'react';
 
-import { Inset } from '../shared/Inset';
+import { Inset } from '../ui/Inset';
 
 /**
  * A pick of one of a few options as tabs, with the controls for the picked one in the panel
