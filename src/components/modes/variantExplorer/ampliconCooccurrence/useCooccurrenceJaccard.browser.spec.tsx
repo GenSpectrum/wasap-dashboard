@@ -7,7 +7,7 @@ import { describe, expect } from 'vitest';
 import { useCooccurrenceJaccard } from './useCooccurrenceJaccard';
 import { DUMMY_LAPIS_URL } from '../../../../../routeMocker';
 import { it } from '../../../../../test-extend';
-import { type CooccurrenceRow } from '../../../../dataLayer/hooks/ampliconCooccurrence';
+import { type CooccurrenceRow } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
 import { mutationsByAmplicon } from '../../../../externalData/fileBased/amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../../../externalData/fileBased/amplicons/primerBed';
 

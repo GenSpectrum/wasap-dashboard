@@ -7,7 +7,7 @@ import {
     isAnyOf,
     type AmpliconRows,
     type CooccurrenceRow,
-} from '../../../../dataLayer/hooks/ampliconCooccurrence';
+} from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
 import { type Amplicon } from '../../../../externalData/fileBased/amplicons/primerBed';
 import { Map2dView } from '../../../../util/map2d';
 import { type Substitution } from '../../../../util/mutations';

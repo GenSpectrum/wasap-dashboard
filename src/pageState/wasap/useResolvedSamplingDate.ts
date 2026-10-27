@@ -1,6 +1,6 @@
 import { isUnresolvedSamplingDate } from './baseFilter';
 import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
-import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
+import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
 import { ALL_TIMES_LABEL } from '../../types/DateWindow';
 import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
 

@@ -9,7 +9,7 @@ import {
     type ReactNode,
 } from 'react';
 
-import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
+import { useSampleOverview } from '../../../dataLayer/hooks/lookups/sampleOverview';
 import { type SampleOverview } from '../../../dataLayer/queries';
 import { TitledPanel } from '../../ui/TitledPanel';
 import { singleGraphColorRGBAById } from '../../ui/charts/colors';

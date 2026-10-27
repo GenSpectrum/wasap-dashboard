@@ -6,8 +6,8 @@ import {
     buildAmpliconCooccurrence,
     cooccurrenceRows,
     type AmpliconRows,
-} from '../../../../dataLayer/hooks/ampliconCooccurrence';
-import { buildDateAxis } from '../../../../dataLayer/hooks/dateAxis';
+} from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
+import { buildDateAxis } from '../../../../dataLayer/hooks/lookups/dateAxis';
 import { mutationsByAmplicon } from '../../../../externalData/fileBased/amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../../../externalData/fileBased/amplicons/primerBed';
 

@@ -1,10 +1,10 @@
 import type { FC, ReactNode } from 'react';
 
 import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
-import { useDateExtent } from '../../../dataLayer/hooks/dateExtent';
-import { useDistinctCount } from '../../../dataLayer/hooks/distinctCount';
-import { useStringFieldOptions } from '../../../dataLayer/hooks/stringFieldOptions';
-import { useTotalReadCount } from '../../../dataLayer/hooks/totalReadCount';
+import { useDateExtent } from '../../../dataLayer/hooks/lookups/dateExtent';
+import { useDistinctCount } from '../../../dataLayer/hooks/lookups/distinctCount';
+import { useStringFieldOptions } from '../../../dataLayer/hooks/lookups/stringFieldOptions';
+import { useTotalReadCount } from '../../../dataLayer/hooks/lookups/totalReadCount';
 
 /**
  * Whole-instance numbers for the organism: how much data there is, and where and when it was

@@ -9,8 +9,8 @@ import {
     useAmpliconCooccurrence,
     type AmpliconRows,
     type CooccurrenceRow,
-} from '../../../../dataLayer/hooks/ampliconCooccurrence';
-import { useDateAxis, type DateAxis } from '../../../../dataLayer/hooks/dateAxis';
+} from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
+import { useDateAxis, type DateAxis } from '../../../../dataLayer/hooks/lookups/dateAxis';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries';
 import { type AmpliconsConfig } from '../../../../externalData/fileBased/amplicons/ampliconsConfig';
 import { mutationsByAmplicon } from '../../../../externalData/fileBased/amplicons/mutationsByAmplicon';

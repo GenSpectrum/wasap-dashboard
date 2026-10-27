@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { DateRangeFilter } from './dateRangeFilter/date-range-filter';
 import { type DateRangeOption } from './dateRangeFilter/dateRangeOption';
-import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
+import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
 import { LoadingDisplay } from '../ui/loading-display';
 

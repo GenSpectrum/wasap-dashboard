@@ -3,16 +3,20 @@ import { Link, type To } from 'react-router-dom';
 
 import { formatSymbol, type CooccurrenceOverTimeDataMap, type CooccurrencePattern } from './CooccurrenceOverTimeData';
 import { type ClinicalLapisSource, usePanelLineageJaccards } from './usePanelLineageJaccards';
-import { useAmpliconAnchor, labelFor, selectDiversePositions } from '../../../../dataLayer/hooks/ampliconPositions';
-import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
+import {
+    useAmpliconAnchor,
+    labelFor,
+    selectDiversePositions,
+} from '../../../../dataLayer/hooks/analyses/ampliconPositions';
 import {
     cooccurrenceTargets,
     filterCooccurrenceByMinShare,
     useCooccurrence,
-} from '../../../../dataLayer/hooks/cooccurrence';
-import { lineagePanelSymbols, matchingPanelLineages } from '../../../../dataLayer/hooks/lineagePanelMatch';
+} from '../../../../dataLayer/hooks/analyses/cooccurrence';
+import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
+import { lineagePanelSymbols, matchingPanelLineages } from '../../../../deconvolution/lineagePanelMatch';
 import { type LineageTree } from '../../../../externalData/fileBased/lineageTree/lineageTree';
 import { type SequenceType, type TemporalGranularity } from '../../../../types/dashboardComponents';
 import { SubstitutionClass, type Substitution } from '../../../../util/mutations';

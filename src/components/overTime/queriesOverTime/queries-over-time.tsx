@@ -2,7 +2,7 @@ import { type FC, useEffect, useMemo } from 'react';
 
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
-import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
+import { useQueriesOverTime } from '../../../dataLayer/hooks/analyses/queriesOverTime';
 import { type RhydbFilterExpression, type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';

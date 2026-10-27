@@ -131,7 +131,10 @@ src/
                              retry, concurrency limit
     queries/                 SaneQL query catalogue + RhydbReadFilter + per-organism
                              RhydbSchema (dict- vs. DATE32-encoded date columns)
-    hooks/                   the Tier-1 + over-time React Query hooks
+    hooks/                   the RhyDB React Query hooks: connection + query plumbing,
+      lookups/               small single-query reads (date extent, counts, options, …)
+      analyses/              the analysis hooks (mutations / queries over time,
+                             co-occurrence, amplicon coverage, …)
   query/                    legacy LAPIS-era serializer helpers, slimmed down
                              but still shared by the over-time views
                              (ProportionValue, getProportion, removeEmptyDatesInPlace)
