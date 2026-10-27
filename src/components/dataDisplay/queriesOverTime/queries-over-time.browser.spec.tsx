@@ -4,9 +4,9 @@ import { render } from 'vitest-browser-react';
 
 import { QueriesOverTime } from './queries-over-time';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../../dataLayer/queries/schema';
+import type { RhydbSchema } from '../../../dataLayer/queries/schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -25,14 +25,14 @@ function ndjson(rows: unknown[]): Response {
 }
 
 /**
- * Routes the SILO queries the component sends to canned NDJSON:
+ * Routes the RhyDB queries the component sends to canned NDJSON:
  *  - the date axis (`group(by := {date}, aggs := {n := count()}).order(...)`) -> two day buckets, 1000 reads each
  *  - the coverage query per query (`... maybe(nucleotideEquals(position := P ...`) -> 1000/day
  *  - the count query per query (`nucleotideEquals(position := P ...`, no `maybe`) -> 900/day for 241, 100/day for 3037
  *
  * So C241T is 900/1000 = 90% in every bucket, C3037T is 100/1000 = 10%.
  */
-function stubSilo() {
+function stubRhydb() {
     const fetchMock = vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
         const q = typeof init?.body === 'string' ? init.body : '';
         const twoDays = (n: number) =>
@@ -77,7 +77,7 @@ function renderOverTime(pageSizes = [10, 20]) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const withFilter = (filter: { samplingDateFrom: string; samplingDateTo: string }) => (
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
                 <QueriesOverTime
                     filter={filter}
                     granularity='day'
@@ -94,9 +94,9 @@ function renderOverTime(pageSizes = [10, 20]) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('QueriesOverTime (SILO)', () => {
+describe('QueriesOverTime (RhyDB)', () => {
     it('renders a row per query, and the first and last date bucket', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime();
 
         await expect.element(screen.getByText('2026-06-01').first()).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe('QueriesOverTime (SILO)', () => {
     });
 
     it('sends a count and a coverage query per query, scoped and grouped by date', async () => {
-        const fetchMock = stubSilo();
+        const fetchMock = stubRhydb();
         renderOverTime();
 
         const bodies = () => fetchMock.mock.calls.map(([, init]) => (typeof init?.body === 'string' ? init.body : ''));
@@ -128,7 +128,7 @@ describe('QueriesOverTime (SILO)', () => {
     });
 
     it('shows the mean proportion of each query', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime();
 
         const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
@@ -138,7 +138,7 @@ describe('QueriesOverTime (SILO)', () => {
     });
 
     it('sorts all the queries, not just those of the page, by the column whose header is clicked', async () => {
-        stubSilo();
+        stubRhydb();
         // One query per page, so the one shown is the first in the order.
         const screen = renderOverTime([1]);
 
@@ -157,7 +157,7 @@ describe('QueriesOverTime (SILO)', () => {
     });
 
     it('keeps the page size when the filter changes', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime([1, 2]);
 
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();

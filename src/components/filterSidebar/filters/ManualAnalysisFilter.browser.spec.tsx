@@ -4,13 +4,13 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { DUMMY_SILO_URL } from '../../../../routeMocker';
-import { it, siloRouteMocker } from '../../../../test-extend';
+import { DUMMY_RHYDB_URL } from '../../../../routeMocker';
+import { it, rhydbRouteMocker } from '../../../../test-extend';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../../dataLayer/queries/schema';
+import type { RhydbSchema } from '../../../dataLayer/queries/schema';
 import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -21,17 +21,18 @@ const schema: SiloSchema = {
     batchId: 'batchId',
 };
 
-/** Renders inside a SILO connection whose reference genome has one 20,000 bp segment and one gene. */
-function renderWithSilo(ui: ReactElement) {
+/** Renders inside a RhyDB connection whose reference genome has one 20,000 bp segment and two genes. */
+function renderWithRhydb(ui: ReactElement) {
     const sequence = 'ATGC'.repeat(5000);
-    siloRouteMocker.mockReferenceGenome([
+    rhydbRouteMocker.mockReferenceGenome([
         { name: 'main', type: 'nucleotide', sequence },
         { name: 'S', type: 'amino_acid', sequence },
+        { name: 'E', type: 'amino_acid', sequence: 'MYSFV' },
     ]);
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url={DUMMY_SILO_URL} schema={schema}>
+            <ConnectionProvider url={DUMMY_RHYDB_URL} schema={schema}>
                 {ui}
             </ConnectionProvider>
         </QueryClientProvider>,
@@ -48,7 +49,7 @@ describe('ManualAnalysisFilter', () => {
     it('renders with nucleotide sequence type selected', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByLabelText } = renderWithSilo(
+        const { getByLabelText } = renderWithRhydb(
             <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
@@ -63,7 +64,7 @@ describe('ManualAnalysisFilter', () => {
             sequenceType: 'amino acid',
         };
 
-        const { getByLabelText } = renderWithSilo(
+        const { getByLabelText } = renderWithRhydb(
             <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
         );
 
@@ -79,7 +80,7 @@ describe('ManualAnalysisFilter', () => {
             mutations: ['A23T'],
         };
 
-        const { getByLabelText } = renderWithSilo(
+        const { getByLabelText } = renderWithRhydb(
             <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
         );
 
@@ -96,7 +97,7 @@ describe('ManualAnalysisFilter', () => {
     it('does not call setPageState when clicking the already selected sequence type', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByLabelText } = renderWithSilo(
+        const { getByLabelText } = renderWithRhydb(
             <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
@@ -109,7 +110,7 @@ describe('ManualAnalysisFilter', () => {
     it('calls setPageState with nucleotide mutation when entering and confirming A23T', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = renderWithSilo(
+        const { getByRole } = renderWithRhydb(
             <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
@@ -133,7 +134,7 @@ describe('ManualAnalysisFilter', () => {
             sequenceType: 'amino acid',
         };
 
-        const { getByRole } = renderWithSilo(
+        const { getByRole } = renderWithRhydb(
             <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
         );
 
@@ -153,7 +154,7 @@ describe('ManualAnalysisFilter', () => {
     it('allows multiple mutations to be entered', async () => {
         const mockSetPageState = vi.fn();
 
-        const { getByRole } = renderWithSilo(
+        const { getByRole } = renderWithRhydb(
             <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
         );
 
@@ -180,5 +181,51 @@ describe('ManualAnalysisFilter', () => {
                 mutations: ['A23T', 'C241T'],
             });
         });
+    });
+
+    it('switches to the position range tab', async () => {
+        const mockSetPageState = vi.fn();
+
+        const { getByRole } = renderWithRhydb(
+            <ManualAnalysisFilter pageState={defaultPageState} setPageState={mockSetPageState} />,
+        );
+
+        await getByRole('tab', { name: 'Position range' }).click();
+
+        expect(mockSetPageState).toHaveBeenCalledWith({ ...defaultPageState, mutationSource: 'range' });
+    });
+
+    it('shows the effective range and sets the start', async () => {
+        const mockSetPageState = vi.fn();
+        const pageState: WasapManualFilter = { ...defaultPageState, mutationSource: 'range', rangeLength: 46 };
+
+        const { getByRole, getByText } = renderWithRhydb(
+            <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
+        );
+
+        await expect.element(getByText('Positions 1 to 46 of the genome')).toBeVisible();
+        await expect.element(getByText('Gene', { exact: true })).not.toBeInTheDocument();
+        await getByRole('spinbutton').first().fill('130');
+
+        expect(mockSetPageState).toHaveBeenLastCalledWith({ ...pageState, rangeStart: 130 });
+    });
+
+    it('picks a gene for amino acids and starts over in it', async () => {
+        const mockSetPageState = vi.fn();
+        const pageState: WasapManualFilter = {
+            ...defaultPageState,
+            sequenceType: 'amino acid',
+            mutationSource: 'range',
+            rangeStart: 130,
+        };
+
+        const { getByRole, getByText } = renderWithRhydb(
+            <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
+        );
+
+        await expect.element(getByText('Positions 130 to 179 of S')).toBeVisible();
+        await getByRole('combobox').selectOptions('E (5 aa)');
+
+        expect(mockSetPageState).toHaveBeenCalledWith({ ...pageState, rangeGene: 'E', rangeStart: undefined });
     });
 });

@@ -1,38 +1,15 @@
 import { describe, expect, test } from 'vitest';
 
+import { buildDateAxis } from './dateAxis';
 import {
-    buildDateAxis,
     buildMatrix,
+    mutationsInRange,
     overallFromPositions,
     positionTargets,
     toMutationEntries,
 } from './mutationsOverTime';
 import { getProportion } from '../../components/dataDisplay/overTime/proportionValue';
 import { type OverallMutationRow, type PositionOverTimeRow } from '../queries';
-
-describe('buildDateAxis', () => {
-    test('buckets days, gap-fills, aligns totals', () => {
-        const { requestedDateRanges, totalCountsByBucket } = buildDateAxis(
-            [
-                { name: '2026-06-01', count: 10 },
-                { name: '2026-06-01', count: 5 },
-                { name: '2026-06-03', count: 20 },
-            ],
-            'day',
-            {},
-        );
-        expect(requestedDateRanges.map((b) => b.dateString)).toEqual(['2026-06-01', '2026-06-02', '2026-06-03']);
-        expect(totalCountsByBucket).toEqual([15, 0, 20]);
-    });
-
-    test('filter bounds win over the data extent', () => {
-        const { requestedDateRanges } = buildDateAxis([{ name: '2026-06-10', count: 3 }], 'day', {
-            samplingDateFrom: '2026-06-09',
-            samplingDateTo: '2026-06-11',
-        });
-        expect(requestedDateRanges.map((b) => b.dateString)).toEqual(['2026-06-09', '2026-06-10', '2026-06-11']);
-    });
-});
 
 describe('toMutationEntries', () => {
     test('nucleotide codes unprefixed, proportion = count/coverage', () => {
@@ -191,5 +168,28 @@ describe('buildMatrix', () => {
         const matrix = buildMatrix(['S:T19I'], 'day', 'amino acid', 'main', dr, [100], byPosition);
         // coverage = 8 + 2 = 10 (X and null excluded); count(I) = 8
         expect(getProportion(matrix.get(matrix.getFirstAxisKeys()[0], dr[0]) ?? null)).toBeCloseTo(0.8);
+    });
+});
+
+describe('mutationsInRange', () => {
+    const rows = (counts: Record<string, number>): PositionOverTimeRow[] =>
+        Object.entries(counts).map(([sym, count]) => ({ date: '2026-06-01', sym, count }));
+
+    test('takes every symbol but the reference and unknown above the floor, in genome order', () => {
+        const range = { reference: { name: 'main', sequence: 'ACGTA', length: 5 }, start: 2, length: 3 };
+        const byPosition = new Map([
+            ['main:2', rows({ C: 900, T: 100, N: 5000 })],
+            ['main:3', rows({ G: 999_999, A: 1 })],
+            ['main:4', rows({ T: 50, '-': 50 })],
+        ]);
+
+        expect(mutationsInRange(range, 'nucleotide', 'main', byPosition)).toEqual(['C2T', 'T4-']);
+    });
+
+    test('qualifies amino acid mutations with the gene', () => {
+        const range = { reference: { name: 'S', sequence: 'MFV', length: 3 }, start: 1, length: 3 };
+        const byPosition = new Map([['S:3', rows({ V: 10, A: 10, X: 100 })]]);
+
+        expect(mutationsInRange(range, 'amino acid', 'main', byPosition)).toEqual(['S:V3A']);
     });
 });

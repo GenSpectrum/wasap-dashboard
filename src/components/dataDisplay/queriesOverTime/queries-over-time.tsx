@@ -3,7 +3,7 @@ import { type FC, useEffect, useMemo } from 'react';
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/queriesOverTime';
-import { type SiloFilterExpression, type SiloReadFilter } from '../../../dataLayer/queries';
+import { type RhydbFilterExpression, type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
 import { type Temporal } from '../../../util/temporalClass';
@@ -25,12 +25,12 @@ export type QueriesOverTimeQuery = {
     description?: string;
     /** The advanced-query string, kept for display in the row-label tooltip. */
     query: string;
-    /** The parsed, genome-only expression that SILO is asked (see `data/queriesOverTime.ts`). */
-    filter: SiloFilterExpression;
+    /** The parsed, genome-only expression that RhyDB is asked (see `data/queriesOverTime.ts`). */
+    filter: RhydbFilterExpression;
 };
 
 export type QueriesOverTimeProps = {
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     queries: QueriesOverTimeQuery[];
     granularity: TemporalGranularity;
     /** Only queries whose mean proportion over the time range lies within this interval are shown. */

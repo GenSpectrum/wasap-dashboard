@@ -16,16 +16,18 @@ import { getLineageSignature } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { ClinicalSequenceCountStat } from '../dataDisplay/ClinicalSequenceCountStat';
 import { ExcludedMutations } from '../dataDisplay/ExcludedMutations';
 import { MutationsResult } from '../dataDisplay/MutationsResult';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
-import { WasapResults } from '../dataDisplay/WasapResults';
 import { AmpliconCooccurrenceSection } from '../dataDisplay/ampliconCooccurrence/AmpliconCooccurrenceSection';
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
 import { VariantExplorerFilter } from '../filterSidebar/filters/VariantExplorerFilter';
+import { TitledPanel } from '../shared/TitledPanel';
+import { ErrorDisplay } from '../shared/error-display';
+import { LoadingDisplay } from '../shared/loading-display';
 
 /** No mutations are left out by their mean proportion here: the sidebar has the mutations to exclude instead. */
 const ALL_MEAN_PROPORTIONS = { min: 0, max: 1 };
@@ -38,7 +40,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const signature = useVariantSignature(config, analysis, lineageTree);
 
     // Opens an amplicon in the co-occurrence mode, to see all of its variable positions there, with
@@ -88,6 +90,14 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     );
     const { clinicalLapis } = config;
 
+    // Each section shows its own placeholder until what it needs is in: the signature, from the
+    // clinical sequences, comes first; the mutations left after the background ones are taken out
+    // of it, which need its mean proportions in the wastewater data, later.
+    const resultError = signature.error ?? error;
+    const isResultPending = signature.isPending || isPending || isFilterPending;
+    const lineageForJaccard = signature.data?.lineageForJaccard;
+    const jaccardLineage = analysis.signatureType === 'computed' ? analysis.variant : lineageForJaccard;
+
     const clinicalLapisProps = {
         analysis,
         clinicalLapisBaseUrl: clinicalLapis.lapisBaseUrl,
@@ -123,89 +133,84 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
                     Please select a variant from the filter panel.
                 </NothingSelected>
             ) : (
-                <WasapResults
-                    data={data}
-                    error={signature.error ?? error}
-                    isPending={signature.isPending || isPending || isFilterPending}
-                >
-                    {({
-                        displayMutations,
-                        candidateMutations,
-                        jaccardIndices,
-                        lineageForJaccard,
-                        excludedMutations,
-                    }) => {
-                        const jaccardLineage =
-                            analysis.signatureType === 'computed' ? analysis.variant : lineageForJaccard;
-                        return (
-                            <MutationsResult
-                                displayMutations={displayMutations}
-                                jaccardIndices={jaccardIndices}
-                                analysis={analysis}
+                <div className='space-y-4'>
+                    {resultError !== null ? (
+                        <ErrorDisplay error={resultError} />
+                    ) : isResultPending || data === undefined ? (
+                        <TitledPanel title='Mutations' info={<MutationsInfo />} boxed={false}>
+                            <div className='h-48'>
+                                <LoadingDisplay />
+                            </div>
+                        </TitledPanel>
+                    ) : (
+                        <MutationsResult
+                            displayMutations={data.displayMutations}
+                            jaccardIndices={data.jaccardIndices}
+                            analysis={analysis}
+                            filter={filter}
+                            granularity={base.granularity}
+                            sequenceType={analysis.sequenceType}
+                            meanProportionInterval={ALL_MEAN_PROPORTIONS}
+                            ampliconsByMutation={
+                                amplicons.data === undefined || analysis.sequenceType !== 'nucleotide'
+                                    ? undefined
+                                    : ampliconNumbersByMutation(data.displayMutations, amplicons.data)
+                            }
+                            title='Mutations'
+                            info={<MutationsInfo />}
+                        />
+                    )}
+                    {config.amplicons !== undefined &&
+                        analysis.sequenceType === 'nucleotide' &&
+                        resultError === null && (
+                            <AmpliconCooccurrenceSection
+                                amplicons={config.amplicons}
+                                cooccurrenceModeLink={cooccurrenceModeLink}
                                 filter={filter}
                                 granularity={base.granularity}
-                                sequenceType={analysis.sequenceType}
-                                meanProportionInterval={ALL_MEAN_PROPORTIONS}
-                                ampliconsByMutation={
-                                    amplicons.data === undefined || analysis.sequenceType !== 'nucleotide'
+                                candidateMutations={isResultPending ? undefined : data?.candidateMutations}
+                                minJaccard={analysis.minJaccard}
+                                jaccardSource={
+                                    jaccardLineage === undefined
                                         ? undefined
-                                        : ampliconNumbersByMutation(displayMutations, amplicons.data)
+                                        : {
+                                              lapisBaseUrl: clinicalLapis.lapisBaseUrl,
+                                              lineageQuery: `${clinicalLapis.lineageField}=${jaccardLineage}`,
+                                              dateField: clinicalLapis.dateField,
+                                              dateFrom: getFromDateForTimeFrame(analysis.timeFrame),
+                                          }
                                 }
-                                title='Mutations'
-                                info={<MutationsInfo />}
-                            >
-                                {config.amplicons !== undefined &&
-                                    analysis.sequenceType === 'nucleotide' &&
-                                    candidateMutations.length !== 0 && (
-                                        <AmpliconCooccurrenceSection
-                                            amplicons={config.amplicons}
-                                            cooccurrenceModeLink={cooccurrenceModeLink}
-                                            filter={filter}
-                                            granularity={base.granularity}
-                                            candidateMutations={candidateMutations}
-                                            minJaccard={analysis.minJaccard}
-                                            jaccardSource={
-                                                jaccardLineage === undefined
-                                                    ? undefined
-                                                    : {
-                                                          lapisBaseUrl: clinicalLapis.lapisBaseUrl,
-                                                          lineageQuery: `${clinicalLapis.lineageField}=${jaccardLineage}`,
-                                                          dateField: clinicalLapis.dateField,
-                                                          dateFrom: getFromDateForTimeFrame(analysis.timeFrame),
-                                                      }
-                                            }
-                                        />
-                                    )}
-                                {analysis.signatureType === 'computed' && analysis.variant !== undefined && (
-                                    <ClinicalSequenceCountStat
-                                        {...clinicalLapisProps}
-                                        lineage={analysis.variant}
-                                        queryKeyPrefix='variantFetchInfo'
-                                        title={`Clinical sequences for ${analysis.variant}`}
-                                        descriptionStart={`The number of clinical sequences for ${analysis.variant}`}
-                                        warningMessage='. Clinical signature calculation with this few sequences is not recommended.'
-                                    />
-                                )}
-                                {analysis.signatureType === 'predefined' && lineageForJaccard !== undefined && (
-                                    <ClinicalSequenceCountStat
-                                        {...clinicalLapisProps}
-                                        lineage={lineageForJaccard}
-                                        queryKeyPrefix='jaccardFetchInfo'
-                                        title='Jaccard index'
-                                        descriptionStart={`Clinical sequences for ${lineageForJaccard}`}
-                                        warningMessage='. Low sequence count may lead to unreliable Jaccard scores.'
-                                        zeroMessage='. No sequences found — min. Jaccard filter was not applied.'
-                                    />
-                                )}
-                                <ExcludedMutations
-                                    mutations={excludedMutations}
-                                    backgroundLineages={backgroundLineages.map(({ name }) => name)}
-                                    sequenceType={analysis.sequenceType}
-                                />
-                            </MutationsResult>
-                        );
-                    }}
-                </WasapResults>
+                            />
+                        )}
+                    {analysis.signatureType === 'computed' && analysis.variant !== undefined && (
+                        <ClinicalSequenceCountStat
+                            {...clinicalLapisProps}
+                            lineage={analysis.variant}
+                            queryKeyPrefix='variantFetchInfo'
+                            title={`Clinical sequences for ${analysis.variant}`}
+                            descriptionStart={`The number of clinical sequences for ${analysis.variant}`}
+                            warningMessage='. Clinical signature calculation with this few sequences is not recommended.'
+                        />
+                    )}
+                    {analysis.signatureType === 'predefined' && lineageForJaccard !== undefined && (
+                        <ClinicalSequenceCountStat
+                            {...clinicalLapisProps}
+                            lineage={lineageForJaccard}
+                            queryKeyPrefix='jaccardFetchInfo'
+                            title='Jaccard index'
+                            descriptionStart={`Clinical sequences for ${lineageForJaccard}`}
+                            warningMessage='. Low sequence count may lead to unreliable Jaccard scores.'
+                            zeroMessage='. No sequences found — min. Jaccard filter was not applied.'
+                        />
+                    )}
+                    {resultError === null && (
+                        <ExcludedMutations
+                            mutations={isResultPending ? undefined : data?.excludedMutations}
+                            backgroundLineages={backgroundLineages.map(({ name }) => name)}
+                            sequenceType={analysis.sequenceType}
+                        />
+                    )}
+                </div>
             )}
         </ModePageLayout>
     );

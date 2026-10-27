@@ -1,5 +1,5 @@
 /**
- * `Cooccurrence` over SILO, in one hook.
+ * `Cooccurrence` over RhyDB, in one hook.
  *
  * Unlike `mutationsOverTime.ts` (a metadata query plus one position-over-time
  * query per visible mutation), co-occurrence needs the *joint* distribution
@@ -11,9 +11,9 @@
  * component, over the already-fetched result.
  */
 
-import { useConnection, useSiloSchema } from './connection';
-import { MAX_GRID_COLUMNS, buildDateAxis } from './mutationsOverTime';
-import { useSiloQuery } from './siloQuery';
+import { useConnection, useRhydbQueryClient, useRhydbSchema } from './connection';
+import { fetchDateAxis } from './dateAxis';
+import { useRhydbQuery } from './rhydbQuery';
 import {
     CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
@@ -27,13 +27,11 @@ import {
     normalizeFilter,
     positionsCooccurrenceQuery,
     readCooccurrenceRows,
-    samplingDatesQuery,
     type CooccurrenceRow,
     type OverTimeSequenceType,
     type PositionTarget,
-    type SiloReadFilter,
+    type RhydbReadFilter,
 } from '../queries';
-import { readNamedCounts } from '../queries/rows';
 
 /** Above this many positions the joint distribution is unwieldy and unverified; refuse it. */
 export const MAX_COOCCURRENCE_POSITIONS = 10;
@@ -48,22 +46,23 @@ export type CooccurrenceResult = {
 };
 
 export function useCooccurrence(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
     targets: readonly PositionTarget[],
     positionLabels: readonly string[],
 ): CooccurrenceResult {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
     const normalized = normalizeFilter(filter);
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance);
-    // `normalized` stands in for `filter` — a pure, order-independent derivation
-    // of it, used instead so equivalent filters share a cache entry.
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance), and `queryClient` is
+    // that of the same RhydbInstance; `normalized` stands in for `filter` — a pure,
+    // order-independent derivation of it, used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const query = useSiloQuery({
-        queryKey: ['silo', 'cooccurrence', ...connection.key, normalized, granularity, sequenceType, targets],
+    const query = useRhydbQuery({
+        queryKey: ['rhydb', 'cooccurrence', ...connection.key, normalized, granularity, sequenceType, targets],
         queryFn: async ({
             signal,
         }): Promise<{ data: CooccurrenceOverTimeDataMap; requestedDateRanges: TemporalClass[] }> => {
@@ -79,20 +78,13 @@ export function useCooccurrence(
                 );
             }
 
-            const dateRows = await connection
-                .query(samplingDatesQuery(schema, normalized), 'Co-occurrence date axis', { signal })
-                .then((result) => readNamedCounts(result.rows, schema.groupingDate));
-
-            const { requestedDateRanges, totalCountsByBucket } = buildDateAxis(dateRows, granularity, filter);
-
-            if (requestedDateRanges.length > MAX_GRID_COLUMNS) {
-                throw new UserFacingError(
-                    'Too many dates',
-                    `The dataset would contain ${requestedDateRanges.length} date intervals. ` +
-                        `Please reduce the number to below ${MAX_GRID_COLUMNS} — narrow the sampling-date filter, ` +
-                        'or choose a coarser granularity.',
-                );
-            }
+            const { requestedDateRanges, totalCountsByBucket } = await fetchDateAxis(
+                queryClient,
+                connection,
+                schema,
+                normalized,
+                granularity,
+            );
 
             if (requestedDateRanges.length === 0) {
                 return { data: new CooccurrenceOverTimeDataMap(), requestedDateRanges };

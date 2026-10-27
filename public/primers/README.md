@@ -15,11 +15,11 @@ checked against the upstream md5.
 ## Coordinates
 
 The positions in a BED file refer to the scheme's reference genome. They can
-only be used as they are when that is the reference the SILO instance aligns
+only be used as they are when that is the reference the RhyDB instance aligns
 to:
 
-- covid: the scheme's `MN908947.3` is identical to the SILO reference.
+- covid: the scheme's `MN908947.3` is identical to the RhyDB reference.
 - rsv-a / rsv-b: the upstream `rsva-rsvb` scheme is on `NC_038235.1` /
-  `NC_001781.1`, which are _not_ the references of our SILO instances. Its
+  `NC_001781.1`, which are _not_ the references of our RhyDB instances. Its
   coordinates would have to be translated (e.g. by aligning the primer
-  sequences to the SILO references) before it could be vendored here.
+  sequences to the RhyDB references) before it could be vendored here.

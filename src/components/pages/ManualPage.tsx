@@ -2,10 +2,22 @@ import { useMemo } from 'react';
 
 import { ModePageLayout } from './ModePageLayout';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { usePositionRangeMutations } from '../../dataLayer/hooks/mutationsOverTime';
+import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { usePageState } from '../../pageState/usePageState';
 import { ManualPageStateHandler } from '../../pageState/wasap/handlers/ManualPageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { usePositionRange } from '../../pageState/wasap/positionRange';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
+import {
+    effectiveMutationSource,
+    MUTATION_SOURCE,
+    type WasapManualFilter,
+} from '../../pageState/wasap/wasapAnalysisFilter';
+import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { MutationsResult } from '../dataDisplay/MutationsResult';
+import { NothingSelected } from '../dataDisplay/NothingSelected';
+import { WasapResults } from '../dataDisplay/WasapResults';
+import { type ProportionInterval } from '../dataDisplay/mutationsOverTime/getFilteredMutationCodes';
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
 import { ManualAnalysisFilter } from '../filterSidebar/filters/ManualAnalysisFilter';
 import { LoadingDisplay } from '../shared/loading-display';
@@ -16,7 +28,7 @@ export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> })
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
@@ -40,15 +52,60 @@ export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> })
             {isFilterPending ? (
                 <LoadingDisplay />
             ) : (
-                <MutationsResult
-                    displayMutations={analysis.mutations}
+                <ManualResult
                     analysis={analysis}
                     filter={filter}
                     granularity={base.granularity}
-                    sequenceType={analysis.sequenceType}
                     meanProportionInterval={meanProportionInterval}
                 />
             )}
         </ModePageLayout>
+    );
+}
+
+function ManualResult({
+    analysis,
+    filter,
+    granularity,
+    meanProportionInterval,
+}: {
+    analysis: WasapManualFilter;
+    filter: RhydbReadFilter;
+    granularity: TemporalGranularity;
+    meanProportionInterval: ProportionInterval;
+}) {
+    const isRange = effectiveMutationSource(analysis) === MUTATION_SOURCE.range;
+    const { referenceGenome, range } = usePositionRange(analysis);
+    const rangeMutations = usePositionRangeMutations(filter, analysis.sequenceType, isRange ? range : undefined);
+
+    const result = (displayMutations: string[] | undefined) => (
+        <MutationsResult
+            displayMutations={displayMutations}
+            analysis={analysis}
+            filter={filter}
+            granularity={granularity}
+            sequenceType={analysis.sequenceType}
+            meanProportionInterval={meanProportionInterval}
+        />
+    );
+
+    if (!isRange) {
+        return result(analysis.mutations);
+    }
+    if (referenceGenome.data !== undefined && range === undefined) {
+        return (
+            <NothingSelected title='No positions selected'>
+                The reference genome has no sequence to pick positions in.
+            </NothingSelected>
+        );
+    }
+    return (
+        <WasapResults
+            data={rangeMutations.data}
+            error={referenceGenome.error ?? rangeMutations.error}
+            isPending={referenceGenome.isPending || rangeMutations.isPending}
+        >
+            {result}
+        </WasapResults>
     );
 }

@@ -9,13 +9,13 @@ co-occurrence), mutations-/queries-over-time grids — without Astro.
 From a service to a tool: today this hosts _our_ data for _our_ users. The goal
 is a tool other people can point at their own data, in three run modes:
 
-1. **Hosted** — a statically served SPA talking to a remote LAPIS/SILO over
+1. **Hosted** — a statically served SPA talking to a remote LAPIS/RhyDB over
    HTTP (how it runs today).
-2. **In-browser** — the same SPA bundling a WASM build of SILO
+2. **In-browser** — the same SPA bundling a WASM build of RhyDB
    (`@rhydb/rhydb-wasm`), queries run entirely client-side against a dataset
-   loaded in the browser. Blocked on an upstream 64-bit WASM SILO build — see
+   loaded in the browser. Blocked on an upstream 64-bit WASM RhyDB build — see
    [`ROADMAP.md`](ROADMAP.md).
-3. **Desktop (Tauri)** — the SPA shipped with a dedicated native SILO process.
+3. **Desktop (Tauri)** — the SPA shipped with a dedicated native RhyDB process.
    Not started — see [`ROADMAP.md`](ROADMAP.md).
 
 Only mode 1 is built today.
@@ -40,7 +40,7 @@ installs the Playwright browser first (see `.github/workflows/ci.yml`).
 
 ### Configuration
 
-Runtime config — LAPIS/SILO/backend URLs, per-organism settings, which
+Runtime config — LAPIS/RhyDB/backend URLs, per-organism settings, which
 analysis modes are enabled — is a `config.json` fetched at startup and
 zod-validated (`src/config/`). `public/config.example.json` documents the
 shape; the real file is gitignored. No config present ⇒ the app renders with
@@ -121,11 +121,11 @@ src/
   components/               the ported dashboard-components fork — filters,
                              over-time grids, gs-* wrappers
   dataLayer/
-    transport/               the SaneQL AST builder + SILO HTTP client (vendored
+    transport/               the SaneQL AST builder + RhyDB HTTP client (vendored
                              from wastewater-analytics-experiment): connection,
                              retry, concurrency limit
-    queries/                 SaneQL query catalogue + SiloReadFilter + per-organism
-                             SiloSchema (dict- vs. DATE32-encoded date columns)
+    queries/                 SaneQL query catalogue + RhydbReadFilter + per-organism
+                             RhydbSchema (dict- vs. DATE32-encoded date columns)
     hooks/                   the Tier-1 + over-time React Query hooks
   query/                    legacy LAPIS-era serializer helpers, slimmed down
                              but still shared by the over-time views

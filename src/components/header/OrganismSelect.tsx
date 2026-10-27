@@ -5,7 +5,7 @@ import { listWastewaterOrganisms } from '../../config/wastewaterOrganisms';
 /**
  * Replaces Astro's per-page routing: pick an organism, navigate to its route.
  * The "Upload your own data" entry mentioned in the plan (step 3) will slot in
- * here once there's a WASM-SILO client to point it at.
+ * here once there's a WASM-RhyDB client to point it at.
  */
 export function OrganismSelect() {
     const navigate = useNavigate();

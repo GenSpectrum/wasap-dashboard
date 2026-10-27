@@ -3,11 +3,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ConnectionProvider, createSiloQueryClient, useSiloQueryClient } from './connection';
+import { ConnectionProvider, createRhydbQueryClient, useRhydbQueryClient } from './connection';
 import { useTotalReadCount } from './totalReadCount';
-import type { SiloSchema } from '../queries/schema';
+import type { RhydbSchema } from '../queries/schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -18,12 +18,12 @@ const schema: SiloSchema = {
     batchId: 'batchId',
 };
 
-function wrapper(siloQueryClient?: QueryClient): FC<PropsWithChildren> {
-    // The app-wide client retries; SILO reads must not end up on it.
+function wrapper(rhydbQueryClient?: QueryClient): FC<PropsWithChildren> {
+    // The app-wide client retries; RhyDB reads must not end up on it.
     const appQueryClient = new QueryClient({ defaultOptions: { queries: { retry: 3, retryDelay: 0 } } });
     return ({ children }) => (
         <QueryClientProvider client={appQueryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema} queryClient={siloQueryClient}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema} queryClient={rhydbQueryClient}>
                 {children}
             </ConnectionProvider>
         </QueryClientProvider>
@@ -32,7 +32,7 @@ function wrapper(siloQueryClient?: QueryClient): FC<PropsWithChildren> {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('SILO queries', () => {
+describe('RhyDB queries', () => {
     it('send a rejected query once, not again for each retry of the app-wide query client', async () => {
         const fetchMock = vi.fn(() =>
             Promise.resolve(new Response(JSON.stringify({ error: 'Bad request', message: 'no' }), { status: 400 })),
@@ -46,8 +46,8 @@ describe('SILO queries', () => {
     });
 
     it('are cached on the query client the provider is given', () => {
-        const siloQueryClient = createSiloQueryClient();
-        const { result } = renderHook(() => useSiloQueryClient(), { wrapper: wrapper(siloQueryClient) });
-        expect(result.current).toBe(siloQueryClient);
+        const rhydbQueryClient = createRhydbQueryClient();
+        const { result } = renderHook(() => useRhydbQueryClient(), { wrapper: wrapper(rhydbQueryClient) });
+        expect(result.current).toBe(rhydbQueryClient);
     });
 });

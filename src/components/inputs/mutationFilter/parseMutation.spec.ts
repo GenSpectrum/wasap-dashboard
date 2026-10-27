@@ -9,16 +9,19 @@ describe('parseMutation', () => {
         nucleotideSequences: [
             {
                 name: 'nuc1',
+                sequence: 'ACGT',
                 length: 4,
             },
         ],
         genes: [
             {
                 name: 'gene1',
+                sequence: 'ACGT',
                 length: 4,
             },
             {
                 name: 'gene2',
+                sequence: 'ACGT',
                 length: 4,
             },
         ],
@@ -52,7 +55,7 @@ describe('parseMutation', () => {
                 expected: { type: mutationType.aminoAcidInsertions, value: new InsertionClass('gene1', 3, '?AC?GT') },
             },
             {
-                name: 'should parse amino acid insertion with SILO-style wildcard',
+                name: 'should parse amino acid insertion with RhyDB-style wildcard',
                 input: 'ins_gene1:3:.*AC.*GT',
                 expected: { type: mutationType.aminoAcidInsertions, value: new InsertionClass('gene1', 3, '.*AC.*GT') },
             },

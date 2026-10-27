@@ -8,13 +8,13 @@
  */
 
 import { groupingColumnsPassThrough } from './groupingColumns';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { field, int } from '../transport/expression';
 import { count } from '../transport/functions';
 import { table, unionall, type Relation } from '../transport/relation';
 import { readCount, readOptionalText, readText, type RhydbRow } from '../transport/row';
 
-function positionBySampleQuery(schema: SiloSchema, sequenceName: string, position: number): Relation {
+function positionBySampleQuery(schema: RhydbSchema, sequenceName: string, position: number): Relation {
     return table(schema.table)
         .map({ ...groupingColumnsPassThrough([schema.sampleId]), sym: field(sequenceName).at(position) })
         .group({ count: count() }, [schema.sampleId, 'sym']);
@@ -26,7 +26,7 @@ function positionBySampleQuery(schema: SiloSchema, sequenceName: string, positio
  * aggregation and times out.
  */
 export function positionsBySampleQuery(
-    schema: SiloSchema,
+    schema: RhydbSchema,
     sequenceName: string,
     positions: readonly number[],
 ): Relation {

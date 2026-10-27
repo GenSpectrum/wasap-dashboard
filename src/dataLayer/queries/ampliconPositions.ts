@@ -7,9 +7,9 @@
  * (`!nucleotideEquals(...)` / `!aminoAcidEquals(...)`).
  */
 
-import { scoped, type SiloReadFilter } from './filter';
+import { scoped, type RhydbReadFilter } from './filter';
 import { type OverTimeSequenceType, type PositionTarget } from './mutationsOverTime';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { not } from '../transport/expression';
 import { aminoAcidEquals, nucleotideEquals } from '../transport/functions';
 import { type Relation } from '../transport/relation';
@@ -23,8 +23,8 @@ export function unknownSymbolFor(sequenceType: OverTimeSequenceType): string {
 }
 
 export function ampliconPositionsQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     anchor: PositionTarget,
     sequenceType: OverTimeSequenceType,
 ): Relation {

@@ -1,7 +1,7 @@
 /**
- * `useStringFieldOptions` — a Tier-1 SILO read, as a TanStack Query hook.
+ * `useStringFieldOptions` — a Tier-1 RhyDB read, as a TanStack Query hook.
  *
- * Reads the instance from context (`useConnection` / `useSiloSchema`), issues
+ * Reads the instance from context (`useConnection` / `useRhydbSchema`), issues
  * one catalogue query, and hands back the parsed rows. Tier-1 reads are the
  * only layer that issues a query — components call these, never
  * `connection.query` directly (doc 04, "One mechanism").
@@ -9,8 +9,8 @@
 
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { useConnection, useSiloSchema } from './connection';
-import { useSiloQuery } from './siloQuery';
+import { useConnection, useRhydbSchema } from './connection';
+import { useRhydbQuery } from './rhydbQuery';
 import { readNamedCounts, stringFieldValuesQuery, type NamedCount } from '../queries';
 
 /**
@@ -20,11 +20,11 @@ import { readNamedCounts, stringFieldValuesQuery, type NamedCount } from '../que
  */
 export function useStringFieldOptions(field: string): UseQueryResult<NamedCount[]> {
     const connection = useConnection();
-    const schema = useSiloSchema();
-    // `schema` stands in for `connection.key` (same memoized SiloInstance).
+    const schema = useRhydbSchema();
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
-        queryKey: ['silo', 'string-field-options', ...connection.key, field],
+    return useRhydbQuery({
+        queryKey: ['rhydb', 'string-field-options', ...connection.key, field],
         queryFn: async ({ signal }): Promise<NamedCount[]> => {
             const { rows } = await connection.query(stringFieldValuesQuery(schema, field), `Options for ${field}`, {
                 signal,

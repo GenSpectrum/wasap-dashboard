@@ -8,7 +8,7 @@ import { LoadingDisplay } from '../shared/loading-display';
 
 /**
  * Computes the available date-range options dynamically from the newest
- * sampling date in the dataset (read from SILO via `useDateExtent`).
+ * sampling date in the dataset (read from RhyDB via `useDateExtent`).
  */
 export function DynamicDateFilter({
     label,

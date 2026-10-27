@@ -8,7 +8,7 @@ import {
     MAX_MUTATIONS_TO_LEAVE_TWO_OUT,
     type CooccurrenceRow,
 } from './ampliconCooccurrence';
-import { buildDateAxis } from './mutationsOverTime';
+import { buildDateAxis } from './dateAxis';
 import { mutationsByAmplicon } from '../../amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../amplicons/primerBed';
 

@@ -2,7 +2,7 @@ import { CollectionInfo } from './CollectionInfo';
 import { NothingSelected } from './NothingSelected';
 import { type ProportionInterval } from './mutationsOverTime/getFilteredMutationCodes';
 import { QueriesOverTime } from './queriesOverTime/queries-over-time';
-import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { type CollectionQueries } from '../../externalData/useCollectionQueries';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 
@@ -18,7 +18,7 @@ export function CollectionResult({
     getCollectionUrl,
 }: {
     data: CollectionQueries;
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     meanProportionInterval: ProportionInterval;
     /** Where the collection comes from, like "GenSpectrum collection". */

@@ -10,7 +10,7 @@ import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageCo
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { CooccurrencePageStateHandler } from '../../pageState/wasap/handlers/CooccurrencePageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import { effectivePositionSource, type WasapCooccurrenceFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { CooccurrenceResult } from '../dataDisplay/CooccurrenceResult';
@@ -70,7 +70,7 @@ export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'coocc
     } = usePageState(pageStateHandler);
     const { analysis, isPending: isDefaultAmpliconPending } = useWithDefaultAmplicon(urlAnalysis, config);
     const { lineageTree } = useWasapLayoutContext();
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
 
     // Opens a row's mutations in the manual mode, to see them over time there.
     const manualModeLink = isModeEnabled(config, 'manual')

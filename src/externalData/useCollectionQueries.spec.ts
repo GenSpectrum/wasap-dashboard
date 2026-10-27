@@ -28,7 +28,7 @@ const unusedBaseConfigFields = {
     linkTemplate: { nucleotideMutation: '', aminoAcidMutation: '' },
     samplingDateField: '',
     locationNameField: '',
-    silo: {
+    rhydb: {
         url: '',
         table: 'data',
         dateColumn: 'date',

@@ -2,7 +2,7 @@ import { type To } from 'react-router-dom';
 
 import { Cooccurrence } from './cooccurrence/cooccurrence';
 import { type ClinicalLapisSource } from './cooccurrence/usePanelLineageJaccards';
-import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { type LineageTree } from '../../lineageTree/lineageTree';
 import {
     DEFAULT_ENTROPY_CUTOFF_BITS,
@@ -26,7 +26,7 @@ export function CooccurrenceResult({
 }: {
     base: WasapBaseFilter;
     analysis: WasapCooccurrenceFilter;
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     /** Only patterns on at least this share of the reads are shown. */
     minShare: number;
     /** EXPERIMENTAL: enables the panel-of-lineages match, when the organism has a lineage tree. */

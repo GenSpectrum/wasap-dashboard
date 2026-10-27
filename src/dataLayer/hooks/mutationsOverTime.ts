@@ -1,5 +1,5 @@
 /**
- * `gs-mutations-over-time` over SILO, in two hooks: one for the grid's frame,
+ * `gs-mutations-over-time` over RhyDB, in two hooks: one for the grid's frame,
  * one for the cells of whichever page is on screen.
  *
  * `useOverTimeMetadata` — the frame, and page-independent: the date axis +
@@ -21,26 +21,21 @@ import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
-import { useConnection, useSiloQueryClient, useSiloSchema } from './connection';
-import { useSiloQueries, useSiloQuery } from './siloQuery';
+import { useConnection, useRhydbQueryClient, useRhydbSchema } from './connection';
+import { fetchDateAxis } from './dateAxis';
+import { useRhydbQueries, useRhydbQuery } from './rhydbQuery';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
 } from '../../components/dataDisplay/mutationsOverTime/MutationOverTimeData';
 import { removeEmptyDatesInPlace, type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
-import { UserFacingError } from '../../components/shared/error-display';
 import { sortSubstitutionsAndDeletions } from '../../components/shared/sort/sortSubstitutionsAndDeletions';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../types/dashboardComponents';
 import { Map2dView, type Map2DContents } from '../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';
+import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';
 import {
-    generateAllInRange,
-    getMinMaxTemporal,
-    parseDateStringToTemporal,
-    type Temporal,
-    type TemporalClass,
-} from '../../util/temporalClass';
-import {
+    OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,
     normalizeFilter,
     positionOverTimeQuery,
@@ -48,19 +43,15 @@ import {
     readOverallMutations,
     readPositionOverTime,
     readPositionsOverTime,
-    samplingDatesQuery,
     type OverallMutationRow,
     type OverTimeSequenceType,
+    type PositionRange,
     type PositionTarget,
     type PositionOverTimeRow,
-    type SiloReadFilter,
-    type SiloSchema,
+    type RhydbReadFilter,
+    type RhydbSchema,
 } from '../queries';
-import { readNamedCounts } from '../queries/rows';
 import { type Connection } from '../transport/connection';
-
-/** Above this many date buckets the grid is unreadable and the queries are expensive; refuse it. */
-export const MAX_GRID_COLUMNS = 200;
 
 /** The symbol that means "the read did not call anything here". */
 export function unknownSymbol(sequenceType: OverTimeSequenceType): string {
@@ -82,26 +73,26 @@ export type OverTimeMetadata = {
 };
 
 export function useOverTimeMetadata(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
     displayMutations: string[] | undefined,
     enabled = true,
 ): UseQueryResult<OverTimeMetadata> {
     const connection = useConnection();
-    const schema = useSiloSchema();
-    const queryClient = useSiloQueryClient();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
     const normalized = normalizeFilter(filter);
     const displayMutationsKey = displayMutations === undefined ? undefined : [...displayMutations].sort();
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance);
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance);
     // `normalized`/`displayMutationsKey` stand in for `filter`/`displayMutations`
     // — they're pure, order-independent derivations of them, deliberately
     // used instead so equivalent filters/sets share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
+    return useRhydbQuery({
         queryKey: [
-            'silo',
+            'rhydb',
             'over-time-metadata',
             ...connection.key,
             normalized,
@@ -114,11 +105,11 @@ export function useOverTimeMetadata(
             // Date axis first: the "too many buckets" guard has to fire before the
             // (potentially expensive) mutation queries.
             const { requestedDateRanges, totalCountsByBucket } = await fetchDateAxis(
+                queryClient,
                 connection,
                 schema,
-                filter,
+                normalized,
                 granularity,
-                signal,
             );
 
             if (displayMutations !== undefined) {
@@ -167,8 +158,8 @@ const POSITIONS_PER_QUERY = 64;
 async function fetchPositionsOverTime(
     queryClient: QueryClient,
     connection: Connection,
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     targets: readonly PositionTarget[],
     signal: AbortSignal,
 ): Promise<Map<string, PositionOverTimeRow[]>> {
@@ -211,56 +202,88 @@ async function fetchPositionsOverTime(
 }
 
 /** The cache key of one position's rows over a (normalized) filter. */
-function positionQueryKey(connection: Connection, filter: SiloReadFilter, target: PositionTarget) {
-    return ['silo', 'over-time-position', ...connection.key, filter, target.sequenceName, target.position];
+function positionQueryKey(connection: Connection, filter: RhydbReadFilter, target: PositionTarget) {
+    return ['rhydb', 'over-time-position', ...connection.key, filter, target.sequenceName, target.position];
 }
-
-export type DateAxis = {
-    /** Every bucket in range, gap-filled and sorted. */
-    requestedDateRanges: TemporalClass[];
-    /** Total reads per bucket, index-aligned with `requestedDateRanges`. */
-    totalCountsByBucket: number[];
-};
 
 /**
- * The date buckets of a grid for the filter and granularity, and the reads in each. More buckets
- * than a grid can show is an error for the user (`MAX_GRID_COLUMNS`).
+ * The mutations at the positions of `range`: every symbol the filtered reads carry there other than
+ * the reference's, above `OVER_TIME_MIN_PROPORTION` over the filter. The rows are fetched as for a
+ * given list of mutations and put into the same cache, so the grid of the mutations needs no
+ * queries of its own.
  */
-export async function fetchDateAxis(
-    connection: Connection,
-    schema: SiloSchema,
-    filter: SiloReadFilter,
-    granularity: TemporalGranularity,
-    signal: AbortSignal,
-): Promise<DateAxis> {
-    const dateRows = await connection
-        .query(samplingDatesQuery(schema, normalizeFilter(filter)), 'Over-time date axis', { signal })
-        .then((result) => readNamedCounts(result.rows, schema.groupingDate));
-
-    const dateAxis = buildDateAxis(dateRows, granularity, filter);
-    if (dateAxis.requestedDateRanges.length > MAX_GRID_COLUMNS) {
-        throw new UserFacingError(
-            'Too many dates',
-            `The dataset would contain ${dateAxis.requestedDateRanges.length} date intervals. ` +
-                `Please reduce the number to below ${MAX_GRID_COLUMNS} — narrow the sampling-date filter, ` +
-                'or choose a coarser granularity.',
-        );
-    }
-    return dateAxis;
-}
-
-/** The date axis (`fetchDateAxis`) on its own, for a grid of something other than the mutations. */
-export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranularity): UseQueryResult<DateAxis> {
+export function usePositionRangeMutations(
+    filter: RhydbReadFilter,
+    sequenceType: OverTimeSequenceType,
+    range: PositionRange | undefined,
+): UseQueryResult<string[]> {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
     const normalized = normalizeFilter(filter);
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for `filter`.
+    // `schema` stands in for `connection.key`, `normalized` for `filter`, and the range by its
+    // sequence's name, start and length.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
-        queryKey: ['silo', 'date-axis', ...connection.key, normalized, granularity],
-        queryFn: ({ signal }) => fetchDateAxis(connection, schema, normalized, granularity, signal),
+    return useRhydbQuery({
+        queryKey: [
+            'rhydb',
+            'position-range-mutations',
+            ...connection.key,
+            normalized,
+            sequenceType,
+            range?.reference.name,
+            range?.start,
+            range?.length,
+        ],
+        enabled: range !== undefined,
+        queryFn: async ({ signal }) => {
+            if (range === undefined) {
+                throw new Error('usePositionRangeMutations queryFn called with no range');
+            }
+            const targets = rangeTargets(range);
+            const rowsByPosition = await fetchPositionsOverTime(
+                queryClient,
+                connection,
+                schema,
+                normalized,
+                targets,
+                signal,
+            );
+            return mutationsInRange(range, sequenceType, schema.nucleotideSequence, rowsByPosition);
+        },
     });
+}
+
+function rangeTargets(range: PositionRange): PositionTarget[] {
+    return Array.from({ length: range.length }, (_, index) => ({
+        sequenceName: range.reference.name,
+        position: range.start + index,
+    }));
+}
+
+/** The codes of the mutations of `usePositionRangeMutations`, from the rows of each position. */
+export function mutationsInRange(
+    range: PositionRange,
+    sequenceType: OverTimeSequenceType,
+    nucleotideSequence: string,
+    rowsByPosition: ReadonlyMap<string, PositionOverTimeRow[]>,
+): string[] {
+    const unknown = unknownSymbol(sequenceType);
+    const segmentPrefix = sequenceType === 'nucleotide' ? '' : `${range.reference.name}:`;
+    const candidates = rangeTargets(range).flatMap((target) => {
+        const ref = range.reference.sequence[target.position - 1];
+        const symbols = new Set(
+            (rowsByPosition.get(targetKey(target)) ?? [])
+                .map((row) => row.sym)
+                .filter((sym) => sym !== null && sym !== '' && sym !== unknown && sym !== ref),
+        );
+        return [...symbols].map((sym) => `${segmentPrefix}${ref}${target.position}${sym}`);
+    });
+    return overallFromPositions(candidates, sequenceType, nucleotideSequence, rowsByPosition)
+        .filter((entry) => entry.proportion >= OVER_TIME_MIN_PROPORTION)
+        .sort((a, b) => sortSubstitutionsAndDeletions(a.mutation, b.mutation))
+        .map((entry) => entry.mutation.code);
 }
 
 // --- page: the visible page's cells -----------------------------------------
@@ -281,7 +304,7 @@ export type MutationsOverTimePage = {
 };
 
 export function useMutationsOverTimePage(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
     schemaNucleotideSequence: string,
@@ -291,7 +314,7 @@ export function useMutationsOverTimePage(
     showEmptyDates: boolean,
 ): MutationsOverTimePage {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
 
     const targets = useMemo(
@@ -299,9 +322,9 @@ export function useMutationsOverTimePage(
         [visibleMutationCodes, sequenceType, schemaNucleotideSequence],
     );
 
-    const positionRows = useSiloQueries({
+    const positionRows = useRhydbQueries({
         combine: allQueryData,
-        // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for
+        // `schema` stands in for `connection.key` (same memoized RhydbInstance); `normalized` for
         // `filter`, so that equivalent filters share a cache entry.
         // eslint-disable-next-line @tanstack/query/exhaustive-deps
         queries: targets.map((target) => ({
@@ -359,28 +382,6 @@ export function useMutationsOverTimePage(
 }
 
 // --- pure helpers (exported for tests) --------------------------------------
-
-export function buildDateAxis(
-    dateRows: { name: string; count: number }[],
-    granularity: TemporalGranularity,
-    filter: SiloReadFilter,
-): { requestedDateRanges: TemporalClass[]; totalCountsByBucket: number[] } {
-    const countByBucket = new Map<string, number>();
-    const bucketByKey = new Map<string, TemporalClass>();
-    for (const { name, count } of dateRows) {
-        const bucket = parseDateStringToTemporal(name, granularity);
-        countByBucket.set(bucket.dateString, (countByBucket.get(bucket.dateString) ?? 0) + count);
-        bucketByKey.set(bucket.dateString, bucket);
-    }
-
-    const { min, max } = getMinMaxTemporal(bucketByKey.values());
-    const from = filter.samplingDateFrom ? parseDateStringToTemporal(filter.samplingDateFrom, granularity) : min;
-    const to = filter.samplingDateTo ? parseDateStringToTemporal(filter.samplingDateTo, granularity) : max;
-
-    const requestedDateRanges = generateAllInRange(from, to);
-    const totalCountsByBucket = requestedDateRanges.map((bucket) => countByBucket.get(bucket.dateString) ?? 0);
-    return { requestedDateRanges, totalCountsByBucket };
-}
 
 export function toMutationEntries(
     rows: OverallMutationRow[],

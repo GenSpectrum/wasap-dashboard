@@ -5,7 +5,7 @@ import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { useMutationFrequencies } from '../../dataLayer/hooks/mutationFrequencies';
-import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { deconvolutionOptions } from '../../deconvolution/granularityOptions';
 import { lineageSignatures } from '../../deconvolution/lineageSignatures';
 import { informativeMutations } from '../../deconvolution/lollipopService';
@@ -15,7 +15,7 @@ import { type LineageTree } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import { effectivePanel } from '../../pageState/wasap/wasapAnalysisFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
@@ -33,7 +33,7 @@ export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deco
         setPageState,
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const panel = useMemo(() => effectivePanel(config.deconvolutionPanel, analysis), [config, analysis]);
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
@@ -112,7 +112,7 @@ function DeconvolutionResults({
     lineageTree: LineageTree;
     panel: string[];
     colors: Map<string, string>;
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     lineageLink: ((lineage: string) => To) | undefined;
 }) {
