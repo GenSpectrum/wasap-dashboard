@@ -69,7 +69,7 @@ function ProportionInput({
 }) {
     return (
         <input
-            className={`input input-bordered w-full min-w-0 ${indicateError ? 'input-error' : ''}`}
+            className={`input w-full min-w-0 ${indicateError ? 'input-error' : ''}`}
             type='number'
             aria-label={`${label} mean proportion`}
             min={0}

@@ -49,9 +49,9 @@ export function DynamicDateFilter({
     const isCustom = normalizedValue?.label === CustomDateRangeLabel;
 
     return (
-        <label className='form-control'>
+        <label>
             <div className='label'>
-                <span className='label-text'>{label}</span>
+                <span>{label}</span>
             </div>
             {isPending ? (
                 <div className='h-20'>

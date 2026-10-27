@@ -244,7 +244,7 @@ function ComputedSignature({
             </div>
             <LabeledField label='Time frame'>
                 <select
-                    className='select select-bordered'
+                    className='select'
                     value={pageState.timeFrame}
                     onChange={(e) => setPageState({ ...pageState, timeFrame: e.target.value as VariantTimeFrame })}
                 >

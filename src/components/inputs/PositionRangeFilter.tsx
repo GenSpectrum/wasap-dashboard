@@ -32,7 +32,7 @@ export function PositionRangeFilter({
                         {pageState.sequenceType === 'amino acid' && (
                             <LabeledField label='Gene'>
                                 <select
-                                    className='select select-bordered w-full'
+                                    className='select w-full'
                                     value={range.reference.name}
                                     onChange={(event) =>
                                         setPageState({

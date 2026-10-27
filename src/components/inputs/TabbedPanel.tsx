@@ -23,8 +23,8 @@ export function TabbedPanel<T extends string>({
     const panelId = useId();
 
     return (
-        <div className='form-control'>
-            <span className='label label-text'>{label}</span>
+        <div>
+            <span className='label'>{label}</span>
             <div role='tablist' aria-label={label} className='flex'>
                 {options.map((option) => {
                     const isSelected = option.value === value;
