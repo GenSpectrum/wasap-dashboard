@@ -44,16 +44,14 @@ export function ConnectionProvider({
     return <RhydbInstanceContext.Provider value={value}>{children}</RhydbInstanceContext.Provider>;
 }
 
-/**
- * The query client of RhyDB reads. It doesn't retry: a request retries on its own, and only what may not
- * fail again (`query` in `dataLayer/transport/query.ts`); a retry here would resend timeouts and invalid
- * queries too, and the requests of a query function that had already answered.
- */
+/** The query client of RhyDB reads. */
 export function createRhydbQueryClient(): QueryClient {
     return new QueryClient({
         defaultOptions: {
             queries: {
                 staleTime: 5 * 60 * 1000,
+                // Requests already retry themselves, only where that's safe (`query` in
+                // `dataLayer/transport/query.ts`). Retrying here would also resend timeouts and invalid queries.
                 retry: false,
             },
         },
