@@ -46,10 +46,10 @@ export function useWasapLayoutContext() {
  * filter of the URL. The page of the mode is rendered inside.
  */
 export function WasapLayout({ config, resistanceData, lineageTree }: WasapLayoutProps) {
-    const schema = useMemo(() => siloSchema(config.silo), [config.silo]);
+    const schema = useMemo(() => siloSchema(config.rhydb), [config.rhydb]);
 
     return (
-        <ConnectionProvider url={config.silo.url} schema={schema} queryClient={siloQueryClient}>
+        <ConnectionProvider url={config.rhydb.url} schema={schema} queryClient={siloQueryClient}>
             <SiloUnreachableWrapper>
                 <WasapLayoutConnected config={config} resistanceData={resistanceData} lineageTree={lineageTree} />
             </SiloUnreachableWrapper>

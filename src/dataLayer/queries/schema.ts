@@ -3,7 +3,7 @@
  *
  * SILO exposes no field semantics — a query names raw columns — so the
  * catalogue is handed this per instance. `src/` builds it from the per-organism
- * `WasapPageConfig.silo` block and passes it down through the connection
+ * `WasapPageConfig.rhydb` block and passes it down through the connection
  * context (`dataLayer/hooks/connection.tsx`).
  */
 export type SiloSchema = {

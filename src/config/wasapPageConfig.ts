@@ -102,7 +102,7 @@ export const wasapPageConfigBaseSchema = z.object({
      * The SILO service is the same backend that sits behind `lapisBaseUrl`;
      * `src/rhydb` talks to it directly over SaneQL at `silo.url`.
      */
-    silo: siloInstanceConfigSchema,
+    rhydb: siloInstanceConfigSchema,
 
     defaultLocationName: z.string(),
 
