@@ -4,13 +4,12 @@ import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 import { RhydbUnreachableWrapper } from './RhydbUnreachableWrapper';
 import { rhydbSchema } from '../../config/rhydbSchema';
 import type { WasapPageConfig } from '../../config/wasapPageConfig';
-import { ConnectionProvider } from '../../dataLayer/hooks/connection';
+import { ConnectionProvider, createRhydbQueryClient } from '../../dataLayer/hooks/connection';
 import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
 import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { rhydbQueryClient } from '../../util/queryClient';
 import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 import { MutationAnnotationsContextProvider } from '../mutations/MutationAnnotationsContext';
 import { MutationLinkTemplateContextProvider } from '../mutations/MutationLinkTemplateContext';
@@ -35,6 +34,13 @@ type WasapLayoutProps = {
     resistanceData: ResistanceData;
     lineageTree: LineageTree | undefined;
 };
+
+/**
+ * The query client of the RhyDB reads, which the layout hands to its `ConnectionProvider`. Kept here
+ * rather than in the provider, so that the results outlive the layout, which unmounts while another
+ * organism loads.
+ */
+const rhydbQueryClient = createRhydbQueryClient();
 
 export function useWasapLayoutContext() {
     return useOutletContext<WasapLayoutContext>();
