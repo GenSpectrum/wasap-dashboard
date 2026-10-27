@@ -1,6 +1,11 @@
 import type { FC } from 'react';
 
-import type { WasapAnalysisFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { OVER_TIME_MIN_PROPORTION } from '../../dataLayer/queries';
+import {
+    effectiveMutationSource,
+    MUTATION_SOURCE,
+    type WasapAnalysisFilter,
+} from '../../pageState/wasap/wasapAnalysisFilter';
 
 /**
  * A note to the user to display when no mutations are selected due to the settings that they set in the filters.
@@ -14,6 +19,12 @@ export const NoDataHelperText: FC<{ analysisFilter: WasapAnalysisFilter }> = ({ 
                 <p className='text-sm'>
                     No mutations could be found matching your current filter settings. Try lowering filter thresholds or
                     looking at a different variant.
+                </p>
+            )}
+            {analysisFilter.mode === 'manual' && effectiveMutationSource(analysisFilter) === MUTATION_SOURCE.range && (
+                <p className='text-sm'>
+                    None of the positions in the range carry a mutation on at least {OVER_TIME_MIN_PROPORTION * 100}% of
+                    the reads. Try a different range, or widen the location or sampling-date filter.
                 </p>
             )}
             {analysisFilter.mode === 'untracked' &&

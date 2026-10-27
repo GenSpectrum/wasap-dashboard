@@ -1,4 +1,8 @@
+import { type UseQueryResult } from '@tanstack/react-query';
+
 import { type WasapManualFilter } from './wasapAnalysisFilter';
+import { useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useReferenceGenome } from '../../dataLayer/hooks/referenceGenome';
 import { type PositionRange, type ReferenceGenome } from '../../dataLayer/queries';
 
 /** The length of the position range of the manual mode when none is picked. */
@@ -26,4 +30,21 @@ export function effectivePositionRange(
     const length = Math.min(analysis.rangeLength ?? DEFAULT_POSITION_RANGE_LENGTH, reference.length);
     const start = Math.min(analysis.rangeStart ?? 1, reference.length - length + 1);
     return { reference, start, length };
+}
+
+/**
+ * The position range of the manual mode (`effectivePositionRange`), with the reference genome it
+ * is fitted into: `range` is `undefined` while that loads, or if the reference has no such sequence.
+ */
+export function usePositionRange(analysis: WasapManualFilter): {
+    referenceGenome: UseQueryResult<ReferenceGenome>;
+    range: PositionRange | undefined;
+} {
+    const referenceGenome = useReferenceGenome();
+    const schema = useSiloSchema();
+    const range =
+        referenceGenome.data === undefined
+            ? undefined
+            : effectivePositionRange(analysis, referenceGenome.data, schema.nucleotideSequence);
+    return { referenceGenome, range };
 }
