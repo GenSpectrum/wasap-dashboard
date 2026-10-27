@@ -1,5 +1,5 @@
 /**
- * The RhyDB queries behind `gs-mutations-over-time`.
+ * The RhyDB queries behind the mutations-over-time grid.
  *
  * There is no over-time / coverage primitive in SaneQL, and the batching
  * options don't hold (grouping by a `unionall` tag literal, or by the `DATE32`

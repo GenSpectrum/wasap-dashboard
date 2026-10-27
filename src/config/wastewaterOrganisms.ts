@@ -4,8 +4,7 @@ import type { WasapPageConfig } from './wasapPageConfig';
 /**
  * The organism-selection layer for the standalone app.
  *
- * Astro routed each organism as its own `.astro` page. Here a single
- * `/:organismPath` route serves all three, and this module maps the URL
+ * A single `/:organismPath` route serves all three organisms, and this module maps the URL
  * segment (`covid` / `rsv-a` / `rsv-b`) to the per-organism `WasapPageConfig`.
  * The route path deliberately matches `config.path` so the links the wasap
  * code builds from it stay valid.

@@ -2,10 +2,10 @@ import {
     BACKGROUND_MIN_PROPORTION,
     type ExcludedMutation,
 } from '../../../dataLayer/hooks/analyses/backgroundMutations';
-import { type SequenceType } from '../../../types/dashboardComponents';
-import { AnnotatedMutation } from '../../mutations/annotated-mutation';
+import { type SequenceType } from '../../../types/domain';
+import { AnnotatedMutation } from '../../mutations/AnnotatedMutation';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';
-import { LoadingDisplay } from '../../ui/loading-display';
 
 type ExcludedMutationsProps = {
     /** From `useSignatureWithoutBackground`; `undefined` while they are still loading. */

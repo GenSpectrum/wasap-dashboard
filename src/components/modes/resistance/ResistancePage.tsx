@@ -8,7 +8,7 @@ import { ResistancePageStateHandler } from '../../../pageState/wasap/handlers/Re
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { useWasapLayoutContext } from '../../layout/WasapLayout';
-import { LoadingDisplay } from '../../ui/loading-display';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 export function ResistancePage({ config }: { config: WasapPageConfigFor<'resistance'> }) {
     const pageStateHandler = useMemo(() => new ResistancePageStateHandler(config), [config]);

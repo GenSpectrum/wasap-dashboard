@@ -1,5 +1,5 @@
 /**
- * `gs-mutations-over-time` over RhyDB, in two hooks: one for the grid's frame,
+ * The data of the mutations-over-time grid, in two hooks: one for the grid's frame,
  * one for the cells of whichever page is on screen.
  *
  * `useOverTimeMetadata` — the frame, and page-independent: the date axis +
@@ -26,7 +26,7 @@ import {
     type MutationOverTimeDataMap,
 } from '../../../components/overTime/mutationsOverTime/MutationOverTimeData';
 import { removeEmptyDatesInPlace, type ProportionValue } from '../../../components/overTime/proportionValue';
-import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../../types/domain';
 import { Map2dView, type Map2DContents } from '../../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../../util/mutations';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';

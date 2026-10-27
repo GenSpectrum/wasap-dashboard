@@ -1,6 +1,6 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { sequenceTypeSchema } from '../../../types/dashboardComponents';
+import { sequenceTypeSchema } from '../../../types/domain';
 import { enumParam, listParam, optional } from '../../urlParams';
 import { excludeSetNameSchema, type WasapUntrackedFilter } from '../wasapAnalysisFilter';
 

@@ -1,5 +1,5 @@
 import { isSingleSegmented, type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
-import type { SequenceType } from '../../../types/dashboardComponents';
+import type { SequenceType } from '../../../types/domain';
 
 export const sequenceTypeFromSegment = (
     possibleSegment: string | undefined,

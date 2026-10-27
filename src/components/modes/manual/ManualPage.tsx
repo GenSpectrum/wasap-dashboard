@@ -13,14 +13,14 @@ import {
     MUTATION_SOURCE,
     type WasapManualFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { WasapResults } from '../../layout/WasapResults';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
-import { LoadingDisplay } from '../../ui/loading-display';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> }) {
     const pageStateHandler = useMemo(() => new ManualPageStateHandler(config), [config]);

@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode } from 'react';
 
-import { HoverTooltip } from './hover-tooltip';
+import { HoverTooltip } from './HoverTooltip';
 
 /**
  * A box around a plot or table with its title above it, so that they look alike across the pages.

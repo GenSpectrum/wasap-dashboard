@@ -1,10 +1,10 @@
 import { CollectionInfo } from './CollectionInfo';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type CollectionQueries } from '../../../externalData/useCollectionQueries';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
-import { QueriesOverTime } from '../../overTime/queriesOverTime/queries-over-time';
+import { QueriesOverTime } from '../../overTime/queriesOverTime/QueriesOverTime';
 
 /**
  * The queries of a collection over time, and what there is to know about the collection.

@@ -28,9 +28,9 @@ import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { useWasapLayoutContext } from '../../layout/WasapLayout';
 import { MutationsResult } from '../../mutations/MutationsResult';
+import { ErrorDisplay } from '../../ui/ErrorDisplay';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';
-import { ErrorDisplay } from '../../ui/error-display';
-import { LoadingDisplay } from '../../ui/loading-display';
 
 /** No mutations are left out by their mean proportion here: the sidebar has the mutations to exclude instead. */
 const ALL_MEAN_PROPORTIONS = { min: 0, max: 1 };

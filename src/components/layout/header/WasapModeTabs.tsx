@@ -5,7 +5,7 @@ import { resolveWasapConfig } from '../../../config/wastewaterOrganisms';
 import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/wasap/baseFilter';
 import { modeLabel, modePath } from '../../../pageState/wasap/wasapModes';
 import { ExplorationModeInfo } from '../../filterSidebar/InfoBlocks';
-import { Modal } from '../../ui/modal';
+import { Modal } from '../../ui/Modal';
 
 /**
  * The menu to pick the analysis mode of the organism whose page is open, which is a page

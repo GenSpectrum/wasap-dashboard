@@ -12,8 +12,8 @@ import { OverviewPage } from '../components/modes/overview/OverviewPage';
 import { ResistancePage } from '../components/modes/resistance/ResistancePage';
 import { UntrackedPage } from '../components/modes/untracked/UntrackedPage';
 import { VariantExplorerPage } from '../components/modes/variantExplorer/VariantExplorerPage';
-import { LoadingDisplay } from '../components/ui/loading-display';
-import { NoDataDisplay } from '../components/ui/no-data-display';
+import { LoadingDisplay } from '../components/ui/LoadingDisplay';
+import { NoDataDisplay } from '../components/ui/NoDataDisplay';
 import { getAppConfig } from '../config/appConfig';
 import { isModeEnabled, type WasapPageConfig } from '../config/wasapPageConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
@@ -28,9 +28,8 @@ const logger = getClientLogger('WasapRoute');
 const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], displayMutationsBySet: {} };
 
 /**
- * The `/:organismPath` route. Replaces `Wasap.astro`: resolves
- * the per-organism config from the URL and fetches resistance-mutation data on the
- * client (Astro did this in page frontmatter), as well as the lineage tree. The page of the analysis mode
+ * The `/:organismPath` route: resolves the per-organism config from the URL and fetches
+ * resistance-mutation data, as well as the lineage tree. The page of the analysis mode
  * (see `WasapModeRoute`) is rendered inside the `WasapLayout`.
  */
 export function WasapRoute() {
@@ -54,8 +53,7 @@ function WasapDashboard({ config }: { config: WasapPageConfig }) {
             try {
                 return await fetchResistanceData(config, getApiServiceForClientside());
             } catch (error) {
-                // Matches Wasap.astro: a resistance-data failure degrades to an
-                // empty set rather than failing the whole page.
+                // A resistance-data failure degrades to an empty set rather than failing the whole page.
                 logger.error(
                     `Failed to fetch resistance data for WASAP page (organism: ${config.genSpectrumOrganismName}): ${getErrorLogMessage(error)}`,
                 );

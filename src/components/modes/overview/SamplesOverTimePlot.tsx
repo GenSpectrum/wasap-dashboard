@@ -11,9 +11,9 @@ import {
 
 import { useSampleOverview } from '../../../dataLayer/hooks/lookups/sampleOverview';
 import { type SampleOverview } from '../../../dataLayer/queries';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';
 import { singleGraphColorRGBAById } from '../../ui/charts/colors';
-import { LoadingDisplay } from '../../ui/loading-display';
 
 /**
  * Which locations were sampled on which dates, and which sequencing batch each sample came
@@ -223,7 +223,7 @@ export function SamplesOverTimeGrid({ samples }: { samples: SampleOverview[] }) 
                                 <th className='p-0 align-bottom'>
                                     {/* One header cell for every date, so a date sits over the column
                                         it names however the width is shared out - the same layout
-                                        `feature-bands.tsx` uses, which avoids Firefox giving many
+                                        `FeatureBands.tsx` uses, which avoids Firefox giving many
                                         tiny auto-width table columns a sliver each. */}
                                     <div className='flex' style={{ height: HEADER_HEIGHT }}>
                                         {/* No week-divider line up here - it only marks the grid of

@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 
-import { ErrorDisplay } from '../ui/error-display';
-import { LoadingDisplay } from '../ui/loading-display';
+import { ErrorDisplay } from '../ui/ErrorDisplay';
+import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**
  * The results of an analysis mode, once there are any. Until then it shows that

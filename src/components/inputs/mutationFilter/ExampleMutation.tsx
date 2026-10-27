@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 
 import { type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
-import type { SequenceType } from '../../../types/dashboardComponents';
+import type { SequenceType } from '../../../types/domain';
 
 type ExampleMutationProps = {
     referenceGenome: ReferenceGenome;

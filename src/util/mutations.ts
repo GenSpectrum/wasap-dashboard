@@ -1,4 +1,4 @@
-import { type SubstitutionOrDeletionOrInsertion } from '../types/dashboardComponents';
+import { type SubstitutionOrDeletionOrInsertion } from '../types/domain';
 
 export interface Mutation {
     readonly position: number;

@@ -1,5 +1,5 @@
 /**
- * `gs-queries-over-time` over RhyDB.
+ * The data of the queries-over-time grid.
  *
  * One hook. The date axis (buckets + per-bucket read totals) is one query; each
  * of the collection's queries is two more — a count and a coverage
@@ -13,7 +13,7 @@
 import { useMemo } from 'react';
 
 import { type ProportionValue } from '../../../components/overTime/proportionValue';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import { type Map2DContents } from '../../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import {

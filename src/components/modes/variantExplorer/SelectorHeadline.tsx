@@ -1,6 +1,6 @@
 import { type ReactNode, type PropsWithChildren } from 'react';
 
-import { Modal } from '../../ui/modal';
+import { Modal } from '../../ui/Modal';
 
 type SelectorHeadlineProps = PropsWithChildren<{
     info?: ReactNode;

@@ -8,8 +8,8 @@
 import { queryOptions, type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { UserFacingError } from '../../../components/ui/error-display';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { UserFacingError } from '../../../components/ui/ErrorDisplay';
+import { type TemporalGranularity } from '../../../types/domain';
 import {
     generateAllInRange,
     getMinMaxTemporal,

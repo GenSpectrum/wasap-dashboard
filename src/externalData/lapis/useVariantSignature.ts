@@ -6,7 +6,7 @@ import { getMutationsForVariant } from './getMutations';
 import { getClientLogger } from '../../clientLogger';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import type { VariantTimeFrame, WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { type LapisFilter } from '../../types/dashboardComponents';
+import { type LapisFilter } from '../../types/domain';
 import { getErrorLogMessage } from '../../util/getErrorLogMessage';
 import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
 

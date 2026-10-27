@@ -5,7 +5,7 @@
  *
  * `src/` posts the query strings to `/query/parse` (the one LAPIS call the
  * RhyDB build keeps) and hands the parsed expressions down as the
- * `gs-queries-over-time` `queries` prop; `validateGenomeOnly` gates them first,
+ * `QueriesOverTime` `queries` prop; `validateGenomeOnly` gates them first,
  * so the translator only ever sees the node types it lists.
  */
 

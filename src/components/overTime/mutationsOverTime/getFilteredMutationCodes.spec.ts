@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getFilteredMutationCodes } from './getFilteredMutationCodes';
-import { type DeletionEntry, type SubstitutionEntry } from '../../../types/dashboardComponents';
+import { type DeletionEntry, type SubstitutionEntry } from '../../../types/domain';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 
 describe('getFilteredMutationCodes', () => {

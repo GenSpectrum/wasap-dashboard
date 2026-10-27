@@ -1,10 +1,10 @@
 # Wastewater Analytics
 
 The GenSpectrum wastewater ("W‑ASAP") dashboards as a standalone **Vite + React
-SPA**, extracted from `GenSpectrum/dashboards` (an Astro app). Renders the
+SPA**, extracted from `GenSpectrum/dashboards`. Renders the
 `covid` / `rsvA` / `rsvB` wastewater dashboards — organism dropdown, six
 analysis modes (manual, variant, resistance, untracked, collection,
-co-occurrence), mutations-/queries-over-time grids — without Astro.
+co-occurrence), mutations-/queries-over-time grids.
 
 From a service to a tool: today this hosts _our_ data for _our_ users. The goal
 is a tool other people can point at their own data, in three run modes:
@@ -121,7 +121,7 @@ src/
     modes/<mode>/           what only one mode uses: its page, filter, results
     layout/                 app shell, mode page layout, header, result states
     filterSidebar/          the filter sidebar + shared field help texts
-    inputs/                 generic filter widgets (ported from dashboard-components)
+    inputs/                 generic filter widgets
     overTime/               over-time grids and their view settings
     mutations/              mutation display, annotations, sorting
     ui/                     generic UI: modal, tooltip, dropdown, errors, loading

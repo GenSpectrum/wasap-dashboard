@@ -13,16 +13,16 @@ import { Map2dView } from '../../../../util/map2d';
 import { type Substitution } from '../../../../util/mutations';
 import { type Temporal, type TemporalClass } from '../../../../util/temporalClass';
 import { useMutationLinkProvider } from '../../../mutations/MutationLinkTemplateContext';
-import { useBandViewSettings } from '../../../overTime/band-view-settings';
-import { LegendEntry, LegendSwatch, type FeatureRenderer, type RowStyle } from '../../../overTime/feature-bands';
+import { LegendEntry, LegendSwatch, type FeatureRenderer, type RowStyle } from '../../../overTime/FeatureBands';
+import { OverTimeGrid, proportionsByDate, useOverTimeGridState } from '../../../overTime/OverTimeGrid';
+import { useBandViewSettings } from '../../../overTime/bandViewSettings';
 import { DEFAULT_FEATURE_SORT, sortRowLabels } from '../../../overTime/featureSort';
-import { OverTimeGrid, proportionsByDate, useOverTimeGridState } from '../../../overTime/over-time-grid';
 import { type ProportionValue } from '../../../overTime/proportionValue';
 import {
     getFilteredQueryOverTimeData,
     getMeanProportions,
 } from '../../../overTime/queriesOverTime/getFilteredQueriesOverTimeData';
-import { HoverTooltip } from '../../../ui/hover-tooltip';
+import { HoverTooltip } from '../../../ui/HoverTooltip';
 
 type TableProps = {
     /** Per amplicon, its rows; the row of all of its mutations is the amplicon's row in the table. */
