@@ -2,7 +2,7 @@ import { type WasapBaseFilter, type WasapDatasetFilter, type WasapMeanProportion
 import { type DateRangeOption } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { type WasapPageConfig } from '../../config/wasapPageConfig';
 import { CustomDateRangeLabel } from '../../types/DateWindow';
-import { temporalGranularitySchema } from '../../types/dashboardComponents';
+import { temporalGranularitySchema } from '../../types/domain';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 import { enumParam, listParam } from '../urlParams';
 import { getStringFromSearch, setSearchFromDateRange, setSearchFromString } from '../urlSearchParams';

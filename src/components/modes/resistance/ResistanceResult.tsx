@@ -8,7 +8,7 @@ import {
     type ResistanceProportionRange,
     type WasapResistanceFilter,
 } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import { MutationsResult } from '../../mutations/MutationsResult';
 
 /**

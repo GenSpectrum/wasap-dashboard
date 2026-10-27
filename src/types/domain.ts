@@ -1,3 +1,5 @@
+/** Types shared across the app: sequence types, granularity, mutation entries, LAPIS filters. */
+
 import z from 'zod';
 
 import {
@@ -21,12 +23,6 @@ export const lapisFilterSchema = z
     .record(z.union([z.string(), z.array(z.string()), z.number(), z.null(), z.boolean(), z.undefined()]))
     .and(mutationsFilterSchema.partial());
 export type LapisFilter = z.infer<typeof lapisFilterSchema>;
-
-export const namedLapisFilterSchema = z.object({
-    lapisFilter: lapisFilterSchema,
-    displayName: z.string(),
-});
-export type NamedLapisFilter = z.infer<typeof namedLapisFilterSchema>;
 
 export const temporalGranularitySchema = z.union([
     z.literal('day'),

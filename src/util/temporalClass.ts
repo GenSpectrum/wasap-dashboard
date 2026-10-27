@@ -2,7 +2,7 @@ import dayjs from 'dayjs/esm';
 import advancedFormat from 'dayjs/esm/plugin/advancedFormat';
 import isoWeek from 'dayjs/esm/plugin/isoWeek';
 
-import type { TemporalGranularity } from '../types/dashboardComponents';
+import type { TemporalGranularity } from '../types/domain';
 
 dayjs.extend(isoWeek);
 dayjs.extend(advancedFormat);

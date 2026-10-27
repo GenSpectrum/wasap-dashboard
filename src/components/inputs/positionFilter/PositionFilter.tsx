@@ -1,6 +1,6 @@
 import { type FC, useEffect, useState } from 'react';
 
-import { type SequenceType } from '../../../types/dashboardComponents';
+import { type SequenceType } from '../../../types/domain';
 import { parsePositionToken } from '../../../util/parsePositionToken';
 import { singleGraphColorRGBByName } from '../../ui/charts/colors';
 

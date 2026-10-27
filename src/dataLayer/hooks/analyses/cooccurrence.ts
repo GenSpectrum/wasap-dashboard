@@ -17,7 +17,7 @@ import {
 } from '../../../components/modes/cooccurrence/cooccurrence/CooccurrenceOverTimeData';
 import { type ProportionValue, removeEmptyDatesInPlace } from '../../../components/overTime/proportionValue';
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import { Map2dView } from '../../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import {

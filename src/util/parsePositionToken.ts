@@ -1,5 +1,5 @@
 import { SubstitutionClass } from './mutations';
-import type { SequenceType } from '../types/dashboardComponents';
+import type { SequenceType } from '../types/domain';
 
 /**
  * A bare sequence position for co-occurrence, without a mutation's ref/alt symbols:

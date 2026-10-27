@@ -22,7 +22,7 @@ import {
     type AmpliconMutation,
     type AmpliconMutations,
 } from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import { type Map2DContents } from '../../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import {

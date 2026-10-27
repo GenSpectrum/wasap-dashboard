@@ -1,5 +1,5 @@
 import { DEFAULT_DECONVOLUTION_OPTIONS, type DeconvolutionOptions } from './lollipopService';
-import { type TemporalGranularity } from '../types/dashboardComponents';
+import { type TemporalGranularity } from '../types/domain';
 
 /** By week (or month, …), how much the neighbouring week counts in a week's estimate. */
 const NEIGHBOUR_WEIGHT = 0.6;

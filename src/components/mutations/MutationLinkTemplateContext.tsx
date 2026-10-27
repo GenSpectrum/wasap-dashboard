@@ -1,6 +1,6 @@
 import { createContext, useContext, type FC, type PropsWithChildren } from 'react';
 
-import type { SequenceType } from '../../types/dashboardComponents';
+import type { SequenceType } from '../../types/domain';
 import type { Deletion, Substitution } from '../../util/mutations';
 
 export type MutationLinkTemplate = {

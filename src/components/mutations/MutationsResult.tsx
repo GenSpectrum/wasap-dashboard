@@ -3,7 +3,7 @@ import { type ReactElement, type ReactNode } from 'react';
 import { NoDataHelperText } from './NoDataHelperText';
 import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { type WasapAnalysisFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { type SequenceType, type TemporalGranularity } from '../../types/dashboardComponents';
+import { type SequenceType, type TemporalGranularity } from '../../types/domain';
 import { MutationsOverTime } from '../overTime/mutationsOverTime/MutationsOverTime';
 import { type ProportionInterval } from '../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { TitledPanel } from '../ui/TitledPanel';

@@ -1,4 +1,4 @@
-import { type SubstitutionOrDeletionEntry } from '../../../types/dashboardComponents';
+import { type SubstitutionOrDeletionEntry } from '../../../types/domain';
 import type { Deletion, Substitution } from '../../../util/mutations';
 
 /**

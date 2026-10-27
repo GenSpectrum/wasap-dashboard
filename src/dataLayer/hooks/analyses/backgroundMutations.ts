@@ -10,11 +10,7 @@ import { useMemo } from 'react';
 
 import { useOverTimeMetadata } from './mutationsOverTime';
 import { type VariantSignature } from '../../../externalData/lapis/useVariantSignature';
-import {
-    type SubstitutionOrDeletionEntry,
-    type SequenceType,
-    type TemporalGranularity,
-} from '../../../types/dashboardComponents';
+import { type SubstitutionOrDeletionEntry, type SequenceType, type TemporalGranularity } from '../../../types/domain';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { type RhydbReadFilter } from '../../queries';
 

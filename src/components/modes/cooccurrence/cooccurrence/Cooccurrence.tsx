@@ -18,7 +18,7 @@ import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
 import { lineagePanelSymbols, matchingPanelLineages } from '../../../../deconvolution/lineagePanelMatch';
 import { type LineageTree } from '../../../../externalData/fileBased/lineageTree/lineageTree';
-import { type SequenceType, type TemporalGranularity } from '../../../../types/dashboardComponents';
+import { type SequenceType, type TemporalGranularity } from '../../../../types/domain';
 import { SubstitutionClass, type Substitution } from '../../../../util/mutations';
 import { parsePositionToken } from '../../../../util/parsePositionToken';
 import { useMutationLinkProvider } from '../../../mutations/MutationLinkTemplateContext';

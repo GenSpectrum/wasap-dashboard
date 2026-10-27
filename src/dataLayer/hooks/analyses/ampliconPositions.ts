@@ -12,7 +12,7 @@
 import { useConnection, useRhydbSchema } from '../connection';
 import { MAX_COOCCURRENCE_POSITIONS } from './cooccurrence';
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { type SequenceType } from '../../../types/dashboardComponents';
+import { type SequenceType } from '../../../types/domain';
 import {
     ampliconPositionsQuery,
     normalizeFilter,

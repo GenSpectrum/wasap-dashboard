@@ -1,6 +1,6 @@
 import { type MutationFrequency } from './lollipopService';
 import { type SampleMutationFrequency } from '../dataLayer/hooks/analyses/mutationFrequencies';
-import { type TemporalGranularity } from '../types/dashboardComponents';
+import { type TemporalGranularity } from '../types/domain';
 import { parseDateStringToTemporal } from '../util/temporalClass';
 
 /**

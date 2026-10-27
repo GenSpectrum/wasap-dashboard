@@ -9,7 +9,7 @@ import { queryOptions, type QueryClient, type UseQueryResult } from '@tanstack/r
 import { useCallback } from 'react';
 
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { type TemporalGranularity } from '../../../types/dashboardComponents';
+import { type TemporalGranularity } from '../../../types/domain';
 import {
     generateAllInRange,
     getMinMaxTemporal,
