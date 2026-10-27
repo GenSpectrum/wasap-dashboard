@@ -26,7 +26,7 @@ export function NumericInput({
         <LabeledField label={label} info={info}>
             <div className='w-full'>
                 <input
-                    className='input input-bordered mb-2 w-full'
+                    className='input mb-2 w-full'
                     type='number'
                     min={min}
                     max={max}

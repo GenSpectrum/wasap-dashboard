@@ -195,7 +195,7 @@ const AmpliconSelect: FC<{
     return (
         <LabeledField label='Amplicon'>
             <select
-                className='select select-bordered w-full'
+                className='select w-full'
                 value={selected?.number ?? ''}
                 onChange={(event) => {
                     const amplicon = amplicons.find((candidate) => candidate.number === Number(event.target.value));
@@ -283,7 +283,7 @@ const AnchorPositionInput: FC<{
     return (
         <LabeledField label='Anchor position'>
             <input
-                className={`input input-bordered w-full ${showErrorIndicator ? 'input-error' : ''}`}
+                className={`input w-full ${showErrorIndicator ? 'input-error' : ''}`}
                 placeholder={sequenceType === 'nucleotide' ? 'e.g. 23403' : 'e.g. S:501'}
                 value={inputValue}
                 onChange={(event) => {

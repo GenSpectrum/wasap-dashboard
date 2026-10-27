@@ -95,7 +95,7 @@ function GenSpectrumCollectionSelect({
                 <div className='text-sm text-gray-500'>No collections available</div>
             ) : (
                 <select
-                    className='select select-bordered'
+                    className='select'
                     value={pageState.collectionId ?? ''}
                     onChange={(e) =>
                         setPageState({
@@ -143,7 +143,7 @@ function CovSpectrumCollectionSelect({
                 <div className='text-error text-sm'>Error loading collections</div>
             ) : (
                 <select
-                    className='select select-bordered'
+                    className='select'
                     value={pageState.collectionId ?? ''}
                     onChange={(e) =>
                         setPageState({

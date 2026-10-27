@@ -20,10 +20,10 @@ interface LabeledFieldProps {
 
 export function LabeledField({ label, children, info }: LabeledFieldProps) {
     return (
-        <div className='form-control'>
+        <div>
             <div className={`flex flex-row items-baseline justify-between gap-2 ${info !== undefined ? 'mb-2' : ''}`}>
                 <label className='label'>
-                    <span className='label-text'>{label}</span>
+                    <span>{label}</span>
                 </label>
                 {info !== undefined && (
                     <Modal

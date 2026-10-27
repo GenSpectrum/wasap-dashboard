@@ -81,9 +81,9 @@ export const PositionFilter: FC<PositionFilterProps> = ({ sequenceType, initialV
     };
 
     return (
-        <div className='form-control'>
+        <div>
             <div className='label'>
-                <span className='label-text'>Positions</span>
+                <span>Positions</span>
             </div>
             <div className={`input flex h-fit w-full flex-wrap gap-x-1 p-1 ${showErrorIndicator ? 'input-error' : ''}`}>
                 {selected.map((token) => (

@@ -55,9 +55,9 @@ export const MutationFilter: FC<MutationFilterProps> = (props) => {
         // its accessible name, and other pages' controls started colliding with it in
         // accessible-name-based test/a11y-tooling queries. A plain <div> (same daisyUI classes, purely
         // visual) restores "not actually a label" instead of "accidentally the wrong one".
-        <div className='form-control'>
+        <div>
             <div className='label'>
-                <span className='label-text'>Mutations</span>
+                <span>Mutations</span>
             </div>
             <WithReferenceGenome referenceGenome={referenceGenome}>
                 {(data) => (

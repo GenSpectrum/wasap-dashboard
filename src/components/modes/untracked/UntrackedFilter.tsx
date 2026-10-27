@@ -38,7 +38,7 @@ export function UntrackedFilter({
             />
             <LabeledField label='Known variants to exclude' info={<KnownVariantsExclusionInfo />}>
                 <select
-                    className='select select-bordered'
+                    className='select'
                     value={pageState.excludeSet}
                     onChange={(e) => setPageState({ ...pageState, excludeSet: e.target.value as ExcludeSetName })}
                 >
