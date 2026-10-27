@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { DEFAULT_BAND_VIEW_SETTINGS, readStoredBandViewSettings, useBandViewSettings } from './band-view-settings';
+import { DEFAULT_BAND_VIEW_SETTINGS, readStoredBandViewSettings, useBandViewSettings } from './bandViewSettings';
 
 const STORAGE_KEY = 'wasap.bandViewSettings';
 

@@ -1,6 +1,6 @@
 import { ExampleMutation } from './ExampleMutation';
 import { isSingleSegmented, type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
-import Info, { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../../ui/info';
+import Info, { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../../ui/Info';
 
 export const MutationFilterInfo = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) => {
     return (

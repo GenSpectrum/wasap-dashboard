@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { DateRangeFilter } from './date-range-filter';
+import { DateRangeFilter } from './DateRangeFilter';
 import { type DateRangeValue } from './dateRangeOption';
 
 const options = [

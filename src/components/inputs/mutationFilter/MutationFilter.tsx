@@ -2,15 +2,15 @@ import { useCombobox, useMultipleSelection } from 'downshift';
 import { type FC, useEffect, useMemo, useState } from 'react';
 
 import { getExampleMutation } from './ExampleMutation';
-import { MutationFilterInfo } from './mutation-filter-info';
+import { MutationFilterInfo } from './MutationFilterInfo';
 import { parseAndValidateMutation } from './parseAndValidateMutation';
 import { useReferenceGenome } from '../../../dataLayer/hooks/lookups/referenceGenome';
 import { type ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import { type MutationsFilter, mutationType, type MutationType } from '../../../types/dashboardComponents';
 import { type DeletionClass, type InsertionClass, type SubstitutionClass } from '../../../util/mutations';
+import { ErrorBoundary } from '../../ui/ErrorBoundary';
+import { UserFacingError } from '../../ui/ErrorDisplay';
 import { singleGraphColorRGBByName } from '../../ui/charts/colors';
-import { ErrorBoundary } from '../../ui/error-boundary';
-import { UserFacingError } from '../../ui/error-display';
 import { WithReferenceGenome } from '../WithReferenceGenome';
 
 export type MutationFilterProps = {

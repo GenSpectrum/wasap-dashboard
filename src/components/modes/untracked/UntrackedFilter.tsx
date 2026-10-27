@@ -5,8 +5,8 @@ import type { ExcludeSetName, WasapUntrackedFilter } from '../../../pageState/wa
 import { KnownVariantsExclusionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
-import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
-import { LoadingDisplay } from '../../ui/loading-display';
+import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 interface UntrackedFilterProps {
     pageState: WasapUntrackedFilter;

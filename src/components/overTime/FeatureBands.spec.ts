@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { bandSegments, jaccardIndexShading } from './feature-bands';
+import { bandSegments, jaccardIndexShading } from './FeatureBands';
 
 describe('jaccardIndexShading', () => {
     test('shades a Jaccard index of .8 and above green, darker from .9', () => {

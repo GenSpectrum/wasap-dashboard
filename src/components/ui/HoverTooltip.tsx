@@ -3,7 +3,7 @@ import { type Placement } from '@floating-ui/utils';
 import { useRef, useState, type Dispatch, type ReactNode, type RefObject, type SetStateAction } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useCloseOnEsc, useFloatingUi } from './floating-ui-hooks';
+import { useCloseOnEsc, useFloatingUi } from './floatingUiHooks';
 
 export const TOOLTIP_BASE_STYLES = 'z-10 w-max bg-white p-4 border border-gray-200';
 

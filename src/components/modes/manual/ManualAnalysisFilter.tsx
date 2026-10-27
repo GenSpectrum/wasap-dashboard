@@ -8,7 +8,7 @@ import { mutationType, type MutationType } from '../../../types/dashboardCompone
 import { PositionRangeFilter } from '../../inputs/PositionRangeFilter';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
-import { MutationFilter } from '../../inputs/mutationFilter/mutation-filter';
+import { MutationFilter } from '../../inputs/mutationFilter/MutationFilter';
 
 export function ManualAnalysisFilter({
     pageState,

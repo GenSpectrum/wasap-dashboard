@@ -3,7 +3,7 @@ import { type ReactElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { LineageFilter } from './lineage-filter';
+import { LineageFilter } from './LineageFilter';
 import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
 
 /** Stubs the two clinical-LAPIS calls the lineage picker makes. */

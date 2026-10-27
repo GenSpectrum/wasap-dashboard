@@ -10,15 +10,15 @@ import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
 import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
-import { AnnotatedMutation } from '../../mutations/annotated-mutation';
-import { ErrorBoundary } from '../../ui/error-boundary';
-import { LoadingDisplay } from '../../ui/loading-display';
-import { NoDataDisplay } from '../../ui/no-data-display';
-import { useBandViewSettings } from '../band-view-settings';
-import { type FeatureRenderer } from '../feature-bands';
+import { AnnotatedMutation } from '../../mutations/AnnotatedMutation';
+import { ErrorBoundary } from '../../ui/ErrorBoundary';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
+import { NoDataDisplay } from '../../ui/NoDataDisplay';
+import { type FeatureRenderer } from '../FeatureBands';
+import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../OverTimeGrid';
+import { TotalInDateRange } from '../OverTimeGridTooltip';
+import { useBandViewSettings } from '../bandViewSettings';
 import { DEFAULT_FEATURE_SORT, JACCARD_FEATURE_SORT, sortRowLabels } from '../featureSort';
-import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../over-time-grid';
-import { TotalInDateRange } from '../over-time-grid-tooltip';
 
 export type MutationsOverTimeProps = {
     filter: RhydbReadFilter;

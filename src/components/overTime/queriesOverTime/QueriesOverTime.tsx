@@ -1,22 +1,22 @@
 import { type FC, useEffect, useMemo } from 'react';
 
+import { QueriesOverTimeRowLabelTooltip } from './QueriesOverTimeRowLabelTooltip';
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
-import { QueriesOverTimeRowLabelTooltip } from './queries-over-time-row-label-tooltip';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/analyses/queriesOverTime';
 import { type RhydbFilterExpression, type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
 import { type Temporal } from '../../../util/temporalClass';
-import { ErrorBoundary } from '../../ui/error-boundary';
-import { HoverTooltip } from '../../ui/hover-tooltip';
-import { LoadingDisplay } from '../../ui/loading-display';
-import { NoDataDisplay } from '../../ui/no-data-display';
-import { useBandViewSettings } from '../band-view-settings';
-import { type FeatureRenderer } from '../feature-bands';
+import { ErrorBoundary } from '../../ui/ErrorBoundary';
+import { HoverTooltip } from '../../ui/HoverTooltip';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
+import { NoDataDisplay } from '../../ui/NoDataDisplay';
+import { type FeatureRenderer } from '../FeatureBands';
+import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../OverTimeGrid';
+import { TotalInDateRange } from '../OverTimeGridTooltip';
+import { useBandViewSettings } from '../bandViewSettings';
 import { sortRowLabels } from '../featureSort';
 import { type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
-import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGridState } from '../over-time-grid';
-import { TotalInDateRange } from '../over-time-grid-tooltip';
 import { type ProportionValue } from '../proportionValue';
 
 export type QueriesOverTimeQuery = {

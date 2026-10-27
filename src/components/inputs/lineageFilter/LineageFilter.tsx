@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 
 import { useLineageOptions, type LineageItem } from '../../../externalData/lapis/lineageOptions';
-import { ErrorBoundary } from '../../ui/error-boundary';
-import { LoadingDisplay } from '../../ui/loading-display';
-import { DownshiftCombobox, DownshiftMultiCombobox } from '../downshift-combobox';
+import { ErrorBoundary } from '../../ui/ErrorBoundary';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
+import { DownshiftCombobox, DownshiftMultiCombobox } from '../DownshiftCombobox';
 
 export type LineageFilterProps<Lineage extends string = string> = {
     field: Lineage;

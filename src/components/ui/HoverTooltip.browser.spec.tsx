@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
-import { HoverTooltip } from './hover-tooltip';
+import { HoverTooltip } from './HoverTooltip';
 
 describe('HoverTooltip', () => {
     it('renders the content only while hovered', async () => {

@@ -3,7 +3,7 @@ import { Link, type To } from 'react-router-dom';
 
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { buildPanelTree, type PanelTreeNode } from '../../../externalData/fileBased/lineageTree/panelTree';
-import { HoverTooltip } from '../../ui/hover-tooltip';
+import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
  * How the lineages of a panel hang together in the lineage tree. Of the lineages that aren't in

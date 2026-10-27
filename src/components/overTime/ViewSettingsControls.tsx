@@ -1,9 +1,9 @@
 import { type FC } from 'react';
 
-import { type BandViewSettings } from './band-view-settings';
-import { ColorScaleRootSelector } from './color-scale-selector';
-import { Dropdown } from '../ui/dropdown';
-import { ToggleIconButton } from '../ui/toggle-icon-button';
+import { ColorScaleRootSelector } from './ColorScaleSelector';
+import { type BandViewSettings } from './bandViewSettings';
+import { Dropdown } from '../ui/Dropdown';
+import { ToggleIconButton } from '../ui/ToggleIconButton';
 
 export interface ViewSettingsControlsProps {
     settings: BandViewSettings;

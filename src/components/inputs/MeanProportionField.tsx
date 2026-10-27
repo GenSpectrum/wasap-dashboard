@@ -1,5 +1,5 @@
 import { LabeledField } from './LabeledField';
-import { MinMaxRangeSlider } from './min-max-range-slider';
+import { MinMaxRangeSlider } from './MinMaxRangeSlider';
 import type { WasapMeanProportion } from '../../pageState/wasap/wasapAnalysisFilter';
 
 /**

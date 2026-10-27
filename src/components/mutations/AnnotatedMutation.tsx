@@ -5,8 +5,8 @@ import { useMutationAnnotationsProvider } from './MutationAnnotationsContext';
 import { useMutationLinkProvider } from './MutationLinkTemplateContext';
 import type { SequenceType } from '../../types/dashboardComponents';
 import type { Deletion, Substitution } from '../../util/mutations';
-import { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../ui/info';
-import { Modal } from '../ui/modal';
+import { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../ui/Info';
+import { Modal } from '../ui/Modal';
 
 export type AnnotatedMutationProps = {
     mutation: Substitution | Deletion;

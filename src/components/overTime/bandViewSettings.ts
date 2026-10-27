@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { z } from 'zod';
 
-import { type ColorScale } from './color-scale-selector';
+import { type ColorScale } from './ColorScaleSelector';
 
 /**
  * How the bands are drawn, as opposed to which data they show. These are the user's own preferences: they

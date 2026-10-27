@@ -2,8 +2,8 @@ import { describe, expect, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
-import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
-import { FeatureBands, type FeatureBandsProps } from './feature-bands';
+import { FeatureBands, type FeatureBandsProps } from './FeatureBands';
+import { DEFAULT_BAND_VIEW_SETTINGS } from './bandViewSettings';
 import { DEFAULT_FEATURE_SORT } from './featureSort';
 import { serializeTemporal, type ProportionValue } from './proportionValue';
 import { it } from '../../../test-extend';

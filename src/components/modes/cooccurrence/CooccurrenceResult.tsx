@@ -1,6 +1,6 @@
 import { type To } from 'react-router-dom';
 
-import { Cooccurrence } from './cooccurrence/cooccurrence';
+import { Cooccurrence } from './cooccurrence/Cooccurrence';
 import { type ClinicalLapisSource } from './cooccurrence/usePanelLineageJaccards';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';

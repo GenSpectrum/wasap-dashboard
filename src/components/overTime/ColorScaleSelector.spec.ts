@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { type ColorScale, getColorWithinScale } from './color-scale-selector';
+import { type ColorScale, getColorWithinScale } from './ColorScaleSelector';
 
 const scale: ColorScale = { color: 'indigo', root: 4 };
 

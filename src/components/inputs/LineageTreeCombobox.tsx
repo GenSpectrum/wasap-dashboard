@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { DownshiftCombobox, DownshiftMultiCombobox } from './downshift-combobox';
+import { DownshiftCombobox, DownshiftMultiCombobox } from './DownshiftCombobox';
 import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 
 type LineageTreeComboboxProps = {

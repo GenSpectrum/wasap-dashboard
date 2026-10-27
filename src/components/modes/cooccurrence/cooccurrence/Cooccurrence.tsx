@@ -28,13 +28,13 @@ import {
     LegendEntry,
     LegendGroup,
     LegendStep,
-} from '../../../overTime/feature-bands';
-import { CsvDownloadButton } from '../../../ui/csv-download-button';
-import { ErrorBoundary } from '../../../ui/error-boundary';
-import { HoverTooltip } from '../../../ui/hover-tooltip';
-import { LoadingDisplay } from '../../../ui/loading-display';
-import { NoDataDisplay } from '../../../ui/no-data-display';
-import { Pagination } from '../../../ui/pagination';
+} from '../../../overTime/FeatureBands';
+import { CsvDownloadButton } from '../../../ui/CsvDownloadButton';
+import { ErrorBoundary } from '../../../ui/ErrorBoundary';
+import { HoverTooltip } from '../../../ui/HoverTooltip';
+import { LoadingDisplay } from '../../../ui/LoadingDisplay';
+import { NoDataDisplay } from '../../../ui/NoDataDisplay';
+import { Pagination } from '../../../ui/Pagination';
 
 type CooccurrenceBaseProps = {
     filter: RhydbReadFilter;

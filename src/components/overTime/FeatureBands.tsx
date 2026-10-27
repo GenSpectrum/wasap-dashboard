@@ -12,16 +12,16 @@ import {
     type RefObject,
 } from 'react';
 
-import { type BandViewSettings } from './band-view-settings';
-import { getColorWithinScale } from './color-scale-selector';
+import { getColorWithinScale } from './ColorScaleSelector';
+import { OverTimeGridTooltip } from './OverTimeGridTooltip';
+import { type BandViewSettings } from './bandViewSettings';
 import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
-import { type Temporal } from '../../util/temporalClass';
-import { formatProportion } from '../ui/formatProportion';
-import { FloatingTooltip, HoverTooltip } from '../ui/hover-tooltip';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
-import { OverTimeGridTooltip } from './over-time-grid-tooltip';
 import { getProportion, type ProportionValue } from './proportionValue';
-import { Pagination, type PaginationProps } from '../ui/pagination';
+import { type Temporal } from '../../util/temporalClass';
+import { FloatingTooltip, HoverTooltip } from '../ui/HoverTooltip';
+import { Pagination, type PaginationProps } from '../ui/Pagination';
+import { formatProportion } from '../ui/formatProportion';
 
 export interface FeatureRenderer<D> {
     asString(value: D): string;

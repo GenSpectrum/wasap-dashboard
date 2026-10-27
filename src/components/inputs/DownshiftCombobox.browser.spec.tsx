@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { DownshiftCombobox } from './downshift-combobox';
+import { DownshiftCombobox } from './DownshiftCombobox';
 
 type Item = { name: string };
 const names = ['A', 'A.1', 'B', 'B.1'];

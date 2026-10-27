@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getDisplayedErrorMessage } from './error-display';
+import { getDisplayedErrorMessage } from './ErrorDisplay';
 import { BackendError, BackendNotAvailable } from '../../externalData/genSpectrum/apiService';
 
 describe('getDisplayedErrorMessage', () => {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { Pagination } from './pagination';
+import { Pagination } from './Pagination';
 
 function ControlledPagination({ totalRows = 50 }: { totalRows?: number }) {
     const [pageIndex, setPageIndex] = useState(0);

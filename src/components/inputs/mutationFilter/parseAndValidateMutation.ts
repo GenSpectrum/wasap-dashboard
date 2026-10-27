@@ -1,4 +1,4 @@
-import { type MutationFilterItem } from './mutation-filter';
+import { type MutationFilterItem } from './MutationFilter';
 import { sequenceTypeFromSegment } from './sequenceTypeFromSegment';
 import type { ReferenceGenome } from '../../../dataLayer/queries/referenceGenome';
 import { type SequenceType, mutationType } from '../../../types/dashboardComponents';

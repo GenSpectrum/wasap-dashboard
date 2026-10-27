@@ -1,8 +1,8 @@
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { DEFAULT_BAND_VIEW_SETTINGS } from './band-view-settings';
-import { ViewSettingsControls } from './view-settings-controls';
+import { ViewSettingsControls } from './ViewSettingsControls';
+import { DEFAULT_BAND_VIEW_SETTINGS } from './bandViewSettings';
 import { it } from '../../../test-extend';
 
 describe('ViewSettingsControls', () => {

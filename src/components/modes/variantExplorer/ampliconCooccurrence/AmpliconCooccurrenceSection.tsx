@@ -19,10 +19,10 @@ import { ampliconAnchor } from '../../../../externalData/fileBased/amplicons/sam
 import { useAmplicons } from '../../../../externalData/fileBased/amplicons/useAmplicons';
 import { type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
 import { type TemporalGranularity } from '../../../../types/dashboardComponents';
+import { ErrorDisplay } from '../../../ui/ErrorDisplay';
+import { LoadingDisplay } from '../../../ui/LoadingDisplay';
+import { NoDataDisplay } from '../../../ui/NoDataDisplay';
 import { TitledPanel } from '../../../ui/TitledPanel';
-import { ErrorDisplay } from '../../../ui/error-display';
-import { LoadingDisplay } from '../../../ui/loading-display';
-import { NoDataDisplay } from '../../../ui/no-data-display';
 
 const NO_ROWS: CooccurrenceRow[] = [];
 

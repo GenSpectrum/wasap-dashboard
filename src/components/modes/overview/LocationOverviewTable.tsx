@@ -8,8 +8,8 @@ import {
     type LocationSortColumn,
 } from './locationSort';
 import { useLocationOverview } from '../../../dataLayer/hooks/lookups/sampleOverview';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';
-import { LoadingDisplay } from '../../ui/loading-display';
 
 /**
  * One row per location: its name, how many samples were collected there, how many amplicon

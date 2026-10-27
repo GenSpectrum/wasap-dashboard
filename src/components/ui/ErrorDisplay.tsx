@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import { InfoHeadline1, InfoParagraph } from './info';
-import { Modal } from './modal';
+import { InfoHeadline1, InfoParagraph } from './Info';
+import { Modal } from './Modal';
 import { RhydbError } from '../../dataLayer/transport/query';
 import { BackendError, BackendNotAvailable, UnknownBackendError } from '../../externalData/genSpectrum/apiService';
 import { LapisError, UnknownLapisError } from '../../externalData/lapisApi/lapisApi';

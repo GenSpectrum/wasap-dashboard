@@ -16,7 +16,7 @@ import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
-import { LineageFilter } from '../../inputs/lineageFilter/lineage-filter';
+import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
 import { Inset } from '../../ui/Inset';
 
 interface VariantExplorerFilterProps {

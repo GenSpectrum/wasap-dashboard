@@ -22,7 +22,7 @@ import { NumericInput } from '../../inputs/NumericInput';
 import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
-import { PositionFilter } from '../../inputs/positionFilter/position-filter';
+import { PositionFilter } from '../../inputs/positionFilter/PositionFilter';
 
 const MIN_SHARE_OPTIONS = [
     { value: 0, label: '–', title: 'None' },

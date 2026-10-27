@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { MutationsOverTime, type MutationsOverTimeProps } from './mutations-over-time';
+import { MutationsOverTime, type MutationsOverTimeProps } from './MutationsOverTime';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../../dataLayer/queries/schema';
 import { MutationAnnotationsContextProvider } from '../../mutations/MutationAnnotationsContext';

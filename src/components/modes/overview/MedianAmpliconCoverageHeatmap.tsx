@@ -9,10 +9,10 @@ import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
 import { type TemporalClass } from '../../../util/temporalClass';
+import { ErrorDisplay } from '../../ui/ErrorDisplay';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';
 import { singleGraphColorRGBByName } from '../../ui/charts/colors';
-import { ErrorDisplay } from '../../ui/error-display';
-import { LoadingDisplay } from '../../ui/loading-display';
 
 const COLOR = 'indigo';
 const ROW_HEIGHT = 28;

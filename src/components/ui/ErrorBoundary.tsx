@@ -1,6 +1,6 @@
 import { Component, type ReactNode } from 'react';
 
-import { ErrorDisplay, type ErrorDisplayProps } from './error-display';
+import { ErrorDisplay, type ErrorDisplayProps } from './ErrorDisplay';
 
 type ErrorBoundaryProps = {
     /** When one of these changes (by `Object.is`), the children are rendered again after an error. */

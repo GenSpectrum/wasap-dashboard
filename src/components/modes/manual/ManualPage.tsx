@@ -20,7 +20,7 @@ import { NothingSelected } from '../../layout/NothingSelected';
 import { WasapResults } from '../../layout/WasapResults';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
-import { LoadingDisplay } from '../../ui/loading-display';
+import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> }) {
     const pageStateHandler = useMemo(() => new ManualPageStateHandler(config), [config]);

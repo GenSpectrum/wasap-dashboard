@@ -4,7 +4,7 @@ import { type CollectionQueries } from '../../../externalData/useCollectionQueri
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
-import { QueriesOverTime } from '../../overTime/queriesOverTime/queries-over-time';
+import { QueriesOverTime } from '../../overTime/queriesOverTime/QueriesOverTime';
 
 /**
  * The queries of a collection over time, and what there is to know about the collection.

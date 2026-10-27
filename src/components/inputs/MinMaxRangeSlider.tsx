@@ -5,7 +5,7 @@ import { useState, type InputEvent, type FC } from 'react';
 // selectors in this file target the `min-max-range-slider` class below rather than the bare
 // `input[type=range]` tag, to avoid leaking onto unrelated range inputs elsewhere in the app
 // (e.g. `NumericInput`'s single-thumb slider).
-import './min-max-percent-slider.css';
+import './minMaxPercentSlider.css';
 
 export interface MinMaxPercentSliderProps {
     min: number;

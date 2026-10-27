@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
 
-import { useBandViewSettings } from './band-view-settings';
-import { FeatureBands, type FeatureBandsProps } from './feature-bands';
+import { FeatureBands, type FeatureBandsProps } from './FeatureBands';
+import { ViewSettingsControls } from './ViewSettingsControls';
+import { useBandViewSettings } from './bandViewSettings';
 import { DEFAULT_FEATURE_SORT, type FeatureSort } from './featureSort';
-import { CsvDownloadButton, type DataValue } from '../ui/csv-download-button';
+import { CsvDownloadButton, type DataValue } from '../ui/CsvDownloadButton';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import { getProportion } from './proportionValue';
-import { ViewSettingsControls } from './view-settings-controls';
 import { toTemporalClass } from '../../util/temporalClass';
 
 /**
