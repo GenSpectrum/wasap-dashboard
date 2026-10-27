@@ -24,12 +24,12 @@ import { allQueryData } from './allQueryData';
 import { useConnection, useRhydbQueryClient, useRhydbSchema } from './connection';
 import { fetchDateAxis } from './dateAxis';
 import { useRhydbQueries, useRhydbQuery } from './rhydbQuery';
+import { sortSubstitutionsAndDeletions } from '../../components/mutations/sortSubstitutionsAndDeletions';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
-} from '../../components/dataDisplay/mutationsOverTime/MutationOverTimeData';
-import { removeEmptyDatesInPlace, type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
-import { sortSubstitutionsAndDeletions } from '../../components/shared/sort/sortSubstitutionsAndDeletions';
+} from '../../components/overTime/mutationsOverTime/MutationOverTimeData';
+import { removeEmptyDatesInPlace, type ProportionValue } from '../../components/overTime/proportionValue';
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../types/dashboardComponents';
 import { Map2dView, type Map2DContents } from '../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../util/mutations';

@@ -2,7 +2,7 @@ import { type FC, useEffect, useState } from 'react';
 
 import { type SequenceType } from '../../../types/dashboardComponents';
 import { parsePositionToken } from '../../../util/parsePositionToken';
-import { singleGraphColorRGBByName } from '../../shared/charts/colors';
+import { singleGraphColorRGBByName } from '../../ui/charts/colors';
 
 export type PositionFilterProps = {
     sequenceType: SequenceType;

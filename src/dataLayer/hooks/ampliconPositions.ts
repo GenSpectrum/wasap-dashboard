@@ -12,7 +12,7 @@
 import { useConnection, useRhydbSchema } from './connection';
 import { MAX_COOCCURRENCE_POSITIONS } from './cooccurrence';
 import { useRhydbQuery } from './rhydbQuery';
-import { UserFacingError } from '../../components/shared/error-display';
+import { UserFacingError } from '../../components/ui/error-display';
 import { type SequenceType } from '../../types/dashboardComponents';
 import {
     ampliconPositionsQuery,

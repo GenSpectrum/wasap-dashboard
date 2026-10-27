@@ -8,7 +8,7 @@ import {
     positionTargets,
     toMutationEntries,
 } from './mutationsOverTime';
-import { getProportion } from '../../components/dataDisplay/overTime/proportionValue';
+import { getProportion } from '../../components/overTime/proportionValue';
 import { type OverallMutationRow, type PositionOverTimeRow } from '../queries';
 
 describe('toMutationEntries', () => {

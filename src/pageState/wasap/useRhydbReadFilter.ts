@@ -1,4 +1,4 @@
-import { useWasapLayoutContext } from '../../components/pages/WasapLayout';
+import { useWasapLayoutContext } from '../../components/layout/WasapLayout';
 import { type RhydbReadFilter } from '../../dataLayer/queries';
 
 /**

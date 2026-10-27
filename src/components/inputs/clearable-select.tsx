@@ -1,6 +1,6 @@
 import { type ChangeEvent } from 'react';
 
-import { DeleteIcon } from '../shared/icons/DeleteIcon';
+import { DeleteIcon } from '../ui/icons/DeleteIcon';
 
 const NOTHING_SELECTED = '__undefined__';
 

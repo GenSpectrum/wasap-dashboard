@@ -17,9 +17,9 @@ import { useRhydbQuery } from './rhydbQuery';
 import {
     CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
-} from '../../components/dataDisplay/cooccurrence/CooccurrenceOverTimeData';
-import { type ProportionValue, removeEmptyDatesInPlace } from '../../components/dataDisplay/overTime/proportionValue';
-import { UserFacingError } from '../../components/shared/error-display';
+} from '../../components/modes/cooccurrence/cooccurrence/CooccurrenceOverTimeData';
+import { type ProportionValue, removeEmptyDatesInPlace } from '../../components/overTime/proportionValue';
+import { UserFacingError } from '../../components/ui/error-display';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { Map2dView } from '../../util/map2d';
 import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../util/temporalClass';

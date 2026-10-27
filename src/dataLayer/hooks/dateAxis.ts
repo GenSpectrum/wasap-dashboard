@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 
 import { useConnection, useRhydbSchema } from './connection';
 import { useRhydbQuery } from './rhydbQuery';
-import { UserFacingError } from '../../components/shared/error-display';
+import { UserFacingError } from '../../components/ui/error-display';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import {
     generateAllInRange,

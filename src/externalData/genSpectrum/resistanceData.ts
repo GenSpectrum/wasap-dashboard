@@ -1,7 +1,7 @@
 import type { Collection } from './Collection';
 import type { ApiService } from './apiService';
 import { getCollection } from './getCollection';
-import { type MutationAnnotations } from '../../components/MutationAnnotationsContext';
+import { type MutationAnnotations } from '../../components/mutations/MutationAnnotationsContext';
 import type { ResistanceMutationCollectionConfig, WasapPageConfig } from '../../config/wasapPageConfig';
 
 /**

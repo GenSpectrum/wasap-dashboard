@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 import { useLineageOptions, type LineageItem } from '../../../dataLayer/hooks/lineageOptions';
-import { ErrorBoundary } from '../../shared/error-boundary';
-import { LoadingDisplay } from '../../shared/loading-display';
+import { ErrorBoundary } from '../../ui/error-boundary';
+import { LoadingDisplay } from '../../ui/loading-display';
 import { DownshiftCombobox, DownshiftMultiCombobox } from '../downshift-combobox';
 
 export type LineageFilterProps<Lineage extends string = string> = {
