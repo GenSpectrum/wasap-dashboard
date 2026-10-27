@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 
-import { createSiloQueryClient } from '../dataLayer/hooks/connection';
+import { createRhydbQueryClient } from '../dataLayer/hooks/connection';
 
 /**
  * The app-wide TanStack Query client, of every data read but those from SILO (see
- * `siloQueryClient`). Defaults are deliberately conservative; per-query overrides live
+ * `rhydbQueryClient`). Defaults are deliberately conservative; per-query overrides live
  * with each hook.
  */
 export const queryClient = new QueryClient({
@@ -22,7 +22,7 @@ export const queryClient = new QueryClient({
  * rather than in the provider, so that the results outlive the layout, which unmounts while another
  * organism loads.
  */
-export const siloQueryClient = createSiloQueryClient();
+export const rhydbQueryClient = createRhydbQueryClient();
 
 export function DataProviders({ children }: { children: ReactNode }) {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

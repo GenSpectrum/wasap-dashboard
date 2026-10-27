@@ -7,7 +7,7 @@ import { getCladeLineages } from '../../externalData/lapis/getCladeLineages';
 import { useUntrackedMutations } from '../../externalData/lapis/useUntrackedMutations';
 import { usePageState } from '../../pageState/usePageState';
 import { UntrackedPageStateHandler } from '../../pageState/wasap/handlers/UntrackedPageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import { MutationsResult } from '../dataDisplay/MutationsResult';
 import { WasapResults } from '../dataDisplay/WasapResults';
 import { FilterSidebar } from '../filterSidebar/FilterSidebar';
@@ -19,7 +19,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const { data, isPending, error } = useUntrackedMutations(config, analysis);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),

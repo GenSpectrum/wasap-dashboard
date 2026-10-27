@@ -16,7 +16,7 @@ import {
     type TemporalGranularity,
 } from '../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../util/mutations';
-import { type SiloReadFilter } from '../queries';
+import { type RhydbReadFilter } from '../queries';
 
 /** A mutation with at least this mean proportion over the time range is background. */
 export const BACKGROUND_MIN_PROPORTION = 0.99;
@@ -51,7 +51,7 @@ export function useSignatureWithoutBackground(
     signature: VariantSignature | undefined,
     backgroundLineages: readonly BackgroundLineage[],
     options: ExclusionOptions,
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: SequenceType,
 ): { data: SignatureWithoutBackground | undefined; error: Error | null; isPending: boolean } {

@@ -8,9 +8,9 @@
  * SILO version behind rsv-a/rsv-b rejects an inline `:=` in a `group` column list.
  */
 
-import { scoped, type SiloReadFilter } from './filter';
+import { scoped, type RhydbReadFilter } from './filter';
 import { type PositionTarget } from './mutationsOverTime';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
 import { type Relation } from '../transport/relation';
@@ -22,8 +22,8 @@ function symColumn(index: number): string {
 }
 
 export function positionsCooccurrenceQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     targets: readonly PositionTarget[],
 ): Relation {
     const assignments = Object.fromEntries(

@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
-import { filterExpression, normalizeFilter, scoped, type SiloReadFilter } from './filter';
-import type { SiloSchema } from './schema';
+import { filterExpression, normalizeFilter, scoped, type RhydbReadFilter } from './filter';
+import type { RhydbSchema } from './schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -14,7 +14,7 @@ const schema: SiloSchema = {
     batchId: 'batchId',
 };
 
-const render = (filter: SiloReadFilter) => filterExpression(schema, filter)?.render();
+const render = (filter: RhydbReadFilter) => filterExpression(schema, filter)?.render();
 
 describe('filterExpression', () => {
     test('nothing to narrow by is undefined rather than an empty string', () => {
@@ -38,7 +38,7 @@ describe('filterExpression', () => {
     });
 
     test('against a DATE32 grouping column the bound carries a ::date cast', () => {
-        const date32Schema: SiloSchema = { ...schema, groupingDate: 'samplingDate', groupingDateIsDictionary: false };
+        const date32Schema: RhydbSchema = { ...schema, groupingDate: 'samplingDate', groupingDateIsDictionary: false };
         expect(filterExpression(date32Schema, { samplingDateFrom: '2024-01-01' })?.render()).toBe(
             "samplingDate >= '2024-01-01'::date",
         );

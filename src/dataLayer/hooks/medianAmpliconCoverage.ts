@@ -15,10 +15,10 @@
 
 import { useMemo } from 'react';
 
-import { useConnection, useSiloSchema } from './connection';
+import { useConnection, useRhydbSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
+import { useRhydbQuery } from './rhydbQuery';
 import { useSampleOverview } from './sampleOverview';
-import { useSiloQuery } from './siloQuery';
 import { type Amplicon } from '../../amplicons/primerBed';
 import { samplingPositions } from '../../amplicons/samplingPositions';
 import {
@@ -69,7 +69,7 @@ export type MedianAmpliconCoverageResult = {
 
 export function useMedianAmpliconCoverage(amplicons: Amplicon[]): MedianAmpliconCoverageResult {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const samples = useSampleOverview();
 
     const positions = useMemo(
@@ -77,10 +77,10 @@ export function useMedianAmpliconCoverage(amplicons: Amplicon[]): MedianAmplicon
         [amplicons],
     );
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance).
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const positionRows = useSiloQuery({
-        queryKey: ['silo', 'positions-by-sample', ...connection.key, schema.nucleotideSequence, positions],
+    const positionRows = useRhydbQuery({
+        queryKey: ['rhydb', 'positions-by-sample', ...connection.key, schema.nucleotideSequence, positions],
         staleTime: Infinity,
         queryFn: async ({ signal }) => {
             if (positions.length === 0) {

@@ -19,9 +19,9 @@
  * `groupBy` column list.
  */
 
-import { scoped, type SiloReadFilter } from './filter';
+import { scoped, type RhydbReadFilter } from './filter';
 import { groupingColumnsPassThrough } from './groupingColumns';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
 import { type Relation } from '../transport/relation';
@@ -32,8 +32,8 @@ export function positionColumn(position: number): string {
 }
 
 export function jointSymbolsQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     sequenceName: string,
     positions: readonly number[],
     groupBy: readonly string[],

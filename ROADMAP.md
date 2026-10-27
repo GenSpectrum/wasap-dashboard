@@ -33,12 +33,12 @@ up" below.
 
 ## Next up — step 3, phases 6–8
 
-1. **Instance selection.** `config.json` bundled default + a `?silo=`
+1. **Instance selection.** `config.json` bundled default + a `?rhydb=`
    override + a settings panel + `localStorage`, modeled on
    `wastewater-analytics-experiment`'s `src/data/instance.tsx`. This is also
    the seam a future "point at another SILO" / "load your own data" dropdown
    entry plugs into.
-2. **`WasmSiloQueryClient`** + a dataset-loading UI, for the in-browser mode.
+2. **`WasmRhydbQueryClient`** + a dataset-loading UI, for the in-browser mode.
    **Blocked externally** on a 64-bit WASM SILO build (the current build is
    32-bit, ~4GB address-space ceiling per handle) — until then this is only
    prototypable against a hand-prepared dataset. Also needs COOP/COEP

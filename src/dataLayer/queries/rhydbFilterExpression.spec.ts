@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
-import { type SiloFilterExpression, siloFilterExpressionSchema, validateGenomeOnly } from './siloFilterExpression';
+import { type RhydbFilterExpression, rhydbFilterExpressionSchema, validateGenomeOnly } from './rhydbFilterExpression';
 
-describe('siloFilterExpressionSchema', () => {
+describe('rhydbFilterExpressionSchema', () => {
     test('should parse StringEquals', () => {
         const data = {
             type: 'StringEquals',
@@ -10,7 +10,7 @@ describe('siloFilterExpressionSchema', () => {
             value: 'USA',
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -26,7 +26,7 @@ describe('siloFilterExpressionSchema', () => {
             symbol: 'A',
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -42,7 +42,7 @@ describe('siloFilterExpressionSchema', () => {
             to: '2024-12-31',
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -58,7 +58,7 @@ describe('siloFilterExpressionSchema', () => {
             to: 50,
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -84,7 +84,7 @@ describe('siloFilterExpressionSchema', () => {
             ],
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -109,7 +109,7 @@ describe('siloFilterExpressionSchema', () => {
             ],
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -127,7 +127,7 @@ describe('siloFilterExpressionSchema', () => {
             },
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -159,7 +159,7 @@ describe('siloFilterExpressionSchema', () => {
             ],
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -198,7 +198,7 @@ describe('siloFilterExpressionSchema', () => {
             ],
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -213,7 +213,7 @@ describe('siloFilterExpressionSchema', () => {
             value: 'USA',
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(false);
     });
@@ -225,13 +225,13 @@ describe('siloFilterExpressionSchema', () => {
             // missing 'value' field
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(false);
     });
 });
 
-describe('siloFilterExpressionSchema (parse)', () => {
+describe('rhydbFilterExpressionSchema (parse)', () => {
     test('should accept nullable values', () => {
         const data = {
             type: 'StringEquals',
@@ -239,7 +239,7 @@ describe('siloFilterExpressionSchema (parse)', () => {
             value: null,
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -252,7 +252,7 @@ describe('siloFilterExpressionSchema (parse)', () => {
             type: 'True',
         };
 
-        const result = siloFilterExpressionSchema.safeParse(data);
+        const result = rhydbFilterExpressionSchema.safeParse(data);
 
         expect(result.success).toBe(true);
         if (result.success) {
@@ -263,7 +263,7 @@ describe('siloFilterExpressionSchema (parse)', () => {
 
 describe('validateGenomeOnly', () => {
     test('accepts the six genome checks, True, and boolean combinators around them', () => {
-        const expr: SiloFilterExpression = {
+        const expr: RhydbFilterExpression = {
             type: 'And',
             children: [
                 { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' },
@@ -285,7 +285,7 @@ describe('validateGenomeOnly', () => {
     });
 
     test('rejects a metadata predicate anywhere in the tree, naming the offending types', () => {
-        const expr: SiloFilterExpression = {
+        const expr: RhydbFilterExpression = {
             type: 'And',
             children: [
                 { type: 'NucleotideEquals', position: 241, symbol: 'T' },

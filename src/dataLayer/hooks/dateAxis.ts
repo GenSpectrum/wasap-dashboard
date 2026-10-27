@@ -8,8 +8,8 @@
 import { queryOptions, type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { useConnection, useSiloSchema } from './connection';
-import { useSiloQuery } from './siloQuery';
+import { useConnection, useRhydbSchema } from './connection';
+import { useRhydbQuery } from './rhydbQuery';
 import { UserFacingError } from '../../components/shared/error-display';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import {
@@ -18,7 +18,7 @@ import {
     parseDateStringToTemporal,
     type TemporalClass,
 } from '../../util/temporalClass';
-import { normalizeFilter, samplingDatesQuery, type SiloReadFilter, type SiloSchema } from '../queries';
+import { normalizeFilter, samplingDatesQuery, type RhydbReadFilter, type RhydbSchema } from '../queries';
 import { readNamedCounts, type NamedCount } from '../queries/rows';
 import { type Connection } from '../transport/connection';
 
@@ -40,8 +40,8 @@ export type DateAxis = {
 export async function fetchDateAxis(
     queryClient: QueryClient,
     connection: Connection,
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
 ): Promise<DateAxis> {
     const dateRows = await queryClient.query(samplingDateCountsQuery(connection, schema, normalizeFilter(filter)));
@@ -49,9 +49,9 @@ export async function fetchDateAxis(
 }
 
 /** The date axis (`fetchDateAxis`) on its own, for a grid of something other than the mutations. */
-export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranularity): UseQueryResult<DateAxis> {
+export function useDateAxis(filter: RhydbReadFilter, granularity: TemporalGranularity): UseQueryResult<DateAxis> {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
 
     // Stable, so that the axis is only made again when it changes; an error of `toDateAxis` (too
@@ -61,18 +61,18 @@ export function useDateAxis(filter: SiloReadFilter, granularity: TemporalGranula
         (dateRows: NamedCount[]) => toDateAxis(dateRows, granularity, { samplingDateFrom, samplingDateTo }),
         [granularity, samplingDateFrom, samplingDateTo],
     );
-    return useSiloQuery({ ...samplingDateCountsQuery(connection, schema, normalized), select });
+    return useRhydbQuery({ ...samplingDateCountsQuery(connection, schema, normalized), select });
 }
 
 /**
  * The query of the reads per sampling date for a (normalized) filter. The buckets of every
  * granularity are made from these, so switching it asks SILO for nothing new.
  */
-function samplingDateCountsQuery(connection: Connection, schema: SiloSchema, filter: SiloReadFilter) {
-    // `schema` stands in for `connection.key` (same memoized SiloInstance).
+function samplingDateCountsQuery(connection: Connection, schema: RhydbSchema, filter: RhydbReadFilter) {
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return queryOptions({
-        queryKey: ['silo', 'sampling-date-counts', ...connection.key, filter],
+        queryKey: ['rhydb', 'sampling-date-counts', ...connection.key, filter],
         staleTime: Infinity,
         queryFn: ({ signal }) =>
             connection
@@ -82,7 +82,7 @@ function samplingDateCountsQuery(connection: Connection, schema: SiloSchema, fil
 }
 
 /** The date axis of the reads per date; more buckets than a grid can show is an error for the user (`MAX_GRID_COLUMNS`). */
-function toDateAxis(dateRows: NamedCount[], granularity: TemporalGranularity, filter: SiloReadFilter): DateAxis {
+function toDateAxis(dateRows: NamedCount[], granularity: TemporalGranularity, filter: RhydbReadFilter): DateAxis {
     const dateAxis = buildDateAxis(dateRows, granularity, filter);
     if (dateAxis.requestedDateRanges.length > MAX_GRID_COLUMNS) {
         throw new UserFacingError(
@@ -99,7 +99,7 @@ function toDateAxis(dateRows: NamedCount[], granularity: TemporalGranularity, fi
 export function buildDateAxis(
     dateRows: { name: string; count: number }[],
     granularity: TemporalGranularity,
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
 ): DateAxis {
     const countByBucket = new Map<string, number>();
     const bucketByKey = new Map<string, TemporalClass>();

@@ -4,10 +4,10 @@ import { render } from 'vitest-browser-react';
 
 import { MutationsOverTime, type MutationsOverTimeProps } from './mutations-over-time';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../../dataLayer/queries/schema';
+import type { RhydbSchema } from '../../../dataLayer/queries/schema';
 import { MutationAnnotationsContextProvider } from '../../MutationAnnotationsContext';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -49,7 +49,7 @@ const SYMBOLS_BY_POSITION: Record<number, { date: string; sym: string; count: nu
  *  - the positions of the display mutations, in one `unionall` -> `SYMBOLS_BY_POSITION`, each row
  *    tagged with its position
  */
-function stubSilo() {
+function stubRhydb() {
     const fetchMock = vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
         const q = typeof init?.body === 'string' ? init.body : '';
 
@@ -85,7 +85,7 @@ function renderOverTime(props: Partial<MutationsOverTimeProps> = {}) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
                 <MutationAnnotationsContextProvider value={[]}>
                     <MutationsOverTime
                         filter={{ samplingDateFrom: '2026-06-01', samplingDateTo: '2026-06-02' }}
@@ -106,7 +106,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('MutationsOverTime (SILO position-over-time)', () => {
     it('renders a row per display mutation, and the first and last date bucket', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime();
 
         await expect.element(screen.getByText('2026-06-01').first()).toBeInTheDocument();
@@ -117,7 +117,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
     });
 
     it('prints the proportions, alt / coverage, over the bands once the percentage toggle is pressed', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime();
 
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
@@ -131,7 +131,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
     });
 
     it('sends the positions in one query, which the grid takes its cells from too', async () => {
-        const fetchMock = stubSilo();
+        const fetchMock = stubRhydb();
         const screen = renderOverTime();
 
         const firstRow = screen.getByRole('row').filter({ hasText: 'C241T' });
@@ -149,7 +149,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
     });
 
     it('shows the mean proportion of each mutation', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime();
 
         // Over both days: C241T 2700/3000, C3037T 300/3000.
@@ -160,7 +160,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
     });
 
     it('sorts all the mutations, not just those of the page, by the column whose header is clicked', async () => {
-        stubSilo();
+        stubRhydb();
         // One mutation per page, so the one shown is the first in the order.
         const screen = renderOverTime({ pageSizes: [1], jaccardIndices: { C241T: 0.1, C3037T: 0.7 } });
 
@@ -190,7 +190,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
     });
 
     it('sorts by position by default without Jaccard indices', async () => {
-        stubSilo();
+        stubRhydb();
         const screen = renderOverTime({ pageSizes: [1] });
 
         await expect.element(screen.getByText('C241T').first()).toBeInTheDocument();
@@ -198,7 +198,7 @@ describe('MutationsOverTime (SILO position-over-time)', () => {
     });
 
     it('shows a dash for a display mutation without a measured mean proportion', async () => {
-        stubSilo();
+        stubRhydb();
         // No read covers C5T.
         const screen = renderOverTime({ displayMutations: ['C5T', 'C241T', 'C3037T'] });
 

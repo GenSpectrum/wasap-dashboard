@@ -21,9 +21,9 @@ import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
-import { useConnection, useSiloQueryClient, useSiloSchema } from './connection';
+import { useConnection, useRhydbQueryClient, useRhydbSchema } from './connection';
 import { fetchDateAxis } from './dateAxis';
-import { useSiloQueries, useSiloQuery } from './siloQuery';
+import { useRhydbQueries, useRhydbQuery } from './rhydbQuery';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
@@ -48,8 +48,8 @@ import {
     type PositionRange,
     type PositionTarget,
     type PositionOverTimeRow,
-    type SiloReadFilter,
-    type SiloSchema,
+    type RhydbReadFilter,
+    type RhydbSchema,
 } from '../queries';
 import { type Connection } from '../transport/connection';
 
@@ -73,26 +73,26 @@ export type OverTimeMetadata = {
 };
 
 export function useOverTimeMetadata(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
     displayMutations: string[] | undefined,
     enabled = true,
 ): UseQueryResult<OverTimeMetadata> {
     const connection = useConnection();
-    const schema = useSiloSchema();
-    const queryClient = useSiloQueryClient();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
     const normalized = normalizeFilter(filter);
     const displayMutationsKey = displayMutations === undefined ? undefined : [...displayMutations].sort();
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance);
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance);
     // `normalized`/`displayMutationsKey` stand in for `filter`/`displayMutations`
     // — they're pure, order-independent derivations of them, deliberately
     // used instead so equivalent filters/sets share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
+    return useRhydbQuery({
         queryKey: [
-            'silo',
+            'rhydb',
             'over-time-metadata',
             ...connection.key,
             normalized,
@@ -158,8 +158,8 @@ const POSITIONS_PER_QUERY = 64;
 async function fetchPositionsOverTime(
     queryClient: QueryClient,
     connection: Connection,
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     targets: readonly PositionTarget[],
     signal: AbortSignal,
 ): Promise<Map<string, PositionOverTimeRow[]>> {
@@ -202,8 +202,8 @@ async function fetchPositionsOverTime(
 }
 
 /** The cache key of one position's rows over a (normalized) filter. */
-function positionQueryKey(connection: Connection, filter: SiloReadFilter, target: PositionTarget) {
-    return ['silo', 'over-time-position', ...connection.key, filter, target.sequenceName, target.position];
+function positionQueryKey(connection: Connection, filter: RhydbReadFilter, target: PositionTarget) {
+    return ['rhydb', 'over-time-position', ...connection.key, filter, target.sequenceName, target.position];
 }
 
 /**
@@ -213,21 +213,21 @@ function positionQueryKey(connection: Connection, filter: SiloReadFilter, target
  * queries of its own.
  */
 export function usePositionRangeMutations(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     sequenceType: OverTimeSequenceType,
     range: PositionRange | undefined,
 ): UseQueryResult<string[]> {
     const connection = useConnection();
-    const schema = useSiloSchema();
-    const queryClient = useSiloQueryClient();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
     const normalized = normalizeFilter(filter);
 
     // `schema` stands in for `connection.key`, `normalized` for `filter`, and the range by its
     // sequence's name, start and length.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
+    return useRhydbQuery({
         queryKey: [
-            'silo',
+            'rhydb',
             'position-range-mutations',
             ...connection.key,
             normalized,
@@ -304,7 +304,7 @@ export type MutationsOverTimePage = {
 };
 
 export function useMutationsOverTimePage(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
     schemaNucleotideSequence: string,
@@ -314,7 +314,7 @@ export function useMutationsOverTimePage(
     showEmptyDates: boolean,
 ): MutationsOverTimePage {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
 
     const targets = useMemo(
@@ -322,9 +322,9 @@ export function useMutationsOverTimePage(
         [visibleMutationCodes, sequenceType, schemaNucleotideSequence],
     );
 
-    const positionRows = useSiloQueries({
+    const positionRows = useRhydbQueries({
         combine: allQueryData,
-        // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for
+        // `schema` stands in for `connection.key` (same memoized RhydbInstance); `normalized` for
         // `filter`, so that equivalent filters share a cache entry.
         // eslint-disable-next-line @tanstack/query/exhaustive-deps
         queries: targets.map((target) => ({

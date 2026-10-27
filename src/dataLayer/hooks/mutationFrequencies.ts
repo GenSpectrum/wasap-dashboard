@@ -12,14 +12,14 @@
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
-import { useConnection, useSiloSchema } from './connection';
-import { useSiloQueries } from './siloQuery';
+import { useConnection, useRhydbSchema } from './connection';
+import { useRhydbQueries } from './rhydbQuery';
 import {
     normalizeFilter,
     POSITIONS_PER_QUERY,
     readSymbolsBySample,
     symbolsBySampleQuery,
-    type SiloReadFilter,
+    type RhydbReadFilter,
     type SymbolsBySampleRow,
 } from '../queries';
 
@@ -45,11 +45,11 @@ export type MutationFrequenciesResult = {
 };
 
 export function useMutationFrequencies(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     mutations: readonly string[],
 ): MutationFrequenciesResult {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const scope = normalizeFilter(filter);
     const batches = useMemo(() => {
         const positions = [...new Set(mutations.map(positionOf))].sort((a, b) => a - b);
@@ -58,13 +58,20 @@ export function useMutationFrequencies(
         );
     }, [mutations]);
 
-    const symbols = useSiloQueries({
+    const symbols = useRhydbQueries({
         combine: allQueryData,
         queries: batches.map((positions) => {
-            // `schema` stands in for `connection.key` (same memoized SiloInstance).
+            // `schema` stands in for `connection.key` (same memoized RhydbInstance).
             // eslint-disable-next-line @tanstack/query/exhaustive-deps
             return {
-                queryKey: ['silo', 'symbols-by-sample', ...connection.key, scope, schema.nucleotideSequence, positions],
+                queryKey: [
+                    'rhydb',
+                    'symbols-by-sample',
+                    ...connection.key,
+                    scope,
+                    schema.nucleotideSequence,
+                    positions,
+                ],
                 staleTime: Infinity,
                 queryFn: async ({ signal }: { signal: AbortSignal }) => {
                     const { rows } = await connection.query(

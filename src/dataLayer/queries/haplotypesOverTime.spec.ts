@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
 import { haplotypesOverTimeQuery, readHaplotypesOverTime } from './haplotypesOverTime';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',

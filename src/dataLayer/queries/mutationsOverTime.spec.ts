@@ -8,9 +8,9 @@ import {
     readPositionOverTime,
     readPositionsOverTime,
 } from './mutationsOverTime';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -83,7 +83,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
     // live that the map()-first / bare-column form above parses and runs
     // sub-second on both that version and covid's newer one.
     test('the DATE32-grouping instance uses the same map()-first shape', () => {
-        const rsvSchema: SiloSchema = {
+        const rsvSchema: RhydbSchema = {
             table: 'data',
             locationName: 'locationName',
             samplingDate: 'samplingDate',

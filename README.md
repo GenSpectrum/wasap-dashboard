@@ -124,8 +124,8 @@ src/
     transport/               the SaneQL AST builder + SILO HTTP client (vendored
                              from wastewater-analytics-experiment): connection,
                              retry, concurrency limit
-    queries/                 SaneQL query catalogue + SiloReadFilter + per-organism
-                             SiloSchema (dict- vs. DATE32-encoded date columns)
+    queries/                 SaneQL query catalogue + RhydbReadFilter + per-organism
+                             RhydbSchema (dict- vs. DATE32-encoded date columns)
     hooks/                   the Tier-1 + over-time React Query hooks
   query/                    legacy LAPIS-era serializer helpers, slimmed down
                              but still shared by the over-time views

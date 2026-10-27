@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { ModePageLayout } from './ModePageLayout';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { usePositionRangeMutations } from '../../dataLayer/hooks/mutationsOverTime';
-import { type SiloReadFilter } from '../../dataLayer/queries';
+import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { usePageState } from '../../pageState/usePageState';
 import { ManualPageStateHandler } from '../../pageState/wasap/handlers/ManualPageStateHandler';
 import { usePositionRange } from '../../pageState/wasap/positionRange';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import {
     effectiveMutationSource,
     MUTATION_SOURCE,
@@ -28,7 +28,7 @@ export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> })
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),
         [base.meanProportion.lower, base.meanProportion.upper],
@@ -70,7 +70,7 @@ function ManualResult({
     meanProportionInterval,
 }: {
     analysis: WasapManualFilter;
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     meanProportionInterval: ProportionInterval;
 }) {

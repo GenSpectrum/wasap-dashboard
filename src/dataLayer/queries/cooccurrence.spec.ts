@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
 import { positionsCooccurrenceQuery, readCooccurrenceRows } from './cooccurrence';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'default',
     locationName: 'locationName',
     samplingDate: 'samplingDate',

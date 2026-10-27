@@ -1,16 +1,16 @@
 /**
  * How a wastewater SILO read is scoped, and the SaneQL predicate that scopes it.
  *
- * `SiloReadFilter` is the one description of "which reads" the catalogue speaks
+ * `RhydbReadFilter` is the one description of "which reads" the catalogue speaks
  * — the purpose-built replacement for the flat `LapisFilter` the components
  * used to take as a prop. wasap only ever narrows the wastewater dataset by
  * sampling location and a sampling-date window, so it is a small, closed record
- * (see doc 04, "The `SiloReadFilter`").
+ * (see doc 04, "The `RhydbReadFilter`").
  */
 
 import z from 'zod';
 
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { and, dateLiteral, field, str, type Expr } from '../transport/expression';
 import { table, type Relation } from '../transport/relation';
 
@@ -24,18 +24,18 @@ import { table, type Relation } from '../transport/relation';
  *
  * TODO: this function should not exist. It is here only for the transition
  * period where covid has a dictionary `date` column and rsv-a / rsv-b do not
- * (see `SiloSchema.groupingDateIsDictionary`). Once every instance has one,
+ * (see `RhydbSchema.groupingDateIsDictionary`). Once every instance has one,
  * every date bound is a plain `str(value)` against the dict column and this
  * collapses back into `filterExpression`.
  */
-function dateComparand(schema: SiloSchema, value: string): Expr {
+function dateComparand(schema: RhydbSchema, value: string): Expr {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
         throw new Error(`Not an ISO date (yyyy-mm-dd): ${JSON.stringify(value)}`);
     }
     return schema.groupingDateIsDictionary ? str(value) : dateLiteral(value);
 }
 
-export const siloReadFilterSchema = z.object({
+export const rhydbReadFilterSchema = z.object({
     /**
      * The locations whose reads are pooled, matched exactly on the location-name column. Absent
      * means every location; never empty, which would match nothing.
@@ -47,7 +47,7 @@ export const siloReadFilterSchema = z.object({
     samplingDateTo: z.string().optional(),
 });
 
-export type SiloReadFilter = z.infer<typeof siloReadFilterSchema>;
+export type RhydbReadFilter = z.infer<typeof rhydbReadFilterSchema>;
 
 /**
  * The same filter written the same way every time.
@@ -56,8 +56,8 @@ export type SiloReadFilter = z.infer<typeof siloReadFilterSchema>;
  * query text has to be deterministic, so the fields are copied in a fixed
  * order and nothing `undefined` is carried.
  */
-export function normalizeFilter(filter: SiloReadFilter): SiloReadFilter {
-    const normalized: SiloReadFilter = {};
+export function normalizeFilter(filter: RhydbReadFilter): RhydbReadFilter {
+    const normalized: RhydbReadFilter = {};
     if (filter.locationNames !== undefined) {
         // A set: the order it was picked in doesn't change the reads.
         const [first, ...rest] = [...new Set(filter.locationNames)].sort();
@@ -81,7 +81,7 @@ export function normalizeFilter(filter: SiloReadFilter): SiloReadFilter {
  * dictionary date column where the instance has one (a plain, cheap string
  * comparison), otherwise the `DATE32` column with a `::date` cast.
  */
-export function filterExpression(schema: SiloSchema, filter: SiloReadFilter): Expr | undefined {
+export function filterExpression(schema: RhydbSchema, filter: RhydbReadFilter): Expr | undefined {
     return and(locationExpression(schema, filter.locationNames), dateRangeExpression(schema, filter));
 }
 
@@ -90,8 +90,8 @@ export function filterExpression(schema: SiloSchema, filter: SiloReadFilter): Ex
  * dates are in a column of another name (one `map()`-ed from `groupingDate`), else `groupingDate`.
  */
 export function dateRangeExpression(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     column: string = schema.groupingDate,
 ): Expr | undefined {
     return and(
@@ -105,7 +105,7 @@ export function dateRangeExpression(
 }
 
 /** One location as a plain comparison, as before there could be several. */
-function locationExpression(schema: SiloSchema, locationNames: SiloReadFilter['locationNames']): Expr | undefined {
+function locationExpression(schema: RhydbSchema, locationNames: RhydbReadFilter['locationNames']): Expr | undefined {
     if (locationNames === undefined) {
         return undefined;
     }
@@ -118,6 +118,10 @@ function locationExpression(schema: SiloSchema, locationNames: SiloReadFilter['l
  * the caller needs on top. Where every catalogue query starts; an unnarrowed
  * table stays bare.
  */
-export function scoped(schema: SiloSchema, filter: SiloReadFilter, ...extra: readonly (Expr | undefined)[]): Relation {
+export function scoped(
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
+    ...extra: readonly (Expr | undefined)[]
+): Relation {
     return table(schema.table).filter(and(filterExpression(schema, filter), ...extra));
 }

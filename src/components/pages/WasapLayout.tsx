@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 
-import { siloSchema } from '../../config/siloSchema';
+import { rhydbSchema } from '../../config/rhydbSchema';
 import type { WasapPageConfig } from '../../config/wasapPageConfig';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
@@ -9,10 +9,10 @@ import { type LineageTree } from '../../lineageTree/lineageTree';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
 import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { siloQueryClient } from '../../util/queryClient';
+import { rhydbQueryClient } from '../../util/queryClient';
 import { MutationAnnotationsContextProvider } from '../MutationAnnotationsContext';
 import { MutationLinkTemplateContextProvider } from '../MutationLinkTemplateContext';
-import { SiloUnreachableWrapper } from '../SiloUnreachableWrapper';
+import { RhydbUnreachableWrapper } from '../RhydbUnreachableWrapper';
 import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 
 /** What the layout hands down to the page of an analysis mode. */
@@ -46,13 +46,13 @@ export function useWasapLayoutContext() {
  * filter of the URL. The page of the mode is rendered inside.
  */
 export function WasapLayout({ config, resistanceData, lineageTree }: WasapLayoutProps) {
-    const schema = useMemo(() => siloSchema(config.rhydb), [config.rhydb]);
+    const schema = useMemo(() => rhydbSchema(config.rhydb), [config.rhydb]);
 
     return (
-        <ConnectionProvider url={config.rhydb.url} schema={schema} queryClient={siloQueryClient}>
-            <SiloUnreachableWrapper>
+        <ConnectionProvider url={config.rhydb.url} schema={schema} queryClient={rhydbQueryClient}>
+            <RhydbUnreachableWrapper>
                 <WasapLayoutConnected config={config} resistanceData={resistanceData} lineageTree={lineageTree} />
-            </SiloUnreachableWrapper>
+            </RhydbUnreachableWrapper>
         </ConnectionProvider>
     );
 }

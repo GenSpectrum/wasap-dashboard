@@ -23,7 +23,7 @@ export const resistanceMutationCollectionConfigSchema = z.object({
 });
 export type ResistanceMutationCollectionConfig = z.infer<typeof resistanceMutationCollectionConfigSchema>;
 
-export const siloInstanceConfigSchema = z.object({
+export const rhydbInstanceConfigSchema = z.object({
     /** Base URL of the SILO instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
     url: z.string(),
     /** Root table name. `data` for every current instance. */
@@ -46,7 +46,7 @@ export const siloInstanceConfigSchema = z.object({
     /** Dictionary-encoded column holding the batch ID every amplicon sequence carries. */
     batchIdColumn: z.string(),
 });
-export type SiloInstanceConfig = z.infer<typeof siloInstanceConfigSchema>;
+export type RhydbInstanceConfig = z.infer<typeof rhydbInstanceConfigSchema>;
 
 /**
  * URL templates containing the placeholder '{{mutation}}', which are used to construct
@@ -100,9 +100,9 @@ export const wasapPageConfigBaseSchema = z.object({
     /**
      * Native SILO (RhyDB) coordinates for this organism's wastewater data.
      * The SILO service is the same backend that sits behind `lapisBaseUrl`;
-     * `src/rhydb` talks to it directly over SaneQL at `silo.url`.
+     * `src/rhydb` talks to it directly over SaneQL at `rhydb.url`.
      */
-    rhydb: siloInstanceConfigSchema,
+    rhydb: rhydbInstanceConfigSchema,
 
     defaultLocationName: z.string(),
 

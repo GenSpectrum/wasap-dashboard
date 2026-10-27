@@ -7,15 +7,15 @@
  * location's data (covid, Zürich).
  */
 
-import type { SiloReadFilter } from './filter';
+import type { RhydbReadFilter } from './filter';
 import { jointSymbolsQuery, positionColumn } from './jointSymbols';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { type Relation } from '../transport/relation';
 import { readCount, readOptionalText, readText, type RhydbRow } from '../transport/row';
 
 export function haplotypesOverTimeQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     sequenceName: string,
     positions: readonly number[],
 ): Relation {

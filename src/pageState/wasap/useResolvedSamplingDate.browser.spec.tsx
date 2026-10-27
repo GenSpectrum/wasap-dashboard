@@ -5,9 +5,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { useResolvedSamplingDate } from './useResolvedSamplingDate';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
-import type { SiloSchema } from '../../dataLayer/queries/schema';
+import type { RhydbSchema } from '../../dataLayer/queries/schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -30,7 +30,7 @@ function wrapper(): FC<PropsWithChildren> {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return ({ children }) => (
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
                 {children}
             </ConnectionProvider>
         </QueryClientProvider>

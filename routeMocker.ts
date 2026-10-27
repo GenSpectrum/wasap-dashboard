@@ -13,7 +13,7 @@ import type { ParsedQueryResult, ParseQueryRequest } from './src/externalData/la
 // type) are all gone — none of that code was copied.
 export const DUMMY_BACKEND_URL = 'http://backend.dummy';
 export const DUMMY_LAPIS_URL = 'http://lapis.dummy';
-export const DUMMY_SILO_URL = 'http://silo.dummy';
+export const DUMMY_RHYDB_URL = 'http://rhydb.dummy';
 
 type MSWWorkerOrServer = SetupWorker | SetupServer;
 
@@ -45,10 +45,10 @@ export class CovSpectrumRouteMocker {
 }
 
 /**
- * Allows you to mock SILO's `/query` route on DUMMY_SILO_URL: a query, exactly as sent, answered
+ * Allows you to mock SILO's `/query` route on DUMMY_RHYDB_URL: a query, exactly as sent, answered
  * with NDJSON rows. A query nothing mocks fails the test as an unhandled request.
  */
-export class SiloRouteMocker {
+export class RhydbRouteMocker {
     constructor(private workerOrServer: MSWWorkerOrServer) {}
 
     mockReferenceGenome(rows: { name: string; type: 'nucleotide' | 'amino_acid'; sequence: string }[]) {
@@ -57,7 +57,7 @@ export class SiloRouteMocker {
 
     mockQuery(query: string, rows: Record<string, unknown>[], statusCode = 200) {
         this.workerOrServer.use(
-            http.post(`${DUMMY_SILO_URL}/query`, async ({ request }) => {
+            http.post(`${DUMMY_RHYDB_URL}/query`, async ({ request }) => {
                 if ((await request.text()) !== query) {
                     return undefined;
                 }

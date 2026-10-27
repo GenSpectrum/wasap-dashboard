@@ -13,9 +13,9 @@
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
-import { useConnection, useSiloSchema } from './connection';
+import { useConnection, useRhydbSchema } from './connection';
 import { useDateAxis } from './dateAxis';
-import { useSiloQueries } from './siloQuery';
+import { useRhydbQueries } from './rhydbQuery';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
 import { type Map2DContents } from '../../util/map2d';
@@ -24,13 +24,13 @@ import {
     countOverTimeQuery,
     coverageOverTimeQuery,
     normalizeFilter,
-    type SiloFilterExpression,
-    type SiloReadFilter,
+    type RhydbFilterExpression,
+    type RhydbReadFilter,
 } from '../queries';
 import { readNamedCounts, type NamedCount } from '../queries/rows';
 
 /** What the hook needs of a collection query: a grid-row label and the genome-only expression. */
-type QuerySpec = { displayLabel: string; filter: SiloFilterExpression };
+type QuerySpec = { displayLabel: string; filter: RhydbFilterExpression };
 
 export type QueriesOverTimeData = {
     /** Queries × dates → count/coverage/proportion, or `null` while anything is still loading. */
@@ -43,21 +43,21 @@ export type QueriesOverTimeData = {
 type QueryDailyCounts = { count: NamedCount[]; coverage: NamedCount[] };
 
 export function useQueriesOverTime(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     queries: readonly QuerySpec[],
 ): QueriesOverTimeData {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
 
     const axis = useDateAxis(filter, granularity);
 
-    const dailyCounts = useSiloQueries({
+    const dailyCounts = useRhydbQueries({
         combine: allQueryData<QueryDailyCounts>,
         queries: queries.map((query) => ({
             queryKey: [
-                'silo',
+                'rhydb',
                 'queries-over-time',
                 ...connection.key,
                 normalized,

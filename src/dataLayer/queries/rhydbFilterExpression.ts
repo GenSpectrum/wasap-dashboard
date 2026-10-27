@@ -121,45 +121,45 @@ const phyloDescendantOfSchema = z.object({
 
 // Recursive types for And, Or, Not, Maybe, NOf
 // We need to define the base type first, then extend it
-export type SiloFilterExpression = z.infer<typeof siloFilterExpressionSchema>;
+export type RhydbFilterExpression = z.infer<typeof rhydbFilterExpressionSchema>;
 
 const andSchema: z.ZodType<{
     type: 'And';
-    children: SiloFilterExpression[];
+    children: RhydbFilterExpression[];
 }> = z.lazy(() =>
     z.object({
         type: z.literal('And'),
-        children: z.array(siloFilterExpressionSchema),
+        children: z.array(rhydbFilterExpressionSchema),
     }),
 );
 
 const orSchema: z.ZodType<{
     type: 'Or';
-    children: SiloFilterExpression[];
+    children: RhydbFilterExpression[];
 }> = z.lazy(() =>
     z.object({
         type: z.literal('Or'),
-        children: z.array(siloFilterExpressionSchema),
+        children: z.array(rhydbFilterExpressionSchema),
     }),
 );
 
 const notSchema: z.ZodType<{
     type: 'Not';
-    child: SiloFilterExpression;
+    child: RhydbFilterExpression;
 }> = z.lazy(() =>
     z.object({
         type: z.literal('Not'),
-        child: siloFilterExpressionSchema,
+        child: rhydbFilterExpressionSchema,
     }),
 );
 
 const maybeSchema: z.ZodType<{
     type: 'Maybe';
-    child: SiloFilterExpression;
+    child: RhydbFilterExpression;
 }> = z.lazy(() =>
     z.object({
         type: z.literal('Maybe'),
-        child: siloFilterExpressionSchema,
+        child: rhydbFilterExpressionSchema,
     }),
 );
 
@@ -167,19 +167,19 @@ const nOfSchema: z.ZodType<{
     type: 'N-Of';
     numberOfMatchers: number;
     matchExactly: boolean;
-    children: SiloFilterExpression[];
+    children: RhydbFilterExpression[];
 }> = z.lazy(() =>
     z.object({
         type: z.literal('N-Of'),
         numberOfMatchers: z.number(),
         matchExactly: z.boolean(),
-        children: z.array(siloFilterExpressionSchema),
+        children: z.array(rhydbFilterExpressionSchema),
     }),
 );
 
-// Combined union for all SiloFilterExpression types.
+// Combined union for all RhydbFilterExpression types.
 // This schema was initially LLM generated from the LAPIS code.
-export const siloFilterExpressionSchema = z.union([
+export const rhydbFilterExpressionSchema = z.union([
     stringEqualsSchema,
     booleanEqualsSchema,
     lineageEqualsSchema,
@@ -223,10 +223,10 @@ const GENOME_CHECK_TYPES = new Set([
  * translator (`queriesOverTime.ts`) only ever sees `True`, the six genome
  * checks, and `And` / `Or` / `Not` / `Maybe` / `N-Of` around them.
  */
-export function validateGenomeOnly(expression: SiloFilterExpression): GenomeCheckResult {
+export function validateGenomeOnly(expression: RhydbFilterExpression): GenomeCheckResult {
     const nonGenomeTypes: string[] = [];
 
-    function traverse(expr: SiloFilterExpression): void {
+    function traverse(expr: RhydbFilterExpression): void {
         const { type } = expr;
 
         if (type === 'And' || type === 'Or' || type === 'N-Of') {

@@ -1,7 +1,7 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
 import { type WasapManualFilter } from './wasapAnalysisFilter';
-import { useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useRhydbSchema } from '../../dataLayer/hooks/connection';
 import { useReferenceGenome } from '../../dataLayer/hooks/referenceGenome';
 import { type PositionRange, type ReferenceGenome } from '../../dataLayer/queries';
 
@@ -41,7 +41,7 @@ export function usePositionRange(analysis: WasapManualFilter): {
     range: PositionRange | undefined;
 } {
     const referenceGenome = useReferenceGenome();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const range =
         referenceGenome.data === undefined
             ? undefined

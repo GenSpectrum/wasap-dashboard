@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { siloFilterExpressionSchema } from '../../dataLayer/queries';
+import { rhydbFilterExpressionSchema } from '../../dataLayer/queries';
 import { lapisPost } from '../lapisApi/lapisApi';
 
 const parsedQueryResultSuccessSchema = z.object({
     type: z.literal('success'),
-    filter: siloFilterExpressionSchema,
+    filter: rhydbFilterExpressionSchema,
 });
 
 const parsedQueryResultFailureSchema = z.object({

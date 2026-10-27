@@ -10,7 +10,7 @@ import { useTotalReadCount } from '../dataLayer/hooks/totalReadCount';
  *
  * (Replaces `LapisUnreachableWrapperClient` — same behaviour, SILO probe.)
  */
-export const SiloUnreachableWrapper: FC<{ children: ReactNode }> = ({ children }) => {
+export const RhydbUnreachableWrapper: FC<{ children: ReactNode }> = ({ children }) => {
     const connection = useConnection();
     const { isError, isLoading } = useTotalReadCount();
 

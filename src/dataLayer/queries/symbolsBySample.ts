@@ -36,9 +36,9 @@
  *   range would then cost no queries at all. Independent of the batching.
  */
 
-import { type SiloReadFilter } from './filter';
+import { type RhydbReadFilter } from './filter';
 import { jointSymbolsQuery, positionColumn } from './jointSymbols';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { type Relation } from '../transport/relation';
 import { readCount, readOptionalText, readText, type RhydbRow } from '../transport/row';
 
@@ -47,8 +47,8 @@ export const POSITIONS_PER_QUERY = 12;
 
 /** A joint symbols query (`jointSymbolsQuery`) by sample and date. */
 export function symbolsBySampleQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     sequenceName: string,
     positions: readonly number[],
 ): Relation {
@@ -67,7 +67,7 @@ export type SymbolsBySampleRow = {
 /** The base counts of each position on its own: the joint counts, summed over the other positions. */
 export function readSymbolsBySample(
     rows: readonly RhydbRow[],
-    schema: SiloSchema,
+    schema: RhydbSchema,
     positions: readonly number[],
 ): Map<number, SymbolsBySampleRow[]> {
     return new Map(

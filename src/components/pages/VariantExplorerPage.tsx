@@ -16,7 +16,7 @@ import { getLineageSignature } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import { modePath } from '../../pageState/wasap/wasapModes';
 import { ClinicalSequenceCountStat } from '../dataDisplay/ClinicalSequenceCountStat';
 import { ExcludedMutations } from '../dataDisplay/ExcludedMutations';
@@ -40,7 +40,7 @@ export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'va
     } = usePageState(pageStateHandler);
     const { lineageTree } = useWasapLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const signature = useVariantSignature(config, analysis, lineageTree);
 
     // Opens an amplicon in the co-occurrence mode, to see all of its variable positions there, with

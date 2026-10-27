@@ -6,7 +6,7 @@
  * `WasapPageConfig.rhydb` block and passes it down through the connection
  * context (`dataLayer/hooks/connection.tsx`).
  */
-export type SiloSchema = {
+export type RhydbSchema = {
     /** Root table. `data` for every current W-ASAP instance. */
     table: string;
     /** Dictionary / indexed-string column holding the human-readable sampling location. */

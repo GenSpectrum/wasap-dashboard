@@ -1,13 +1,13 @@
 import { type FC, useEffect, useMemo } from 'react';
 
 import { getFilteredMutationCodes, type ProportionInterval } from './getFilteredMutationCodes';
-import { useSiloSchema } from '../../../dataLayer/hooks/connection';
+import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import {
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
 } from '../../../dataLayer/hooks/mutationsOverTime';
-import { type SiloReadFilter } from '../../../dataLayer/queries/filter';
+import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
 import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';
 import { ErrorBoundary } from '../../shared/error-boundary';
@@ -21,7 +21,7 @@ import { OverTimeGrid, proportionsByDate, useOverTimeGridState, type OverTimeGri
 import { TotalInDateRange } from '../over-time-grid-tooltip';
 
 export type MutationsOverTimeProps = {
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     sequenceType: SequenceType;
     granularity: TemporalGranularity;
     displayMutations?: string[];
@@ -75,7 +75,7 @@ const MutationsOverTimeWithMetadata: FC<{
 }> = ({ metadata, props, gridState }) => {
     const { filter, sequenceType, granularity, meanProportionInterval, jaccardIndices, ampliconsByMutation } = props;
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
-    const { nucleotideSequence } = useSiloSchema();
+    const { nucleotideSequence } = useRhydbSchema();
     const [viewSettings] = useBandViewSettings();
 
     const filteredMutationCodes = useMemo(

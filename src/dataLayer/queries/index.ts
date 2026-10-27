@@ -8,7 +8,7 @@ export * from './schema';
 export * from './filter';
 export * from './catalogue';
 export * from './rows';
-export * from './siloFilterExpression';
+export * from './rhydbFilterExpression';
 export * from './mutationsOverTime';
 export * from './queriesOverTime';
 export * from './positionBySample';

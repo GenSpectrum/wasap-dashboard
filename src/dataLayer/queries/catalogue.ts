@@ -7,8 +7,8 @@
  * single `group(by := …, aggs := {count()})`.
  */
 
-import { scoped, type SiloReadFilter } from './filter';
-import type { SiloSchema } from './schema';
+import { scoped, type RhydbReadFilter } from './filter';
+import type { RhydbSchema } from './schema';
 import { field, type Expr } from '../transport/expression';
 import { count } from '../transport/functions';
 import { table, type Relation } from '../transport/relation';
@@ -21,7 +21,7 @@ function readCounts(): Record<string, Expr> {
 }
 
 /** Total reads the filter admits, as a single row. */
-export function totalReadCountQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
+export function totalReadCountQuery(schema: RhydbSchema, filter: RhydbReadFilter = {}): Relation {
     return scoped(schema, filter).group(readCounts());
 }
 
@@ -32,7 +32,7 @@ export function totalReadCountQuery(schema: SiloSchema, filter: SiloReadFilter =
  * Grouping a dictionary/indexed column is close to free. Used for the sampling
  * location list; `field` must name a dictionary or indexed string column.
  */
-export function stringFieldValuesQuery(schema: SiloSchema, field: string): Relation {
+export function stringFieldValuesQuery(schema: RhydbSchema, field: string): Relation {
     return table(schema.table).group(readCounts(), [field]);
 }
 
@@ -42,7 +42,7 @@ export function stringFieldValuesQuery(schema: SiloSchema, field: string): Relat
  * one. The date extent is the first and last row; the caller reads min/max off
  * the sorted result rather than paying for two queries.
  */
-export function samplingDatesQuery(schema: SiloSchema, filter: SiloReadFilter = {}): Relation {
+export function samplingDatesQuery(schema: RhydbSchema, filter: RhydbReadFilter = {}): Relation {
     return scoped(schema, filter).group(readCounts(), [schema.groupingDate]).order(field(schema.groupingDate).asc());
 }
 
@@ -58,7 +58,7 @@ export function samplingDatesQuery(schema: SiloSchema, filter: SiloReadFilter = 
  * with `readSampleOverview`, and folds them into a per-location summary with
  * `readLocationOverview` where that's what's needed.
  */
-export function sampleOverviewQuery(schema: SiloSchema): Relation {
+export function sampleOverviewQuery(schema: RhydbSchema): Relation {
     return table(schema.table).group(readCounts(), [
         schema.locationName,
         schema.groupingDate,
@@ -74,6 +74,6 @@ export function sampleOverviewQuery(schema: SiloSchema): Relation {
  * while adding more columns to a group multiplies its cost, which is why the sample count doesn't
  * read off `sampleOverviewQuery`.
  */
-export function distinctCountQuery(schema: SiloSchema, column: string): Relation {
+export function distinctCountQuery(schema: RhydbSchema, column: string): Relation {
     return table(schema.table).group(readCounts(), [column]).group(readCounts());
 }
