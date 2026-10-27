@@ -1,10 +1,8 @@
 import { useState, type InputEvent, type FC } from 'react';
 
-// Previously injected only into this component's Lit shadow root by PreactLitAdapter (see
-// the step-2 Lit-removal commit). There's no shadow DOM to scope it to any more, so the
-// selectors in this file target the `min-max-range-slider` class below rather than the bare
-// `input[type=range]` tag, to avoid leaking onto unrelated range inputs elsewhere in the app
-// (e.g. `NumericInput`'s single-thumb slider).
+// Global CSS, so its selectors target the `min-max-range-slider` class below rather than the
+// bare `input[type=range]` tag, to avoid leaking onto unrelated range inputs elsewhere in the
+// app (e.g. `NumericInput`'s single-thumb slider).
 import './minMaxPercentSlider.css';
 
 export interface MinMaxPercentSliderProps {

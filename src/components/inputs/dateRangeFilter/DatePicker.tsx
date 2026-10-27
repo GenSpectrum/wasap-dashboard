@@ -1,7 +1,5 @@
 import flatpickr from 'flatpickr';
 import { useEffect, useRef, useState } from 'react';
-// Previously injected only into gs-date-range-filter's Lit shadow root (see the step-2
-// Lit-removal commit). Global now that there's no shadow DOM to scope it to.
 import 'flatpickr/dist/flatpickr.css';
 
 export function DatePicker({

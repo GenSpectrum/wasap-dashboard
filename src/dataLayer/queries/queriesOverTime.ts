@@ -1,5 +1,5 @@
 /**
- * The RhyDB queries behind `gs-queries-over-time`.
+ * The RhyDB queries behind the queries-over-time grid.
  *
  * A "query" is a genome-only boolean expression (`RhydbFilterExpression`, parsed
  * from an advanced-query string by LAPIS `/query/parse` in `src/`). Per query,

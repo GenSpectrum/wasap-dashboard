@@ -179,15 +179,12 @@ type CountedGroup = { symbols: Record<string, string | null>; count: number };
 /**
  * The pattern/date matrix from the raw joint rows.
  *
- * Ported from dashboard-components' `queryMutationCooccurrence` (which built
- * this from a flat LAPIS `aggregated` response grouped the same way, one row
- * per date + symbol combination): only patterns covered at at least one
- * position are kept, sorted by how many positions they cover (most first),
- * then alphabetically. A pattern's "coverage" at a bucket is every read that
- * is at least as informative as this pattern's own covered positions —
- * matching how a single mutation's coverage in `mutationsOverTime.ts` counts
- * every read with a known symbol there, regardless of what else the read
- * carries.
+ * Only patterns covered at at least one position are kept, sorted by how many
+ * positions they cover (most first), then alphabetically. A pattern's
+ * "coverage" at a bucket is every read that is at least as informative as this
+ * pattern's own covered positions — matching how a single mutation's coverage
+ * in `mutationsOverTime.ts` counts every read with a known symbol there,
+ * regardless of what else the read carries.
  */
 export function buildCooccurrenceMap(
     rows: readonly CooccurrenceRow[],

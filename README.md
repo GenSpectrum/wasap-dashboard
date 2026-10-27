@@ -121,7 +121,7 @@ src/
     modes/<mode>/           what only one mode uses: its page, filter, results
     layout/                 app shell, mode page layout, header, result states
     filterSidebar/          the filter sidebar + shared field help texts
-    inputs/                 generic filter widgets (ported from dashboard-components)
+    inputs/                 generic filter widgets
     overTime/               over-time grids and their view settings
     mutations/              mutation display, annotations, sorting
     ui/                     generic UI: modal, tooltip, dropdown, errors, loading

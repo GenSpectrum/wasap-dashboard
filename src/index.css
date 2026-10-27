@@ -5,16 +5,13 @@
     themes: light --default;
 }
 
-/* Iconify utility classes (`iconify mdi--…`) used by our chrome and the ported
-   wastewater components. Mirrors the dashboards repo (`src/styles/tailwind.css`). */
+/* Iconify utility classes (`iconify mdi--…`) used across the app. Mirrors the dashboards repo (`src/styles/tailwind.css`). */
 @plugin '@iconify/tailwind4' {
     prefixes: mdi;
 }
 
-/* Palette lifted verbatim from the dashboards repo (`src/styles/tailwind.css`),
-   so the wastewater charts and panels ported in step 1b/1c keep their colours.
-   The `gs-*` components render into shadow DOM and bring their own styling; this
-   is here so our wrappers and chrome match them. */
+/* The app's colour palette, lifted verbatim from the dashboards repo
+   (`src/styles/tailwind.css`). */
 @theme {
     --color-indigo: rgba(51, 34, 136, 0.9);
     --color-green: rgba(17, 119, 51, 1);

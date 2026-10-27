@@ -25,7 +25,7 @@ export type QueriesOverTimeQuery = {
     description?: string;
     /** The advanced-query string, kept for display in the row-label tooltip. */
     query: string;
-    /** The parsed, genome-only expression that RhyDB is asked (see `data/queriesOverTime.ts`). */
+    /** The parsed, genome-only expression that RhyDB is asked (see `dataLayer/queries/queriesOverTime.ts`). */
     filter: RhydbFilterExpression;
 };
 
