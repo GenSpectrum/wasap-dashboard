@@ -5,13 +5,12 @@
     themes: light --default;
 }
 
-/* Iconify utility classes (`iconify mdi--…`) used across the app. Mirrors the dashboards repo (`src/styles/tailwind.css`). */
+/* Iconify utility classes (`iconify mdi--…`) used across the app. */
 @plugin '@iconify/tailwind4' {
     prefixes: mdi;
 }
 
-/* The app's colour palette, lifted verbatim from the dashboards repo
-   (`src/styles/tailwind.css`). */
+/* The app's colour palette. */
 @theme {
     --color-indigo: rgba(51, 34, 136, 0.9);
     --color-green: rgba(17, 119, 51, 1);

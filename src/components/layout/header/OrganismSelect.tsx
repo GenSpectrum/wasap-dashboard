@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { listWastewaterOrganisms } from '../../../config/wastewaterOrganisms';
 
 /**
- * Replaces Astro's per-page routing: pick an organism, navigate to its route.
+ * Pick an organism, navigate to its route.
  * The "Upload your own data" entry mentioned in the plan (step 3) will slot in
  * here once there's a WASM-RhyDB client to point it at.
  */

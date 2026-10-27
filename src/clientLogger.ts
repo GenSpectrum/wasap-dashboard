@@ -1,9 +1,7 @@
 import { type logLevels, type AdditionalLogContext, type InstanceLogger } from './types/logMessage';
 
 /**
- * Console-backed logger with the same interface as the dashboards repo's
- * `clientLogger` (which POSTed to the Astro `/api/log` route). A standalone SPA
- * has nowhere to send logs, so they go to the browser console.
+ * Logs to the browser console: the app has no server of its own to send logs to.
  */
 export const getClientLogger = (instance: string): InstanceLogger => {
     const log = (level: (typeof logLevels)[number], message: string, context?: AdditionalLogContext): void => {

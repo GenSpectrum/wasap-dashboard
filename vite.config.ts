@@ -9,8 +9,7 @@ export default defineConfig({
     base: process.env.BASE_PATH ?? '/',
     plugins: [react(), tailwindcss()],
     server: {
-        // Match the port the Astro `dashboards` app uses, so muscle memory and
-        // any bookmarks carry over.
+        // The port the app has always been served on, so bookmarks keep working.
         port: 4321,
     },
 });
