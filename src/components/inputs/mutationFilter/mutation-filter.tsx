@@ -11,6 +11,7 @@ import { type DeletionClass, type InsertionClass, type SubstitutionClass } from 
 import { singleGraphColorRGBByName } from '../../shared/charts/colors';
 import { ErrorBoundary } from '../../shared/error-boundary';
 import { UserFacingError } from '../../shared/error-display';
+import { WithReferenceGenome } from '../WithReferenceGenome';
 
 export type MutationFilterProps = {
     /** Only read when mounted: to set another value, mount it again (e.g. with a new `key`). */
@@ -58,15 +59,13 @@ export const MutationFilter: FC<MutationFilterProps> = (props) => {
             <div className='label'>
                 <span className='label-text'>Mutations</span>
             </div>
-            {referenceGenome.isError ? (
-                <span>Cannot fetch the reference genome. {referenceGenome.error.message}</span>
-            ) : referenceGenome.isPending ? (
-                <div className='loading loading-spinner loading-md'>Loading...</div>
-            ) : (
-                <ErrorBoundary layout='horizontal' resetKeys={[props.initialValue, props.enabledMutationTypes]}>
-                    <MutationFilterWithReferenceGenome {...props} referenceGenome={referenceGenome.data} />
-                </ErrorBoundary>
-            )}
+            <WithReferenceGenome referenceGenome={referenceGenome}>
+                {(data) => (
+                    <ErrorBoundary layout='horizontal' resetKeys={[props.initialValue, props.enabledMutationTypes]}>
+                        <MutationFilterWithReferenceGenome {...props} referenceGenome={data} />
+                    </ErrorBoundary>
+                )}
+            </WithReferenceGenome>
         </div>
     );
 };
