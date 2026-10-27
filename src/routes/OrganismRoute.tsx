@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { NotFoundPage } from './NotFoundPage';
@@ -13,19 +12,11 @@ import { UntrackedPage } from '../components/modes/untracked/UntrackedPage';
 import { VariantExplorerPage } from '../components/modes/variantExplorer/VariantExplorerPage';
 import { LoadingDisplay } from '../components/ui/LoadingDisplay';
 import { NoDataDisplay } from '../components/ui/NoDataDisplay';
-import { getAppConfig } from '../config/appConfig';
 import { isModeEnabled, type OrganismConfig } from '../config/organismConfig';
 import { resolveOrganismConfig } from '../config/wastewaterOrganisms';
-import { fetchLineageTree } from '../externalData/fileBased/lineageTree/fetchLineageTree';
-import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
-import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
-import { getClientLogger } from '../logging';
-import { getErrorLogMessage } from '../logging';
+import { useLineageTree } from '../externalData/fileBased/lineageTree/useLineageTree';
+import { EMPTY_RESISTANCE_DATA, useResistanceData } from '../externalData/genSpectrum/useResistanceData';
 import { segmentToMode } from '../pageState/modes';
-
-const logger = getClientLogger('OrganismRoute');
-
-const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], displayMutationsBySet: {} };
 
 /**
  * The `/:organismPath` route: resolves the per-organism config from the URL and fetches
@@ -44,55 +35,18 @@ export function OrganismRoute() {
 }
 
 function OrganismDashboard({ config }: { config: OrganismConfig }) {
-    // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it (one
-    // static config per organism).
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const { data, isPending } = useQuery({
-        queryKey: ['resistanceData', config.genSpectrumOrganismName, getAppConfig().collectionsBackendUrl],
-        queryFn: async () => {
-            try {
-                return await fetchResistanceData(config, getApiServiceForClientside());
-            } catch (error) {
-                // A resistance-data failure degrades to an empty set rather than failing the whole page.
-                logger.error(
-                    `Failed to fetch resistance data for WASAP page (organism: ${config.genSpectrumOrganismName}): ${getErrorLogMessage(error)}`,
-                );
-                return EMPTY_RESISTANCE_DATA;
-            }
-        },
-    });
+    const resistanceData = useResistanceData(config);
+    const lineageTree = useLineageTree(config.lineageTree);
 
-    const lineageTreeConfig = config.lineageTree;
-    const lineageTreeQuery = useQuery({
-        queryKey: ['lineageTree', config.genSpectrumOrganismName, lineageTreeConfig],
-        queryFn: async () => {
-            if (lineageTreeConfig === undefined) {
-                return null;
-            }
-            try {
-                return await fetchLineageTree(lineageTreeConfig);
-            } catch (error) {
-                // like the resistance data: the pages work without it, just with less to offer
-                logger.error(
-                    `Failed to fetch the lineage tree for WASAP page (organism: ${config.genSpectrumOrganismName}): ${getErrorLogMessage(error)}`,
-                );
-                return null;
-            }
-        },
-        // the tree only changes when Nextclade publishes a new dataset, and it's costly to parse
-        staleTime: Infinity,
-        gcTime: Infinity,
-    });
-
-    if (isPending || lineageTreeQuery.isPending) {
+    if (resistanceData.isPending || lineageTree.isPending) {
         return <LoadingDisplay />;
     }
 
     return (
         <OrganismLayout
             config={config}
-            resistanceData={data ?? EMPTY_RESISTANCE_DATA}
-            lineageTree={lineageTreeQuery.data ?? undefined}
+            resistanceData={resistanceData.data ?? EMPTY_RESISTANCE_DATA}
+            lineageTree={lineageTree.data ?? undefined}
         />
     );
 }
