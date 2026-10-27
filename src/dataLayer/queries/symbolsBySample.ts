@@ -20,7 +20,7 @@
  * | 12                  | 8       | 1.1 s     | 0.8 MB   |
  * | 92                  | 1       | 1.8 s     | 5.0 MB   |
  *
- * Each query costs SILO about the same, whether it maps one position or a dozen, so fewer queries
+ * Each query costs RhyDB about the same, whether it maps one position or a dozen, so fewer queries
  * are faster. But every row repeats every column (mostly `N`), so a single query for all positions
  * gets big and slower again; `POSITIONS_PER_QUERY` is the sweet spot in between.
  *
@@ -28,9 +28,9 @@
  *
  * - **One query per position** (`positions` of length 1): the simplest, each response is exactly
  *   the base counts of its position, nothing to sum — about 3.5× slower for a typical panel.
- * - **A base-count action in SILO**: per sample, the count of each symbol at a list of positions,
+ * - **A base-count action in RhyDB**: per sample, the count of each symbol at a list of positions,
  *   computed in one pass without the joint distribution. One small query, no batching, no
- *   summing — the cleanest, but SILO has no such action today (`mutations()` can't be grouped
+ *   summing — the cleanest, but RhyDB has no such action today (`mutations()` can't be grouped
  *   by sample).
  * - **Fetch the location's whole history once, filter dates in the browser**: changing the date
  *   range would then cost no queries at all. Independent of the batching.

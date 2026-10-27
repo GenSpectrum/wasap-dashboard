@@ -21,7 +21,7 @@ const schema: RhydbSchema = {
     batchId: 'batchId',
 };
 
-/** Renders inside a SILO connection whose reference genome has one 20,000 bp segment and two genes. */
+/** Renders inside a RhyDB connection whose reference genome has one 20,000 bp segment and two genes. */
 function renderWithRhydb(ui: ReactElement) {
     const sequence = 'ATGC'.repeat(5000);
     rhydbRouteMocker.mockReferenceGenome([

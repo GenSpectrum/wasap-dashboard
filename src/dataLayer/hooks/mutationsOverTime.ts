@@ -1,5 +1,5 @@
 /**
- * `gs-mutations-over-time` over SILO, in two hooks: one for the grid's frame,
+ * `gs-mutations-over-time` over RhyDB, in two hooks: one for the grid's frame,
  * one for the cells of whichever page is on screen.
  *
  * `useOverTimeMetadata` — the frame, and page-independent: the date axis +

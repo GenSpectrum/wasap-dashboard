@@ -1,5 +1,5 @@
 /**
- * `gs-queries-over-time` over SILO.
+ * `gs-queries-over-time` over RhyDB.
  *
  * One hook. The date axis (buckets + per-bucket read totals) is one query; each
  * of the collection's queries is two more — a count and a coverage

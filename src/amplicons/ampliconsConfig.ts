@@ -32,7 +32,7 @@ export const ampliconsConfigSchema = z.union([
         /**
          * A primer BED file (see `primerBed.ts` for the format): a URL, or a path relative to where
          * the app is served, like `primers/custom/primer.bed` for a file put into `public/`. Its
-         * coordinates have to be on the reference of the organism's SILO instance.
+         * coordinates have to be on the reference of the organism's RhyDB instance.
          */
         bedFile: z.string().min(1),
     }),

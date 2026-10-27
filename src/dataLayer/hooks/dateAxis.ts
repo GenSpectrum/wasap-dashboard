@@ -1,6 +1,6 @@
 /**
  * The date axis of a grid over time: its buckets for the filter and granularity, and the reads in
- * each. The reads per date are one SILO query, cached apart from the granularity
+ * each. The reads per date are one RhyDB query, cached apart from the granularity
  * (`samplingDateCountsQuery`), so that all the grids of a page, and of the modes with the same
  * filter, ask for it once, and switching the granularity asks for nothing.
  */
@@ -35,7 +35,7 @@ export type DateAxis = {
 /**
  * The date buckets of a grid for the filter and granularity, and the reads in each. The reads per
  * date come from the cache (`samplingDateCountsQuery`), whatever the granularity, so that the grids
- * of a page ask SILO for them once between them.
+ * of a page ask RhyDB for them once between them.
  */
 export async function fetchDateAxis(
     queryClient: QueryClient,
@@ -66,7 +66,7 @@ export function useDateAxis(filter: RhydbReadFilter, granularity: TemporalGranul
 
 /**
  * The query of the reads per sampling date for a (normalized) filter. The buckets of every
- * granularity are made from these, so switching it asks SILO for nothing new.
+ * granularity are made from these, so switching it asks RhyDB for nothing new.
  */
 function samplingDateCountsQuery(connection: Connection, schema: RhydbSchema, filter: RhydbReadFilter) {
     // `schema` stands in for `connection.key` (same memoized RhydbInstance).

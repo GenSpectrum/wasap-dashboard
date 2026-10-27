@@ -18,7 +18,7 @@ const schema: RhydbSchema = {
     batchId: 'batchId',
 };
 
-/** An NDJSON `Response`, as SILO's `/query` returns. */
+/** An NDJSON `Response`, as RhyDB's `/query` returns. */
 function ndjson(rows: unknown[]): Response {
     return new Response(rows.map((row) => JSON.stringify(row)).join('\n'), {
         status: 200,

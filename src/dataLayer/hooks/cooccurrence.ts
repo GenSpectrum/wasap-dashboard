@@ -1,5 +1,5 @@
 /**
- * `Cooccurrence` over SILO, in one hook.
+ * `Cooccurrence` over RhyDB, in one hook.
  *
  * Unlike `mutationsOverTime.ts` (a metadata query plus one position-over-time
  * query per visible mutation), co-occurrence needs the *joint* distribution

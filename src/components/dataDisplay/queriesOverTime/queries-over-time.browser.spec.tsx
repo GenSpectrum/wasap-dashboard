@@ -25,7 +25,7 @@ function ndjson(rows: unknown[]): Response {
 }
 
 /**
- * Routes the SILO queries the component sends to canned NDJSON:
+ * Routes the RhyDB queries the component sends to canned NDJSON:
  *  - the date axis (`group(by := {date}, aggs := {n := count()}).order(...)`) -> two day buckets, 1000 reads each
  *  - the coverage query per query (`... maybe(nucleotideEquals(position := P ...`) -> 1000/day
  *  - the count query per query (`nucleotideEquals(position := P ...`, no `maybe`) -> 900/day for 241, 100/day for 3037
@@ -94,7 +94,7 @@ function renderOverTime(pageSizes = [10, 20]) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('QueriesOverTime (SILO)', () => {
+describe('QueriesOverTime (RhyDB)', () => {
     it('renders a row per query, and the first and last date bucket', async () => {
         stubRhydb();
         const screen = renderOverTime();

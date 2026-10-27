@@ -42,7 +42,7 @@ export function useWasapLayoutContext() {
 
 /**
  * What is the same for all the analysis modes of an organism, and stays mounted
- * when going from one mode to another: the connection to SILO and the dataset
+ * when going from one mode to another: the connection to RhyDB and the dataset
  * filter of the URL. The page of the mode is rendered inside.
  */
 export function WasapLayout({ config, resistanceData, lineageTree }: WasapLayoutProps) {

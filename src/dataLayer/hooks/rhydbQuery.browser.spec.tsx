@@ -19,7 +19,7 @@ const schema: RhydbSchema = {
 };
 
 function wrapper(rhydbQueryClient?: QueryClient): FC<PropsWithChildren> {
-    // The app-wide client retries; SILO reads must not end up on it.
+    // The app-wide client retries; RhyDB reads must not end up on it.
     const appQueryClient = new QueryClient({ defaultOptions: { queries: { retry: 3, retryDelay: 0 } } });
     return ({ children }) => (
         <QueryClientProvider client={appQueryClient}>
@@ -32,7 +32,7 @@ function wrapper(rhydbQueryClient?: QueryClient): FC<PropsWithChildren> {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('SILO queries', () => {
+describe('RhyDB queries', () => {
     it('send a rejected query once, not again for each retry of the app-wide query client', async () => {
         const fetchMock = vi.fn(() =>
             Promise.resolve(new Response(JSON.stringify({ error: 'Bad request', message: 'no' }), { status: 400 })),

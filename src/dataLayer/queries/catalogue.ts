@@ -1,5 +1,5 @@
 /**
- * The SILO SaneQL queries the wastewater components send.
+ * The RhyDB SaneQL queries the wastewater components send.
  *
  * Each is a builder returning a `Relation` (renderable query text); the
  * rendered text of each is asserted in `catalogue.spec.ts`. Grows as components
@@ -51,7 +51,7 @@ export function samplingDatesQuery(schema: RhydbSchema, filter: RhydbReadFilter 
  * count — one row each. Unfiltered, for the overview page's per-location table and its
  * samples-over-time plot.
  *
- * SILO's `group` has only `count()`, no `max`/`countDistinct`, so this groups by all four
+ * RhyDB's `group` has only `count()`, no `max`/`countDistinct`, so this groups by all four
  * columns together rather than aggregating them: the resulting row count is the same whether
  * grouping by `sampleId` alone or by all four (checked against the live instances), meaning a
  * sample always carries exactly one location, one date and one batch. The caller reads the rows

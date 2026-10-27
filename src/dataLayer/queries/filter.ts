@@ -1,5 +1,5 @@
 /**
- * How a wastewater SILO read is scoped, and the SaneQL predicate that scopes it.
+ * How a wastewater RhyDB read is scoped, and the SaneQL predicate that scopes it.
  *
  * `RhydbReadFilter` is the one description of "which reads" the catalogue speaks
  * — the purpose-built replacement for the flat `LapisFilter` the components
@@ -18,7 +18,7 @@ import { table, type Relation } from '../transport/relation';
  * An ISO date as the right-hand side of a comparison against `groupingDate`.
  *
  * The dictionary date column holds an ISO string, so a plain string comparison
- * is both correct (ISO dates sort lexically) and fast — and SILO rejects a
+ * is both correct (ISO dates sort lexically) and fast — and RhyDB rejects a
  * `::date` cast against it. The `DATE32` column needs the cast. Either way the
  * value is validated here, not at the instance.
  *

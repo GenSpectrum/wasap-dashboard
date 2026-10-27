@@ -5,7 +5,7 @@
  * Verified live: sub-second up to 10 positions against covid (~600M reads) and rsv-a (~17M).
  *
  * Grouping columns are named bare (`{date, sym0, sym1, ...}`), not reassigned inline: the older
- * SILO version behind rsv-a/rsv-b rejects an inline `:=` in a `group` column list.
+ * RhyDB version behind rsv-a/rsv-b rejects an inline `:=` in a `group` column list.
  */
 
 import { scoped, type RhydbReadFilter } from './filter';

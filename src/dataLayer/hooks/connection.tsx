@@ -1,9 +1,9 @@
 /**
- * The active SILO instance, in React context.
+ * The active RhyDB instance, in React context.
  *
  * One `Connection` (`dataLayer/transport/connection.ts`) per provider subtree: it
  * owns the transport, the CORS rules, the concurrency cap, the retry and the
- * logging, and every SILO read in `dataLayer/hooks/**` goes through it. The
+ * logging, and every RhyDB read in `dataLayer/hooks/**` goes through it. The
  * provider also holds the query client of those reads (`createRhydbQueryClient`, `rhydbQuery.ts`). The
  * component tree never sees a URL — it calls the `dataLayer/hooks` hooks, which
  * call `useConnection()` / `useRhydbSchema()`.
@@ -24,7 +24,7 @@ import { connect, type Connection } from '../transport/connection';
 type RhydbInstance = { connection: Connection; schema: RhydbSchema; queryClient: QueryClient };
 
 /**
- * The query client of SILO reads. It doesn't retry: a request retries on its own, and only what may not
+ * The query client of RhyDB reads. It doesn't retry: a request retries on its own, and only what may not
  * fail again (`query` in `dataLayer/transport/query.ts`); a retry here would resend timeouts and invalid
  * queries too, and the requests of a query function that had already answered.
  */
@@ -50,7 +50,7 @@ export function ConnectionProvider({
     url: string;
     schema: RhydbSchema;
     /**
-     * The query client of the SILO reads (`createRhydbQueryClient`). Without one, the provider has its own,
+     * The query client of the RhyDB reads (`createRhydbQueryClient`). Without one, the provider has its own,
      * with a cache that goes when it unmounts, as for a test.
      */
     queryClient?: QueryClient;
@@ -76,7 +76,7 @@ function useRhydbInstance(): RhydbInstance {
 }
 
 /**
- * The SILO instance to read from.
+ * The RhyDB instance to read from.
  *
  * Stable while the instance is, so it can be a dependency of a memo, an effect
  * or a TanStack query key (spread `connection.key`).
@@ -90,7 +90,7 @@ export function useRhydbSchema(): RhydbSchema {
     return useRhydbInstance().schema;
 }
 
-/** The query client of the SILO reads; see `rhydbQuery.ts`. */
+/** The query client of the RhyDB reads; see `rhydbQuery.ts`. */
 export function useRhydbQueryClient(): QueryClient {
     return useRhydbInstance().queryClient;
 }

@@ -14,20 +14,20 @@ of each step; this file only tracks what's still outstanding.
 - **Step 2 — inline `dashboard-components`.** The component library is a hard
   fork, ported Preact→React, vendored into `src/components/` (no
   `@genspectrum/dashboard-components` dependency, no upstream tracking).
-- **Step 3, phases 0–5 — native SILO for the wastewater data.** Dead-code
-  pruning; the SILO connection/transport layer (`src/dataLayer/transport/`,
+- **Step 3, phases 0–5 — native RhyDB for the wastewater data.** Dead-code
+  pruning; the RhyDB connection/transport layer (`src/dataLayer/transport/`,
   vendored from `wastewater-analytics-experiment`); Tier-1 reads (location/date
   filters, dataset stats, health check) moved off LAPIS; the lineage picker
   moved to a minimal clinical-LAPIS client; both over-time grids
-  (`gs-mutations-over-time`, `gs-queries-over-time`) rewritten against SILO.
+  (`gs-mutations-over-time`, `gs-queries-over-time`) rewritten against RhyDB.
 - Assorted hardening after phase 5 landed: organism config externalized to a
   zod-validated `config.json` (no config ⇒ empty app, not a hardcoded
   default), lint/format aligned with the upstream `dashboards`/
   `dashboard-components` repos (ESLint added), the external-API clients
-  gathered under `src/externalData/`, the SILO data layer reorganized into
+  gathered under `src/externalData/`, the RhyDB data layer reorganized into
   `src/dataLayer/{transport,queries,hooks}/`.
 
-**Known accepted gap:** RSV mutations-/queries-over-time is broken (SILO
+**Known accepted gap:** RSV mutations-/queries-over-time is broken (RhyDB
 times out grouping by RSV's non-dictionary-encoded date column) — see "Next
 up" below.
 
@@ -36,10 +36,10 @@ up" below.
 1. **Instance selection.** `config.json` bundled default + a `?rhydb=`
    override + a settings panel + `localStorage`, modeled on
    `wastewater-analytics-experiment`'s `src/data/instance.tsx`. This is also
-   the seam a future "point at another SILO" / "load your own data" dropdown
+   the seam a future "point at another RhyDB" / "load your own data" dropdown
    entry plugs into.
 2. **`WasmRhydbQueryClient`** + a dataset-loading UI, for the in-browser mode.
-   **Blocked externally** on a 64-bit WASM SILO build (the current build is
+   **Blocked externally** on a 64-bit WASM RhyDB build (the current build is
    32-bit, ~4GB address-space ceiling per handle) — until then this is only
    prototypable against a hand-prepared dataset. Also needs COOP/COEP
    cross-origin-isolation headers wired up (the WASM build uses pthreads).
@@ -51,12 +51,12 @@ up" below.
 ## Not started — step 4: Tauri desktop bundle
 
 Still a stub. Depends on phase 6/7's client abstraction (a client that can
-point at a local SILO over HTTP or Tauri IPC). Rough shape, nothing decided:
+point at a local RhyDB over HTTP or Tauri IPC). Rough shape, nothing decided:
 
 - Tauri v2 shell around the same Vite build as the hosted SPA.
-- SILO as a Tauri sidecar (bundle a platform binary, start/health-check/stop
+- RhyDB as a Tauri sidecar (bundle a platform binary, start/health-check/stop
   it) — or an `invoke`-bridged in-process alternative. Undecided.
-- Dataset management: ship a default processed SILO state, let users
+- Dataset management: ship a default processed RhyDB state, let users
   import/update datasets, store under the OS app-data dir. The 64-bit WASM
   ceiling does **not** block desktop — a native sidecar has no such limit;
   this is part of desktop's "larger datasets" value proposition.
@@ -66,20 +66,20 @@ point at a local SILO over HTTP or Tauri IPC). Rough shape, nothing decided:
   unaffected since it's `pushState`).
 - Packaging: signing, notarization, auto-update, CI matrix. Not started.
 
-Open questions: native SILO sidecar vs. WASM-in-webview vs. both; HTTP-on-
+Open questions: native RhyDB sidecar vs. WASM-in-webview vs. both; HTTP-on-
 localhost vs. Tauri IPC; where desktop users' datasets come from; whether
 desktop bundles/proxies the collections backend + clinical LAPIS or requires
 network access for those; binary size budget.
 
 ## External dependencies (outside this project, block parts of it)
 
-- **64-bit WASM build of SILO/RhyDB** — required for the in-browser mode
+- **64-bit WASM build of RhyDB/RhyDB** — required for the in-browser mode
   (phase 7) and to widen what "browser" can realistically hold. Does not
   exist yet.
-- **RhyDB BAM importer** (a generic BAM → SILO preprocessing pipeline) — a
+- **RhyDB BAM importer** (a generic BAM → RhyDB preprocessing pipeline) — a
   separate project, out of scope here, but upstream of "drag-and-drop your
   own data" ever being real for ad-hoc users.
-- **SILO `DATE32` grouping performance** — RSV's over-time views are blocked
+- **RhyDB `DATE32` grouping performance** — RSV's over-time views are blocked
   on this (grouping by RSV's non-dictionary-encoded date column times out).
   Worth checking status before re-attempting a client-side workaround.
 
@@ -107,11 +107,11 @@ the areas they touch:
   browser-upload as an explicit later milestone — but this hasn't been
   written down as a decision anywhere.
 - **Third-party hosting / self-hosting story.** Config surface for someone
-  running their own dashboard against their own SILO (which organisms, which
-  modes enabled, branding, deploy story, SILO setup expectations — the
+  running their own dashboard against their own RhyDB (which organisms, which
+  modes enabled, branding, deploy story, RhyDB setup expectations — the
   dict-encoded date column requirement in particular). Nothing built; the
   `config.json` module should stay structured so this can grow into it.
-- **Concrete data sizes.** How big is the real dataset (SILO state dir /
+- **Concrete data sizes.** How big is the real dataset (RhyDB state dir /
   NDJSON)? What should a typical bring-your-own-data user's dataset size be
   assumed to be? Does the eventual 64-bit WASM build realistically cover
   that range, or does desktop's value proposition rest mainly on

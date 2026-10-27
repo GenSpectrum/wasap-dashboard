@@ -4,11 +4,11 @@ import { useConnection } from '../dataLayer/hooks/connection';
 import { useTotalReadCount } from '../dataLayer/hooks/totalReadCount';
 
 /**
- * Renders its children only once the SILO instance has answered a trivial
+ * Renders its children only once the RhyDB instance has answered a trivial
  * query; otherwise shows an unreachable notice. Must be mounted inside a
  * `ConnectionProvider`.
  *
- * (Replaces `LapisUnreachableWrapperClient` — same behaviour, SILO probe.)
+ * (Replaces `LapisUnreachableWrapperClient` — same behaviour, RhyDB probe.)
  */
 export const RhydbUnreachableWrapper: FC<{ children: ReactNode }> = ({ children }) => {
     const connection = useConnection();

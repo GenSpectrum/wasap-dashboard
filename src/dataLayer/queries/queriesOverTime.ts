@@ -1,5 +1,5 @@
 /**
- * The SILO queries behind `gs-queries-over-time`.
+ * The RhyDB queries behind `gs-queries-over-time`.
  *
  * A "query" is a genome-only boolean expression (`RhydbFilterExpression`, parsed
  * from an advanced-query string by LAPIS `/query/parse` in `src/`). Per query,
@@ -16,7 +16,7 @@
  * plain `group(by := {date}, aggs := {count()})` calls, assembled into the matrix in
  * `dataLayer/hooks/queriesOverTime.ts`.
  *
- * `translateGenomeFilter` is the whole LAPIS→SILO bridge for this feature: the
+ * `translateGenomeFilter` is the whole LAPIS→RhyDB bridge for this feature: the
  * 12 node types `validateGenomeOnly` lets through, each to a `transport` builder.
  */
 
@@ -101,7 +101,7 @@ export function translateGenomeFilter(schema: RhydbSchema, node: RhydbFilterExpr
             });
         default:
             throw new Error(
-                `queries-over-time cannot translate SILO filter node '${node.type}' to SaneQL ` +
+                `queries-over-time cannot translate RhyDB filter node '${node.type}' to SaneQL ` +
                     '(validateGenomeOnly should have rejected the query)',
             );
     }

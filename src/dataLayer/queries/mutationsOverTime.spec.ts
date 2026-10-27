@@ -77,7 +77,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
         );
     });
 
-    // Regression: the older SILO version behind rsv-a / rsv-b (0.12.1) rejects
+    // Regression: the older RhyDB version behind rsv-a / rsv-b (0.12.1) rejects
     // an inline `:=` assignment in a groupBy column list outright (400,
     // "expected set literal") — not a timeout, as previously assumed. Verified
     // live that the map()-first / bare-column form above parses and runs

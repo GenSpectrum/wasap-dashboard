@@ -1,7 +1,7 @@
 /**
- * The column names the SILO query catalogue needs from an instance.
+ * The column names the RhyDB query catalogue needs from an instance.
  *
- * SILO exposes no field semantics — a query names raw columns — so the
+ * RhyDB exposes no field semantics — a query names raw columns — so the
  * catalogue is handed this per instance. `src/` builds it from the per-organism
  * `WasapPageConfig.rhydb` block and passes it down through the connection
  * context (`dataLayer/hooks/connection.tsx`).
@@ -28,7 +28,7 @@ export type RhydbSchema = {
      * `.map(sym := …).group(count(), {groupingDate, sym})` shape
      * (`positionOverTimeQuery`). An earlier, unverified assumption that this
      * *always* times out on a `DATE32` column turned out to be a different bug
-     * (a `groupBy` column-list syntax rejected outright by the older SILO
+     * (a `groupBy` column-list syntax rejected outright by the older RhyDB
      * version behind rsv-a / rsv-b — see that function's docstring), not a
      * performance wall. Whether grouping by `DATE32` itself degrades at
      * covid-scale row counts (~600 M vs rsv's ~17 M) is still untested.
@@ -36,7 +36,7 @@ export type RhydbSchema = {
     groupingDate: string;
     /**
      * Whether `groupingDate` is dictionary-encoded (holds an ISO string).
-     * `true` on covid (`date`): filters use a plain string comparison, and SILO
+     * `true` on covid (`date`): filters use a plain string comparison, and RhyDB
      * *rejects* a `::date` cast against it. `false` on rsv-a / rsv-b
      * (`samplingDate` is `DATE32`): filters need the `'yyyy-mm-dd'::date` cast.
      *

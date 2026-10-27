@@ -1,5 +1,5 @@
 /**
- * `useTotalReadCount` — a Tier-1 SILO read, as a TanStack Query hook.
+ * `useTotalReadCount` — a Tier-1 RhyDB read, as a TanStack Query hook.
  *
  * Reads the instance from context (`useConnection` / `useRhydbSchema`), issues
  * one catalogue query, and hands back the parsed rows. Tier-1 reads are the

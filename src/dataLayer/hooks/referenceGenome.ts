@@ -1,5 +1,5 @@
 /**
- * `useReferenceGenome` — a Tier-1 SILO read, as a TanStack Query hook.
+ * `useReferenceGenome` — a Tier-1 RhyDB read, as a TanStack Query hook.
  *
  * Reads the instance from context (`useConnection`), issues one query, and
  * hands back the parsed rows. The reference does not change while the page is

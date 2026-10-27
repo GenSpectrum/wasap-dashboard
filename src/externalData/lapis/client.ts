@@ -4,13 +4,13 @@
  *
  * The lineage picker in `variant` / `untracked` mode filters the *wastewater*
  * dataset but reads its lineage list from the **clinical** LAPIS — someone
- * else's dataset, which has no SILO. That is the deliberate "wart" in doc 04:
- * one component reading from LAPIS while every other reads from SILO, through
+ * else's dataset, which has no RhyDB. That is the deliberate "wart" in doc 04:
+ * one component reading from LAPIS while every other reads from RhyDB, through
  * the same client-in-context → data-hook mechanism.
  *
  * Just the two calls that read need — an aggregate over one field for the
  * counts, and the lineage-definition DAG — wrapping the kept `lapisApi`
- * functions. Everything else in `lapisApi` is on the SILO chopping block.
+ * functions. Everything else in `lapisApi` is on the RhyDB chopping block.
  */
 
 import type { LineageDefinitionResponse } from '../lapisApi/LineageDefinition';

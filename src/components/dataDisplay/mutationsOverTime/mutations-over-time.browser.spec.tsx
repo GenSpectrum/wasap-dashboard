@@ -44,7 +44,7 @@ const SYMBOLS_BY_POSITION: Record<number, { date: string; sym: string; count: nu
 };
 
 /**
- * Routes the SILO queries the component sends to canned NDJSON:
+ * Routes the RhyDB queries the component sends to canned NDJSON:
  *  - the date axis (`group(by := {date}, aggs := {n := count()})`) -> two day buckets
  *  - the positions of the display mutations, in one `unionall` -> `SYMBOLS_BY_POSITION`, each row
  *    tagged with its position
@@ -104,7 +104,7 @@ function renderOverTime(props: Partial<MutationsOverTimeProps> = {}) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('MutationsOverTime (SILO position-over-time)', () => {
+describe('MutationsOverTime (RhyDB position-over-time)', () => {
     it('renders a row per display mutation, and the first and last date bucket', async () => {
         stubRhydb();
         const screen = renderOverTime();

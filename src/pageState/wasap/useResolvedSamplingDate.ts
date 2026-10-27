@@ -9,7 +9,7 @@ const allTimes: DateRangeOption = { label: ALL_TIMES_LABEL };
 /**
  * Resolves a `samplingDate` that may just be a preset label (e.g. "Most recent
  * 14 days", from a URL loaded fresh) into concrete dates, by reading the
- * dataset's actual date range from SILO (`useDateExtent`) and matching the
+ * dataset's actual date range from RhyDB (`useDateExtent`) and matching the
  * label against the same options `DynamicDateFilter` generates for the
  * dropdown.
  *

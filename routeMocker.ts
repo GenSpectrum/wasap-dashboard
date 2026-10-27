@@ -45,7 +45,7 @@ export class CovSpectrumRouteMocker {
 }
 
 /**
- * Allows you to mock SILO's `/query` route on DUMMY_RHYDB_URL: a query, exactly as sent, answered
+ * Allows you to mock RhyDB's `/query` route on DUMMY_RHYDB_URL: a query, exactly as sent, answered
  * with NDJSON rows. A query nothing mocks fails the test as an unhandled request.
  */
 export class RhydbRouteMocker {

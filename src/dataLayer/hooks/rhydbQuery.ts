@@ -1,6 +1,6 @@
 /**
- * TanStack queries of SILO reads, on a query client of their own, which the `ConnectionProvider` holds:
- * every hook in `dataLayer/hooks` that reads from SILO uses `useRhydbQuery` / `useRhydbQueries` instead of
+ * TanStack queries of RhyDB reads, on a query client of their own, which the `ConnectionProvider` holds:
+ * every hook in `dataLayer/hooks` that reads from RhyDB uses `useRhydbQuery` / `useRhydbQueries` instead of
  * `useQuery` / `useQueries` (ESLint enforces it).
  */
 
@@ -15,7 +15,7 @@ import {
 
 import { useRhydbQueryClient } from './connection';
 
-/** `useQuery` on the SILO query client. */
+/** `useQuery` on the RhyDB query client. */
 export function useRhydbQuery<
     TQueryFnData,
     TError = Error,
@@ -25,7 +25,7 @@ export function useRhydbQuery<
     return useQuery(options, useRhydbQueryClient());
 }
 
-/** `useQueries` on the SILO query client. */
+/** `useQueries` on the RhyDB query client. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the same constraint as `useQueries`
 export function useRhydbQueries<T extends any[], TCombinedResult = QueriesResults<T>>(
     options: Parameters<typeof useQueries<T, TCombinedResult>>[0],

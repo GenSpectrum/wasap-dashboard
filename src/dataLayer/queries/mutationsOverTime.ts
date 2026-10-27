@@ -1,5 +1,5 @@
 /**
- * The SILO queries behind `gs-mutations-over-time`.
+ * The RhyDB queries behind `gs-mutations-over-time`.
  *
  * There is no over-time / coverage primitive in SaneQL, and the batching
  * options don't hold (grouping by a `unionall` tag literal, or by the `DATE32`
@@ -115,7 +115,7 @@ export type PositionRange = {
  *
  * The computed `sym` column is `.map()`-ed *before* `group`, and both
  * grouping columns are named bare rather than re-assigned inline
- * (`{<date>, sym}`, not `{<date> := <date>, sym := sym}`) — the older SILO
+ * (`{<date>, sym}`, not `{<date> := <date>, sym := sym}`) — the older RhyDB
  * version behind rsv-a / rsv-b rejects an inline `:=` assignment in a
  * `groupBy` column list outright (400, "expected set literal"; not a timeout).
  * This form parses and runs sub-second on both that version and covid's newer

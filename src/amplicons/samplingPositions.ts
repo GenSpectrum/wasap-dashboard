@@ -22,7 +22,7 @@ export function ampliconAnchor(amplicon: Amplicon, allAmplicons: readonly Amplic
 
 /**
  * The positions at which to measure how many reads an amplicon has, without knowing which amplicon
- * each read came from (SILO has no read start/end or amplicon column).
+ * each read came from (RhyDB has no read start/end or amplicon column).
  *
  * In a tiled scheme, the neighbouring amplicons overlap: the start of an insert is also the end of
  * the previous amplicon's insert, and its end the start of the next one's. A read covering a

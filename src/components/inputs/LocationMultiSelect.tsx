@@ -15,7 +15,7 @@ export type LocationMultiSelectProps = {
 /**
  * A dropdown of all locations with a checkbox each, a search field and "Clear".
  * The ticks are applied when the dropdown closes, so that picking several locations reads them from
- * SILO once, not once per tick. Nothing ticked means every location, which the button shows
+ * RhyDB once, not once per tick. Nothing ticked means every location, which the button shows
  * as "All locations", so that an empty selection is never mistaken for none.
  */
 export function LocationMultiSelect(props: LocationMultiSelectProps) {

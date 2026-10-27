@@ -105,7 +105,7 @@ const namingConvention = {
         },
         {
             // Object keys that require quoting (HTTP headers with a dash, LAPIS/
-            // SILO field names with dots, the "amino acid" label, vite proxy
+            // RhyDB field names with dots, the "amino acid" label, vite proxy
             // paths) aren't identifiers to begin with, so no format applies.
             selector: 'objectLiteralProperty',
             format: null,
@@ -216,9 +216,9 @@ export default tseslint.config(
         },
     },
     {
-        // SILO reads go on the SILO query client (`dataLayer/hooks/rhydbQuery.ts`), which doesn't retry.
+        // RhyDB reads go on the RhyDB query client (`dataLayer/hooks/rhydbQuery.ts`), which doesn't retry.
         files: ['src/dataLayer/hooks/**/*.{ts,tsx}'],
-        // `lineageOptions` reads from LAPIS, not SILO.
+        // `lineageOptions` reads from LAPIS, not RhyDB.
         ignores: ['src/dataLayer/hooks/rhydbQuery.ts', 'src/dataLayer/hooks/lineageOptions.ts', '**/*.spec.{ts,tsx}'],
         rules: {
             'no-restricted-imports': [
@@ -228,7 +228,7 @@ export default tseslint.config(
                         {
                             name: '@tanstack/react-query',
                             importNames: ['useQuery', 'useQueries', 'useSuspenseQuery', 'useSuspenseQueries'],
-                            message: 'Use useRhydbQuery / useRhydbQueries from ./rhydbQuery for SILO reads.',
+                            message: 'Use useRhydbQuery / useRhydbQueries from ./rhydbQuery for RhyDB reads.',
                         },
                     ],
                 },

@@ -30,7 +30,7 @@ export type ParseQueryRequest = {
 };
 
 /**
- * Parses a list of advanced query strings into SILO filter expressions.
+ * Parses a list of advanced query strings into RhyDB filter expressions.
  * Returns partial results: successfully parsed queries will have a "filter" field,
  * while failed queries will have an "error" field with the error message.
  *

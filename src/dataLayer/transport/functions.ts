@@ -34,7 +34,7 @@ export function isNotNull(sequence: Expr): Expr {
 /**
  * Whether a read carries *any* non-reference, non-ambiguous symbol at a
  * nucleotide position — the "has a mutation here, don't care which" predicate.
- * `sequenceName` is mandatory (SILO rejects the call without it).
+ * `sequenceName` is mandatory (RhyDB rejects the call without it).
  */
 export function hasMutation(options: { position: number; sequenceName: string }): Expr {
     return hasMutationAt('hasMutation', options);

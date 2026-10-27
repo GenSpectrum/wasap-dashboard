@@ -24,14 +24,14 @@ export const resistanceMutationCollectionConfigSchema = z.object({
 export type ResistanceMutationCollectionConfig = z.infer<typeof resistanceMutationCollectionConfigSchema>;
 
 export const rhydbInstanceConfigSchema = z.object({
-    /** Base URL of the SILO instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
+    /** Base URL of the RhyDB instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
     url: z.string(),
     /** Root table name. `data` for every current instance. */
     table: z.string(),
     /**
      * Column to group and range on for date-bucketed reads. covid's instance
      * carries a dictionary-encoded `date` column (cheap to group); rsv-a / rsv-b
-     * have only `samplingDate` (DATE32), which SILO groups pathologically slowly —
+     * have only `samplingDate` (DATE32), which RhyDB groups pathologically slowly —
      * so date-bucketed RSV views stay blocked until those instances gain a dict
      * date column (doc 04, "Date axis"). `samplingDateColumn` is the DATE32 column
      * everywhere, for the min/max date-extent read.
@@ -98,8 +98,8 @@ export const wasapPageConfigBaseSchema = z.object({
     locationNameField: z.string(),
 
     /**
-     * Native SILO (RhyDB) coordinates for this organism's wastewater data.
-     * The SILO service is the same backend that sits behind `lapisBaseUrl`;
+     * Native RhyDB (RhyDB) coordinates for this organism's wastewater data.
+     * The RhyDB service is the same backend that sits behind `lapisBaseUrl`;
      * `src/rhydb` talks to it directly over SaneQL at `rhydb.url`.
      */
     rhydb: rhydbInstanceConfigSchema,

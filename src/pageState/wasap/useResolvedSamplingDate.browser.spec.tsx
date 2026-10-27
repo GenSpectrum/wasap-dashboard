@@ -18,7 +18,7 @@ const schema: RhydbSchema = {
     batchId: 'batchId',
 };
 
-/** An NDJSON `Response`, as SILO's `/query` returns. */
+/** An NDJSON `Response`, as RhyDB's `/query` returns. */
 function ndjson(rows: unknown[]): Response {
     return new Response(rows.map((row) => JSON.stringify(row)).join('\n'), {
         status: 200,
@@ -118,7 +118,7 @@ describe('useResolvedSamplingDate', () => {
         expect(result.current.samplingDate).toEqual({ label: 'All times', dateFrom: '2024-01-01' });
     });
 
-    it('does not query SILO when the samplingDate already has concrete dates', () => {
+    it('does not query RhyDB when the samplingDate already has concrete dates', () => {
         const fetchMock = vi.fn();
         vi.stubGlobal('fetch', fetchMock);
 
