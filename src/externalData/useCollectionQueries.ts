@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getClientLogger } from '../clientLogger';
 import { type QueriesOverTimeQuery } from '../components/overTime/queriesOverTime/QueriesOverTime';
 import { type WasapPageConfigFor } from '../config/wasapPageConfig';
 import { validateGenomeOnly } from '../dataLayer/queries';
+import { getClientLogger } from '../logging';
+import { getErrorLogMessage } from '../logging';
 import { getCollection } from './covSpectrum/getCollection';
 import type { CollectionVariant } from './covSpectrum/types';
 import { detailedMutationsToQuery } from './covSpectrum/variantConversionUtil';
@@ -12,7 +13,6 @@ import { getApiServiceForClientside } from './genSpectrum/apiService';
 import { getCollection as getGenSpectrumCollection } from './genSpectrum/getCollection';
 import { parseQuery } from './lapis/parseQuery';
 import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/wasap/wasapAnalysisFilter';
-import { getErrorLogMessage } from '../util/getErrorLogMessage';
 
 const logger = getClientLogger('useCollectionQueries');
 

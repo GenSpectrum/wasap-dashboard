@@ -3,10 +3,10 @@ import dayjs from 'dayjs';
 
 import { getClusterJaccardsWithLineageCount } from './getClusterJaccards';
 import { getMutationsForVariant } from './getMutations';
-import { getClientLogger } from '../../clientLogger';
 import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { getClientLogger } from '../../logging';
+import { getErrorLogMessage } from '../../logging';
 import type { VariantTimeFrame, WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { getErrorLogMessage } from '../../util/getErrorLogMessage';
 import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
 import { type LapisFilter } from '../lapisApi/lapisTypes';
 
