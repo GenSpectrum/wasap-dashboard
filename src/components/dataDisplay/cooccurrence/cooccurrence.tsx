@@ -13,7 +13,7 @@ import {
 import { lineagePanelSymbols, matchingPanelLineages } from '../../../dataLayer/hooks/lineagePanelMatch';
 import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../dataLayer/queries/mutationsOverTime';
-import { type LineageTree } from '../../../lineageTree/lineageTree';
+import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
 import { SubstitutionClass, type Substitution } from '../../../util/mutations';
 import { parsePositionToken } from '../../../util/parsePositionToken';

@@ -2,7 +2,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { parseGeneAnnotation, type GeneRange } from './geneAnnotation';
 
-/** EXPERIMENTAL: a dataset's gene nucleotide ranges, fetched and parsed once. `undefined` disables the query. */
+/** A dataset's gene nucleotide ranges, fetched and parsed once. `undefined` disables the query. */
 export function useGeneAnnotation(url: string | undefined): UseQueryResult<GeneRange[]> {
     return useQuery({
         queryKey: ['genome-annotation', url],

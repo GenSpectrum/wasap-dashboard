@@ -2,8 +2,8 @@ import { useMemo, type ReactNode } from 'react';
 import { Link, type To } from 'react-router-dom';
 
 import { HoverTooltip } from './hover-tooltip';
-import { type LineageTree } from '../../lineageTree/lineageTree';
-import { buildPanelTree, type PanelTreeNode } from '../../lineageTree/panelTree';
+import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
+import { buildPanelTree, type PanelTreeNode } from '../../externalData/fileBased/lineageTree/panelTree';
 
 /**
  * How the lineages of a panel hang together in the lineage tree. Of the lineages that aren't in

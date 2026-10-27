@@ -1,7 +1,7 @@
 import { useId } from 'react';
 
+import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
-import { type LineageTree } from '../../../lineageTree/lineageTree';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,

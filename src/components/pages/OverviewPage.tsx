@@ -1,4 +1,4 @@
-import { type AmpliconsConfig } from '../../amplicons/ampliconsConfig';
+import { type AmpliconsConfig } from '../../externalData/fileBased/amplicons/ampliconsConfig';
 import { LocationOverviewTable } from '../dataDisplay/LocationOverviewTable';
 import { MedianAmpliconCoverageHeatmap } from '../dataDisplay/MedianAmpliconCoverageHeatmap';
 import { OverviewStats } from '../dataDisplay/OverviewStats';

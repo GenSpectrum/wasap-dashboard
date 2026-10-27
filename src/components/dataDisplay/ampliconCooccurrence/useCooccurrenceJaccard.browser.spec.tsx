@@ -7,9 +7,9 @@ import { describe, expect } from 'vitest';
 import { useCooccurrenceJaccard } from './useCooccurrenceJaccard';
 import { DUMMY_LAPIS_URL } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
-import { mutationsByAmplicon } from '../../../amplicons/mutationsByAmplicon';
-import { type Amplicon } from '../../../amplicons/primerBed';
 import { type CooccurrenceRow } from '../../../dataLayer/hooks/ampliconCooccurrence';
+import { mutationsByAmplicon } from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
+import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 
 const amplicon: Amplicon = { chrom: 'ref', number: 7, pool: '1', start: 1, end: 400, insertStart: 30, insertEnd: 370 };
 const { mutations } = mutationsByAmplicon(['C100T', 'G300A'], [amplicon]).groups[0];

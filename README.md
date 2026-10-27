@@ -130,12 +130,14 @@ src/
   query/                    legacy LAPIS-era serializer helpers, slimmed down
                              but still shared by the over-time views
                              (ProportionValue, getProportion, removeEmptyDatesInPlace)
-  externalData/             everything that talks to a remote HTTP API: clinical
+  externalData/             everything loaded from outside the app: clinical
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
                              collections
+    fileBased/              data loaded from static files: amplicons (primer
+                             BEDs), genome (Nextclade gene annotation),
+                             lineageTree (Nextclade tree.json, alias key)
   config/                   config.json loading + schema, per-organism types
-  amplicons/                primer schemes: the `amplicons` config, BED parsing
   clientLogger.ts, types/, util/, styles/
 lollipop-service/           the service that computes the Lineage Prevalence page with
                             LolliPop — Python, its own image, see lollipop-service/README.md

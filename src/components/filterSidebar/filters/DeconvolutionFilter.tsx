@@ -1,4 +1,4 @@
-import { type LineageTree } from '../../../lineageTree/lineageTree';
+import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { type WasapDeconvolutionFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
 import { LineagePanelInfo } from '../../InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';

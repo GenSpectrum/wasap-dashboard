@@ -12,8 +12,8 @@ import z from 'zod';
  * the lineages that start a clade serve as landmarks in the tree.
  *
  * `genomeAnnotationUrl` is the sibling `genome_annotation.gff3` Nextclade datasets ship next to
- * `tree.json` — gene nucleotide coordinates, used (EXPERIMENTAL) to translate a nucleotide
- * position into a gene:codon one; see `src/genome/geneAnnotation.ts`.
+ * `tree.json` — gene nucleotide coordinates, used to translate a nucleotide
+ * position into a gene:codon one; see `src/externalData/fileBased/genome/geneAnnotation.ts`.
  */
 export const lineageTreeConfigSchema = z.object({
     url: z.string().min(1),

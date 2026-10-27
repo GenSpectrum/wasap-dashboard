@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
 import { usesDefaultAmplicon, withDefaultAmplicon } from './CooccurrencePage';
-import { type Amplicon } from '../../amplicons/primerBed';
-import { ampliconAnchor } from '../../amplicons/samplingPositions';
+import { type Amplicon } from '../../externalData/fileBased/amplicons/primerBed';
+import { ampliconAnchor } from '../../externalData/fileBased/amplicons/samplingPositions';
 import { type WasapCooccurrenceFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 
 function amplicon(number: number, insertStart: number, insertEnd: number): Amplicon {

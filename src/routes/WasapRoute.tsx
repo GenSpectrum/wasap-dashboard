@@ -17,9 +17,9 @@ import { NoDataDisplay } from '../components/shared/no-data-display';
 import { getAppConfig } from '../config/appConfig';
 import { isModeEnabled, type WasapPageConfig } from '../config/wasapPageConfig';
 import { resolveWasapConfig } from '../config/wastewaterOrganisms';
+import { fetchLineageTree } from '../externalData/fileBased/lineageTree/fetchLineageTree';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
 import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
-import { fetchLineageTree } from '../lineageTree/fetchLineageTree';
 import { segmentToMode } from '../pageState/wasap/wasapModes';
 import { getErrorLogMessage } from '../util/getErrorLogMessage';
 

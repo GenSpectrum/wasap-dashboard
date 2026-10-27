@@ -3,16 +3,16 @@ import { type To } from 'react-router-dom';
 
 import { ModePageLayout } from './ModePageLayout';
 import { useWasapLayoutContext } from './WasapLayout';
-import { ampliconNumbersByMutation } from '../../amplicons/mutationsByAmplicon';
-import { useAmplicons } from '../../amplicons/useAmplicons';
 import { isModeEnabled, type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { useSignatureWithoutBackground, type BackgroundLineage } from '../../dataLayer/hooks/backgroundMutations';
+import { ampliconNumbersByMutation } from '../../externalData/fileBased/amplicons/mutationsByAmplicon';
+import { useAmplicons } from '../../externalData/fileBased/amplicons/useAmplicons';
+import { getLineageSignature } from '../../externalData/fileBased/lineageTree/lineageTree';
 import {
     getFromDateForTimeFrame,
     isVariantSelected,
     useVariantSignature,
 } from '../../externalData/lapis/useVariantSignature';
-import { getLineageSignature } from '../../lineageTree/lineageTree';
 import { usePageState } from '../../pageState/usePageState';
 import { datasetFilterSearchParams } from '../../pageState/wasap/baseFilter';
 import { VariantExplorerPageStateHandler } from '../../pageState/wasap/handlers/VariantExplorerPageStateHandler';

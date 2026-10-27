@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { lineagePanelSymbols, matchingPanelLineages } from './lineagePanelMatch';
-import { buildLineageTree } from '../../lineageTree/lineageTree';
-import { type NextcladeTreeNode } from '../../lineageTree/nextcladeTree';
+import { buildLineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
+import { type NextcladeTreeNode } from '../../externalData/fileBased/lineageTree/nextcladeTree';
 
 /* eslint-disable @typescript-eslint/naming-convention -- the field names of the Auspice JSON format */
 

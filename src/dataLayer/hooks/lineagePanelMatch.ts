@@ -15,7 +15,7 @@
  */
 
 import { lineageSignatures } from '../../deconvolution/lineageSignatures';
-import { getLineageSignature, type LineageTree } from '../../lineageTree/lineageTree';
+import { getLineageSignature, type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { type SequenceType } from '../../types/dashboardComponents';
 import { SubstitutionClass } from '../../util/mutations';
 
