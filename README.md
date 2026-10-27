@@ -122,7 +122,7 @@ src/
     layout/                 app shell, mode page layout, header, result states
     filterSidebar/          the filter sidebar + shared field help texts
     inputs/                 generic filter widgets
-    overTime/               over-time grids and their view settings
+    overTime/               over-time grids, their view settings, ProportionValue
     mutations/              mutation display, annotations, sorting
     ui/                     generic UI: modal, tooltip, dropdown, errors, loading
   dataLayer/
@@ -135,9 +135,6 @@ src/
       lookups/               small single-query reads (date extent, counts, options, …)
       analyses/              the analysis hooks (mutations / queries over time,
                              co-occurrence, amplicon coverage, …)
-  query/                    legacy LAPIS-era serializer helpers, slimmed down
-                             but still shared by the over-time views
-                             (ProportionValue, getProportion, removeEmptyDatesInPlace)
   externalData/             everything loaded from outside the app: clinical
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
@@ -148,7 +145,7 @@ src/
                              lineageTree (Nextclade tree.json, alias key,
                              lineage signatures, panel matching)
   config/                   config.json loading + schema, per-organism types
-  clientLogger.ts, types/, util/, styles/
+  logging.ts, index.css, types/, util/
 lollipop-service/           the service that computes the Lineage Prevalence page with
                             LolliPop — Python, its own image, see lollipop-service/README.md
 ```
