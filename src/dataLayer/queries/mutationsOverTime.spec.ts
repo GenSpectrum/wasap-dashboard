@@ -8,9 +8,9 @@ import {
     readPositionOverTime,
     readPositionsOverTime,
 } from './mutationsOverTime';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -77,13 +77,13 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
         );
     });
 
-    // Regression: the older SILO version behind rsv-a / rsv-b (0.12.1) rejects
+    // Regression: the older RhyDB version behind rsv-a / rsv-b (0.12.1) rejects
     // an inline `:=` assignment in a groupBy column list outright (400,
     // "expected set literal") — not a timeout, as previously assumed. Verified
     // live that the map()-first / bare-column form above parses and runs
     // sub-second on both that version and covid's newer one.
     test('the DATE32-grouping instance uses the same map()-first shape', () => {
-        const rsvSchema: SiloSchema = {
+        const rsvSchema: RhydbSchema = {
             table: 'data',
             locationName: 'locationName',
             samplingDate: 'samplingDate',

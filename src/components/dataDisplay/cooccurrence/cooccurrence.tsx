@@ -4,14 +4,14 @@ import { Link, type To } from 'react-router-dom';
 import { formatSymbol, type CooccurrenceOverTimeDataMap, type CooccurrencePattern } from './CooccurrenceOverTimeData';
 import { type ClinicalLapisSource, usePanelLineageJaccards } from './usePanelLineageJaccards';
 import { useAmpliconAnchor, labelFor, selectDiversePositions } from '../../../dataLayer/hooks/ampliconPositions';
-import { useSiloSchema } from '../../../dataLayer/hooks/connection';
+import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import {
     cooccurrenceTargets,
     filterCooccurrenceByMinShare,
     useCooccurrence,
 } from '../../../dataLayer/hooks/cooccurrence';
 import { lineagePanelSymbols, matchingPanelLineages } from '../../../dataLayer/hooks/lineagePanelMatch';
-import { type SiloReadFilter } from '../../../dataLayer/queries/filter';
+import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../dataLayer/queries/mutationsOverTime';
 import { type LineageTree } from '../../../lineageTree/lineageTree';
 import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
@@ -27,7 +27,7 @@ import { HoverTooltip } from '../hover-tooltip';
 import { Pagination } from '../pagination';
 
 type CooccurrenceBaseProps = {
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     sequenceType: SequenceType;
     granularity: TemporalGranularity;
     /** Only patterns on at least this share of the reads over the time range are shown. */
@@ -76,7 +76,7 @@ type AmpliconCooccurrenceProps = Extract<CooccurrenceProps, { positionSource: 'a
 
 const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = (componentProps) => {
     const { sequenceType, positions } = componentProps;
-    const { nucleotideSequence } = useSiloSchema();
+    const { nucleotideSequence } = useRhydbSchema();
 
     const { targets, labels } = useMemo(() => {
         const tokens = positions.map((raw) => parsePositionToken(raw, sequenceType)).filter((token) => token !== null);
@@ -93,7 +93,7 @@ const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = (componentProps) =>
  */
 const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, lineageTree, ...componentProps }) => {
     const { filter, sequenceType, anchorPosition, entropyCutoff } = componentProps;
-    const { nucleotideSequence } = useSiloSchema();
+    const { nucleotideSequence } = useRhydbSchema();
 
     const anchorToken = useMemo(() => parsePositionToken(anchorPosition, sequenceType), [anchorPosition, sequenceType]);
     const anchorTarget: PositionTarget | null = useMemo(() => {

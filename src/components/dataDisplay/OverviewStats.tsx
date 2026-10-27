@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from 'react';
 
-import { useSiloSchema } from '../../dataLayer/hooks/connection';
+import { useRhydbSchema } from '../../dataLayer/hooks/connection';
 import { useDateExtent } from '../../dataLayer/hooks/dateExtent';
 import { useDistinctCount } from '../../dataLayer/hooks/distinctCount';
 import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
@@ -25,7 +25,7 @@ export const OverviewStats: FC = () => (
 );
 
 const LocationCount: FC = () => {
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const { data, isPending, isError, error } = useStringFieldOptions(schema.locationName);
 
     return (
@@ -38,7 +38,7 @@ const LocationCount: FC = () => {
 };
 
 const BatchCount: FC = () => {
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const { data, isPending, isError, error } = useDistinctCount(schema.batchId);
 
     return (
@@ -51,7 +51,7 @@ const BatchCount: FC = () => {
 };
 
 const SampleCount: FC = () => {
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const { data, isPending, isError, error } = useDistinctCount(schema.sampleId);
 
     return (

@@ -5,7 +5,7 @@ import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
 import { useCollectionQueries } from '../../externalData/useCollectionQueries';
 import { usePageState } from '../../pageState/usePageState';
 import { CollectionPageStateHandler } from '../../pageState/wasap/handlers/CollectionPageStateHandler';
-import { useSiloReadFilter } from '../../pageState/wasap/useSiloReadFilter';
+import { useRhydbReadFilter } from '../../pageState/wasap/useRhydbReadFilter';
 import { COLLECTION_SOURCE } from '../../pageState/wasap/wasapAnalysisFilter';
 import { CollectionResult } from '../dataDisplay/CollectionResult';
 import { NothingSelected } from '../dataDisplay/NothingSelected';
@@ -19,7 +19,7 @@ export function CollectionPage({ config }: { config: WasapPageConfigFor<'collect
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { filter, isPending: isFilterPending } = useSiloReadFilter(base.locationNames);
+    const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const { data, isPending, error } = useCollectionQueries(config, analysis.source, analysis.collectionId);
     const meanProportionInterval = useMemo(
         () => ({ min: base.meanProportion.lower, max: base.meanProportion.upper }),

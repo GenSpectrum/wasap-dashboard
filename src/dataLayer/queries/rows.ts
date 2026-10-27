@@ -6,7 +6,7 @@
  */
 
 import { READS } from './catalogue';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { readCount, readText, type RhydbRow } from '../transport/row';
 
 /** The reads a total-count query counted, off its single row. */
@@ -48,7 +48,7 @@ export type SampleOverview = {
  * dropped, the same as `readNamedCounts`. The overview page's per-location table folds these
  * with `readLocationOverview`; its samples-over-time plot uses them as they are.
  */
-export function readSampleOverview(rows: readonly RhydbRow[], schema: SiloSchema): SampleOverview[] {
+export function readSampleOverview(rows: readonly RhydbRow[], schema: RhydbSchema): SampleOverview[] {
     return rows
         .map((row) => ({
             locationName: readText(row, schema.locationName),

@@ -16,7 +16,7 @@ import {
     type CooccurrenceRow,
 } from '../../../dataLayer/hooks/ampliconCooccurrence';
 import { useDateAxis, type DateAxis } from '../../../dataLayer/hooks/dateAxis';
-import { type SiloReadFilter } from '../../../dataLayer/queries';
+import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type ClusterJaccardSource } from '../../../externalData/lapis/getClusterJaccards';
 import { type TemporalGranularity } from '../../../types/dashboardComponents';
 import { TitledPanel } from '../../shared/TitledPanel';
@@ -28,7 +28,7 @@ const NO_ROWS: CooccurrenceRow[] = [];
 
 type SectionProps = {
     amplicons: AmpliconsConfig;
-    filter: SiloReadFilter;
+    filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     /**
      * All the variant's mutations, before the Jaccard threshold: the clusters are looked for among these.

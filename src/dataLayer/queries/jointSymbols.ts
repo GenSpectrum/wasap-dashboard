@@ -15,13 +15,13 @@
  * two of positions spread over the genome and is `N` at all the others, so the rows grow with the
  * number of positions, not with the number of combinations of symbols. Grouping columns are named
  * bare (`{date, p241, …}`), not reassigned inline, for the same reason as in
- * `positionOverTimeQuery`: the older SILO version behind rsv-a / rsv-b rejects an inline `:=` in a
+ * `positionOverTimeQuery`: the older RhyDB version behind rsv-a / rsv-b rejects an inline `:=` in a
  * `groupBy` column list.
  */
 
-import { scoped, type SiloReadFilter } from './filter';
+import { scoped, type RhydbReadFilter } from './filter';
 import { groupingColumnsPassThrough } from './groupingColumns';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
 import { type Relation } from '../transport/relation';
@@ -32,8 +32,8 @@ export function positionColumn(position: number): string {
 }
 
 export function jointSymbolsQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     sequenceName: string,
     positions: readonly number[],
     groupBy: readonly string[],

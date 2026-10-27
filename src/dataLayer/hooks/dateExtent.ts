@@ -1,7 +1,7 @@
 /**
- * `useDateExtent` — a Tier-1 SILO read, as a TanStack Query hook.
+ * `useDateExtent` — a Tier-1 RhyDB read, as a TanStack Query hook.
  *
- * Reads the instance from context (`useConnection` / `useSiloSchema`), issues
+ * Reads the instance from context (`useConnection` / `useRhydbSchema`), issues
  * one catalogue query, and hands back the parsed rows. Tier-1 reads are the
  * only layer that issues a query — components call these, never
  * `connection.query` directly (doc 04, "One mechanism").
@@ -9,9 +9,9 @@
 
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { useConnection, useSiloSchema } from './connection';
-import { useSiloQuery } from './siloQuery';
-import { normalizeFilter, readValueExtent, samplingDatesQuery, type SiloReadFilter } from '../queries';
+import { useConnection, useRhydbSchema } from './connection';
+import { useRhydbQuery } from './rhydbQuery';
+import { normalizeFilter, readValueExtent, samplingDatesQuery, type RhydbReadFilter } from '../queries';
 
 /**
  * The oldest and newest sampling date the filter admits, or `null` where
@@ -19,18 +19,18 @@ import { normalizeFilter, readValueExtent, samplingDatesQuery, type SiloReadFilt
  * when the caller doesn't need the extent for the render at hand.
  */
 export function useDateExtent(
-    filter: SiloReadFilter = {},
+    filter: RhydbReadFilter = {},
     { enabled = true }: { enabled?: boolean } = {},
 ): UseQueryResult<{ min: string; max: string } | null> {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
-    // `schema` stands in for `connection.key` (same memoized SiloInstance);
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance);
     // `normalized` stands in for `filter` — a pure derivation of it,
     // deliberately used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
-        queryKey: ['silo', 'date-extent', ...connection.key, normalized],
+    return useRhydbQuery({
+        queryKey: ['rhydb', 'date-extent', ...connection.key, normalized],
         queryFn: async ({ signal }) => {
             const { rows } = await connection.query(samplingDatesQuery(schema, normalized), 'Sampling dates', {
                 signal,

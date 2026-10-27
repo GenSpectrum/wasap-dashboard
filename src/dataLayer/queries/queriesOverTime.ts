@@ -1,7 +1,7 @@
 /**
- * The SILO queries behind `gs-queries-over-time`.
+ * The RhyDB queries behind `gs-queries-over-time`.
  *
- * A "query" is a genome-only boolean expression (`SiloFilterExpression`, parsed
+ * A "query" is a genome-only boolean expression (`RhydbFilterExpression`, parsed
  * from an advanced-query string by LAPIS `/query/parse` in `src/`). Per query,
  * per date bucket, the grid shows `count / coverage`:
  *
@@ -16,14 +16,14 @@
  * plain `group(by := {date}, aggs := {count()})` calls, assembled into the matrix in
  * `dataLayer/hooks/queriesOverTime.ts`.
  *
- * `translateGenomeFilter` is the whole LAPIS→SILO bridge for this feature: the
+ * `translateGenomeFilter` is the whole LAPIS→RhyDB bridge for this feature: the
  * 12 node types `validateGenomeOnly` lets through, each to a `transport` builder.
  */
 
 import { READS } from './catalogue';
-import { scoped, type SiloReadFilter } from './filter';
-import type { SiloSchema } from './schema';
-import type { SiloFilterExpression } from './siloFilterExpression';
+import { scoped, type RhydbReadFilter } from './filter';
+import type { RhydbFilterExpression } from './rhydbFilterExpression';
+import type { RhydbSchema } from './schema';
 import { and, bool, not, or, type Expr } from '../transport/expression';
 import {
     aminoAcidEquals,
@@ -39,9 +39,9 @@ import {
 import { type Relation } from '../transport/relation';
 
 /**
- * A genome-only `SiloFilterExpression` as a SaneQL predicate.
+ * A genome-only `RhydbFilterExpression` as a SaneQL predicate.
  *
- * Only the node types `validateGenomeOnly` (`siloFilterExpression.ts`) admits
+ * Only the node types `validateGenomeOnly` (`rhydbFilterExpression.ts`) admits
  * are handled — the six genome checks, `True`, and `And` / `Or` / `Not` /
  * `Maybe` / `N-Of` around them. Anything else throws: `queries-over-time`
  * rejects such a query upstream, so reaching the `default` branch is a bug.
@@ -50,7 +50,7 @@ import { type Relation } from '../transport/relation';
  * wrote an unprefixed code (`C241T`); it becomes the instance's nucleotide
  * sequence. The amino-acid nodes always carry their gene.
  */
-export function translateGenomeFilter(schema: SiloSchema, node: SiloFilterExpression): Expr {
+export function translateGenomeFilter(schema: RhydbSchema, node: RhydbFilterExpression): Expr {
     switch (node.type) {
         case 'True':
             return bool(true);
@@ -101,18 +101,22 @@ export function translateGenomeFilter(schema: SiloSchema, node: SiloFilterExpres
             });
         default:
             throw new Error(
-                `queries-over-time cannot translate SILO filter node '${node.type}' to SaneQL ` +
+                `queries-over-time cannot translate RhyDB filter node '${node.type}' to SaneQL ` +
                     '(validateGenomeOnly should have rejected the query)',
             );
     }
 }
 
-function groupByDate(relation: Relation, schema: SiloSchema): Relation {
+function groupByDate(relation: Relation, schema: RhydbSchema): Relation {
     return relation.group({ [READS]: count() }, [schema.groupingDate]);
 }
 
 /** Reads matching the query, per date bucket: `{ <date>, n }` rows. */
-export function countOverTimeQuery(schema: SiloSchema, filter: SiloReadFilter, node: SiloFilterExpression): Relation {
+export function countOverTimeQuery(
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
+    node: RhydbFilterExpression,
+): Relation {
     return groupByDate(scoped(schema, filter, translateGenomeFilter(schema, node)), schema);
 }
 
@@ -121,9 +125,9 @@ export function countOverTimeQuery(schema: SiloSchema, filter: SiloReadFilter, n
  * cannot match it even allowing for ambiguity — `q || !maybe(q)`.
  */
 export function coverageOverTimeQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
-    node: SiloFilterExpression,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
+    node: RhydbFilterExpression,
 ): Relation {
     const query = translateGenomeFilter(schema, node);
     return groupByDate(scoped(schema, filter, or(query, not(maybe(query)))), schema);

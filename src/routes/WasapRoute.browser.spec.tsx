@@ -7,7 +7,7 @@ import { it } from '../../test-extend';
 import type { WasapPageConfig } from '../config/wasapPageConfig';
 import { testConfig } from '../pageState/wasap/wasapTestConfig';
 
-// the real pages need SILO; stand-ins that say which page it is are enough here
+// the real pages need RhyDB; stand-ins that say which page it is are enough here
 /* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */
 vi.mock('../components/pages/ManualPage', () => ({ ManualPage: () => <ModePage mode='manual' /> }));
 vi.mock('../components/pages/VariantExplorerPage', () => ({

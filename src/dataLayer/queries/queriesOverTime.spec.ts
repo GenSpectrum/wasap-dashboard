@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
 
 import { coverageOverTimeQuery, countOverTimeQuery, translateGenomeFilter } from './queriesOverTime';
-import type { SiloSchema } from './schema';
-import type { SiloFilterExpression } from './siloFilterExpression';
+import type { RhydbFilterExpression } from './rhydbFilterExpression';
+import type { RhydbSchema } from './schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -15,7 +15,7 @@ const schema: SiloSchema = {
     batchId: 'batchId',
 };
 
-const render = (node: SiloFilterExpression) => translateGenomeFilter(schema, node).render();
+const render = (node: RhydbFilterExpression) => translateGenomeFilter(schema, node).render();
 
 describe('translateGenomeFilter', () => {
     test('nucleotide equals: fills the sequence name when the node omits it', () => {
@@ -50,7 +50,7 @@ describe('translateGenomeFilter', () => {
     });
 
     test('And / Or / Not compose, Or is parenthesised inside And', () => {
-        const expr: SiloFilterExpression = {
+        const expr: RhydbFilterExpression = {
             type: 'And',
             children: [
                 { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' },
@@ -80,7 +80,7 @@ describe('translateGenomeFilter', () => {
     });
 
     test('N-Of carries the count, the matchers, and matchExactly', () => {
-        const expr: SiloFilterExpression = {
+        const expr: RhydbFilterExpression = {
             type: 'N-Of',
             numberOfMatchers: 2,
             matchExactly: true,
@@ -105,7 +105,7 @@ describe('translateGenomeFilter', () => {
 });
 
 describe('countOverTimeQuery / coverageOverTimeQuery', () => {
-    const node: SiloFilterExpression = { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' };
+    const node: RhydbFilterExpression = { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' };
 
     test('count: the query, scoped, grouped by the dictionary date column', () => {
         expect(countOverTimeQuery(schema, { locationNames: ['Zürich (ZH)'] }, node).render()).toBe(

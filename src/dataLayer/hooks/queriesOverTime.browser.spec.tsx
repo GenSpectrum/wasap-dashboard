@@ -5,9 +5,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
 import { useQueriesOverTime } from './queriesOverTime';
-import type { SiloSchema } from '../queries/schema';
+import type { RhydbSchema } from '../queries/schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -29,7 +29,7 @@ function wrapper(): FC<PropsWithChildren> {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return ({ children }) => (
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
                 {children}
             </ConnectionProvider>
         </QueryClientProvider>
@@ -37,7 +37,7 @@ function wrapper(): FC<PropsWithChildren> {
 }
 
 /** One day with 1000 reads, all of which cover the query; the query count is 900 in Zürich and 100 in Basel. */
-function stubSilo() {
+function stubRhydb() {
     vi.stubGlobal(
         'fetch',
         vi.fn((_url: RequestInfo | URL, init?: RequestInit) => {
@@ -61,7 +61,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('useQueriesOverTime', () => {
     it("shows a location's own counts when going back to it after another one", async () => {
-        stubSilo();
+        stubRhydb();
         const { result, rerender } = renderHook(
             ({ locationName }: { locationName: string }) =>
                 useQueriesOverTime({ locationNames: [locationName], samplingDateFrom: '2026-06-01' }, 'day', queries),

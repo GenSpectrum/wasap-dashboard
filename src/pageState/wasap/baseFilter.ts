@@ -134,7 +134,7 @@ function parseLocationNames(search: URLSearchParams, name: string, defaultLocati
  * label-only value has no concrete dates yet: WASAP's presets are relative to
  * the dataset's actual latest sample date (which can lag behind today), not to
  * today, so they can only be resolved once that date range has been read from
- * SILO. See `useResolvedSamplingDate`, which does that resolution — this
+ * RhyDB. See `useResolvedSamplingDate`, which does that resolution — this
  * function only parses, deliberately not against a fixed options list (the old
  * `{ type: 'date', dateRangeOptions: () => [] }` mechanism never had one to
  * match against, which is why a preset label from the URL never resolved).
@@ -158,7 +158,7 @@ function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRa
 /**
  * A `samplingDate` that's a preset label without concrete dates yet — needs to
  * be resolved against the dataset's actual date range before it can be used to
- * build a SILO query.
+ * build a RhyDB query.
  */
 export function isUnresolvedSamplingDate(samplingDate: DateRangeOption): boolean {
     return (

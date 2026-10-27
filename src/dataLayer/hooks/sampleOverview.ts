@@ -1,7 +1,7 @@
 /**
- * `useSampleOverview` — a Tier-1 SILO read, as a TanStack Query hook.
+ * `useSampleOverview` — a Tier-1 RhyDB read, as a TanStack Query hook.
  *
- * Reads the instance from context (`useConnection` / `useSiloSchema`), issues
+ * Reads the instance from context (`useConnection` / `useRhydbSchema`), issues
  * one catalogue query, and hands back the parsed rows. Tier-1 reads are the
  * only layer that issues a query — components call these, never
  * `connection.query` directly (doc 04, "One mechanism").
@@ -9,8 +9,8 @@
 
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { useConnection, useSiloSchema } from './connection';
-import { useSiloQuery } from './siloQuery';
+import { useConnection, useRhydbSchema } from './connection';
+import { useRhydbQuery } from './rhydbQuery';
 import { readSampleOverview, sampleOverviewQuery, type SampleOverview } from '../queries';
 
 /**
@@ -20,11 +20,11 @@ import { readSampleOverview, sampleOverviewQuery, type SampleOverview } from '..
  */
 export function useSampleOverview(): UseQueryResult<SampleOverview[]> {
     const connection = useConnection();
-    const schema = useSiloSchema();
-    // `schema` stands in for `connection.key` (same memoized SiloInstance).
+    const schema = useRhydbSchema();
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    return useSiloQuery({
-        queryKey: ['silo', 'sample-overview', ...connection.key],
+    return useRhydbQuery({
+        queryKey: ['rhydb', 'sample-overview', ...connection.key],
         queryFn: async ({ signal }) => {
             const { rows } = await connection.query(sampleOverviewQuery(schema), 'Sample overview', { signal });
             return readSampleOverview(rows, schema);

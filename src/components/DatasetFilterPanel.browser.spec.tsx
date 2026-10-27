@@ -7,10 +7,10 @@ import { render } from 'vitest-browser-react';
 import { DatasetFilterPanel } from './DatasetFilterPanel';
 import { it } from '../../test-extend';
 import { ConnectionProvider } from '../dataLayer/hooks/connection';
-import type { SiloSchema } from '../dataLayer/queries/schema';
+import type { RhydbSchema } from '../dataLayer/queries/schema';
 import type { WasapDatasetFilter } from '../pageState/wasap/wasapAnalysisFilter';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -68,7 +68,7 @@ function renderPanel(onChange = vi.fn()) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
                 <Harness onChange={onChange} />
             </ConnectionProvider>
         </QueryClientProvider>,

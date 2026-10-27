@@ -15,9 +15,9 @@
 import { useMemo } from 'react';
 
 import { allQueryData } from './allQueryData';
-import { useConnection, useSiloSchema } from './connection';
+import { useConnection, useRhydbSchema } from './connection';
 import { unknownSymbol } from './mutationsOverTime';
-import { useSiloQueries } from './siloQuery';
+import { useRhydbQueries } from './rhydbQuery';
 import { type AmpliconMutation, type AmpliconMutations } from '../../amplicons/mutationsByAmplicon';
 import { type ProportionValue } from '../../components/dataDisplay/overTime/proportionValue';
 import { type TemporalGranularity } from '../../types/dashboardComponents';
@@ -28,7 +28,7 @@ import {
     normalizeFilter,
     readHaplotypesOverTime,
     type HaplotypeOverTimeRow,
-    type SiloReadFilter,
+    type RhydbReadFilter,
 } from '../queries';
 
 /** Reads with one particular set of the amplicon's mutations. */
@@ -59,26 +59,26 @@ function hasCooccurrence({ mutations }: AmpliconMutations): boolean {
 }
 
 export function useAmpliconCooccurrence(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     groups: AmpliconMutations[],
     dateRanges: TemporalClass[],
     granularity: TemporalGranularity,
 ): AmpliconCooccurrenceResult {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
     const measured = useMemo(() => groups.filter(hasCooccurrence), [groups]);
 
-    const haplotypes = useSiloQueries({
+    const haplotypes = useRhydbQueries({
         combine: allQueryData,
         queries: measured.map((group) => {
             const positions = positionsOf(group.mutations);
-            // `schema` stands in for `connection.key` (same memoized SiloInstance); `normalized` for
+            // `schema` stands in for `connection.key` (same memoized RhydbInstance); `normalized` for
             // `filter`, so that equivalent filters share a cache entry.
             // eslint-disable-next-line @tanstack/query/exhaustive-deps
             return {
                 queryKey: [
-                    'silo',
+                    'rhydb',
                     'haplotypes-over-time',
                     ...connection.key,
                     normalized,

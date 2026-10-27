@@ -1,5 +1,5 @@
 /**
- * The SILO queries behind `gs-mutations-over-time`.
+ * The RhyDB queries behind `gs-mutations-over-time`.
  *
  * There is no over-time / coverage primitive in SaneQL, and the batching
  * options don't hold (grouping by a `unionall` tag literal, or by the `DATE32`
@@ -21,10 +21,10 @@
  *     is their sums over the days.
  */
 
-import { dateRangeExpression, scoped, type SiloReadFilter } from './filter';
+import { dateRangeExpression, scoped, type RhydbReadFilter } from './filter';
 import { groupingColumnsPassThrough } from './groupingColumns';
 import { type ReferenceSequence } from './referenceGenome';
-import type { SiloSchema } from './schema';
+import type { RhydbSchema } from './schema';
 import { field, int, str } from '../transport/expression';
 import { count } from '../transport/functions';
 import { unionall, type Relation } from '../transport/relation';
@@ -59,8 +59,8 @@ export type OverallMutationsOptions = {
  * ("overall") figure per mutation; the per-day breakdown is the position query.
  */
 export function overallMutationsQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     options: OverallMutationsOptions,
 ): Relation {
     const args = {
@@ -115,7 +115,7 @@ export type PositionRange = {
  *
  * The computed `sym` column is `.map()`-ed *before* `group`, and both
  * grouping columns are named bare rather than re-assigned inline
- * (`{<date>, sym}`, not `{<date> := <date>, sym := sym}`) — the older SILO
+ * (`{<date>, sym}`, not `{<date> := <date>, sym := sym}`) — the older RhyDB
  * version behind rsv-a / rsv-b rejects an inline `:=` assignment in a
  * `groupBy` column list outright (400, "expected set literal"; not a timeout).
  * This form parses and runs sub-second on both that version and covid's newer
@@ -124,7 +124,7 @@ export type PositionRange = {
  * The caller buckets the days. `schema.groupingDate` is the dictionary date column where
  * the instance has one, else the `DATE32` column.
  */
-export function positionOverTimeQuery(schema: SiloSchema, filter: SiloReadFilter, target: PositionTarget): Relation {
+export function positionOverTimeQuery(schema: RhydbSchema, filter: RhydbReadFilter, target: PositionTarget): Relation {
     return scoped(schema, filter)
         .map({
             ...groupingColumnsPassThrough([schema.groupingDate]),
@@ -165,8 +165,8 @@ export function readPositionOverTime(rows: readonly RhydbRow[], dateColumn: stri
  * In theory that is the better plan.
  */
 export function positionsOverTimeQuery(
-    schema: SiloSchema,
-    filter: SiloReadFilter,
+    schema: RhydbSchema,
+    filter: RhydbReadFilter,
     targets: readonly PositionTarget[],
 ): Relation {
     const location = scoped(schema, filter.locationNames === undefined ? {} : { locationNames: filter.locationNames });

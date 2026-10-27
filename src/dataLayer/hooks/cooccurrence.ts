@@ -1,5 +1,5 @@
 /**
- * `Cooccurrence` over SILO, in one hook.
+ * `Cooccurrence` over RhyDB, in one hook.
  *
  * Unlike `mutationsOverTime.ts` (a metadata query plus one position-over-time
  * query per visible mutation), co-occurrence needs the *joint* distribution
@@ -11,9 +11,9 @@
  * component, over the already-fetched result.
  */
 
-import { useConnection, useSiloQueryClient, useSiloSchema } from './connection';
+import { useConnection, useRhydbQueryClient, useRhydbSchema } from './connection';
 import { fetchDateAxis } from './dateAxis';
-import { useSiloQuery } from './siloQuery';
+import { useRhydbQuery } from './rhydbQuery';
 import {
     CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
@@ -30,7 +30,7 @@ import {
     type CooccurrenceRow,
     type OverTimeSequenceType,
     type PositionTarget,
-    type SiloReadFilter,
+    type RhydbReadFilter,
 } from '../queries';
 
 /** Above this many positions the joint distribution is unwieldy and unverified; refuse it. */
@@ -46,23 +46,23 @@ export type CooccurrenceResult = {
 };
 
 export function useCooccurrence(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     granularity: TemporalGranularity,
     sequenceType: OverTimeSequenceType,
     targets: readonly PositionTarget[],
     positionLabels: readonly string[],
 ): CooccurrenceResult {
     const connection = useConnection();
-    const schema = useSiloSchema();
-    const queryClient = useSiloQueryClient();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
     const normalized = normalizeFilter(filter);
 
-    // `schema` stands in for `connection.key` (same memoized SiloInstance), and `queryClient` is
-    // that of the same SiloInstance; `normalized` stands in for `filter` — a pure,
+    // `schema` stands in for `connection.key` (same memoized RhydbInstance), and `queryClient` is
+    // that of the same RhydbInstance; `normalized` stands in for `filter` — a pure,
     // order-independent derivation of it, used instead so equivalent filters share a cache entry.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const query = useSiloQuery({
-        queryKey: ['silo', 'cooccurrence', ...connection.key, normalized, granularity, sequenceType, targets],
+    const query = useRhydbQuery({
+        queryKey: ['rhydb', 'cooccurrence', ...connection.key, normalized, granularity, sequenceType, targets],
         queryFn: async ({
             signal,
         }): Promise<{ data: CooccurrenceOverTimeDataMap; requestedDateRanges: TemporalClass[] }> => {

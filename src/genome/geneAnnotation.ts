@@ -14,7 +14,7 @@
 const FEATURE_TYPES = new Set(['gene', 'CDS']);
 
 export type GeneRange = {
-    /** As `gene_name` (RSV) or `Name` names it — the name SILO's amino-acid sequence is under. */
+    /** As `gene_name` (RSV) or `Name` names it — the name RhyDB's amino-acid sequence is under. */
     name: string;
     /** 1-based, inclusive. */
     start: number;

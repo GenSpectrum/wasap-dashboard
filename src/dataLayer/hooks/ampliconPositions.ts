@@ -9,9 +9,9 @@
  * ones worth co-occurrence.
  */
 
-import { useConnection, useSiloSchema } from './connection';
+import { useConnection, useRhydbSchema } from './connection';
 import { MAX_COOCCURRENCE_POSITIONS } from './cooccurrence';
-import { useSiloQuery } from './siloQuery';
+import { useRhydbQuery } from './rhydbQuery';
 import { UserFacingError } from '../../components/shared/error-display';
 import { type SequenceType } from '../../types/dashboardComponents';
 import {
@@ -21,7 +21,7 @@ import {
     type AmpliconPositionRow,
     type OverTimeSequenceType,
     type PositionTarget,
-    type SiloReadFilter,
+    type RhydbReadFilter,
 } from '../queries';
 
 /** Below this share of the anchor's own coverage, a position is "outside the amplicon". */
@@ -48,17 +48,17 @@ export type AmpliconAnchorResult = {
 };
 
 export function useAmpliconAnchor(
-    filter: SiloReadFilter,
+    filter: RhydbReadFilter,
     sequenceType: OverTimeSequenceType,
     anchor: PositionTarget | null,
 ): AmpliconAnchorResult {
     const connection = useConnection();
-    const schema = useSiloSchema();
+    const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
 
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    const query = useSiloQuery({
-        queryKey: ['silo', 'amplicon-anchor', ...connection.key, normalized, sequenceType, anchor],
+    const query = useRhydbQuery({
+        queryKey: ['rhydb', 'amplicon-anchor', ...connection.key, normalized, sequenceType, anchor],
         enabled: anchor !== null,
         queryFn: async ({ signal }) => {
             if (anchor === null) {

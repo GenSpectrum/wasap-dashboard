@@ -5,9 +5,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from './connection';
 import { useStringFieldOptions } from './stringFieldOptions';
-import type { SiloSchema } from '../queries/schema';
+import type { RhydbSchema } from '../queries/schema';
 
-const schema: SiloSchema = {
+const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
@@ -18,7 +18,7 @@ const schema: SiloSchema = {
     batchId: 'batchId',
 };
 
-/** An NDJSON `Response`, as SILO's `/query` returns. */
+/** An NDJSON `Response`, as RhyDB's `/query` returns. */
 function ndjson(rows: unknown[]): Response {
     return new Response(rows.map((row) => JSON.stringify(row)).join('\n'), {
         status: 200,
@@ -30,7 +30,7 @@ function wrapper(): FC<PropsWithChildren> {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return ({ children }) => (
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://silo.example.org/covid' schema={schema}>
+            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
                 {children}
             </ConnectionProvider>
         </QueryClientProvider>

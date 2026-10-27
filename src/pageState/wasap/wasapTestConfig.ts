@@ -13,7 +13,7 @@ export const testConfig = {
         aminoAcidMutation:
             'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}',
     },
-    silo: {
+    rhydb: {
         url: '',
         table: 'data',
         dateColumn: 'date',
