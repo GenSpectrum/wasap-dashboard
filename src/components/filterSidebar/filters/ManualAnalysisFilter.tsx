@@ -1,6 +1,13 @@
-import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import {
+    effectiveMutationSource,
+    MUTATION_SOURCE,
+    type MutationSource,
+    type WasapManualFilter,
+} from '../../../pageState/wasap/wasapAnalysisFilter';
 import { mutationType, type MutationType } from '../../../types/dashboardComponents';
+import { PositionRangeFilter } from '../../inputs/PositionRangeFilter';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
+import { TabbedPanel } from '../../inputs/TabbedPanel';
 import { MutationFilter } from '../../inputs/mutationFilter/mutation-filter';
 
 export function ManualAnalysisFilter({
@@ -10,6 +17,7 @@ export function ManualAnalysisFilter({
     pageState: WasapManualFilter;
     setPageState: (newState: WasapManualFilter) => void;
 }) {
+    const mutationSource = effectiveMutationSource(pageState);
     const enabledMutationTypes: MutationType[] =
         pageState.sequenceType === 'nucleotide'
             ? [mutationType.nucleotideMutations]
@@ -22,20 +30,40 @@ export function ManualAnalysisFilter({
                     if (sequenceType === pageState.sequenceType) {
                         return;
                     }
-                    setPageState({ ...pageState, sequenceType, mutations: undefined });
+                    setPageState({
+                        ...pageState,
+                        sequenceType,
+                        mutations: undefined,
+                        rangeGene: undefined,
+                        rangeStart: undefined,
+                    });
                 }}
             />
-            <MutationFilter
-                enabledMutationTypes={enabledMutationTypes}
-                initialValue={pageState.mutations}
-                onMutationChange={(mutationFilter) => {
-                    if (pageState.sequenceType === 'nucleotide') {
-                        setPageState({ ...pageState, mutations: mutationFilter?.nucleotideMutations });
-                    } else {
-                        setPageState({ ...pageState, mutations: mutationFilter?.aminoAcidMutations });
-                    }
-                }}
-            />
+            <TabbedPanel<MutationSource>
+                label='Mutations from'
+                value={mutationSource}
+                options={[
+                    { value: MUTATION_SOURCE.list, label: 'List' },
+                    { value: MUTATION_SOURCE.range, label: 'Position range' },
+                ]}
+                onChange={(newSource) => setPageState({ ...pageState, mutationSource: newSource })}
+            >
+                {mutationSource === MUTATION_SOURCE.list ? (
+                    <MutationFilter
+                        enabledMutationTypes={enabledMutationTypes}
+                        initialValue={pageState.mutations}
+                        onMutationChange={(mutationFilter) => {
+                            if (pageState.sequenceType === 'nucleotide') {
+                                setPageState({ ...pageState, mutations: mutationFilter?.nucleotideMutations });
+                            } else {
+                                setPageState({ ...pageState, mutations: mutationFilter?.aminoAcidMutations });
+                            }
+                        }}
+                    />
+                ) : (
+                    <PositionRangeFilter pageState={pageState} setPageState={setPageState} />
+                )}
+            </TabbedPanel>
         </>
     );
 }
