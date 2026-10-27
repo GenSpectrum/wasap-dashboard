@@ -9,7 +9,7 @@ import {
     YearMonthClass,
     YearMonthDayClass,
     YearWeekClass,
-} from './temporalClass';
+} from './temporal';
 
 const cache = TemporalCache.getInstance();
 

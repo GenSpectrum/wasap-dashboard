@@ -8,7 +8,7 @@ import { DEFAULT_FEATURE_SORT } from './featureSort';
 import { serializeTemporal, type ProportionValue } from './proportionValue';
 import { it } from '../../../test-extend';
 import { Map2dBase } from '../../util/map2d';
-import { type Temporal, TemporalCache } from '../../util/temporalClass';
+import { type Temporal, TemporalCache } from '../../util/temporal';
 
 const dates: Temporal[] = [
     TemporalCache.getInstance().getYearMonthDay('2024-01-01'),

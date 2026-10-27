@@ -29,7 +29,7 @@ import { removeEmptyDatesInPlace, type ProportionValue } from '../../../componen
 import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../../types/domain';
 import { Map2dView, type Map2DContents } from '../../../util/map2d';
 import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../../util/mutations';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
+import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporal';
 import {
     OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,

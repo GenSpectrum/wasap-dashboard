@@ -8,7 +8,7 @@ import {
 import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/ampliconsConfig';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
-import { type TemporalClass } from '../../../util/temporalClass';
+import { type TemporalClass } from '../../../util/temporal';
 import { ErrorDisplay } from '../../ui/ErrorDisplay';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';

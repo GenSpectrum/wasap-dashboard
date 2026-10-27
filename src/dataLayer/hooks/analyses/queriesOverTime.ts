@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 import { type ProportionValue } from '../../../components/overTime/proportionValue';
 import { type TemporalGranularity } from '../../../types/domain';
 import { type Map2DContents } from '../../../util/map2d';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
+import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporal';
 import {
     countOverTimeQuery,
     coverageOverTimeQuery,

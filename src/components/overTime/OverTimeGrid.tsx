@@ -7,7 +7,7 @@ import { DEFAULT_FEATURE_SORT, type FeatureSort } from './featureSort';
 import { CsvDownloadButton, type DataValue } from '../ui/CsvDownloadButton';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import { getProportion } from './proportionValue';
-import { toTemporalClass } from '../../util/temporalClass';
+import { toTemporalClass } from '../../util/temporal';
 
 /**
  * What the user chose in an over-time grid: the sort, the page and the page size. Hold it above
