@@ -5,12 +5,7 @@ import { fetchVariantSignature, getLapisFilterForTimeFrame, isVariantSelected } 
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
 import type { OrganismConfig } from '../../config/organismConfig';
-import {
-    SEQUENCE_TYPE,
-    SIGNATURE_TYPE,
-    VARIANT_TIME_FRAME,
-    WASAP_ANALYSIS_MODE,
-} from '../../pageState/wasap/wasapAnalysisFilter';
+import { SEQUENCE_TYPE, SIGNATURE_TYPE, VARIANT_TIME_FRAME, ANALYSIS_MODE } from '../../pageState/wasap/analysisFilter';
 import { buildLineageTree } from '../fileBased/lineageTree/lineageTree';
 
 // these fields have no effect on data fetching, but need to be present to have a correct type.
@@ -53,7 +48,7 @@ describe('fetchVariantSignature', () => {
         },
         filterDefaults: {
             variant: {
-                mode: WASAP_ANALYSIS_MODE.variant,
+                mode: ANALYSIS_MODE.variant,
                 signatureType: SIGNATURE_TYPE.computed,
                 sequenceType: SEQUENCE_TYPE.nucleotide,
                 variant: 'XEC',
@@ -118,7 +113,7 @@ describe('fetchVariantSignature', () => {
         const result = await fetchVariantSignature(
             config,
             {
-                mode: WASAP_ANALYSIS_MODE.variant,
+                mode: ANALYSIS_MODE.variant,
                 signatureType: SIGNATURE_TYPE.computed,
                 sequenceType: SEQUENCE_TYPE.nucleotide,
                 variant: 'XEC',
@@ -149,7 +144,7 @@ describe('fetchVariantSignature', () => {
         const result = await fetchVariantSignature(
             config,
             {
-                mode: WASAP_ANALYSIS_MODE.variant,
+                mode: ANALYSIS_MODE.variant,
                 signatureType: SIGNATURE_TYPE.predefined,
                 sequenceType: SEQUENCE_TYPE.nucleotide,
                 minProportion: -1,
@@ -178,7 +173,7 @@ describe('fetchVariantSignature', () => {
         const result = await fetchVariantSignature(
             config,
             {
-                mode: WASAP_ANALYSIS_MODE.variant,
+                mode: ANALYSIS_MODE.variant,
                 signatureType: SIGNATURE_TYPE.predefined,
                 sequenceType: SEQUENCE_TYPE.nucleotide,
                 minProportion: -1,
@@ -210,7 +205,7 @@ describe('fetchVariantSignature', () => {
         const result = await fetchVariantSignature(
             config,
             {
-                mode: WASAP_ANALYSIS_MODE.variant,
+                mode: ANALYSIS_MODE.variant,
                 signatureType: SIGNATURE_TYPE.predefined,
                 sequenceType: SEQUENCE_TYPE.aminoAcid,
                 minProportion: -1,
@@ -236,7 +231,7 @@ describe('fetchVariantSignature', () => {
             fetchVariantSignature(
                 config,
                 {
-                    mode: WASAP_ANALYSIS_MODE.variant,
+                    mode: ANALYSIS_MODE.variant,
                     signatureType: SIGNATURE_TYPE.predefined,
                     sequenceType: SEQUENCE_TYPE.nucleotide,
                     minProportion: -1,
@@ -252,7 +247,7 @@ describe('fetchVariantSignature', () => {
 
     test('computed signature: does not ask for the signature of all sequences without a variant', async () => {
         const analysis = {
-            mode: WASAP_ANALYSIS_MODE.variant,
+            mode: ANALYSIS_MODE.variant,
             signatureType: SIGNATURE_TYPE.computed,
             sequenceType: SEQUENCE_TYPE.nucleotide,
             variant: undefined,

@@ -6,7 +6,7 @@ import { getMutationsForVariant } from './getMutations';
 import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
-import type { VariantTimeFrame, WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import type { VariantTimeFrame, VariantAnalysis } from '../../pageState/wasap/analysisFilter';
 import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
 import { type LapisFilter } from '../lapisApi/lapisTypes';
 
@@ -36,7 +36,7 @@ export type VariantSignature = {
  */
 export function useVariantSignature(
     config: OrganismConfigFor<'variant'>,
-    analysis: WasapVariantFilter,
+    analysis: VariantAnalysis,
     lineageTree: LineageTree | undefined,
 ) {
     // The background lineages are taken out of the signature afterwards
@@ -62,13 +62,13 @@ export function useVariantSignature(
  * Whether there is a variant to show: the variant of a computed signature, or the lineage of a
  * predefined one. Without one, a computed signature would be that of all clinical sequences.
  */
-export function isVariantSelected(analysis: WasapVariantFilter): boolean {
+export function isVariantSelected(analysis: VariantAnalysis): boolean {
     return (analysis.signatureType === 'computed' ? analysis.variant : analysis.lineage) !== undefined;
 }
 
 export async function fetchVariantSignature(
     config: OrganismConfigFor<'variant'>,
-    analysis: WasapVariantFilter,
+    analysis: VariantAnalysis,
     lineageTree: LineageTree | undefined,
     signal?: AbortSignal,
 ): Promise<VariantSignature> {
@@ -82,7 +82,7 @@ export async function fetchVariantSignature(
 
 async function fetchComputedSignature(
     config: OrganismConfigFor<'variant'>,
-    analysis: WasapVariantFilter,
+    analysis: VariantAnalysis,
     signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {
     if (analysis.variant === undefined) {
@@ -110,7 +110,7 @@ async function fetchComputedSignature(
 
 async function fetchPredefinedSignature(
     config: OrganismConfigFor<'variant'>,
-    analysis: WasapVariantFilter,
+    analysis: VariantAnalysis,
     lineageTree: LineageTree | undefined,
     signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {

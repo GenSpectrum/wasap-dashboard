@@ -5,14 +5,10 @@ import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { usePositionRangeMutations } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { usePageState } from '../../../pageState/usePageState';
+import { effectiveMutationSource, MUTATION_SOURCE, type ManualAnalysis } from '../../../pageState/wasap/analysisFilter';
 import { ManualPageStateHandler } from '../../../pageState/wasap/handlers/ManualPageStateHandler';
 import { usePositionRange } from '../../../pageState/wasap/positionRange';
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
-import {
-    effectiveMutationSource,
-    MUTATION_SOURCE,
-    type WasapManualFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
 import { type TemporalGranularity } from '../../../util/temporal';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
@@ -69,7 +65,7 @@ function ManualResult({
     granularity,
     meanProportionInterval,
 }: {
-    analysis: WasapManualFilter;
+    analysis: ManualAnalysis;
     filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     meanProportionInterval: ProportionInterval;

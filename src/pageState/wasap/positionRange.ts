@@ -1,6 +1,6 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { type WasapManualFilter } from './wasapAnalysisFilter';
+import { type ManualAnalysis } from './analysisFilter';
 import { useRhydbSchema } from '../../dataLayer/hooks/connection';
 import { useReferenceGenome } from '../../dataLayer/hooks/lookups/referenceGenome';
 import { type PositionRange, type ReferenceGenome } from '../../dataLayer/queries';
@@ -16,7 +16,7 @@ export const DEFAULT_POSITION_RANGE_LENGTH = 50;
  * `undefined` if the reference has no such sequence.
  */
 export function effectivePositionRange(
-    analysis: WasapManualFilter,
+    analysis: ManualAnalysis,
     referenceGenome: ReferenceGenome,
     nucleotideSequence: string,
 ): PositionRange | undefined {
@@ -36,7 +36,7 @@ export function effectivePositionRange(
  * The position range of the manual mode (`effectivePositionRange`), with the reference genome it
  * is fitted into: `range` is `undefined` while that loads, or if the reference has no such sequence.
  */
-export function usePositionRange(analysis: WasapManualFilter): {
+export function usePositionRange(analysis: ManualAnalysis): {
     referenceGenome: UseQueryResult<ReferenceGenome>;
     range: PositionRange | undefined;
 } {

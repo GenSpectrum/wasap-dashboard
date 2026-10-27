@@ -1,5 +1,5 @@
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
-import { type WasapDeconvolutionFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { type DeconvolutionAnalysis } from '../../../pageState/wasap/analysisFilter';
 import { LineagePanelInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
@@ -15,8 +15,8 @@ export function DeconvolutionFilter({
     lineageTree,
 }: {
     panel: string[];
-    pageState: WasapDeconvolutionFilter;
-    setPageState: (newState: WasapDeconvolutionFilter) => void;
+    pageState: DeconvolutionAnalysis;
+    setPageState: (newState: DeconvolutionAnalysis) => void;
     lineageTree: LineageTree;
 }) {
     return (

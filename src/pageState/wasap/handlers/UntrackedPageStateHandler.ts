@@ -1,10 +1,10 @@
-import { WasapModePageStateHandler } from './WasapModePageStateHandler';
+import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { enumParam, listParam, optional } from '../../urlParams';
-import { excludeSetNameSchema, type WasapUntrackedFilter } from '../wasapAnalysisFilter';
+import { excludeSetNameSchema, type UntrackedAnalysis } from '../analysisFilter';
 
-export class UntrackedPageStateHandler extends WasapModePageStateHandler<WasapUntrackedFilter> {
+export class UntrackedPageStateHandler extends ModePageStateHandler<UntrackedAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'untracked'>) {
         super(config, 'untracked');
     }
@@ -15,7 +15,7 @@ export class UntrackedPageStateHandler extends WasapModePageStateHandler<WasapUn
         excludeVariants: optional(listParam),
     };
 
-    protected defaults(): WasapUntrackedFilter {
+    protected defaults(): UntrackedAnalysis {
         const { sequenceType, excludeSet } = this.config.filterDefaults.untracked;
         return { mode: 'untracked', sequenceType, excludeSet, excludeVariants: undefined };
     }

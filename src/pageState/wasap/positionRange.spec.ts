@@ -1,14 +1,14 @@
 import { describe, expect, test } from 'vitest';
 
+import { type ManualAnalysis } from './analysisFilter';
 import { effectivePositionRange } from './positionRange';
-import { type WasapManualFilter } from './wasapAnalysisFilter';
 
 const main = { name: 'main', sequence: 'ACGTACGTAC', length: 10 };
 const S = { name: 'S', sequence: 'MFVFL', length: 5 };
 const E = { name: 'E', sequence: 'MYSFV', length: 5 };
 const referenceGenome = { nucleotideSequences: [main], genes: [S, E] };
 
-const range = (analysis: Omit<WasapManualFilter, 'mode'>) =>
+const range = (analysis: Omit<ManualAnalysis, 'mode'>) =>
     effectivePositionRange({ mode: 'manual', ...analysis }, referenceGenome, 'main');
 
 describe('effectivePositionRange', () => {

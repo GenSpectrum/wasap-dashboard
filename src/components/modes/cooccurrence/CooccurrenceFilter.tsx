@@ -12,8 +12,8 @@ import {
     POSITION_SOURCE,
     effectivePositionSource,
     type PositionSource,
-    type WasapCooccurrenceFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+    type CooccurrenceAnalysis,
+} from '../../../pageState/wasap/analysisFilter';
 import { type SequenceType } from '../../../util/mutations';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
@@ -37,8 +37,8 @@ export function CooccurrenceFilter({
     config,
     lineageTree,
 }: {
-    pageState: WasapCooccurrenceFilter;
-    setPageState: (newState: WasapCooccurrenceFilter) => void;
+    pageState: CooccurrenceAnalysis;
+    setPageState: (newState: CooccurrenceAnalysis) => void;
     config: OrganismConfigFor<'cooccurrence'>;
     /** For the panel-of-lineages match, when the organism has a lineage tree. */
     lineageTree?: LineageTree;

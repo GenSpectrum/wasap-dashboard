@@ -1,9 +1,9 @@
-import { WasapModePageStateHandler } from './WasapModePageStateHandler';
+import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { enumParam, numberParam, optional } from '../../urlParams';
-import { COLLECTION_SOURCE, collectionSourceSchema, type WasapCollectionFilter } from '../wasapAnalysisFilter';
+import { COLLECTION_SOURCE, collectionSourceSchema, type CollectionAnalysis } from '../analysisFilter';
 
-export class CollectionPageStateHandler extends WasapModePageStateHandler<WasapCollectionFilter> {
+export class CollectionPageStateHandler extends ModePageStateHandler<CollectionAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'collection'>) {
         super(config, 'collection');
     }
@@ -13,11 +13,11 @@ export class CollectionPageStateHandler extends WasapModePageStateHandler<WasapC
         collectionId: optional(numberParam({ min: 0, integer: true })),
     };
 
-    protected defaults(): WasapCollectionFilter {
+    protected defaults(): CollectionAnalysis {
         return { mode: 'collection', source: COLLECTION_SOURCE.genSpectrum, collectionId: undefined };
     }
 
-    protected parseAnalysis(search: URLSearchParams): WasapCollectionFilter {
+    protected parseAnalysis(search: URLSearchParams): CollectionAnalysis {
         const analysis = super.parseAnalysis(search);
         // Only trust `covSpectrum` from the URL when this organism actually has that source
         // (e.g. an RSV link with a stale/crafted `source=covSpectrum` falls back to GenSpectrum).

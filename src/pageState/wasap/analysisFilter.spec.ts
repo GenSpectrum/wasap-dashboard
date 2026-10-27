@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { effectivePanel } from './wasapAnalysisFilter';
+import { effectivePanel } from './analysisFilter';
 
 describe('effectivePanel', () => {
     const panel = ['XFG', 'NB.1.8.1'];

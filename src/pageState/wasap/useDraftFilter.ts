@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
+import { type AnalysisFilter, type MeanProportion } from './analysisFilter';
 import { getDefaultMeanProportion } from './defaultMeanProportion';
-import { type WasapAnalysisFilter, type WasapMeanProportion } from './wasapAnalysisFilter';
 
 /**
  * The filter of a mode as it is being edited, before it is applied.
@@ -10,12 +10,12 @@ import { type WasapAnalysisFilter, type WasapMeanProportion } from './wasapAnaly
  * change with the manually entered mutations, say), so an explicit value is only kept once they have
  * changed it.
  */
-export function useDraftFilter<Analysis extends WasapAnalysisFilter>(
+export function useDraftFilter<Analysis extends AnalysisFilter>(
     appliedAnalysis: Analysis,
-    appliedMeanProportion: WasapMeanProportion,
+    appliedMeanProportion: MeanProportion,
 ) {
     const [analysis, setAnalysis] = useState(appliedAnalysis);
-    const [meanProportionOverride, setMeanProportion] = useState<WasapMeanProportion | undefined>(
+    const [meanProportionOverride, setMeanProportion] = useState<MeanProportion | undefined>(
         isDefaultMeanProportion(appliedMeanProportion, appliedAnalysis) ? undefined : appliedMeanProportion,
     );
 
@@ -27,7 +27,7 @@ export function useDraftFilter<Analysis extends WasapAnalysisFilter>(
     };
 }
 
-function isDefaultMeanProportion(meanProportion: WasapMeanProportion, analysis: WasapAnalysisFilter): boolean {
+function isDefaultMeanProportion(meanProportion: MeanProportion, analysis: AnalysisFilter): boolean {
     const defaults = getDefaultMeanProportion(analysis);
     return meanProportion.lower === defaults.lower && meanProportion.upper === defaults.upper;
 }

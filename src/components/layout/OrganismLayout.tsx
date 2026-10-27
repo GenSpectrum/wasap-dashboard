@@ -7,9 +7,9 @@ import { rhydbSchema } from '../../config/rhydbSchema';
 import { ConnectionProvider, createRhydbQueryClient } from '../../dataLayer/hooks/connection';
 import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
+import { type DatasetFilter } from '../../pageState/wasap/analysisFilter';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/wasap/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/wasap/useResolvedSamplingDate';
-import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 import { MutationAnnotationsContextProvider } from '../mutations/MutationAnnotationsContext';
 import { MutationLinkTemplateContextProvider } from '../mutations/MutationLinkTemplateContext';
@@ -21,9 +21,9 @@ export type OrganismLayoutContext = {
     /** `undefined` if the organism has none configured, or it failed to load. */
     lineageTree: LineageTree | undefined;
     /** The dataset filter of the URL, which is the same for all modes. */
-    dataset: WasapDatasetFilter;
+    dataset: DatasetFilter;
     /** Applies a new dataset filter (right away, by writing it to the URL). */
-    onDatasetChange: (dataset: WasapDatasetFilter) => void;
+    onDatasetChange: (dataset: DatasetFilter) => void;
     /** The sampling date of the dataset filter, with a preset (like "Most recent 90 days") turned into dates. */
     samplingDate: DateRangeOption;
     isSamplingDatePending: boolean;

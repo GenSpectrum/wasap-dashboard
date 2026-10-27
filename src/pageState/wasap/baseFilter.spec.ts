@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { type BaseFilter } from './analysisFilter';
 import {
     datasetFilterSearchParams,
     isUnresolvedSamplingDate,
@@ -7,7 +8,6 @@ import {
     setBaseFilterSearchParams,
     withDatasetFilter,
 } from './baseFilter';
-import { type WasapBaseFilter } from './wasapAnalysisFilter';
 import { CUSTOM_DATE_RANGE_LABEL } from '../../components/inputs/dateRangeFilter/dateRangeOption';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 
@@ -21,7 +21,7 @@ const defaultMeanProportion = { lower: 0.05, upper: 0.95 };
 
 const parse = (query: string) => parseBaseFilter(new URLSearchParams(query), config, defaultMeanProportion);
 
-const serialize = (base: WasapBaseFilter) => {
+const serialize = (base: BaseFilter) => {
     const search = new URLSearchParams();
     setBaseFilterSearchParams(search, base, config, defaultMeanProportion);
     return search.toString();

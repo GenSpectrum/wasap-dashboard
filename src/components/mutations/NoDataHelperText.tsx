@@ -1,17 +1,13 @@
 import type { FC } from 'react';
 
 import { OVER_TIME_MIN_PROPORTION } from '../../dataLayer/queries';
-import {
-    effectiveMutationSource,
-    MUTATION_SOURCE,
-    type WasapAnalysisFilter,
-} from '../../pageState/wasap/wasapAnalysisFilter';
+import { effectiveMutationSource, MUTATION_SOURCE, type AnalysisFilter } from '../../pageState/wasap/analysisFilter';
 
 /**
  * A note to the user to display when no mutations are selected due to the settings that they set in the filters.
  * The information is tailored to the mode and settings the user selected.
  */
-export const NoDataHelperText: FC<{ analysisFilter: WasapAnalysisFilter }> = ({ analysisFilter }) => {
+export const NoDataHelperText: FC<{ analysisFilter: AnalysisFilter }> = ({ analysisFilter }) => {
     return (
         <div className='border border-stone-300 bg-white p-4'>
             <h1 className='text-lg font-semibold'>No mutations selected</h1>

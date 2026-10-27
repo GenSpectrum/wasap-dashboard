@@ -3,11 +3,11 @@ import type { FC } from 'react';
 
 import { getTotalCount } from '../../../externalData/lapis/getTotalCount';
 import { getLapisFilterForTimeFrame } from '../../../externalData/lapis/useVariantSignature';
-import { variantTimeFrameLabel, type WasapVariantFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { variantTimeFrameLabel, type VariantAnalysis } from '../../../pageState/wasap/analysisFilter';
 
 type ClinicalSequenceCountStatProps = {
     lineage: string;
-    analysis: WasapVariantFilter;
+    analysis: VariantAnalysis;
     clinicalLapisBaseUrl: string;
     clinicalLapisLineageField: string;
     clinicalLapisDateField: string;

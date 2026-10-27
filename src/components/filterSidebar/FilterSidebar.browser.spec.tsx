@@ -3,22 +3,22 @@ import { render } from 'vitest-browser-react';
 
 import { FilterSidebar } from './FilterSidebar';
 import { it } from '../../../test-extend';
+import type { BaseFilter, ManualAnalysis } from '../../pageState/wasap/analysisFilter';
 import { ManualPageStateHandler } from '../../pageState/wasap/handlers/ManualPageStateHandler';
 import { testConfig } from '../../pageState/wasap/testConfig';
-import type { WasapBaseFilter, WasapManualFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 
 const handler = new ManualPageStateHandler(testConfig);
 
-const base: WasapBaseFilter = {
+const base: BaseFilter = {
     locationNames: ['Basel'],
     samplingDate: { label: 'Most recent 90 days' },
     granularity: 'day',
     meanProportion: { lower: 0.05, upper: 0.95 },
 };
 
-const noMutations: WasapManualFilter = { mode: 'manual', sequenceType: 'nucleotide', mutations: undefined };
+const noMutations: ManualAnalysis = { mode: 'manual', sequenceType: 'nucleotide', mutations: undefined };
 
-function renderSidebar(analysis: WasapManualFilter = noMutations, appliedBase: WasapBaseFilter = base) {
+function renderSidebar(analysis: ManualAnalysis = noMutations, appliedBase: BaseFilter = base) {
     const setPageState = vi.fn();
     const screen = render(
         <FilterSidebar pageStateHandler={handler} base={appliedBase} analysis={analysis} setPageState={setPageState}>

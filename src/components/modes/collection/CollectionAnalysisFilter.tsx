@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 import { getCollections as getCovSpectrumCollections } from '../../../externalData/covSpectrum/getCollections';
 import { getApiServiceForClientside } from '../../../externalData/genSpectrum/apiService';
 import { getCollections as getGenSpectrumCollections } from '../../../externalData/genSpectrum/getCollections';
-import { COLLECTION_SOURCE, type WasapCollectionFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { COLLECTION_SOURCE, type CollectionAnalysis } from '../../../pageState/wasap/analysisFilter';
 import { CollectionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { RadioSelect } from '../../inputs/RadioSelect';
 
 type CollectionAnalysisFilterProps = {
-    pageState: WasapCollectionFilter;
-    setPageState: (newState: WasapCollectionFilter) => void;
+    pageState: CollectionAnalysis;
+    setPageState: (newState: CollectionAnalysis) => void;
     /** GenSpectrum's collections are keyed by organism, and always available. */
     organism: string;
     /** Present only when this organism also has the CoV-Spectrum collection source enabled. */
@@ -65,8 +65,8 @@ function GenSpectrumCollectionSelect({
     setPageState,
     organism,
 }: {
-    pageState: WasapCollectionFilter;
-    setPageState: (newState: WasapCollectionFilter) => void;
+    pageState: CollectionAnalysis;
+    setPageState: (newState: CollectionAnalysis) => void;
     organism: string;
 }) {
     const {
@@ -121,8 +121,8 @@ function CovSpectrumCollectionSelect({
     collectionsApiBaseUrl,
     collectionTitleFilter,
 }: {
-    pageState: WasapCollectionFilter;
-    setPageState: (newState: WasapCollectionFilter) => void;
+    pageState: CollectionAnalysis;
+    setPageState: (newState: CollectionAnalysis) => void;
     collectionsApiBaseUrl: string;
     collectionTitleFilter: string;
 }) {

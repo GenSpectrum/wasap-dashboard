@@ -15,11 +15,11 @@ import { type LineageTree } from '../../../externalData/fileBased/lineageTree/li
 import { informativeMutations } from '../../../externalData/lollipop/lollipopService';
 import { useDeconvolution, useLollipopVersion } from '../../../externalData/lollipop/useDeconvolution';
 import { usePageState } from '../../../pageState/usePageState';
+import { effectivePanel } from '../../../pageState/wasap/analysisFilter';
 import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
+import { modePath } from '../../../pageState/wasap/modes';
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
-import { effectivePanel } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { modePath } from '../../../pageState/wasap/wasapModes';
 import { type TemporalGranularity } from '../../../util/temporal';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';

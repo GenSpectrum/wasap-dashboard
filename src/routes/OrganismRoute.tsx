@@ -21,7 +21,7 @@ import { getApiServiceForClientside } from '../externalData/genSpectrum/apiServi
 import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
 import { getClientLogger } from '../logging';
 import { getErrorLogMessage } from '../logging';
-import { segmentToMode } from '../pageState/wasap/wasapModes';
+import { segmentToMode } from '../pageState/wasap/modes';
 
 const logger = getClientLogger('OrganismRoute');
 

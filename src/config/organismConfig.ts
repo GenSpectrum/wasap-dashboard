@@ -3,14 +3,14 @@ import z from 'zod';
 import { ampliconsConfigSchema } from '../externalData/fileBased/amplicons/ampliconsConfig';
 import { lineageTreeConfigSchema } from '../externalData/fileBased/lineageTree/lineageTreeConfig';
 import {
-    wasapCollectionFilterSchema,
-    wasapCooccurrenceFilterSchema,
-    wasapManualFilterSchema,
-    wasapResistanceFilterSchema,
-    wasapUntrackedFilterSchema,
-    wasapVariantFilterSchema,
-    type WasapAnalysisMode,
-} from '../pageState/wasap/wasapAnalysisFilter';
+    collectionAnalysisSchema,
+    cooccurrenceAnalysisSchema,
+    manualAnalysisSchema,
+    resistanceAnalysisSchema,
+    untrackedAnalysisSchema,
+    variantAnalysisSchema,
+    type AnalysisMode,
+} from '../pageState/wasap/analysisFilter';
 
 /**
  * Resistance mutations defined in a collection, which is specified via the collection ID.
@@ -133,7 +133,7 @@ export type OrganismConfigBase = z.infer<typeof organismConfigBaseSchema>;
 export const manualAnalysisModeConfigSchema = z.union([
     z.object({
         manualAnalysisModeEnabled: z.literal(true),
-        filterDefaults: z.object({ manual: wasapManualFilterSchema }),
+        filterDefaults: z.object({ manual: manualAnalysisSchema }),
     }),
     z.object({ manualAnalysisModeEnabled: z.undefined().optional() }),
 ]);
@@ -146,7 +146,7 @@ export const variantAnalysisModeConfigSchema = z.union([
             dateField: z.string(),
             lineageField: z.string(),
         }),
-        filterDefaults: z.object({ variant: wasapVariantFilterSchema }),
+        filterDefaults: z.object({ variant: variantAnalysisSchema }),
         clinicalSequenceCountWarningThreshold: z.number(),
     }),
     z.object({ variantAnalysisModeEnabled: z.undefined().optional() }),
@@ -156,7 +156,7 @@ export const resistanceAnalysisModeConfigSchema = z.union([
     z.object({
         resistanceAnalysisModeEnabled: z.literal(true),
         resistanceMutationCollections: z.array(resistanceMutationCollectionConfigSchema),
-        filterDefaults: z.object({ resistance: wasapResistanceFilterSchema.omit({ proportionRange: true }) }),
+        filterDefaults: z.object({ resistance: resistanceAnalysisSchema.omit({ proportionRange: true }) }),
     }),
     z.object({ resistanceAnalysisModeEnabled: z.undefined().optional() }),
 ]);
@@ -169,7 +169,7 @@ export const untrackedAnalysisModeConfigSchema = z.union([
             cladeField: z.string(),
             lineageField: z.string(),
         }),
-        filterDefaults: z.object({ untracked: wasapUntrackedFilterSchema }),
+        filterDefaults: z.object({ untracked: untrackedAnalysisSchema }),
     }),
     z.object({ untrackedAnalysisModeEnabled: z.undefined().optional() }),
 ]);
@@ -178,7 +178,7 @@ export const cooccurrenceAnalysisModeConfigSchema = z.union([
     z.object({
         cooccurrenceAnalysisModeEnabled: z.literal(true),
         // No default amplicon by its position: `cooccurrenceDefaultAmplicon` is that, by its number.
-        filterDefaults: z.object({ cooccurrence: wasapCooccurrenceFilterSchema.omit({ anchorPosition: true }) }),
+        filterDefaults: z.object({ cooccurrence: cooccurrenceAnalysisSchema.omit({ anchorPosition: true }) }),
         /**
          * The amplicon (by its number in the primer scheme) the mode opens with, when no amplicon
          * (nor manual positions) is picked; none without. Only for nucleotides.
@@ -211,7 +211,7 @@ export const collectionAnalysisModeConfigSchema = z
     .union([
         z.object({
             collectionAnalysisModeEnabled: z.literal(true),
-            filterDefaults: z.object({ collection: wasapCollectionFilterSchema }),
+            filterDefaults: z.object({ collection: collectionAnalysisSchema }),
             /**
              * URL template for linking out to this collection on GenSpectrum, with
              * the placeholder `{{id}}`, e.g. `https://genspectrum.org/collections/covid/{{id}}`.
@@ -262,8 +262,8 @@ export type OrganismConfig = z.infer<typeof organismConfigSchema>;
 /**
  * Convenience function to get the list of enabled modes, in the order of their tabs.
  */
-export function enabledAnalysisModes(config: OrganismConfig): WasapAnalysisMode[] {
-    const result: WasapAnalysisMode[] = [];
+export function enabledAnalysisModes(config: OrganismConfig): AnalysisMode[] {
+    const result: AnalysisMode[] = [];
     if (config.deconvolutionAnalysisModeEnabled) {
         result.push('deconvolution');
     }
@@ -296,18 +296,18 @@ const MODE_ENABLED_FLAGS = {
     collection: 'collectionAnalysisModeEnabled',
     deconvolution: 'deconvolutionAnalysisModeEnabled',
     cooccurrence: 'cooccurrenceAnalysisModeEnabled',
-} as const satisfies Record<WasapAnalysisMode, string>;
+} as const satisfies Record<AnalysisMode, string>;
 
 /**
  * The config of a page where the given mode is enabled, so that the settings
  * of that mode (like `filterDefaults.manual`) are known to be there.
  */
-export type OrganismConfigFor<Mode extends WasapAnalysisMode> = Extract<
+export type OrganismConfigFor<Mode extends AnalysisMode> = Extract<
     OrganismConfig,
     { [Flag in (typeof MODE_ENABLED_FLAGS)[Mode]]: true }
 >;
 
-export function isModeEnabled<Mode extends WasapAnalysisMode>(
+export function isModeEnabled<Mode extends AnalysisMode>(
     config: OrganismConfig,
     mode: Mode,
 ): config is OrganismConfigFor<Mode> {

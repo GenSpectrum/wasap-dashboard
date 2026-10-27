@@ -1,10 +1,10 @@
-import { WasapModePageStateHandler } from './WasapModePageStateHandler';
+import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
-import { MAX_POSITION_RANGE_LENGTH, mutationSourceSchema, type WasapManualFilter } from '../wasapAnalysisFilter';
+import { MAX_POSITION_RANGE_LENGTH, mutationSourceSchema, type ManualAnalysis } from '../analysisFilter';
 
-export class ManualPageStateHandler extends WasapModePageStateHandler<WasapManualFilter> {
+export class ManualPageStateHandler extends ModePageStateHandler<ManualAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'manual'>) {
         super(config, 'manual');
     }
@@ -18,7 +18,7 @@ export class ManualPageStateHandler extends WasapModePageStateHandler<WasapManua
         rangeLength: optional(numberParam({ min: 1, max: MAX_POSITION_RANGE_LENGTH, integer: true })),
     };
 
-    protected defaults(): WasapManualFilter {
+    protected defaults(): ManualAnalysis {
         return { mode: 'manual', sequenceType: this.config.filterDefaults.manual.sequenceType, mutations: undefined };
     }
 }

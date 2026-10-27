@@ -1,7 +1,7 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
 import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
-import type { ExcludeSetName, WasapUntrackedFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { ExcludeSetName, UntrackedAnalysis } from '../../../pageState/wasap/analysisFilter';
 import { KnownVariantsExclusionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
@@ -9,8 +9,8 @@ import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 interface UntrackedFilterProps {
-    pageState: WasapUntrackedFilter;
-    setPageState: (newState: WasapUntrackedFilter) => void;
+    pageState: UntrackedAnalysis;
+    setPageState: (newState: UntrackedAnalysis) => void;
     cladeLineageQueryResult: UseQueryResult<Record<string, string>>;
     /**
      * The LAPIS base URL for the clinical sequence data used in the variant selector.

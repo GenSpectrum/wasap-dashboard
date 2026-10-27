@@ -1,10 +1,10 @@
-import { WasapModePageStateHandler } from './WasapModePageStateHandler';
+import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { booleanParam, enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
-import { signatureTypeSchema, variantTimeFrameSchema, type WasapVariantFilter } from '../wasapAnalysisFilter';
+import { signatureTypeSchema, variantTimeFrameSchema, type VariantAnalysis } from '../analysisFilter';
 
-export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<WasapVariantFilter> {
+export class VariantExplorerPageStateHandler extends ModePageStateHandler<VariantAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'variant'>) {
         super(config, 'variant');
     }
@@ -31,7 +31,7 @@ export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<W
         excludeDeletions: optional(booleanParam),
     };
 
-    protected defaults(): WasapVariantFilter {
+    protected defaults(): VariantAnalysis {
         const defaults = this.config.filterDefaults.variant;
         return {
             ...defaults,

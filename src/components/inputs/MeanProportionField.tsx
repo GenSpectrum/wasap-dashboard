@@ -1,6 +1,6 @@
 import { LabeledField } from './LabeledField';
 import { MinMaxRangeSlider } from './MinMaxRangeSlider';
-import type { WasapMeanProportion } from '../../pageState/wasap/wasapAnalysisFilter';
+import type { MeanProportion } from '../../pageState/wasap/analysisFilter';
 
 /**
  * Selects the interval that the mean proportion of a mutation (or query) over the
@@ -16,8 +16,8 @@ export function MeanProportionField({
     value,
     onChange,
 }: {
-    value: WasapMeanProportion;
-    onChange: (v: WasapMeanProportion) => void;
+    value: MeanProportion;
+    onChange: (v: MeanProportion) => void;
 }) {
     const indicateError = value.lower > value.upper;
 

@@ -7,7 +7,7 @@ import { backendRouteMocker, lapisRouteMocker, testServer } from '../../vitest.s
 import type { OrganismConfig } from '../config/organismConfig';
 import type { Collection } from './genSpectrum/Collection';
 import type * as ApiServiceModule from './genSpectrum/apiService';
-import { WASAP_ANALYSIS_MODE } from '../pageState/wasap/wasapAnalysisFilter';
+import { ANALYSIS_MODE } from '../pageState/wasap/analysisFilter';
 
 vi.mock('./genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();
@@ -54,7 +54,7 @@ describe('fetchCollectionQueries', () => {
         lapisBaseUrl: DUMMY_LAPIS_URL,
         collectionAnalysisModeEnabled: true as const,
         filterDefaults: {
-            collection: { mode: WASAP_ANALYSIS_MODE.collection, source: 'genSpectrum' as const, collectionId: 1 },
+            collection: { mode: ANALYSIS_MODE.collection, source: 'genSpectrum' as const, collectionId: 1 },
         },
         genSpectrumCollectionLinkOut: 'https://genspectrum.org/collections/covid/{{id}}',
     };

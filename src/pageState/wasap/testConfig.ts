@@ -1,4 +1,4 @@
-import { VARIANT_TIME_FRAME } from './wasapAnalysisFilter';
+import { VARIANT_TIME_FRAME } from './analysisFilter';
 import { type OrganismConfig } from '../../config/organismConfig';
 
 /** An organism config with the manual, variant, resistance and untracked modes enabled. */

@@ -4,7 +4,7 @@ import { fetchUntrackedMutations } from './useUntrackedMutations';
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
 import type { OrganismConfig } from '../../config/organismConfig';
-import { EXCLUDE_SET_NAME, SEQUENCE_TYPE, WASAP_ANALYSIS_MODE } from '../../pageState/wasap/wasapAnalysisFilter';
+import { EXCLUDE_SET_NAME, SEQUENCE_TYPE, ANALYSIS_MODE } from '../../pageState/wasap/analysisFilter';
 
 // these fields have no effect on data fetching, but need to be present to have a correct type.
 const unusedBaseConfigFields = {
@@ -46,7 +46,7 @@ describe('fetchUntrackedMutations', () => {
             lineageField: 'pangoLineage',
         },
         filterDefaults: {
-            untracked: { mode: WASAP_ANALYSIS_MODE.untracked, sequenceType: SEQUENCE_TYPE.nucleotide },
+            untracked: { mode: ANALYSIS_MODE.untracked, sequenceType: SEQUENCE_TYPE.nucleotide },
         },
     };
 
@@ -73,7 +73,7 @@ describe('fetchUntrackedMutations', () => {
         ]);
 
         const result = await fetchUntrackedMutations(config, {
-            mode: WASAP_ANALYSIS_MODE.untracked,
+            mode: ANALYSIS_MODE.untracked,
             sequenceType: SEQUENCE_TYPE.nucleotide,
             excludeSet: EXCLUDE_SET_NAME.custom,
             excludeVariants: ['XEC', 'JN.1'],
@@ -107,7 +107,7 @@ describe('fetchUntrackedMutations', () => {
         ]);
 
         const result = await fetchUntrackedMutations(config, {
-            mode: WASAP_ANALYSIS_MODE.untracked,
+            mode: ANALYSIS_MODE.untracked,
             sequenceType: SEQUENCE_TYPE.nucleotide,
             excludeSet: EXCLUDE_SET_NAME.predefined,
         });

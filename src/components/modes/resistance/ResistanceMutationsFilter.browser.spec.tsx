@@ -3,10 +3,10 @@ import { render } from 'vitest-browser-react';
 
 import { ResistanceMutationsFilter } from './ResistanceMutationsFilter';
 import { it } from '../../../../test-extend';
-import type { WasapResistanceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { ResistanceAnalysis } from '../../../pageState/wasap/analysisFilter';
 
 describe('ResistanceMutationsFilter', () => {
-    const defaultPageState: WasapResistanceFilter = {
+    const defaultPageState: ResistanceAnalysis = {
         mode: 'resistance',
         sequenceType: 'amino acid',
         resistanceSet: '3CLpro',

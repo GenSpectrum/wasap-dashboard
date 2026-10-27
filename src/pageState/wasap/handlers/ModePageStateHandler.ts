@@ -1,6 +1,7 @@
 import { type OrganismConfig } from '../../../config/organismConfig';
 import { type PageStateHandler } from '../../PageStateHandler';
 import { parseUrlParams, type UrlParams, writeUrlParams } from '../../urlParams';
+import { type AnalysisFilter, type ModeFilter } from '../analysisFilter';
 import {
     parseBaseFilter,
     parseDatasetFilter,
@@ -8,16 +9,15 @@ import {
     setDatasetFilterSearchParams,
 } from '../baseFilter';
 import { getDefaultMeanProportion } from '../defaultMeanProportion';
-import { type WasapAnalysisFilter, type WasapModeFilter } from '../wasapAnalysisFilter';
-import { modePath } from '../wasapModes';
+import { modePath } from '../modes';
 
 /**
  * The page state handler of one analysis mode page. The settings all modes have
  * in common (see `baseFilter.ts`) are handled here, a subclass only has to give
  * the URL params of the settings of its own mode, and their defaults.
  */
-export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFilter> implements PageStateHandler<
-    WasapModeFilter<Analysis>
+export abstract class ModePageStateHandler<Analysis extends AnalysisFilter> implements PageStateHandler<
+    ModeFilter<Analysis>
 > {
     protected constructor(
         protected readonly config: OrganismConfig,
@@ -30,7 +30,7 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
      */
     protected readonly hasMeanProportion: boolean = true;
 
-    parsePageStateFromUrl(searchParams: URLSearchParams): WasapModeFilter<Analysis> {
+    parsePageStateFromUrl(searchParams: URLSearchParams): ModeFilter<Analysis> {
         const analysis = this.parseAnalysis(searchParams);
         const base = this.hasMeanProportion
             ? parseBaseFilter(searchParams, this.config, getDefaultMeanProportion(analysis))
@@ -38,7 +38,7 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
         return { base, analysis };
     }
 
-    toSearchParams({ base, analysis }: WasapModeFilter<Analysis>): URLSearchParams {
+    toSearchParams({ base, analysis }: ModeFilter<Analysis>): URLSearchParams {
         const search = new URLSearchParams();
         if (this.hasMeanProportion) {
             setBaseFilterSearchParams(search, base, this.config, getDefaultMeanProportion(analysis));
@@ -49,7 +49,7 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
         return search;
     }
 
-    toUrl(pageState: WasapModeFilter<Analysis>): string {
+    toUrl(pageState: ModeFilter<Analysis>): string {
         const search = this.toSearchParams(pageState).toString();
         return search === '' ? this.getDefaultPageUrl() : `${this.getDefaultPageUrl()}?${search}`;
     }

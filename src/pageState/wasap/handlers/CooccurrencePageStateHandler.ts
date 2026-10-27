@@ -1,10 +1,10 @@
-import { WasapModePageStateHandler } from './WasapModePageStateHandler';
+import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
-import { positionSourceSchema, type WasapCooccurrenceFilter } from '../wasapAnalysisFilter';
+import { positionSourceSchema, type CooccurrenceAnalysis } from '../analysisFilter';
 
-export class CooccurrencePageStateHandler extends WasapModePageStateHandler<WasapCooccurrenceFilter> {
+export class CooccurrencePageStateHandler extends ModePageStateHandler<CooccurrenceAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'cooccurrence'>) {
         super(config, 'cooccurrence');
     }
@@ -22,7 +22,7 @@ export class CooccurrencePageStateHandler extends WasapModePageStateHandler<Wasa
         panel: optional(listParam),
     };
 
-    protected defaults(): WasapCooccurrenceFilter {
+    protected defaults(): CooccurrenceAnalysis {
         return {
             mode: 'cooccurrence',
             sequenceType: this.config.filterDefaults.cooccurrence.sequenceType,

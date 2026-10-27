@@ -8,8 +8,8 @@ import {
     variantTimeFrameLabel,
     type SignatureType,
     type VariantTimeFrame,
-    type WasapVariantFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+    type VariantAnalysis,
+} from '../../../pageState/wasap/analysisFilter';
 import { DefineClinicalSignatureInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
@@ -20,8 +20,8 @@ import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
 import { Inset } from '../../ui/Inset';
 
 interface VariantExplorerFilterProps {
-    pageState: WasapVariantFilter;
-    setPageState: (newState: WasapVariantFilter) => void;
+    pageState: VariantAnalysis;
+    setPageState: (newState: VariantAnalysis) => void;
     /**
      * The LAPIS base URL for the clinical sequence data used in the variant selector.
      * This is _not_ the same as the LAPIS providing the wastewater amplicon sequences.
@@ -143,8 +143,8 @@ function PredefinedSignature({
     setPageState,
     lineageTree,
 }: {
-    pageState: WasapVariantFilter;
-    setPageState: (newState: WasapVariantFilter) => void;
+    pageState: VariantAnalysis;
+    setPageState: (newState: VariantAnalysis) => void;
     lineageTree: LineageTree;
 }) {
     return (
@@ -188,8 +188,8 @@ function ComputedSignature({
     clinicalSequenceLapisBaseUrl,
     clinicalSequenceLapisLineageField,
 }: {
-    pageState: WasapVariantFilter;
-    setPageState: (newState: WasapVariantFilter) => void;
+    pageState: VariantAnalysis;
+    setPageState: (newState: VariantAnalysis) => void;
     clinicalSequenceLapisBaseUrl: string;
     clinicalSequenceLapisLineageField: string;
 }) {

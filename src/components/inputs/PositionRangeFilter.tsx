@@ -1,8 +1,8 @@
 import { LabeledField } from './LabeledField';
 import { NumericInput } from './NumericInput';
 import { WithReferenceGenome } from './WithReferenceGenome';
+import { MAX_POSITION_RANGE_LENGTH, type ManualAnalysis } from '../../pageState/wasap/analysisFilter';
 import { usePositionRange } from '../../pageState/wasap/positionRange';
-import { MAX_POSITION_RANGE_LENGTH, type WasapManualFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 
 /**
  * The position range of the manual mode: a gene for amino acids, then sliders for the first
@@ -12,8 +12,8 @@ export function PositionRangeFilter({
     pageState,
     setPageState,
 }: {
-    pageState: WasapManualFilter;
-    setPageState: (newState: WasapManualFilter) => void;
+    pageState: ManualAnalysis;
+    setPageState: (newState: ManualAnalysis) => void;
 }) {
     const { referenceGenome, range } = usePositionRange(pageState);
 

@@ -2,21 +2,17 @@ import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { ApplyFilterButton } from './ApplyFilterButton';
 import { type PageStateHandler } from '../../pageState/PageStateHandler';
+import { type AnalysisFilter, type BaseFilter, type ModeFilter } from '../../pageState/wasap/analysisFilter';
 import { useDraftFilter } from '../../pageState/wasap/useDraftFilter';
-import {
-    type WasapAnalysisFilter,
-    type WasapBaseFilter,
-    type WasapModeFilter,
-} from '../../pageState/wasap/wasapAnalysisFilter';
 import { MeanProportionField } from '../inputs/MeanProportionField';
 
-type FilterSidebarProps<Analysis extends WasapAnalysisFilter> = {
-    pageStateHandler: PageStateHandler<WasapModeFilter<Analysis>>;
+type FilterSidebarProps<Analysis extends AnalysisFilter> = {
+    pageStateHandler: PageStateHandler<ModeFilter<Analysis>>;
     /** The applied base filter. Its dataset part has its own panel, only the mean proportion is edited here. */
-    base: WasapBaseFilter;
+    base: BaseFilter;
     /** The applied filter of the mode. */
     analysis: Analysis;
-    setPageState: Dispatch<SetStateAction<WasapModeFilter<Analysis>>>;
+    setPageState: Dispatch<SetStateAction<ModeFilter<Analysis>>>;
     /** The filter fields of the mode, editing the draft. */
     children: (analysis: Analysis, setAnalysis: (analysis: Analysis) => void) => ReactNode;
     /** Without, the mean proportion is not edited here (the mode doesn't have one: `hasMeanProportion`). */
@@ -27,7 +23,7 @@ type FilterSidebarProps<Analysis extends WasapAnalysisFilter> = {
  * The panel next to the results of an analysis mode: the filter of the mode, the mean
  * proportion (unless `withMeanProportion` is false), and the button to apply them. What is edited is only applied with the button.
  */
-export function FilterSidebar<Analysis extends WasapAnalysisFilter>(props: FilterSidebarProps<Analysis>) {
+export function FilterSidebar<Analysis extends AnalysisFilter>(props: FilterSidebarProps<Analysis>) {
     return (
         <FilterSidebarWithDraft
             // Remount (rather than resync via an effect) whenever the URL-derived
@@ -43,7 +39,7 @@ export function FilterSidebar<Analysis extends WasapAnalysisFilter>(props: Filte
     );
 }
 
-function FilterSidebarWithDraft<Analysis extends WasapAnalysisFilter>({
+function FilterSidebarWithDraft<Analysis extends AnalysisFilter>({
     pageStateHandler,
     base,
     analysis,

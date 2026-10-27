@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { WASAP_ANALYSIS_MODE } from './wasapAnalysisFilter';
-import { modeLabel, modeToSegment, segmentToMode } from './wasapModes';
+import { ANALYSIS_MODE } from './analysisFilter';
+import { modeLabel, modeToSegment, segmentToMode } from './modes';
 
-describe('wasapModes', () => {
-    const modes = Object.values(WASAP_ANALYSIS_MODE);
+describe('modes', () => {
+    const modes = Object.values(ANALYSIS_MODE);
 
     it('maps every mode to a segment and back', () => {
         for (const mode of modes) {

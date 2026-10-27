@@ -8,24 +8,24 @@ import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerB
 import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
 import { usePageState } from '../../../pageState/usePageState';
+import { effectivePositionSource, type CooccurrenceAnalysis } from '../../../pageState/wasap/analysisFilter';
 import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
 import { CooccurrencePageStateHandler } from '../../../pageState/wasap/handlers/CooccurrencePageStateHandler';
+import { modePath } from '../../../pageState/wasap/modes';
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
-import { effectivePositionSource, type WasapCooccurrenceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { modePath } from '../../../pageState/wasap/wasapModes';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 
-function isNothingSelected(analysis: WasapCooccurrenceFilter): boolean {
+function isNothingSelected(analysis: CooccurrenceAnalysis): boolean {
     return effectivePositionSource(analysis) === 'amplicon'
         ? (analysis.anchorPosition?.length ?? 0) === 0
         : (analysis.positions?.length ?? 0) === 0;
 }
 
 /** Whether the config's default amplicon is to be picked: when nothing else is (exported for tests). */
-export function usesDefaultAmplicon(analysis: WasapCooccurrenceFilter, defaultAmplicon: number | undefined): boolean {
+export function usesDefaultAmplicon(analysis: CooccurrenceAnalysis, defaultAmplicon: number | undefined): boolean {
     return (
         defaultAmplicon !== undefined &&
         analysis.sequenceType === 'nucleotide' &&
@@ -36,10 +36,10 @@ export function usesDefaultAmplicon(analysis: WasapCooccurrenceFilter, defaultAm
 
 /** The analysis with the default amplicon picked, if it is in the primer scheme (exported for tests). */
 export function withDefaultAmplicon(
-    analysis: WasapCooccurrenceFilter,
+    analysis: CooccurrenceAnalysis,
     defaultAmplicon: number,
     amplicons: Amplicon[],
-): WasapCooccurrenceFilter {
+): CooccurrenceAnalysis {
     const amplicon = amplicons.find(({ number }) => number === defaultAmplicon);
     return amplicon === undefined ? analysis : { ...analysis, anchorPosition: ampliconAnchor(amplicon, amplicons) };
 }
@@ -48,7 +48,7 @@ export function withDefaultAmplicon(
  * The analysis with the config's default amplicon picked, when nothing else is; pending while the
  * primer scheme loads, to find the amplicon in.
  */
-function useWithDefaultAmplicon(analysis: WasapCooccurrenceFilter, config: OrganismConfigFor<'cooccurrence'>) {
+function useWithDefaultAmplicon(analysis: CooccurrenceAnalysis, config: OrganismConfigFor<'cooccurrence'>) {
     const defaultAmplicon = config.cooccurrenceDefaultAmplicon;
     const usesDefault = usesDefaultAmplicon(analysis, defaultAmplicon);
     const amplicons = useAmplicons(usesDefault ? config.amplicons : undefined);

@@ -11,7 +11,7 @@ export const SEQUENCE_TYPE = {
 
 // --- the six per-mode filter-default shapes -------------------------------
 //
-// Each of these is also a `WasapAnalysisFilter` member — the shape of the
+// Each of these is also an `AnalysisFilter` member — the shape of the
 // *current* filter selection for that mode, not just its config default.
 
 export const VARIANT_TIME_FRAME = {
@@ -65,7 +65,7 @@ export type MutationSource = z.infer<typeof mutationSourceSchema>;
 /** At most this many positions in the position range of the manual mode. */
 export const MAX_POSITION_RANGE_LENGTH = 300;
 
-export const wasapManualFilterSchema = z.object({
+export const manualAnalysisSchema = z.object({
     mode: z.literal('manual'),
     sequenceType: sequenceTypeSchema,
     /** Where the mutations come from. Defaults to `list`, see `effectiveMutationSource`. */
@@ -85,9 +85,9 @@ export const wasapManualFilterSchema = z.object({
     /** The number of positions in the range. */
     rangeLength: z.number().int().min(1).max(MAX_POSITION_RANGE_LENGTH).optional(),
 });
-export type WasapManualFilter = z.infer<typeof wasapManualFilterSchema>;
+export type ManualAnalysis = z.infer<typeof manualAnalysisSchema>;
 
-export const wasapVariantFilterSchema = z.object({
+export const variantAnalysisSchema = z.object({
     mode: z.literal('variant'),
     signatureType: signatureTypeSchema,
     sequenceType: sequenceTypeSchema,
@@ -111,7 +111,7 @@ export const wasapVariantFilterSchema = z.object({
     /** Whether the variant's deletions are left out of it, too; unless `false`, they are. */
     excludeDeletions: z.boolean().optional(),
 });
-export type WasapVariantFilter = z.infer<typeof wasapVariantFilterSchema>;
+export type VariantAnalysis = z.infer<typeof variantAnalysisSchema>;
 
 /**
  * Which mutations of a resistance set are shown, by their mean proportion: all of them,
@@ -131,22 +131,22 @@ export const resistanceProportionRangeSchema = z.enum([
 ]);
 export type ResistanceProportionRange = z.infer<typeof resistanceProportionRangeSchema>;
 
-export const wasapResistanceFilterSchema = z.object({
+export const resistanceAnalysisSchema = z.object({
     mode: z.literal('resistance'),
     // resistance sets are only defined for amino acid mutations
     sequenceType: z.literal('amino acid'),
     resistanceSet: z.string(),
     proportionRange: resistanceProportionRangeSchema,
 });
-export type WasapResistanceFilter = z.infer<typeof wasapResistanceFilterSchema>;
+export type ResistanceAnalysis = z.infer<typeof resistanceAnalysisSchema>;
 
-export const wasapUntrackedFilterSchema = z.object({
+export const untrackedAnalysisSchema = z.object({
     mode: z.literal('untracked'),
     sequenceType: sequenceTypeSchema,
     excludeSet: excludeSetNameSchema.optional(),
     excludeVariants: z.array(z.string()).optional(),
 });
-export type WasapUntrackedFilter = z.infer<typeof wasapUntrackedFilterSchema>;
+export type UntrackedAnalysis = z.infer<typeof untrackedAnalysisSchema>;
 
 /**
  * Where a collection comes from: GenSpectrum's own collections, which are always available once
@@ -160,12 +160,12 @@ export const COLLECTION_SOURCE = {
 export const collectionSourceSchema = z.enum([COLLECTION_SOURCE.genSpectrum, COLLECTION_SOURCE.covSpectrum]);
 export type CollectionSource = z.infer<typeof collectionSourceSchema>;
 
-export const wasapCollectionFilterSchema = z.object({
+export const collectionAnalysisSchema = z.object({
     mode: z.literal('collection'),
     source: collectionSourceSchema,
     collectionId: z.number().optional(),
 });
-export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
+export type CollectionAnalysis = z.infer<typeof collectionAnalysisSchema>;
 
 /**
  * The "Lineage Prevalence" page, which estimates the prevalences of a panel of lineages from the
@@ -173,15 +173,15 @@ export type WasapCollectionFilter = z.infer<typeof wasapCollectionFilterSchema>;
  * The panel is fixed by the config (`deconvolutionPanel`); only a lineage can be added to it. The
  * lineages are named like in the lineage tree, where their signatures come from.
  */
-export const wasapDeconvolutionFilterSchema = z.object({
+export const deconvolutionAnalysisSchema = z.object({
     mode: z.literal('deconvolution'),
     /** A lineage added to the panel for the deconvolution, if any. */
     extraLineage: z.string().optional(),
 });
-export type WasapDeconvolutionFilter = z.infer<typeof wasapDeconvolutionFilterSchema>;
+export type DeconvolutionAnalysis = z.infer<typeof deconvolutionAnalysisSchema>;
 
 /** The lineages to deconvolve: the panel, and `extraLineage` if it isn't in the panel already. */
-export function effectivePanel(panel: string[], { extraLineage }: WasapDeconvolutionFilter): string[] {
+export function effectivePanel(panel: string[], { extraLineage }: DeconvolutionAnalysis): string[] {
     return extraLineage === undefined || panel.includes(extraLineage) ? panel : [...panel, extraLineage];
 }
 
@@ -192,7 +192,7 @@ export const POSITION_SOURCE = {
 export const positionSourceSchema = z.enum([POSITION_SOURCE.manual, POSITION_SOURCE.amplicon]);
 export type PositionSource = z.infer<typeof positionSourceSchema>;
 
-export const wasapCooccurrenceFilterSchema = z.object({
+export const cooccurrenceAnalysisSchema = z.object({
     mode: z.literal('cooccurrence'),
     sequenceType: sequenceTypeSchema,
     /** Where the positions to run co-occurrence over come from. Defaults to `amplicon`, see `effectivePositionSource`. */
@@ -218,30 +218,30 @@ export const wasapCooccurrenceFilterSchema = z.object({
      */
     panel: z.array(z.string()).optional(),
 });
-export type WasapCooccurrenceFilter = z.infer<typeof wasapCooccurrenceFilterSchema>;
+export type CooccurrenceAnalysis = z.infer<typeof cooccurrenceAnalysisSchema>;
 
 /** `entropyCutoff`'s value when the URL/config doesn't specify one. */
 export const DEFAULT_ENTROPY_CUTOFF_BITS = 0.5;
 
 /** `positionSource`'s value when the URL/config doesn't specify one — the single source of truth for that default. */
-export function effectiveMutationSource(analysis: WasapManualFilter): MutationSource {
+export function effectiveMutationSource(analysis: ManualAnalysis): MutationSource {
     return analysis.mutationSource ?? MUTATION_SOURCE.list;
 }
 
-export function effectivePositionSource(analysis: WasapCooccurrenceFilter): PositionSource {
+export function effectivePositionSource(analysis: CooccurrenceAnalysis): PositionSource {
     return analysis.positionSource ?? POSITION_SOURCE.amplicon;
 }
 
-export type WasapAnalysisFilter =
-    | WasapManualFilter
-    | WasapVariantFilter
-    | WasapResistanceFilter
-    | WasapUntrackedFilter
-    | WasapCollectionFilter
-    | WasapDeconvolutionFilter
-    | WasapCooccurrenceFilter;
+export type AnalysisFilter =
+    | ManualAnalysis
+    | VariantAnalysis
+    | ResistanceAnalysis
+    | UntrackedAnalysis
+    | CollectionAnalysis
+    | DeconvolutionAnalysis
+    | CooccurrenceAnalysis;
 
-export const WASAP_ANALYSIS_MODE = {
+export const ANALYSIS_MODE = {
     manual: 'manual',
     variant: 'variant',
     resistance: 'resistance',
@@ -250,22 +250,22 @@ export const WASAP_ANALYSIS_MODE = {
     deconvolution: 'deconvolution',
     cooccurrence: 'cooccurrence',
 } as const;
-export const wasapAnalysisModeSchema = z.enum([
-    WASAP_ANALYSIS_MODE.manual,
-    WASAP_ANALYSIS_MODE.variant,
-    WASAP_ANALYSIS_MODE.resistance,
-    WASAP_ANALYSIS_MODE.untracked,
-    WASAP_ANALYSIS_MODE.collection,
-    WASAP_ANALYSIS_MODE.deconvolution,
-    WASAP_ANALYSIS_MODE.cooccurrence,
+export const analysisModeSchema = z.enum([
+    ANALYSIS_MODE.manual,
+    ANALYSIS_MODE.variant,
+    ANALYSIS_MODE.resistance,
+    ANALYSIS_MODE.untracked,
+    ANALYSIS_MODE.collection,
+    ANALYSIS_MODE.deconvolution,
+    ANALYSIS_MODE.cooccurrence,
 ]);
-export type WasapAnalysisMode = z.infer<typeof wasapAnalysisModeSchema>;
+export type AnalysisMode = z.infer<typeof analysisModeSchema>;
 
 /**
  * Only mutations (or queries) whose mean proportion over the selected time range
  * lies within [lower, upper] are displayed. Both are proportions between 0 and 1.
  */
-export type WasapMeanProportion = {
+export type MeanProportion = {
     lower: number;
     upper: number;
 };
@@ -273,27 +273,27 @@ export type WasapMeanProportion = {
 /**
  * Mode-independent settings, like the filter for location and date range —
  * the *current* filter selection (derived from URL state, see
- * `WasapModePageStateHandler`), not a `OrganismConfig` default.
+ * `ModePageStateHandler`), not a `OrganismConfig` default.
  */
-export type WasapBaseFilter = {
+export type BaseFilter = {
     /** The locations whose reads are pooled. Empty means all locations. */
     locationNames: string[];
     samplingDate?: DateRangeOption;
     granularity: TemporalGranularity;
-    meanProportion: WasapMeanProportion;
+    meanProportion: MeanProportion;
 };
 
 /**
  * The part of the base filter that selects the dataset, and that stays the same
  * when going from one analysis mode to another (the mean proportion doesn't).
  */
-export type WasapDatasetFilter = Omit<WasapBaseFilter, 'meanProportion'>;
+export type DatasetFilter = Omit<BaseFilter, 'meanProportion'>;
 
 /**
  * The page state of one analysis mode page, where `analysis` is narrowed to the
  * filter of that mode.
  */
-export type WasapModeFilter<Analysis extends WasapAnalysisFilter = WasapAnalysisFilter> = {
-    base: WasapBaseFilter;
+export type ModeFilter<Analysis extends AnalysisFilter = AnalysisFilter> = {
+    base: BaseFilter;
     analysis: Analysis;
 };
