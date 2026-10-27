@@ -2,7 +2,7 @@ import { MemoryRouter, Outlet, Route, Routes, useLocation } from 'react-router-d
 import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { ModeRoute } from './OrganismRoute';
+import { ModeRoute } from './ModeRoute';
 import { it } from '../../test-extend';
 import type { OrganismConfig } from '../config/organismConfig';
 import { testConfig } from '../pageState/testConfig';
