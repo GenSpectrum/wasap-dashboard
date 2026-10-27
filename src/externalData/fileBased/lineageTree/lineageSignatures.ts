@@ -1,4 +1,4 @@
-import { getLineageSignature, type LineageTree } from '../externalData/fileBased/lineageTree/lineageTree';
+import { getLineageSignature, type LineageTree } from './lineageTree';
 
 export type LineageSignatures = {
     /** The nucleotide substitutions of each lineage of the panel that is in the tree, in panel order. */

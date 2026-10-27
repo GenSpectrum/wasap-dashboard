@@ -15,8 +15,8 @@
  */
 
 import { lineageSignatures } from './lineageSignatures';
-import { getLineageSignature, type LineageTree } from '../externalData/fileBased/lineageTree/lineageTree';
-import { SubstitutionClass, type SequenceType } from '../util/mutations';
+import { getLineageSignature, type LineageTree } from './lineageTree';
+import { SubstitutionClass, type SequenceType } from '../../../util/mutations';
 
 const NUCLEOTIDE_SUBSTITUTION = /^[ACGT](\d+)([ACGT])$/;
 

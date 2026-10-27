@@ -6,7 +6,7 @@ import {
     type DeconvolutionInput,
     type DeconvolutionResult,
 } from './lollipopService';
-import { getAppConfig } from '../config/appConfig';
+import { getAppConfig } from '../../config/appConfig';
 
 export type DeconvolutionState =
     | { status: 'idle' }

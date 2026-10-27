@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
 import { UNDETERMINED_COLOR } from './lineageColors';
-import { UNDETERMINED, type DeconvolutionResult } from '../../../deconvolution/lollipopService';
+import { UNDETERMINED, type DeconvolutionResult } from '../../../externalData/lollipop/lollipopService';
 import { parseDateStringToTemporal, type TemporalGranularity } from '../../../util/temporal';
 
 const MARGIN = { top: 8, right: 12, bottom: 22, left: 40 };

@@ -142,9 +142,11 @@ src/
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
                              collections
+    lollipop/               the client of the LolliPop service (`lollipop-service/`)
     fileBased/              data loaded from static files: amplicons (primer
                              BEDs), genome (Nextclade gene annotation),
-                             lineageTree (Nextclade tree.json, alias key)
+                             lineageTree (Nextclade tree.json, alias key,
+                             lineage signatures, panel matching)
   config/                   config.json loading + schema, per-organism types
   clientLogger.ts, types/, util/, styles/
 lollipop-service/           the service that computes the Lineage Prevalence page with
