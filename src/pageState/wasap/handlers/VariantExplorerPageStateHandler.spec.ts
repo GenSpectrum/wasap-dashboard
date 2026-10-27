@@ -75,7 +75,9 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(withDefault.toUrl(parse(''))).not.toContain('backgroundLineages');
         const cleared = parse('backgroundLineages=');
         expect(cleared.analysis.backgroundLineages).toEqual([]);
-        expect(withDefault.toUrl(cleared)).toContain('backgroundLineages=&');
+        expect(new URL(withDefault.toUrl(cleared), 'http://example.com').searchParams.get('backgroundLineages')).toBe(
+            '',
+        );
     });
 
     it('excludes the nearly fixed mutations unless told not to, and only writes that down', () => {
@@ -212,10 +214,10 @@ describe('VariantExplorerPageStateHandler', () => {
             );
         const cleared = { ...parse(''), analysis: { ...parse('').analysis, variant: undefined, lineage: undefined } };
 
-        const url = handler.toUrl(cleared);
+        const { searchParams } = new URL(handler.toUrl(cleared), 'http://example.com');
 
-        expect(url).toContain('variant=&');
-        expect(url).toContain('lineage=&');
+        expect(searchParams.get('variant')).toBe('');
+        expect(searchParams.get('lineage')).toBe('');
         expect(handler.parsePageStateFromUrl(handler.toSearchParams(cleared))).toEqual(cleared);
     });
 

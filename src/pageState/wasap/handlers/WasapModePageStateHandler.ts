@@ -1,5 +1,4 @@
 import { type WasapPageConfig } from '../../../config/wasapPageConfig';
-import { formatUrl } from '../../../util/formatUrl';
 import { type PageStateHandler } from '../../PageStateHandler';
 import { parseUrlParams, type UrlParams, writeUrlParams } from '../../urlParams';
 import {
@@ -51,7 +50,8 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
     }
 
     toUrl(pageState: WasapModeFilter<Analysis>): string {
-        return formatUrl(this.getDefaultPageUrl(), this.toSearchParams(pageState));
+        const search = this.toSearchParams(pageState).toString();
+        return search === '' ? this.getDefaultPageUrl() : `${this.getDefaultPageUrl()}?${search}`;
     }
 
     getDefaultPageUrl(): string {
