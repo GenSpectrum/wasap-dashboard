@@ -9,16 +9,31 @@
 
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { readSampleOverview, sampleOverviewQuery, type SampleOverview } from '../../queries';
+import {
+    readLocationOverview,
+    readSampleOverview,
+    sampleOverviewQuery,
+    type LocationOverview,
+    type SampleOverview,
+} from '../../queries';
 import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQuery } from '../rhydbQuery';
 
 /**
  * Every sample the instance holds, one entry each — its location, sampling date, batch and read
- * count. Shared by the overview page's per-location table (folded with `readLocationOverview`)
- * and its samples-over-time plot (used as is); both read off this same cached query.
+ * count. Used as is by the overview page's samples-over-time plot; `useLocationOverview` reads off
+ * the same cached query.
  */
 export function useSampleOverview(): UseQueryResult<SampleOverview[]> {
+    return useSampleOverviewQuery();
+}
+
+/** `useSampleOverview` folded into one entry per location, for the overview page's per-location table. */
+export function useLocationOverview(): UseQueryResult<LocationOverview[]> {
+    return useSampleOverviewQuery(readLocationOverview);
+}
+
+function useSampleOverviewQuery<T = SampleOverview[]>(select?: (samples: SampleOverview[]) => T): UseQueryResult<T> {
     const connection = useConnection();
     const schema = useRhydbSchema();
     // `schema` stands in for `connection.key` (same memoized RhydbInstance).
@@ -29,5 +44,6 @@ export function useSampleOverview(): UseQueryResult<SampleOverview[]> {
             const { rows } = await connection.query(sampleOverviewQuery(schema), 'Sample overview', { signal });
             return readSampleOverview(rows, schema);
         },
+        select,
     });
 }

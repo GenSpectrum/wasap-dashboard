@@ -55,8 +55,8 @@ export function samplingDatesQuery(schema: RhydbSchema, filter: RhydbReadFilter 
  * columns together rather than aggregating them: the resulting row count is the same whether
  * grouping by `sampleId` alone or by all four (checked against the live instances), meaning a
  * sample always carries exactly one location, one date and one batch. The caller reads the rows
- * with `readSampleOverview`, and folds them into a per-location summary with
- * `readLocationOverview` where that's what's needed.
+ * with `readSampleOverview`; `useLocationOverview` folds them into a per-location summary with
+ * `readLocationOverview`.
  */
 export function sampleOverviewQuery(schema: RhydbSchema): Relation {
     return table(schema.table).group(readCounts(), [

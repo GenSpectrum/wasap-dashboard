@@ -4,7 +4,7 @@ import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider } from '../connection';
-import { useSampleOverview } from './sampleOverview';
+import { useLocationOverview, useSampleOverview } from './sampleOverview';
 import type { RhydbSchema } from '../../queries/schema';
 
 const schema: RhydbSchema = {
@@ -61,5 +61,30 @@ describe('useSampleOverview', () => {
 
         const [, init] = fetchMock.mock.calls[0];
         expect(init.body).toBe('data.group(by := {locationName, date, sampleId, batchId}, aggs := {n := count()})');
+    });
+});
+
+describe('useLocationOverview', () => {
+    it('folds the sample overview into one entry per location, off the same query', async () => {
+        const fetchMock = vi.fn().mockResolvedValue(
+            ndjson([
+                { locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 },
+                { locationName: 'Basel (BS)', date: '2024-02-05', sampleId: 'A2', batchId: 'B2', n: 8 },
+                { locationName: 'Zürich (ZH)', date: '2024-01-12', sampleId: 'Z1', batchId: 'B1', n: 5 },
+            ]),
+        );
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { result } = renderHook(() => ({ samples: useSampleOverview(), locations: useLocationOverview() }), {
+            wrapper: wrapper(),
+        });
+
+        await waitFor(() => expect(result.current.locations.isSuccess).toBe(true));
+        expect(result.current.locations.data).toEqual([
+            { name: 'Basel (BS)', sampleCount: 2, totalReads: 18, mostRecentSampleDate: '2024-02-05' },
+            { name: 'Zürich (ZH)', sampleCount: 1, totalReads: 5, mostRecentSampleDate: '2024-01-12' },
+        ]);
+        expect(result.current.samples.data).toHaveLength(3);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 });
