@@ -2,17 +2,17 @@ import { readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
-import { wasapPageConfigSchema, type WasapPageConfig } from './wasapPageConfig';
+import { organismConfigSchema, type OrganismConfig } from './organismConfig';
 
 // These pin behaviour of the GenSpectrum-hosted deployment's own data, which
 // now lives in `public/config.example.json` rather than in TypeScript.
 const prodOrganisms = (
     JSON.parse(readFileSync('public/config.example.json', 'utf-8')) as { organisms: unknown[] }
-).organisms.map((organism) => wasapPageConfigSchema.parse(organism));
+).organisms.map((organism) => organismConfigSchema.parse(organism));
 
 describe.each(prodOrganisms.map((config) => [config.genSpectrumOrganismName, config] as const))(
     'config.example.json %s',
-    (_genSpectrumOrganismName, config: WasapPageConfig) => {
+    (_genSpectrumOrganismName, config: OrganismConfig) => {
         test('default resistance set name is valid', () => {
             if (config.resistanceAnalysisModeEnabled) {
                 const resistanceSetNames = config.resistanceMutationCollections.map((s) => s.name);

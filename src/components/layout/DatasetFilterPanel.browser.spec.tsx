@@ -8,7 +8,7 @@ import { DatasetFilterPanel } from './DatasetFilterPanel';
 import { it } from '../../../test-extend';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../dataLayer/queries/schema';
-import type { WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import type { DatasetFilter } from '../../pageState/analysisFilter';
 
 const schema: RhydbSchema = {
     table: 'data',
@@ -23,13 +23,13 @@ const schema: RhydbSchema = {
 
 const DEFAULT_LOCATION = 'Zürich (ZH)';
 
-const dataset: WasapDatasetFilter = {
+const dataset: DatasetFilter = {
     locationNames: [DEFAULT_LOCATION],
     samplingDate: { label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' },
     granularity: 'day',
 };
 
-function Harness({ onChange }: { onChange: (value: WasapDatasetFilter) => void }) {
+function Harness({ onChange }: { onChange: (value: DatasetFilter) => void }) {
     const [value, setValue] = useState(dataset);
 
     return (

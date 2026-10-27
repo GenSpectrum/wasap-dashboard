@@ -2,15 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getCladeLineages } from './getCladeLineages';
 import { getMutations } from './getMutations';
-import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
-import type { WasapUntrackedFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import type { UntrackedAnalysis } from '../../pageState/analysisFilter';
 
 const logger = getClientLogger('useUntrackedMutations');
 
 /** The mutations of the untracked page: those in the wastewater, but not in the variants to exclude. */
-export function useUntrackedMutations(config: WasapPageConfigFor<'untracked'>, analysis: WasapUntrackedFilter) {
+export function useUntrackedMutations(config: OrganismConfigFor<'untracked'>, analysis: UntrackedAnalysis) {
     // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     return useQuery({
@@ -26,8 +26,8 @@ export function useUntrackedMutations(config: WasapPageConfigFor<'untracked'>, a
 }
 
 export async function fetchUntrackedMutations(
-    config: WasapPageConfigFor<'untracked'>,
-    analysis: WasapUntrackedFilter,
+    config: OrganismConfigFor<'untracked'>,
+    analysis: UntrackedAnalysis,
     signal?: AbortSignal,
 ): Promise<string[]> {
     const variantsToExclude =

@@ -8,7 +8,7 @@ import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { type LapisRouteMocker } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
 import { buildLineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
-import type { WasapVariantFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { VariantAnalysis } from '../../../pageState/analysisFilter';
 
 const DUMMY_LAPIS_URL_2 = 'http://lapis2.dummy';
 
@@ -31,7 +31,7 @@ const lineageTree = buildLineageTree(
 /* eslint-enable @typescript-eslint/naming-convention */
 
 describe('VariantExplorerFilter', () => {
-    const defaultPageState: WasapVariantFilter = {
+    const defaultPageState: VariantAnalysis = {
         mode: 'variant',
         signatureType: 'computed',
         sequenceType: 'nucleotide',
@@ -42,7 +42,7 @@ describe('VariantExplorerFilter', () => {
         timeFrame: 'all',
     };
 
-    const predefinedPageState: WasapVariantFilter = {
+    const predefinedPageState: VariantAnalysis = {
         ...defaultPageState,
         signatureType: 'predefined',
     };

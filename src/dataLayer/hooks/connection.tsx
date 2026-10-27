@@ -7,7 +7,7 @@
  * retry and the logging apply to all of them.
  *
  * The provider takes `url` + `schema` as props: each organism has its own RhyDB
- * instance (`WasapPageConfig`).
+ * instance (`OrganismConfig`).
  */
 
 import { QueryClient } from '@tanstack/react-query';

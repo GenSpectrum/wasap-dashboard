@@ -8,7 +8,7 @@ import { DUMMY_RHYDB_URL } from '../../../../routeMocker';
 import { it, rhydbRouteMocker } from '../../../../test-extend';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../../dataLayer/queries/schema';
-import type { WasapManualFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { ManualAnalysis } from '../../../pageState/analysisFilter';
 
 const schema: RhydbSchema = {
     table: 'data',
@@ -40,7 +40,7 @@ function renderWithRhydb(ui: ReactElement) {
 }
 
 describe('ManualAnalysisFilter', () => {
-    const defaultPageState: WasapManualFilter = {
+    const defaultPageState: ManualAnalysis = {
         mode: 'manual',
         sequenceType: 'nucleotide',
         mutations: undefined,
@@ -59,7 +59,7 @@ describe('ManualAnalysisFilter', () => {
 
     it('renders with amino acid sequence type selected', async () => {
         const mockSetPageState = vi.fn();
-        const pageState: WasapManualFilter = {
+        const pageState: ManualAnalysis = {
             ...defaultPageState,
             sequenceType: 'amino acid',
         };
@@ -74,7 +74,7 @@ describe('ManualAnalysisFilter', () => {
 
     it('clears mutations when changing sequence type', async () => {
         const mockSetPageState = vi.fn();
-        const pageState: WasapManualFilter = {
+        const pageState: ManualAnalysis = {
             ...defaultPageState,
             sequenceType: 'nucleotide',
             mutations: ['A23T'],
@@ -129,7 +129,7 @@ describe('ManualAnalysisFilter', () => {
 
     it('calls setPageState with amino acid mutation when in amino acid mode', async () => {
         const mockSetPageState = vi.fn();
-        const pageState: WasapManualFilter = {
+        const pageState: ManualAnalysis = {
             ...defaultPageState,
             sequenceType: 'amino acid',
         };
@@ -197,7 +197,7 @@ describe('ManualAnalysisFilter', () => {
 
     it('shows the effective range and sets the start', async () => {
         const mockSetPageState = vi.fn();
-        const pageState: WasapManualFilter = { ...defaultPageState, mutationSource: 'range', rangeLength: 46 };
+        const pageState: ManualAnalysis = { ...defaultPageState, mutationSource: 'range', rangeLength: 46 };
 
         const { getByRole, getByText } = renderWithRhydb(
             <ManualAnalysisFilter pageState={pageState} setPageState={mockSetPageState} />,
@@ -212,7 +212,7 @@ describe('ManualAnalysisFilter', () => {
 
     it('picks a gene for amino acids and starts over in it', async () => {
         const mockSetPageState = vi.fn();
-        const pageState: WasapManualFilter = {
+        const pageState: ManualAnalysis = {
             ...defaultPageState,
             sequenceType: 'amino acid',
             mutationSource: 'range',

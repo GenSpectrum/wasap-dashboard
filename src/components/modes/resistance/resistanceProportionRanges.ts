@@ -1,7 +1,4 @@
-import {
-    RESISTANCE_PROPORTION_RANGE,
-    type ResistanceProportionRange,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+import { RESISTANCE_PROPORTION_RANGE, type ResistanceProportionRange } from '../../../pageState/analysisFilter';
 import {
     type ProportionInterval,
     isInProportionInterval,

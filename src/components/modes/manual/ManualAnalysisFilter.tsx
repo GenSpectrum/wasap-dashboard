@@ -2,8 +2,8 @@ import {
     effectiveMutationSource,
     MUTATION_SOURCE,
     type MutationSource,
-    type WasapManualFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+    type ManualAnalysis,
+} from '../../../pageState/analysisFilter';
 import { mutationType, type MutationType } from '../../../util/mutations';
 import { PositionRangeFilter } from '../../inputs/PositionRangeFilter';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
@@ -14,8 +14,8 @@ export function ManualAnalysisFilter({
     pageState,
     setPageState,
 }: {
-    pageState: WasapManualFilter;
-    setPageState: (newState: WasapManualFilter) => void;
+    pageState: ManualAnalysis;
+    setPageState: (newState: ManualAnalysis) => void;
 }) {
     const mutationSource = effectiveMutationSource(pageState);
     const enabledMutationTypes: MutationType[] =

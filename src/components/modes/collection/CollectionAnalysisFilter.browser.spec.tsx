@@ -6,7 +6,7 @@ import { CollectionAnalysisFilter } from './CollectionAnalysisFilter';
 import { DUMMY_BACKEND_URL } from '../../../../routeMocker';
 import { it } from '../../../../test-extend';
 import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
-import type { WasapCollectionFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { CollectionAnalysis } from '../../../pageState/analysisFilter';
 
 vi.mock('../../../externalData/genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();
@@ -30,11 +30,11 @@ const covSpectrumCollections = [
     },
 ];
 
-const genSpectrumFilter: WasapCollectionFilter = { mode: 'collection', source: 'genSpectrum', collectionId: 1 };
-const covSpectrumFilter: WasapCollectionFilter = { mode: 'collection', source: 'covSpectrum', collectionId: 42 };
+const genSpectrumFilter: CollectionAnalysis = { mode: 'collection', source: 'genSpectrum', collectionId: 1 };
+const covSpectrumFilter: CollectionAnalysis = { mode: 'collection', source: 'covSpectrum', collectionId: 42 };
 
 function renderFilter(
-    pageState: WasapCollectionFilter,
+    pageState: CollectionAnalysis,
     covSpectrum?: { collectionsApiBaseUrl: string; collectionTitleFilter: string },
 ) {
     const setPageState = vi.fn();

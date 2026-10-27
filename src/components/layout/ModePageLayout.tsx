@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 
 import { DatasetFilterPanel } from './DatasetFilterPanel';
-import { useWasapLayoutContext } from './WasapLayout';
+import { useOrganismLayoutContext } from './OrganismLayout';
 
 /**
  * The filter panel of an analysis mode on the left, and on the right the panel for the
@@ -9,7 +9,7 @@ import { useWasapLayoutContext } from './WasapLayout';
  * fill the height of the page, in their own shade of grey.
  */
 export function ModePageLayout({ sidebar, children }: { sidebar: ReactNode; children: ReactNode }) {
-    const { config, dataset, onDatasetChange } = useWasapLayoutContext();
+    const { config, dataset, onDatasetChange } = useOrganismLayoutContext();
 
     return (
         <div className='flex-1 grid-cols-[300px_1fr] lg:grid'>

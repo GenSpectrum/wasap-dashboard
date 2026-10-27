@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { type QueriesOverTimeQuery } from '../components/overTime/queriesOverTime/QueriesOverTime';
-import { type WasapPageConfigFor } from '../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../config/organismConfig';
 import { validateGenomeOnly } from '../dataLayer/queries';
 import { getClientLogger } from '../logging';
 import { getErrorLogMessage } from '../logging';
@@ -12,13 +12,13 @@ import { getLineageFields, type FilterObject, type Variant } from './genSpectrum
 import { getApiServiceForClientside } from './genSpectrum/apiService';
 import { getCollection as getGenSpectrumCollection } from './genSpectrum/getCollection';
 import { parseQuery } from './lapis/parseQuery';
-import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/wasap/wasapAnalysisFilter';
+import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/analysisFilter';
 
 const logger = getClientLogger('useCollectionQueries');
 
 /** The queries of the collection of the collection page. Not fetched while no collection is selected. */
 export function useCollectionQueries(
-    config: WasapPageConfigFor<'collection'>,
+    config: OrganismConfigFor<'collection'>,
     source: CollectionSource,
     collectionId: number | undefined,
 ) {
@@ -42,7 +42,7 @@ export function useCollectionQueries(
 }
 
 export async function fetchCollectionQueries(
-    config: WasapPageConfigFor<'collection'>,
+    config: OrganismConfigFor<'collection'>,
     source: CollectionSource,
     collectionId: number,
     signal?: AbortSignal,

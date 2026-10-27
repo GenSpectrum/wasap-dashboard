@@ -1,0 +1,74 @@
+import { type OrganismConfig } from '../../config/organismConfig';
+import { type PageStateHandler } from '../PageStateHandler';
+import { type AnalysisFilter, type ModeFilter } from '../analysisFilter';
+import {
+    parseBaseFilter,
+    parseDatasetFilter,
+    setBaseFilterSearchParams,
+    setDatasetFilterSearchParams,
+} from '../baseFilter';
+import { getDefaultMeanProportion } from '../defaultMeanProportion';
+import { modePath } from '../modes';
+import { parseUrlParams, type UrlParams, writeUrlParams } from '../urlParams';
+
+/**
+ * The page state handler of one analysis mode page. The settings all modes have
+ * in common (see `baseFilter.ts`) are handled here, a subclass only has to give
+ * the URL params of the settings of its own mode, and their defaults.
+ */
+export abstract class ModePageStateHandler<Analysis extends AnalysisFilter> implements PageStateHandler<
+    ModeFilter<Analysis>
+> {
+    protected constructor(
+        protected readonly config: OrganismConfig,
+        readonly mode: Analysis['mode'],
+    ) {}
+
+    /**
+     * Whether the mean proportion can be set on the page of the mode. If not, it is
+     * always the default of the mode, and not in the URL.
+     */
+    protected readonly hasMeanProportion: boolean = true;
+
+    parsePageStateFromUrl(searchParams: URLSearchParams): ModeFilter<Analysis> {
+        const analysis = this.parseAnalysis(searchParams);
+        const base = this.hasMeanProportion
+            ? parseBaseFilter(searchParams, this.config, getDefaultMeanProportion(analysis))
+            : { ...parseDatasetFilter(searchParams, this.config), meanProportion: getDefaultMeanProportion(analysis) };
+        return { base, analysis };
+    }
+
+    toSearchParams({ base, analysis }: ModeFilter<Analysis>): URLSearchParams {
+        const search = new URLSearchParams();
+        if (this.hasMeanProportion) {
+            setBaseFilterSearchParams(search, base, this.config, getDefaultMeanProportion(analysis));
+        } else {
+            setDatasetFilterSearchParams(search, base, this.config);
+        }
+        this.setAnalysisSearchParams(search, analysis);
+        return search;
+    }
+
+    toUrl(pageState: ModeFilter<Analysis>): string {
+        const search = this.toSearchParams(pageState).toString();
+        return search === '' ? this.getDefaultPageUrl() : `${this.getDefaultPageUrl()}?${search}`;
+    }
+
+    getDefaultPageUrl(): string {
+        return modePath(this.config.path, this.mode);
+    }
+
+    /** The URL params of the settings of the mode (see `urlParams.ts`). */
+    protected abstract readonly params: UrlParams<Analysis>;
+
+    /** The settings of the mode when the URL doesn't say otherwise. */
+    protected abstract defaults(): Analysis;
+
+    protected parseAnalysis(search: URLSearchParams): Analysis {
+        return parseUrlParams(search, this.params, this.defaults());
+    }
+
+    protected setAnalysisSearchParams(search: URLSearchParams, analysis: Analysis) {
+        writeUrlParams(search, this.params, analysis, this.defaults());
+    }
+}

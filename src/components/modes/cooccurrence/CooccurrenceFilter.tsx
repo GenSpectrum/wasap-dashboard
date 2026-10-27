@@ -1,6 +1,6 @@
 import { type FC, useState } from 'react';
 
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor, samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
@@ -12,8 +12,8 @@ import {
     POSITION_SOURCE,
     effectivePositionSource,
     type PositionSource,
-    type WasapCooccurrenceFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+    type CooccurrenceAnalysis,
+} from '../../../pageState/analysisFilter';
 import { type SequenceType } from '../../../util/mutations';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
@@ -37,9 +37,9 @@ export function CooccurrenceFilter({
     config,
     lineageTree,
 }: {
-    pageState: WasapCooccurrenceFilter;
-    setPageState: (newState: WasapCooccurrenceFilter) => void;
-    config: WasapPageConfigFor<'cooccurrence'>;
+    pageState: CooccurrenceAnalysis;
+    setPageState: (newState: CooccurrenceAnalysis) => void;
+    config: OrganismConfigFor<'cooccurrence'>;
     /** For the panel-of-lineages match, when the organism has a lineage tree. */
     lineageTree?: LineageTree;
 }) {
@@ -168,7 +168,7 @@ export function CooccurrenceFilter({
  * amino-acid case) is shown but disabled.
  */
 const AmpliconSelect: FC<{
-    amplicons: NonNullable<WasapPageConfigFor<'cooccurrence'>['amplicons']>;
+    amplicons: NonNullable<OrganismConfigFor<'cooccurrence'>['amplicons']>;
     toAnchor: (amplicon: Amplicon, allAmplicons: Amplicon[]) => string | null;
     value: string | undefined;
     onChange: (value: string) => void;
@@ -224,7 +224,7 @@ const AmpliconSelect: FC<{
 
 /** `AmpliconSelect`, anchoring on the gene:codon of each amplicon's core midpoint. */
 const AminoAcidAmpliconSelect: FC<{
-    amplicons: NonNullable<WasapPageConfigFor<'cooccurrence'>['amplicons']>;
+    amplicons: NonNullable<OrganismConfigFor<'cooccurrence'>['amplicons']>;
     genomeAnnotationUrl: string;
     value: string | undefined;
     onChange: (value: string) => void;

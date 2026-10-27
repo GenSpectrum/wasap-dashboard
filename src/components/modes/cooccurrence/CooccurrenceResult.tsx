@@ -7,9 +7,9 @@ import { type LineageTree } from '../../../externalData/fileBased/lineageTree/li
 import {
     DEFAULT_ENTROPY_CUTOFF_BITS,
     effectivePositionSource,
-    type WasapBaseFilter,
-    type WasapCooccurrenceFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+    type BaseFilter,
+    type CooccurrenceAnalysis,
+} from '../../../pageState/analysisFilter';
 
 /**
  * The co-occurrence bands of a mode that selects positions.
@@ -24,8 +24,8 @@ export function CooccurrenceResult({
     variantModeLink,
     clinicalLapis,
 }: {
-    base: WasapBaseFilter;
-    analysis: WasapCooccurrenceFilter;
+    base: BaseFilter;
+    analysis: CooccurrenceAnalysis;
     filter: RhydbReadFilter;
     /** Only patterns on at least this share of the reads are shown. */
     minShare: number;

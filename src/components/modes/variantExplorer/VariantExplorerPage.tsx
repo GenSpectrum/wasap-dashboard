@@ -5,7 +5,7 @@ import { ClinicalSequenceCountStat } from './ClinicalSequenceCountStat';
 import { ExcludedMutations } from './ExcludedMutations';
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { AmpliconCooccurrenceSection } from './ampliconCooccurrence/AmpliconCooccurrenceSection';
-import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismConfig';
 import {
     useSignatureWithoutBackground,
     type BackgroundLineage,
@@ -18,15 +18,15 @@ import {
     isVariantSelected,
     useVariantSignature,
 } from '../../../externalData/lapis/useVariantSignature';
+import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
+import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
+import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
-import { VariantExplorerPageStateHandler } from '../../../pageState/wasap/handlers/VariantExplorerPageStateHandler';
-import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
-import { modePath } from '../../../pageState/wasap/wasapModes';
+import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { useWasapLayoutContext } from '../../layout/WasapLayout';
+import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { ErrorDisplay } from '../../ui/ErrorDisplay';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
@@ -35,13 +35,13 @@ import { TitledPanel } from '../../ui/TitledPanel';
 /** No mutations are left out by their mean proportion here: the sidebar has the mutations to exclude instead. */
 const ALL_MEAN_PROPORTIONS = { min: 0, max: 1 };
 
-export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
+export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'variant'> }) {
     const pageStateHandler = useMemo(() => new VariantExplorerPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { lineageTree } = useWasapLayoutContext();
+    const { lineageTree } = useOrganismLayoutContext();
     const amplicons = useAmplicons(config.amplicons);
     const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const signature = useVariantSignature(config, analysis, lineageTree);

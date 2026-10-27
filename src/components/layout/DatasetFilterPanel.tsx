@@ -1,5 +1,5 @@
-import { type WasapPageConfig } from '../../config/wasapPageConfig';
-import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import { type OrganismConfig } from '../../config/organismConfig';
+import { type DatasetFilter } from '../../pageState/analysisFilter';
 import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
 import { LabeledField } from '../inputs/LabeledField';
@@ -15,9 +15,9 @@ export function DatasetFilterPanel({
     value,
     onChange,
 }: {
-    config: Pick<WasapPageConfig, 'locationNameField'>;
-    value: WasapDatasetFilter;
-    onChange: (value: WasapDatasetFilter) => void;
+    config: Pick<OrganismConfig, 'locationNameField'>;
+    value: DatasetFilter;
+    onChange: (value: DatasetFilter) => void;
 }) {
     return (
         // The date column is the widest: the select and the two dates of the date filter are in one row, which

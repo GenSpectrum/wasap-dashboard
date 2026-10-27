@@ -1,0 +1,139 @@
+import { VARIANT_TIME_FRAME } from './analysisFilter';
+import { type OrganismConfig } from '../config/organismConfig';
+
+/** An organism config with the manual, variant, resistance and untracked modes enabled. */
+export const testConfig = {
+    genSpectrumOrganismName: 'covid',
+    name: 'SARS-CoV-2',
+    path: `/wastewater/covid`,
+    description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',
+    linkTemplate: {
+        nucleotideMutation:
+            'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}',
+        aminoAcidMutation:
+            'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}',
+    },
+    rhydb: {
+        url: '',
+        table: 'data',
+        dateColumn: 'date',
+        dateColumnIsDictionaryEncoded: true,
+        samplingDateColumn: 'samplingDate',
+        locationNameColumn: 'locationName',
+        sampleIdColumn: 'sampleId',
+        batchIdColumn: 'batchId',
+    },
+    manualAnalysisModeEnabled: true,
+    variantAnalysisModeEnabled: true,
+    resistanceAnalysisModeEnabled: true,
+    untrackedAnalysisModeEnabled: true,
+    resistanceMutationCollections: [
+        {
+            name: '3CLpro',
+            annotationSymbol: 'c',
+            description: '',
+            collectionId: 1,
+        },
+        {
+            name: 'RdRp',
+            annotationSymbol: 'r',
+            description: '',
+            collectionId: 2,
+        },
+        {
+            name: 'Spike',
+            annotationSymbol: 's',
+            description: '',
+            collectionId: 3,
+        },
+    ],
+    lapisBaseUrl: 'https://lapis.wasap.genspectrum.org',
+    samplingDateField: 'samplingDate',
+    locationNameField: 'locationName',
+    clinicalLapis: {
+        lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
+        cladeField: 'nextstrainClade',
+        lineageField: 'nextcladePangoLineage',
+        dateField: 'date',
+    },
+    browseDataUrl: 'https://db.wasap.genspectrum.org/covid/search',
+    browseDataDescription: 'Browse the data in the W-ASAP Loculus instance.',
+    defaultLocationName: 'Zürich (ZH)',
+    clinicalSequenceCountWarningThreshold: 50,
+    filterDefaults: {
+        manual: {
+            mode: 'manual',
+            sequenceType: 'nucleotide',
+            mutations: undefined,
+        },
+        variant: {
+            mode: 'variant',
+            signatureType: 'predefined',
+            sequenceType: 'nucleotide',
+            variant: 'XFG*',
+            minProportion: 0.8,
+            minCount: 15,
+            minJaccard: 0.75,
+            timeFrame: VARIANT_TIME_FRAME.all,
+            lineage: 'XFG',
+        },
+        resistance: {
+            mode: 'resistance',
+            sequenceType: 'amino acid',
+            resistanceSet: '3CLpro',
+        },
+        untracked: {
+            mode: 'untracked',
+            sequenceType: 'nucleotide',
+            excludeSet: 'predefined',
+        },
+    },
+} satisfies OrganismConfig;
+
+/**
+ * Like `testConfig`, with the collection mode enabled: GenSpectrum collections only, the same
+ * as e.g. RSV, which has no CoV-Spectrum instance to pull collections from.
+ */
+export const testConfigWithCollection = {
+    ...testConfig,
+    collectionAnalysisModeEnabled: true,
+    genSpectrumCollectionLinkOut: 'https://genspectrum.org/collections/covid/{{id}}',
+    filterDefaults: {
+        ...testConfig.filterDefaults,
+        collection: {
+            mode: 'collection',
+            source: 'genSpectrum',
+            collectionId: undefined,
+        },
+    },
+} satisfies OrganismConfig;
+
+/** Like `testConfigWithCollection`, with the CoV-Spectrum collection source enabled too, as covid has. */
+export const testConfigWithCollectionSources = {
+    ...testConfigWithCollection,
+    covSpectrumCollectionSourceEnabled: true,
+    collectionsApiBaseUrl: 'https://collections.example.org',
+    collectionTitleFilter: 'test',
+} satisfies OrganismConfig;
+
+/** Like `testConfig`, with the deconvolution mode enabled. */
+export const testConfigWithDeconvolution = {
+    ...testConfig,
+    deconvolutionAnalysisModeEnabled: true,
+    lineageTree: { url: 'https://example.org/tree.json', lineageAttribute: 'Nextclade_pango' },
+    deconvolutionPanel: ['XFG', 'NB.1.8.1'],
+} satisfies OrganismConfig;
+
+/** Like `testConfig`, with the co-occurrence mode enabled. */
+export const testConfigWithCooccurrence = {
+    ...testConfig,
+    cooccurrenceAnalysisModeEnabled: true,
+    filterDefaults: {
+        ...testConfig.filterDefaults,
+        cooccurrence: {
+            mode: 'cooccurrence',
+            sequenceType: 'nucleotide',
+            positions: undefined,
+        },
+    },
+} satisfies OrganismConfig;
