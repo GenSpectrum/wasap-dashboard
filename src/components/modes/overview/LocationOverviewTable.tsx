@@ -7,8 +7,7 @@ import {
     type LocationSort,
     type LocationSortColumn,
 } from './locationSort';
-import { useSampleOverview } from '../../../dataLayer/hooks/lookups/sampleOverview';
-import { readLocationOverview } from '../../../dataLayer/queries';
+import { useLocationOverview } from '../../../dataLayer/hooks/lookups/sampleOverview';
 import { TitledPanel } from '../../ui/TitledPanel';
 import { LoadingDisplay } from '../../ui/loading-display';
 
@@ -18,12 +17,9 @@ import { LoadingDisplay } from '../../ui/loading-display';
  * column header is clicked.
  */
 export const LocationOverviewTable: FC = () => {
-    const { data, isPending, isError, error } = useSampleOverview();
+    const { data, isPending, isError, error } = useLocationOverview();
     const [sort, setSort] = useState<LocationSort>(DEFAULT_LOCATION_SORT);
-    const locations = useMemo(
-        () => (data === undefined ? undefined : sortLocations(readLocationOverview(data), sort)),
-        [data, sort],
-    );
+    const locations = useMemo(() => (data === undefined ? undefined : sortLocations(data, sort)), [data, sort]);
 
     if (isError) {
         return (
