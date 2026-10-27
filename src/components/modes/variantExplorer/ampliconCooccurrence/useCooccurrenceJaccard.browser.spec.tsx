@@ -56,6 +56,29 @@ describe('useCooccurrenceJaccard', () => {
         expect(result.current.jaccardIndices).toEqual({ 'Amplicon 7: C100T + G300A': 0.4 });
     });
 
+    it('has no Jaccard indices without clinical sequences of the lineage, so no row is left out', async ({
+        routeMockers,
+    }) => {
+        routeMockers.lapis.mockPostQueriesOverTime(
+            {
+                filters: {},
+                queries: [
+                    { countQuery: 'pangoLineage=XEC*', coverageQuery: 'pangoLineage=XEC*' },
+                    { countQuery: 'pangoLineage=XEC* & C100T & G300A', coverageQuery: 'C100T & G300A' },
+                ],
+                dateRanges: [{ dateFrom: '1900-01-01', dateTo: dayjs().format('YYYY-MM-DD') }],
+                dateField: 'date',
+            },
+            { data: { data: [[{ count: 0, coverage: 0 }], [{ count: 0, coverage: 200 }]] } },
+        );
+        const rows = [row(mutations)];
+
+        const { result } = renderHook(() => useCooccurrenceJaccard(rows, source), { wrapper: wrapper() });
+
+        await waitFor(() => expect(result.current.isLoading).toBe(false));
+        expect(result.current.jaccardIndices).toBeUndefined();
+    });
+
     it('has no Jaccard indices, and loads nothing, without a source', ({ routeMockers }) => {
         routeMockers.lapis.mockLapisDown();
         const rows = [row(mutations)];

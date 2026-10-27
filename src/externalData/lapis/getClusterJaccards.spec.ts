@@ -51,6 +51,33 @@ describe('getClusterJaccards', () => {
         expect(jaccards).toEqual([0.4, 0, 120 / 210]);
     });
 
+    test('knows no index without sequences of the lineage, not even where 0 / 0', async () => {
+        lapisRouteMocker.mockPostQueriesOverTime(
+            {
+                filters: {},
+                queries: [
+                    { countQuery: 'pangoLineage=XEC*', coverageQuery: 'pangoLineage=XEC*' },
+                    { countQuery: 'pangoLineage=XEC* & C100T', coverageQuery: 'C100T' },
+                    { countQuery: 'pangoLineage=XEC* & A200-', coverageQuery: 'A200-' },
+                ],
+                dateRanges: [{ dateFrom: '1900-01-01', dateTo: dayjs().format('YYYY-MM-DD') }],
+                dateField: 'date',
+            },
+            {
+                data: {
+                    data: [[{ count: 0, coverage: 0 }], [{ count: 0, coverage: 50 }], [{ count: 0, coverage: 0 }]],
+                },
+            },
+        );
+
+        expect(
+            await getClusterJaccards({ ...source, dateFrom: undefined }, [
+                { codes: ['C100T'], atLeast: 1 },
+                { codes: ['A200-'], atLeast: 1 },
+            ]),
+        ).toEqual([undefined, undefined]);
+    });
+
     test('takes all of the time from long ago without a start date', async () => {
         lapisRouteMocker.mockPostQueriesOverTime(
             {
