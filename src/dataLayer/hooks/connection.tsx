@@ -1,9 +1,11 @@
 /**
  * The active RhyDB instance, in React context.
  *
- * One `Connection` (`dataLayer/transport/connection.ts`) per provider subtree: it
- * owns the transport, the CORS rules, the concurrency cap, the retry and the
- * logging, and every RhyDB read in `dataLayer/hooks/**` goes through it. The
+ * Each `ConnectionProvider` creates one `Connection` (`dataLayer/transport/connection.ts`)
+ * for its `url` and `schema`, and every component below it shares that connection.
+ * Every RhyDB read in `dataLayer/hooks/**` goes through it, so the CORS rules, the
+ * retry and the logging apply to all of them. The concurrency cap
+ * (`transport/requestLimit.ts`) is global, shared across all connections. The
  * provider also holds the query client of those reads (`createRhydbQueryClient`, `rhydbQuery.ts`). The
  * component tree never sees a URL — it calls the `dataLayer/hooks` hooks, which
  * call `useConnection()` / `useRhydbSchema()`.
