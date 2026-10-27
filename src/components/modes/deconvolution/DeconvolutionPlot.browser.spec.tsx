@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { DeconvolutionPlot } from './DeconvolutionPlot';
-import { UNDETERMINED, type DeconvolutionResult } from '../../../deconvolution/lollipopService';
+import { UNDETERMINED, type DeconvolutionResult } from '../../../externalData/lollipop/lollipopService';
 
 const colors = new Map([
     ['A', '#ff0000'],

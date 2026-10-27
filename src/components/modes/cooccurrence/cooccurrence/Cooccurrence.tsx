@@ -16,7 +16,10 @@ import {
 import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
-import { lineagePanelSymbols, matchingPanelLineages } from '../../../../deconvolution/lineagePanelMatch';
+import {
+    lineagePanelSymbols,
+    matchingPanelLineages,
+} from '../../../../externalData/fileBased/lineageTree/lineagePanelMatch';
 import { type LineageTree } from '../../../../externalData/fileBased/lineageTree/lineageTree';
 import { SubstitutionClass, type Substitution, type SequenceType } from '../../../../util/mutations';
 import { type TemporalGranularity } from '../../../../util/temporal';
