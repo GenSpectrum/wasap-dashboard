@@ -20,7 +20,7 @@ import { lineagePanelSymbols, matchingPanelLineages } from '../../../../deconvol
 import { type LineageTree } from '../../../../externalData/fileBased/lineageTree/lineageTree';
 import { type SequenceType, type TemporalGranularity } from '../../../../types/domain';
 import { SubstitutionClass, type Substitution } from '../../../../util/mutations';
-import { parsePositionToken } from '../../../../util/parsePositionToken';
+import { parsePositionToken } from '../../../inputs/positionFilter/parsePositionToken';
 import { useMutationLinkProvider } from '../../../mutations/MutationLinkTemplateContext';
 import {
     formatJaccardIndex,

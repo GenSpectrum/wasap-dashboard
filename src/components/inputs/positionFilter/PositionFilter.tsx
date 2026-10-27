@@ -1,7 +1,7 @@
 import { type FC, useEffect, useState } from 'react';
 
+import { parsePositionToken } from './parsePositionToken';
 import { type SequenceType } from '../../../types/domain';
-import { parsePositionToken } from '../../../util/parsePositionToken';
 import { singleGraphColorRGBByName } from '../../ui/charts/colors';
 
 export type PositionFilterProps = {
