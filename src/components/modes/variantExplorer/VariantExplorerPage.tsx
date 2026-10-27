@@ -6,7 +6,10 @@ import { ExcludedMutations } from './ExcludedMutations';
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { AmpliconCooccurrenceSection } from './ampliconCooccurrence/AmpliconCooccurrenceSection';
 import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { useSignatureWithoutBackground, type BackgroundLineage } from '../../../dataLayer/hooks/backgroundMutations';
+import {
+    useSignatureWithoutBackground,
+    type BackgroundLineage,
+} from '../../../dataLayer/hooks/analyses/backgroundMutations';
 import { ampliconNumbersByMutation } from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
 import { getLineageSignature } from '../../../externalData/fileBased/lineageTree/lineageTree';

@@ -6,7 +6,7 @@ import { DeconvolutionPlot } from './DeconvolutionPlot';
 import { LineagePanelTree } from './LineagePanelTree';
 import { lineageColors } from './lineageColors';
 import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { useMutationFrequencies } from '../../../dataLayer/hooks/mutationFrequencies';
+import { useMutationFrequencies } from '../../../dataLayer/hooks/analyses/mutationFrequencies';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { deconvolutionOptions } from '../../../deconvolution/granularityOptions';
 import { lineageSignatures } from '../../../deconvolution/lineageSignatures';

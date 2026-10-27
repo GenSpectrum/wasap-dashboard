@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useLineageOptions, type LineageItem } from '../../../dataLayer/hooks/lineageOptions';
+import { useLineageOptions, type LineageItem } from '../../../externalData/lapis/lineageOptions';
 import { ErrorBoundary } from '../../ui/error-boundary';
 import { LoadingDisplay } from '../../ui/loading-display';
 import { DownshiftCombobox, DownshiftMultiCombobox } from '../downshift-combobox';

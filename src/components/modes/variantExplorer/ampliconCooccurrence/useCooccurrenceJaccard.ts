@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { type CooccurrenceRow } from '../../../../dataLayer/hooks/ampliconCooccurrence';
+import { type CooccurrenceRow } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
 import { getClusterJaccards, type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
 
 /**

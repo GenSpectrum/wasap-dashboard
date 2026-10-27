@@ -1,12 +1,12 @@
 import { type FC, useEffect, useMemo } from 'react';
 
 import { getFilteredMutationCodes, type ProportionInterval } from './getFilteredMutationCodes';
-import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import {
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
-} from '../../../dataLayer/hooks/mutationsOverTime';
+} from '../../../dataLayer/hooks/analyses/mutationsOverTime';
+import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
 import { type SequenceType, type TemporalGranularity } from '../../../types/dashboardComponents';
 import { type Deletion, type Substitution } from '../../../util/mutations';

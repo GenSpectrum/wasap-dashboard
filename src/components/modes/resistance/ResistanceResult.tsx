@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { ProportionRangeTabs } from './ProportionRangeTabs';
 import { countByProportionRange, getProportionInterval } from './resistanceProportionRanges';
-import { useOverTimeMetadata } from '../../../dataLayer/hooks/mutationsOverTime';
+import { useOverTimeMetadata } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import {
     type ResistanceProportionRange,

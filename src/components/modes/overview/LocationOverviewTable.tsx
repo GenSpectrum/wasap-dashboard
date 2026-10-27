@@ -7,7 +7,7 @@ import {
     type LocationSort,
     type LocationSortColumn,
 } from './locationSort';
-import { useSampleOverview } from '../../../dataLayer/hooks/sampleOverview';
+import { useSampleOverview } from '../../../dataLayer/hooks/lookups/sampleOverview';
 import { readLocationOverview } from '../../../dataLayer/queries';
 import { TitledPanel } from '../../ui/TitledPanel';
 import { LoadingDisplay } from '../../ui/loading-display';

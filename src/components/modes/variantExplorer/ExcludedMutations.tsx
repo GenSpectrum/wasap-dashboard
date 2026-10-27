@@ -1,4 +1,7 @@
-import { BACKGROUND_MIN_PROPORTION, type ExcludedMutation } from '../../../dataLayer/hooks/backgroundMutations';
+import {
+    BACKGROUND_MIN_PROPORTION,
+    type ExcludedMutation,
+} from '../../../dataLayer/hooks/analyses/backgroundMutations';
 import { type SequenceType } from '../../../types/dashboardComponents';
 import { AnnotatedMutation } from '../../mutations/annotated-mutation';
 import { TitledPanel } from '../../ui/TitledPanel';

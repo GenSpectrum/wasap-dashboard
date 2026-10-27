@@ -1,7 +1,7 @@
 import { type FC, type ReactNode } from 'react';
 
 import { useConnection } from '../../dataLayer/hooks/connection';
-import { useTotalReadCount } from '../../dataLayer/hooks/totalReadCount';
+import { useTotalReadCount } from '../../dataLayer/hooks/lookups/totalReadCount';
 
 /**
  * Renders its children only once the RhyDB instance has answered a trivial

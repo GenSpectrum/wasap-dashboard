@@ -4,7 +4,7 @@ import { type FC, type PropsWithChildren } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConnectionProvider, createRhydbQueryClient, useRhydbQueryClient } from './connection';
-import { useTotalReadCount } from './totalReadCount';
+import { useTotalReadCount } from './lookups/totalReadCount';
 import type { RhydbSchema } from '../queries/schema';
 
 const schema: RhydbSchema = {

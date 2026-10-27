@@ -14,7 +14,7 @@
  * shared date axis (`samplingDatesQuery`). No over-time primitive is involved —
  * unlike `mutations-over-time` there is no fan-out, just `queries.length × 2`
  * plain `group(by := {date}, aggs := {count()})` calls, assembled into the matrix in
- * `dataLayer/hooks/queriesOverTime.ts`.
+ * `dataLayer/hooks/analyses/queriesOverTime.ts`.
  *
  * `translateGenomeFilter` is the whole LAPIS→RhyDB bridge for this feature: the
  * 12 node types `validateGenomeOnly` lets through, each to a `transport` builder.

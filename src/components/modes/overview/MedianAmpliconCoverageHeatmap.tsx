@@ -4,7 +4,7 @@ import {
     useMedianAmpliconCoverage,
     type MedianAmpliconCoverageGrid,
     type SampleAmpliconCoverage,
-} from '../../../dataLayer/hooks/medianAmpliconCoverage';
+} from '../../../dataLayer/hooks/analyses/medianAmpliconCoverage';
 import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/ampliconsConfig';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';

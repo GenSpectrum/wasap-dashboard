@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
-import { useStringFieldOptions } from '../../dataLayer/hooks/stringFieldOptions';
+import { useStringFieldOptions } from '../../dataLayer/hooks/lookups/stringFieldOptions';
 import { ErrorBoundary } from '../ui/error-boundary';
 import { LoadingDisplay } from '../ui/loading-display';
 

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
 import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { usePositionRangeMutations } from '../../../dataLayer/hooks/mutationsOverTime';
+import { usePositionRangeMutations } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { usePageState } from '../../../pageState/usePageState';
 import { ManualPageStateHandler } from '../../../pageState/wasap/handlers/ManualPageStateHandler';
