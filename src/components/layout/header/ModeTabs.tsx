@@ -1,7 +1,7 @@
 import { NavLink, useParams, useSearchParams } from 'react-router-dom';
 
-import { enabledAnalysisModes } from '../../../config/wasapPageConfig';
-import { resolveWasapConfig } from '../../../config/wastewaterOrganisms';
+import { enabledAnalysisModes } from '../../../config/organismConfig';
+import { resolveOrganismConfig } from '../../../config/wastewaterOrganisms';
 import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/wasap/baseFilter';
 import { modeLabel, modePath } from '../../../pageState/wasap/wasapModes';
 import { ExplorationModeInfo } from '../../filterSidebar/InfoBlocks';
@@ -19,7 +19,7 @@ import { Modal } from '../../ui/Modal';
 export function ModeTabs() {
     const { organismPath } = useParams();
     const [searchParams] = useSearchParams();
-    const config = resolveWasapConfig(organismPath);
+    const config = resolveOrganismConfig(organismPath);
 
     if (config === undefined) {
         return null;

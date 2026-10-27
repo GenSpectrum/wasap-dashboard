@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { fetchUntrackedMutations } from './useUntrackedMutations';
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
-import type { WasapPageConfig } from '../../config/wasapPageConfig';
+import type { OrganismConfig } from '../../config/organismConfig';
 import { EXCLUDE_SET_NAME, SEQUENCE_TYPE, WASAP_ANALYSIS_MODE } from '../../pageState/wasap/wasapAnalysisFilter';
 
 // these fields have no effect on data fetching, but need to be present to have a correct type.
@@ -30,7 +30,7 @@ const unusedBaseConfigFields = {
     browseDataDescription: '',
 };
 
-const baseConfigFields: WasapPageConfig = {
+const baseConfigFields: OrganismConfig = {
     ...unusedBaseConfigFields,
     lapisBaseUrl: DUMMY_LAPIS_URL,
 };

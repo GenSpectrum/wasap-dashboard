@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ResistancePageStateHandler } from './ResistancePageStateHandler';
-import { testConfig } from '../wasapTestConfig';
+import { testConfig } from '../testConfig';
 
 describe('ResistancePageStateHandler', () => {
     const handler = new ResistancePageStateHandler(testConfig);

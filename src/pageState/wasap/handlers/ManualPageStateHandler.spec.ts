@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ManualPageStateHandler } from './ManualPageStateHandler';
-import { testConfig } from '../wasapTestConfig';
+import { testConfig } from '../testConfig';
 
 describe('ManualPageStateHandler', () => {
     const handler = new ManualPageStateHandler(testConfig);

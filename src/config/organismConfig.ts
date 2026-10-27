@@ -61,7 +61,7 @@ export type LinkTemplate = z.infer<typeof linkTemplateSchema>;
 /**
  * Base settings that apply to all modes.
  */
-export const wasapPageConfigBaseSchema = z.object({
+export const organismConfigBaseSchema = z.object({
     /**
      * GenSpectrum's own identifier for the organism, i.e. 'covid'. Used as a
      * cache-key component and as the `organism` parameter on GenSpectrum
@@ -121,7 +121,7 @@ export const wasapPageConfigBaseSchema = z.object({
      */
     lineageTree: lineageTreeConfigSchema.optional(),
 });
-export type WasapPageConfigBase = z.infer<typeof wasapPageConfigBaseSchema>;
+export type OrganismConfigBase = z.infer<typeof organismConfigBaseSchema>;
 
 /**
  * Mode-dependent settings, one union per mode: either the mode is off (no
@@ -249,7 +249,7 @@ export const deconvolutionAnalysisModeConfigSchema = z.union([
  * `z.infer` of an intersection-of-unions produces the same kind of TS union a
  * hand-written one would.
  */
-export const wasapPageConfigSchema = wasapPageConfigBaseSchema
+export const organismConfigSchema = organismConfigBaseSchema
     .and(manualAnalysisModeConfigSchema)
     .and(variantAnalysisModeConfigSchema)
     .and(resistanceAnalysisModeConfigSchema)
@@ -257,12 +257,12 @@ export const wasapPageConfigSchema = wasapPageConfigBaseSchema
     .and(collectionAnalysisModeConfigSchema)
     .and(deconvolutionAnalysisModeConfigSchema)
     .and(cooccurrenceAnalysisModeConfigSchema);
-export type WasapPageConfig = z.infer<typeof wasapPageConfigSchema>;
+export type OrganismConfig = z.infer<typeof organismConfigSchema>;
 
 /**
  * Convenience function to get the list of enabled modes, in the order of their tabs.
  */
-export function enabledAnalysisModes(config: WasapPageConfig): WasapAnalysisMode[] {
+export function enabledAnalysisModes(config: OrganismConfig): WasapAnalysisMode[] {
     const result: WasapAnalysisMode[] = [];
     if (config.deconvolutionAnalysisModeEnabled) {
         result.push('deconvolution');
@@ -302,14 +302,14 @@ const MODE_ENABLED_FLAGS = {
  * The config of a page where the given mode is enabled, so that the settings
  * of that mode (like `filterDefaults.manual`) are known to be there.
  */
-export type WasapPageConfigFor<Mode extends WasapAnalysisMode> = Extract<
-    WasapPageConfig,
+export type OrganismConfigFor<Mode extends WasapAnalysisMode> = Extract<
+    OrganismConfig,
     { [Flag in (typeof MODE_ENABLED_FLAGS)[Mode]]: true }
 >;
 
 export function isModeEnabled<Mode extends WasapAnalysisMode>(
-    config: WasapPageConfig,
+    config: OrganismConfig,
     mode: Mode,
-): config is WasapPageConfigFor<Mode> {
+): config is OrganismConfigFor<Mode> {
     return config[MODE_ENABLED_FLAGS[mode]] === true;
 }

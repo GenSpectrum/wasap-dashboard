@@ -1,4 +1,4 @@
-import { type WasapPageConfig } from '../../../config/wasapPageConfig';
+import { type OrganismConfig } from '../../../config/organismConfig';
 import { type PageStateHandler } from '../../PageStateHandler';
 import { parseUrlParams, type UrlParams, writeUrlParams } from '../../urlParams';
 import {
@@ -20,7 +20,7 @@ export abstract class WasapModePageStateHandler<Analysis extends WasapAnalysisFi
     WasapModeFilter<Analysis>
 > {
     protected constructor(
-        protected readonly config: WasapPageConfig,
+        protected readonly config: OrganismConfig,
         readonly mode: Analysis['mode'],
     ) {}
 

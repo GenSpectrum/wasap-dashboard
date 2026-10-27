@@ -3,7 +3,7 @@ import { type To } from 'react-router-dom';
 
 import { CooccurrenceFilter } from './CooccurrenceFilter';
 import { CooccurrenceResult } from './CooccurrenceResult';
-import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismConfig';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
@@ -48,7 +48,7 @@ export function withDefaultAmplicon(
  * The analysis with the config's default amplicon picked, when nothing else is; pending while the
  * primer scheme loads, to find the amplicon in.
  */
-function useWithDefaultAmplicon(analysis: WasapCooccurrenceFilter, config: WasapPageConfigFor<'cooccurrence'>) {
+function useWithDefaultAmplicon(analysis: WasapCooccurrenceFilter, config: OrganismConfigFor<'cooccurrence'>) {
     const defaultAmplicon = config.cooccurrenceDefaultAmplicon;
     const usesDefault = usesDefaultAmplicon(analysis, defaultAmplicon);
     const amplicons = useAmplicons(usesDefault ? config.amplicons : undefined);
@@ -62,7 +62,7 @@ function useWithDefaultAmplicon(analysis: WasapCooccurrenceFilter, config: Wasap
     );
 }
 
-export function CooccurrencePage({ config }: { config: WasapPageConfigFor<'cooccurrence'> }) {
+export function CooccurrencePage({ config }: { config: OrganismConfigFor<'cooccurrence'> }) {
     const pageStateHandler = useMemo(() => new CooccurrencePageStateHandler(config), [config]);
     const {
         pageState: { base, analysis: urlAnalysis },

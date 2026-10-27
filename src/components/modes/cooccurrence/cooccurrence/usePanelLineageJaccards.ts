@@ -1,11 +1,11 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { type WasapPageConfigFor } from '../../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../../config/organismConfig';
 import { getClusterJaccards } from '../../../../externalData/lapis/getClusterJaccards';
 
 /** The clinical sequences to compute the Jaccard indices in: the variant mode's. */
-export type ClinicalLapisSource = WasapPageConfigFor<'variant'>['clinicalLapis'];
+export type ClinicalLapisSource = OrganismConfigFor<'variant'>['clinicalLapis'];
 
 /** A row, with its mutations and the panel lineages to compute the Jaccard index of with them. */
 export type PanelJaccardRow = { rowKey: string; codes: readonly string[]; lineages: readonly string[] };

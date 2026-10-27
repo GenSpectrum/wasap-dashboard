@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { fetchCollectionQueries } from './useCollectionQueries';
 import { DUMMY_BACKEND_URL, DUMMY_LAPIS_URL } from '../../routeMocker';
 import { backendRouteMocker, lapisRouteMocker, testServer } from '../../vitest.setup';
-import type { WasapPageConfig } from '../config/wasapPageConfig';
+import type { OrganismConfig } from '../config/organismConfig';
 import type { Collection } from './genSpectrum/Collection';
 import type * as ApiServiceModule from './genSpectrum/apiService';
 import { WASAP_ANALYSIS_MODE } from '../pageState/wasap/wasapAnalysisFilter';
@@ -43,7 +43,7 @@ const unusedBaseConfigFields = {
     browseDataDescription: '',
 };
 
-const baseConfigFields: WasapPageConfig = {
+const baseConfigFields: OrganismConfig = {
     ...unusedBaseConfigFields,
     lapisBaseUrl: DUMMY_LAPIS_URL,
 };

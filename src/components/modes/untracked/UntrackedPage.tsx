@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { UntrackedFilter } from './UntrackedFilter';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { useUntrackedMutations } from '../../../externalData/lapis/useUntrackedMutations';
 import { usePageState } from '../../../pageState/usePageState';
@@ -13,7 +13,7 @@ import { ModePageLayout } from '../../layout/ModePageLayout';
 import { ModeResults } from '../../layout/ModeResults';
 import { MutationsResult } from '../../mutations/MutationsResult';
 
-export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracked'> }) {
+export function UntrackedPage({ config }: { config: OrganismConfigFor<'untracked'> }) {
     const pageStateHandler = useMemo(() => new UntrackedPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },

@@ -14,8 +14,8 @@ import { VariantExplorerPage } from '../components/modes/variantExplorer/Variant
 import { LoadingDisplay } from '../components/ui/LoadingDisplay';
 import { NoDataDisplay } from '../components/ui/NoDataDisplay';
 import { getAppConfig } from '../config/appConfig';
-import { isModeEnabled, type WasapPageConfig } from '../config/wasapPageConfig';
-import { resolveWasapConfig } from '../config/wastewaterOrganisms';
+import { isModeEnabled, type OrganismConfig } from '../config/organismConfig';
+import { resolveOrganismConfig } from '../config/wastewaterOrganisms';
 import { fetchLineageTree } from '../externalData/fileBased/lineageTree/fetchLineageTree';
 import { getApiServiceForClientside } from '../externalData/genSpectrum/apiService';
 import { fetchResistanceData, type ResistanceData } from '../externalData/genSpectrum/resistanceData';
@@ -34,7 +34,7 @@ const EMPTY_RESISTANCE_DATA: ResistanceData = { mutationAnnotations: [], display
  */
 export function OrganismRoute() {
     const { organismPath } = useParams();
-    const config = resolveWasapConfig(organismPath);
+    const config = resolveOrganismConfig(organismPath);
 
     if (config === undefined) {
         return <NoDataDisplay message={`Organism '${organismPath}' doesn't exist or isn't configured.`} />;
@@ -43,7 +43,7 @@ export function OrganismRoute() {
     return <OrganismDashboard config={config} />;
 }
 
-function OrganismDashboard({ config }: { config: WasapPageConfig }) {
+function OrganismDashboard({ config }: { config: OrganismConfig }) {
     // `config.genSpectrumOrganismName` stands in for `config` — it's 1:1 with it (one
     // static config per organism).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps

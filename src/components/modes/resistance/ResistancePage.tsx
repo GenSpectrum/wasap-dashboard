@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { ResistanceMutationsFilter } from './ResistanceMutationsFilter';
 import { ResistanceResult } from './ResistanceResult';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { usePageState } from '../../../pageState/usePageState';
 import { ResistancePageStateHandler } from '../../../pageState/wasap/handlers/ResistancePageStateHandler';
 import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
@@ -10,7 +10,7 @@ import { ModePageLayout } from '../../layout/ModePageLayout';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
-export function ResistancePage({ config }: { config: WasapPageConfigFor<'resistance'> }) {
+export function ResistancePage({ config }: { config: OrganismConfigFor<'resistance'> }) {
     const pageStateHandler = useMemo(() => new ResistancePageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },

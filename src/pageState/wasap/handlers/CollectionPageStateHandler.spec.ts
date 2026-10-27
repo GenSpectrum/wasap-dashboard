@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { CollectionPageStateHandler } from './CollectionPageStateHandler';
-import { testConfigWithCollection, testConfigWithCollectionSources } from '../wasapTestConfig';
+import { testConfigWithCollection, testConfigWithCollectionSources } from '../testConfig';
 
 describe('CollectionPageStateHandler', () => {
     const handler = new CollectionPageStateHandler(testConfigWithCollection);

@@ -1,11 +1,11 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { enumParam, listParam, optional } from '../../urlParams';
 import { excludeSetNameSchema, type WasapUntrackedFilter } from '../wasapAnalysisFilter';
 
 export class UntrackedPageStateHandler extends WasapModePageStateHandler<WasapUntrackedFilter> {
-    constructor(protected readonly config: WasapPageConfigFor<'untracked'>) {
+    constructor(protected readonly config: OrganismConfigFor<'untracked'>) {
         super(config, 'untracked');
     }
 

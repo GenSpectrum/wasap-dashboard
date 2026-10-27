@@ -1,5 +1,5 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { enumParam, stringParam } from '../../urlParams';
 import {
     RESISTANCE_PROPORTION_RANGE,
@@ -8,7 +8,7 @@ import {
 } from '../wasapAnalysisFilter';
 
 export class ResistancePageStateHandler extends WasapModePageStateHandler<WasapResistanceFilter> {
-    constructor(protected readonly config: WasapPageConfigFor<'resistance'>) {
+    constructor(protected readonly config: OrganismConfigFor<'resistance'>) {
         super(config, 'resistance');
     }
 

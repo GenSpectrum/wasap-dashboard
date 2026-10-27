@@ -2,12 +2,12 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
-import { wasapPageConfigSchema } from './wasapPageConfig';
+import { organismConfigSchema } from './organismConfig';
 
 /**
  * The checked-in example configs (`public/config*.example.json`) are the only
  * thing standing in for the old hardcoded `defaultOrganisms` now — nothing
- * else proves they're still valid `WasapPageConfig` data, so this does.
+ * else proves they're still valid `OrganismConfig` data, so this does.
  *
  * Globbed rather than named one by one, so a new example config (a new
  * deployment target, a new demo variant, …) is covered automatically.
@@ -28,9 +28,9 @@ describe.each(exampleConfigFilenames)('%s', (filename) => {
         expect(parsed.organisms!.length).toBeGreaterThan(0);
     });
 
-    test('every organism validates against wasapPageConfigSchema', () => {
+    test('every organism validates against organismConfigSchema', () => {
         for (const organism of parsed.organisms!) {
-            expect(() => wasapPageConfigSchema.parse(organism)).not.toThrow();
+            expect(() => organismConfigSchema.parse(organism)).not.toThrow();
         }
     });
 });

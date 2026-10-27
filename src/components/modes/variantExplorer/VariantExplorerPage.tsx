@@ -5,7 +5,7 @@ import { ClinicalSequenceCountStat } from './ClinicalSequenceCountStat';
 import { ExcludedMutations } from './ExcludedMutations';
 import { VariantExplorerFilter } from './VariantExplorerFilter';
 import { AmpliconCooccurrenceSection } from './ampliconCooccurrence/AmpliconCooccurrenceSection';
-import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismConfig';
 import {
     useSignatureWithoutBackground,
     type BackgroundLineage,
@@ -35,7 +35,7 @@ import { TitledPanel } from '../../ui/TitledPanel';
 /** No mutations are left out by their mean proportion here: the sidebar has the mutations to exclude instead. */
 const ALL_MEAN_PROPORTIONS = { min: 0, max: 1 };
 
-export function VariantExplorerPage({ config }: { config: WasapPageConfigFor<'variant'> }) {
+export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'variant'> }) {
     const pageStateHandler = useMemo(() => new VariantExplorerPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },

@@ -1,11 +1,11 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
 import { MAX_POSITION_RANGE_LENGTH, mutationSourceSchema, type WasapManualFilter } from '../wasapAnalysisFilter';
 
 export class ManualPageStateHandler extends WasapModePageStateHandler<WasapManualFilter> {
-    constructor(protected readonly config: WasapPageConfigFor<'manual'>) {
+    constructor(protected readonly config: OrganismConfigFor<'manual'>) {
         super(config, 'manual');
     }
 

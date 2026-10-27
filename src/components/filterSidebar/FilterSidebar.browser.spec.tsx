@@ -4,8 +4,8 @@ import { render } from 'vitest-browser-react';
 import { FilterSidebar } from './FilterSidebar';
 import { it } from '../../../test-extend';
 import { ManualPageStateHandler } from '../../pageState/wasap/handlers/ManualPageStateHandler';
+import { testConfig } from '../../pageState/wasap/testConfig';
 import type { WasapBaseFilter, WasapManualFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { testConfig } from '../../pageState/wasap/wasapTestConfig';
 
 const handler = new ManualPageStateHandler(testConfig);
 

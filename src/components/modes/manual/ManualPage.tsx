@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { usePositionRangeMutations } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { usePageState } from '../../../pageState/usePageState';
@@ -22,7 +22,7 @@ import { MutationsResult } from '../../mutations/MutationsResult';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
-export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> }) {
+export function ManualPage({ config }: { config: OrganismConfigFor<'manual'> }) {
     const pageStateHandler = useMemo(() => new ManualPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },

@@ -2,7 +2,7 @@ import type { Collection } from './Collection';
 import type { ApiService } from './apiService';
 import { getCollection } from './getCollection';
 import { type MutationAnnotations } from '../../components/mutations/MutationAnnotationsContext';
-import type { ResistanceMutationCollectionConfig, WasapPageConfig } from '../../config/wasapPageConfig';
+import type { ResistanceMutationCollectionConfig, OrganismConfig } from '../../config/organismConfig';
 
 /**
  * Data about resistance mutations, used by the wastewater dashboards.
@@ -20,7 +20,7 @@ export type ResistanceData = {
  * Given a wastewater dashboard config and GenSpectrum API service, fetch resistance mutation data.
  * This is done by fetching relevant collections, and transforming the data into the shape we want here.
  */
-export async function fetchResistanceData(config: WasapPageConfig, apiService: ApiService): Promise<ResistanceData> {
+export async function fetchResistanceData(config: OrganismConfig, apiService: ApiService): Promise<ResistanceData> {
     if (!config.resistanceAnalysisModeEnabled) {
         return { mutationAnnotations: [], displayMutationsBySet: {} };
     }

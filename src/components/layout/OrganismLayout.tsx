@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 
 import { RhydbUnreachableWrapper } from './RhydbUnreachableWrapper';
+import type { OrganismConfig } from '../../config/organismConfig';
 import { rhydbSchema } from '../../config/rhydbSchema';
-import type { WasapPageConfig } from '../../config/wasapPageConfig';
 import { ConnectionProvider, createRhydbQueryClient } from '../../dataLayer/hooks/connection';
 import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
@@ -16,7 +16,7 @@ import { MutationLinkTemplateContextProvider } from '../mutations/MutationLinkTe
 
 /** What the layout hands down to the page of an analysis mode. */
 export type OrganismLayoutContext = {
-    config: WasapPageConfig;
+    config: OrganismConfig;
     resistanceData: ResistanceData;
     /** `undefined` if the organism has none configured, or it failed to load. */
     lineageTree: LineageTree | undefined;
@@ -30,7 +30,7 @@ export type OrganismLayoutContext = {
 };
 
 type OrganismLayoutProps = {
-    config: WasapPageConfig;
+    config: OrganismConfig;
     resistanceData: ResistanceData;
     lineageTree: LineageTree | undefined;
 };

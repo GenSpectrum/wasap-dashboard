@@ -1,11 +1,11 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
 import { positionSourceSchema, type WasapCooccurrenceFilter } from '../wasapAnalysisFilter';
 
 export class CooccurrencePageStateHandler extends WasapModePageStateHandler<WasapCooccurrenceFilter> {
-    constructor(protected readonly config: WasapPageConfigFor<'cooccurrence'>) {
+    constructor(protected readonly config: OrganismConfigFor<'cooccurrence'>) {
         super(config, 'cooccurrence');
     }
 

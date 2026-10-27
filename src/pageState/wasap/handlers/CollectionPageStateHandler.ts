@@ -1,10 +1,10 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { enumParam, numberParam, optional } from '../../urlParams';
 import { COLLECTION_SOURCE, collectionSourceSchema, type WasapCollectionFilter } from '../wasapAnalysisFilter';
 
 export class CollectionPageStateHandler extends WasapModePageStateHandler<WasapCollectionFilter> {
-    constructor(protected readonly config: WasapPageConfigFor<'collection'>) {
+    constructor(protected readonly config: OrganismConfigFor<'collection'>) {
         super(config, 'collection');
     }
 

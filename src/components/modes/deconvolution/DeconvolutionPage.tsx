@@ -7,7 +7,7 @@ import { LineagePanelTree } from './LineagePanelTree';
 import { deconvolutionOptions } from './granularityOptions';
 import { lineageColors } from './lineageColors';
 import { poolFrequencies } from './poolFrequencies';
-import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismConfig';
 import { useMutationFrequencies } from '../../../dataLayer/hooks/analyses/mutationFrequencies';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { lineageSignatures } from '../../../externalData/fileBased/lineageTree/lineageSignatures';
@@ -26,7 +26,7 @@ import { NothingSelected } from '../../layout/NothingSelected';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
 import { TitledPanel } from '../../ui/TitledPanel';
 
-export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deconvolution'> }) {
+export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'deconvolution'> }) {
     const pageStateHandler = useMemo(() => new DeconvolutionPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },

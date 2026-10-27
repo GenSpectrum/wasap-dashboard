@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { CollectionAnalysisFilter } from './CollectionAnalysisFilter';
 import { CollectionResult } from './CollectionResult';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { useCollectionQueries } from '../../../externalData/useCollectionQueries';
 import { usePageState } from '../../../pageState/usePageState';
 import { CollectionPageStateHandler } from '../../../pageState/wasap/handlers/CollectionPageStateHandler';
@@ -13,7 +13,7 @@ import { ModePageLayout } from '../../layout/ModePageLayout';
 import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
 
-export function CollectionPage({ config }: { config: WasapPageConfigFor<'collection'> }) {
+export function CollectionPage({ config }: { config: OrganismConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { DeconvolutionPageStateHandler } from './DeconvolutionPageStateHandler';
-import { testConfigWithDeconvolution } from '../wasapTestConfig';
+import { testConfigWithDeconvolution } from '../testConfig';
 
 describe('DeconvolutionPageStateHandler', () => {
     const handler = new DeconvolutionPageStateHandler(testConfigWithDeconvolution);

@@ -1,6 +1,6 @@
 import { type WasapBaseFilter, type WasapDatasetFilter, type WasapMeanProportion } from './wasapAnalysisFilter';
 import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../../components/inputs/dateRangeFilter/dateRangeOption';
-import { type WasapPageConfig } from '../../config/wasapPageConfig';
+import { type OrganismConfig } from '../../config/organismConfig';
 import { DEFAULT_RECENT_DAYS_LABEL } from '../../util/recentDaysDateRangeOptions';
 import { temporalGranularitySchema } from '../../util/temporal';
 import { enumParam, listParam } from '../urlParams';
@@ -17,7 +17,7 @@ const granularityParam = enumParam(temporalGranularitySchema);
  */
 export function parseBaseFilter(
     search: URLSearchParams,
-    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
+    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
     defaultMeanProportion: WasapMeanProportion,
 ): WasapBaseFilter {
     return {
@@ -32,7 +32,7 @@ export function parseBaseFilter(
 /** The part of the base filter that selects the dataset, and is the same for all modes. */
 export function parseDatasetFilter(
     search: URLSearchParams,
-    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
+    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
 ): WasapDatasetFilter {
     const samplingDate = parseSamplingDateFromUrl(search, config.samplingDateField);
 
@@ -56,7 +56,7 @@ export function parseDatasetFilter(
 export function setBaseFilterSearchParams(
     search: URLSearchParams,
     base: WasapBaseFilter,
-    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
     defaultMeanProportion: WasapMeanProportion,
 ) {
     setDatasetFilterSearchParams(search, base, config);
@@ -72,7 +72,7 @@ export function setBaseFilterSearchParams(
 export function setDatasetFilterSearchParams(
     search: URLSearchParams,
     dataset: WasapDatasetFilter,
-    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
 ) {
     search.set(config.locationNameField, listParam.write(dataset.locationNames));
     // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
@@ -91,7 +91,7 @@ export function setDatasetFilterSearchParams(
  */
 export function datasetFilterSearchParams(
     dataset: WasapDatasetFilter,
-    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
 ): URLSearchParams {
     const search = new URLSearchParams();
     setDatasetFilterSearchParams(search, dataset, config);
@@ -105,7 +105,7 @@ export function datasetFilterSearchParams(
 export function withDatasetFilter(
     search: URLSearchParams,
     dataset: WasapDatasetFilter,
-    config: Pick<WasapPageConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
 ): URLSearchParams {
     const datasetParams = [config.locationNameField, config.samplingDateField, 'granularity'];
 

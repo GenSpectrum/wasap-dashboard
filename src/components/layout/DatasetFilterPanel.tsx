@@ -1,4 +1,4 @@
-import { type WasapPageConfig } from '../../config/wasapPageConfig';
+import { type OrganismConfig } from '../../config/organismConfig';
 import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
 import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
@@ -15,7 +15,7 @@ export function DatasetFilterPanel({
     value,
     onChange,
 }: {
-    config: Pick<WasapPageConfig, 'locationNameField'>;
+    config: Pick<OrganismConfig, 'locationNameField'>;
     value: WasapDatasetFilter;
     onChange: (value: WasapDatasetFilter) => void;
 }) {

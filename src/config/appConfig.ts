@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type WasapPageConfig, wasapPageConfigSchema } from './wasapPageConfig';
+import { type OrganismConfig, organismConfigSchema } from './organismConfig';
 
 /**
  * Runtime configuration for the standalone app.
@@ -32,7 +32,7 @@ const appConfigSchema = z
          * segments (`covid`, `rsv-a`, …) onto entries of this array. No default:
          * an absent or organisms-less config.json means zero dashboards.
          */
-        organisms: z.array(wasapPageConfigSchema).default([]),
+        organisms: z.array(organismConfigSchema).default([]),
         /**
          * Base URL of the LolliPop service (`lollipop-service/`), which computes the deconvolution
          * mode's estimates. Without it, that mode is off for every organism.
@@ -45,7 +45,7 @@ const appConfigSchema = z
             : config,
     );
 
-function withoutDeconvolution(organism: WasapPageConfig): WasapPageConfig {
+function withoutDeconvolution(organism: OrganismConfig): OrganismConfig {
     return { ...organism, deconvolutionAnalysisModeEnabled: undefined };
 }
 

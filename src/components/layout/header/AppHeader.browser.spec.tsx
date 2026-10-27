@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-react';
 import { AppHeader } from './AppHeader';
 import { it } from '../../../../test-extend';
 import { setAppConfigForTesting } from '../../../config/appConfig';
-import { testConfig } from '../../../pageState/wasap/wasapTestConfig';
+import { testConfig } from '../../../pageState/wasap/testConfig';
 
 function renderHeader(entry: string) {
     return render(

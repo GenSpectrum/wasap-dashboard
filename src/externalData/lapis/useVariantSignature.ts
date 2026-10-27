@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import { getClusterJaccardsWithLineageCount } from './getClusterJaccards';
 import { getMutationsForVariant } from './getMutations';
-import { type WasapPageConfigFor } from '../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
 import type { VariantTimeFrame, WasapVariantFilter } from '../../pageState/wasap/wasapAnalysisFilter';
@@ -35,7 +35,7 @@ export type VariantSignature = {
  * has no lineage selected.
  */
 export function useVariantSignature(
-    config: WasapPageConfigFor<'variant'>,
+    config: OrganismConfigFor<'variant'>,
     analysis: WasapVariantFilter,
     lineageTree: LineageTree | undefined,
 ) {
@@ -67,7 +67,7 @@ export function isVariantSelected(analysis: WasapVariantFilter): boolean {
 }
 
 export async function fetchVariantSignature(
-    config: WasapPageConfigFor<'variant'>,
+    config: OrganismConfigFor<'variant'>,
     analysis: WasapVariantFilter,
     lineageTree: LineageTree | undefined,
     signal?: AbortSignal,
@@ -81,7 +81,7 @@ export async function fetchVariantSignature(
 }
 
 async function fetchComputedSignature(
-    config: WasapPageConfigFor<'variant'>,
+    config: OrganismConfigFor<'variant'>,
     analysis: WasapVariantFilter,
     signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {
@@ -109,7 +109,7 @@ async function fetchComputedSignature(
 }
 
 async function fetchPredefinedSignature(
-    config: WasapPageConfigFor<'variant'>,
+    config: OrganismConfigFor<'variant'>,
     analysis: WasapVariantFilter,
     lineageTree: LineageTree | undefined,
     signal: AbortSignal | undefined,

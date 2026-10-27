@@ -1,11 +1,11 @@
 import { WasapModePageStateHandler } from './WasapModePageStateHandler';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { sequenceTypeSchema } from '../../../util/mutations';
 import { booleanParam, enumParam, listParam, numberParam, optional, stringParam } from '../../urlParams';
 import { signatureTypeSchema, variantTimeFrameSchema, type WasapVariantFilter } from '../wasapAnalysisFilter';
 
 export class VariantExplorerPageStateHandler extends WasapModePageStateHandler<WasapVariantFilter> {
-    constructor(protected readonly config: WasapPageConfigFor<'variant'>) {
+    constructor(protected readonly config: OrganismConfigFor<'variant'>) {
         super(config, 'variant');
     }
 

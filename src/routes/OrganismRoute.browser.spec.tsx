@@ -4,8 +4,8 @@ import { render } from 'vitest-browser-react';
 
 import { ModeRoute } from './OrganismRoute';
 import { it } from '../../test-extend';
-import type { WasapPageConfig } from '../config/wasapPageConfig';
-import { testConfig } from '../pageState/wasap/wasapTestConfig';
+import type { OrganismConfig } from '../config/organismConfig';
+import { testConfig } from '../pageState/wasap/testConfig';
 
 // the real pages need RhyDB; stand-ins that say which page it is are enough here
 /* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */
@@ -36,7 +36,7 @@ function CurrentLocation() {
     return <div data-testid='location'>{`${pathname}${search}`}</div>;
 }
 
-function renderRoutes(entry: string, config: WasapPageConfig = testConfig) {
+function renderRoutes(entry: string, config: OrganismConfig = testConfig) {
     return render(
         <MemoryRouter initialEntries={[entry]}>
             <CurrentLocation />

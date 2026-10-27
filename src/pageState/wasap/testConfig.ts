@@ -1,7 +1,7 @@
 import { VARIANT_TIME_FRAME } from './wasapAnalysisFilter';
-import { type WasapPageConfig } from '../../config/wasapPageConfig';
+import { type OrganismConfig } from '../../config/organismConfig';
 
-/** A page config with the manual, variant, resistance and untracked modes enabled. */
+/** An organism config with the manual, variant, resistance and untracked modes enabled. */
 export const testConfig = {
     genSpectrumOrganismName: 'covid',
     name: 'SARS-CoV-2',
@@ -88,7 +88,7 @@ export const testConfig = {
             excludeSet: 'predefined',
         },
     },
-} satisfies WasapPageConfig;
+} satisfies OrganismConfig;
 
 /**
  * Like `testConfig`, with the collection mode enabled: GenSpectrum collections only, the same
@@ -106,7 +106,7 @@ export const testConfigWithCollection = {
             collectionId: undefined,
         },
     },
-} satisfies WasapPageConfig;
+} satisfies OrganismConfig;
 
 /** Like `testConfigWithCollection`, with the CoV-Spectrum collection source enabled too, as covid has. */
 export const testConfigWithCollectionSources = {
@@ -114,7 +114,7 @@ export const testConfigWithCollectionSources = {
     covSpectrumCollectionSourceEnabled: true,
     collectionsApiBaseUrl: 'https://collections.example.org',
     collectionTitleFilter: 'test',
-} satisfies WasapPageConfig;
+} satisfies OrganismConfig;
 
 /** Like `testConfig`, with the deconvolution mode enabled. */
 export const testConfigWithDeconvolution = {
@@ -122,7 +122,7 @@ export const testConfigWithDeconvolution = {
     deconvolutionAnalysisModeEnabled: true,
     lineageTree: { url: 'https://example.org/tree.json', lineageAttribute: 'Nextclade_pango' },
     deconvolutionPanel: ['XFG', 'NB.1.8.1'],
-} satisfies WasapPageConfig;
+} satisfies OrganismConfig;
 
 /** Like `testConfig`, with the co-occurrence mode enabled. */
 export const testConfigWithCooccurrence = {
@@ -136,4 +136,4 @@ export const testConfigWithCooccurrence = {
             positions: undefined,
         },
     },
-} satisfies WasapPageConfig;
+} satisfies OrganismConfig;

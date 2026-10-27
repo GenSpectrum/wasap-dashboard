@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 import { fetchVariantSignature, getLapisFilterForTimeFrame, isVariantSelected } from './useVariantSignature';
 import { DUMMY_LAPIS_URL } from '../../../routeMocker';
 import { lapisRouteMocker } from '../../../vitest.setup';
-import type { WasapPageConfig } from '../../config/wasapPageConfig';
+import type { OrganismConfig } from '../../config/organismConfig';
 import {
     SEQUENCE_TYPE,
     SIGNATURE_TYPE,
@@ -37,7 +37,7 @@ const unusedBaseConfigFields = {
     browseDataDescription: '',
 };
 
-const baseConfigFields: WasapPageConfig = {
+const baseConfigFields: OrganismConfig = {
     ...unusedBaseConfigFields,
     lapisBaseUrl: DUMMY_LAPIS_URL,
 };
