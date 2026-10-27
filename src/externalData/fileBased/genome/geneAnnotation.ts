@@ -1,5 +1,5 @@
 /**
- * EXPERIMENTAL: parsing a Nextclade dataset's `genome_annotation.gff3` (the sibling of the
+ * Parses a Nextclade dataset's `genome_annotation.gff3` (the sibling of the
  * `tree.json` the lineage tree already comes from) into each gene's nucleotide range, just enough
  * to translate a nucleotide genome position into a gene:codon one — see `codonAnchorFor`.
  *

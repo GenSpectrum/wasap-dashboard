@@ -163,7 +163,7 @@ export function CooccurrenceFilter({
 
 /**
  * Picks a known amplicon of the organism's primer scheme. `toAnchor` turns the chosen amplicon
- * into the anchor position token to use (nucleotide or, EXPERIMENTAL, gene:codon — see
+ * into the anchor position token to use (nucleotide or gene:codon — see
  * `AminoAcidAmpliconSelect`); an amplicon it returns `null` for (no coding region under it, in the
  * amino-acid case) is shown but disabled.
  */
@@ -222,7 +222,7 @@ const AmpliconSelect: FC<{
     );
 };
 
-/** EXPERIMENTAL: `AmpliconSelect`, anchoring on the gene:codon of each amplicon's core midpoint. */
+/** `AmpliconSelect`, anchoring on the gene:codon of each amplicon's core midpoint. */
 const AminoAcidAmpliconSelect: FC<{
     amplicons: NonNullable<WasapPageConfigFor<'cooccurrence'>['amplicons']>;
     genomeAnnotationUrl: string;
