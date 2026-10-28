@@ -15,7 +15,7 @@ export const OverviewStats: FC = () => (
     // daisyUI's stat tiles lay out as columns only inside `.stats` — a bare `.stat` hard-codes
     // `width: 100%`, so without it every tile would claim a row of its own. `.stats`' own columns
     // are content-sized by default (grid-auto-columns: auto); [grid-auto-columns:1fr] makes them equal.
-    <div className='stats stats-horizontal w-full [grid-auto-columns:1fr] overflow-x-auto border border-stone-300 bg-white'>
+    <div className='stats stats-vertical md:stats-horizontal w-full [grid-auto-columns:1fr] overflow-x-auto border border-stone-300 bg-white'>
         <LocationCount />
         <BatchCount />
         <SampleCount />
