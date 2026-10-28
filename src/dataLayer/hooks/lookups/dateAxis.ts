@@ -17,7 +17,7 @@ import {
     type TemporalGranularity,
 } from '../../../util/temporal';
 import { normalizeFilter, samplingDatesQuery, type RhydbReadFilter, type RhydbSchema } from '../../queries';
-import { readNamedCounts, type NamedCount } from '../../queries/rows';
+import { readNamedCounts, type NamedCount } from '../../queries/counts';
 import { type Connection } from '../../transport/connection';
 import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQuery } from '../rhydbQuery';

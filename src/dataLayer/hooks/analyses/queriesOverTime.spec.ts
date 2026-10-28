@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import { buildQueriesMatrix } from './queriesOverTime';
 import { getProportion } from '../../../components/overTime/proportionValue';
-import { type NamedCount } from '../../queries/rows';
+import { type NamedCount } from '../../queries/counts';
 import { buildDateAxis } from '../lookups/dateAxis';
 
 const axis = buildDateAxis(
