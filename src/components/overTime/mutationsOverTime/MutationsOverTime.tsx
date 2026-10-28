@@ -8,7 +8,7 @@ import {
 } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { useRhydbSchema } from '../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../dataLayer/queries/filter';
-import { type Deletion, type Substitution, type SequenceType } from '../../../util/mutations';
+import { type Deletion, type Substitution, type SequenceType } from '../../../domain/mutations';
 import { type TemporalGranularity } from '../../../util/temporal';
 import { AnnotatedMutation } from '../../mutations/AnnotatedMutation';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';

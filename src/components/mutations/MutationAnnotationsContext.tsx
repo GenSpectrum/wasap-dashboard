@@ -1,6 +1,6 @@
 import { createContext, type ComponentProps, type FC, useContext, useMemo } from 'react';
 
-import { type Mutation, type SequenceType } from '../../util/mutations';
+import { type Mutation, type SequenceType } from '../../domain/mutations';
 
 type MutationEntry = string | { mutation: string; name?: string; description?: string };
 

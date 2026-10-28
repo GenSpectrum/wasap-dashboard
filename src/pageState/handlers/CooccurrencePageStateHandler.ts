@@ -1,6 +1,6 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { sequenceTypeSchema } from '../../util/mutations';
+import { sequenceTypeSchema } from '../../domain/mutations';
 import { positionSourceSchema, type CooccurrenceAnalysis } from '../analysisFilter';
 import { enumParam, listParam, numberParam, optional, stringParam } from '../urlParams';
 

@@ -9,7 +9,7 @@ import {
     type ResolvedMutationAnnotation,
     useMutationAnnotationsProvider,
 } from './MutationAnnotationsContext';
-import { SubstitutionClass } from '../../util/mutations';
+import { SubstitutionClass } from '../../domain/mutations';
 
 function resolved(annotation: MutationAnnotation): ResolvedMutationAnnotation {
     return { annotation, name: annotation.name, description: annotation.description };

@@ -20,20 +20,20 @@
 import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { sortSubstitutionsAndDeletions } from '../../../components/mutations/sortSubstitutionsAndDeletions';
 import {
     BaseMutationOverTimeDataMap,
     type MutationOverTimeDataMap,
 } from '../../../components/overTime/mutationsOverTime/MutationOverTimeData';
 import { removeEmptyDatesInPlace, type ProportionValue } from '../../../components/overTime/proportionValue';
-import { Map2dView, type Map2DContents } from '../../../util/map2d';
 import {
     DeletionClass,
     SubstitutionClass,
     type Deletion,
     type Substitution,
     type SubstitutionOrDeletionEntry,
-} from '../../../util/mutations';
+} from '../../../domain/mutations';
+import { sortSubstitutionsAndDeletions } from '../../../domain/sortSubstitutionsAndDeletions';
+import { Map2dView, type Map2DContents } from '../../../util/map2d';
 import {
     parseDateStringToTemporal,
     type Temporal,

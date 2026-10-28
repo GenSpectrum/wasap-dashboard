@@ -1,5 +1,5 @@
+import { type Deletion, type Substitution } from '../../domain/mutations';
 import { type Map2dView } from '../../util/map2d';
-import { type Deletion, type Substitution } from '../../util/mutations';
 import { type Temporal } from '../../util/temporal';
 
 /**

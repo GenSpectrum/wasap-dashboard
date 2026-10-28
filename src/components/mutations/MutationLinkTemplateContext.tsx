@@ -1,6 +1,6 @@
 import { createContext, useContext, type FC, type PropsWithChildren } from 'react';
 
-import { type Deletion, type Substitution, type SequenceType } from '../../util/mutations';
+import { type Deletion, type Substitution, type SequenceType } from '../../domain/mutations';
 
 export type MutationLinkTemplate = {
     nucleotideMutation?: string;

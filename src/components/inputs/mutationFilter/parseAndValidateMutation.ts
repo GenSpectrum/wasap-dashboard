@@ -8,7 +8,7 @@ import {
     SubstitutionClass,
     type SequenceType,
     mutationType,
-} from '../../../util/mutations';
+} from '../../../domain/mutations';
 
 export const parseAndValidateMutation = (
     value: string,

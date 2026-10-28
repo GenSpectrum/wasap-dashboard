@@ -9,13 +9,13 @@
 import { useMemo } from 'react';
 
 import { useOverTimeMetadata } from './mutationsOverTime';
-import { type VariantSignature } from '../../../externalData/lapis/useVariantSignature';
 import {
     type Deletion,
     type Substitution,
     type SubstitutionOrDeletionEntry,
     type SequenceType,
-} from '../../../util/mutations';
+} from '../../../domain/mutations';
+import { type VariantSignature } from '../../../externalData/lapis/useVariantSignature';
 import { type TemporalGranularity } from '../../../util/temporal';
 import { type RhydbReadFilter } from '../../queries';
 
