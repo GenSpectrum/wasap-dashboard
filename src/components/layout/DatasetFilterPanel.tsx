@@ -19,7 +19,7 @@ export function DatasetFilterPanel({
     return (
         // The date column is the widest: the select and the two dates of the date filter are in one row, which
         // needs about 24rem. The flex bases are what the columns wrap at on a narrow page.
-        <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-4 p-6'>
+        <section aria-label='Filter dataset' className='flex flex-wrap items-start gap-x-6 gap-y-4 p-4 lg:p-6'>
             <div className='min-w-0 flex-[1_1_11rem]'>
                 <LabeledField label='Sampling locations'>
                     <LocationMultiSelect

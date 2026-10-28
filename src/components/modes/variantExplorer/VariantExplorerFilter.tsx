@@ -119,7 +119,7 @@ export function VariantExplorerFilter({
 
 function ExcludeMutationsInfo() {
     return (
-        <div className='w-96 space-y-2 text-sm font-normal text-gray-700'>
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p>
                 Mutations left out of the variant&apos;s as the background it stands on, rather than what tells it
                 apart. They are listed at the bottom of the page.

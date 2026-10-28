@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 
 import { useCloseOnEsc, useFloatingUi } from './floatingUiHooks';
 
-export const TOOLTIP_BASE_STYLES = 'z-10 w-max bg-white p-4 border border-gray-200';
+export const TOOLTIP_BASE_STYLES = 'z-10 w-max max-w-[calc(100vw-16px)] bg-white p-4 border border-gray-200';
 
 const TOOLTIP_MIDDLEWARE = [offset(4), flip(), shift({ padding: 8 })];
 
