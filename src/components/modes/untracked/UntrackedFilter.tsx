@@ -1,7 +1,6 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
-import type { ExcludeSetName, WasapUntrackedFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { ExcludeSetName, UntrackedAnalysis } from '../../../pageState/analysisFilter';
 import { KnownVariantsExclusionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
@@ -9,8 +8,8 @@ import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 interface UntrackedFilterProps {
-    pageState: WasapUntrackedFilter;
-    setPageState: (newState: WasapUntrackedFilter) => void;
+    pageState: UntrackedAnalysis;
+    setPageState: (newState: UntrackedAnalysis) => void;
     cladeLineageQueryResult: UseQueryResult<Record<string, string>>;
     /**
      * The LAPIS base URL for the clinical sequence data used in the variant selector.
@@ -72,21 +71,20 @@ export function UntrackedFilter({
             ) : (
                 <>
                     <LabeledField label='Custom variant list'>
-                        <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                            <LineageFilter
-                                field={clinicalSequenceLapisLineageField}
-                                placeholderText='Variant'
-                                value={pageState.excludeVariants}
-                                onLineageMultiChange={(lineages) => {
-                                    setPageState({
-                                        ...pageState,
-                                        excludeVariants: lineages[clinicalSequenceLapisLineageField],
-                                    });
-                                }}
-                                hideCounts={true}
-                                multiSelect={true}
-                            />
-                        </LapisClientProvider>
+                        <LineageFilter
+                            lapisUrl={clinicalSequenceLapisBaseUrl}
+                            field={clinicalSequenceLapisLineageField}
+                            placeholderText='Variant'
+                            value={pageState.excludeVariants}
+                            onLineageMultiChange={(lineages) => {
+                                setPageState({
+                                    ...pageState,
+                                    excludeVariants: lineages[clinicalSequenceLapisLineageField],
+                                });
+                            }}
+                            hideCounts={true}
+                            multiSelect={true}
+                        />
                     </LabeledField>
                 </>
             )}

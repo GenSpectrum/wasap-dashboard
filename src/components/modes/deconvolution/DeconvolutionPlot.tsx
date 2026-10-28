@@ -2,9 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
 import { UNDETERMINED_COLOR } from './lineageColors';
-import { UNDETERMINED, type DeconvolutionResult } from '../../../deconvolution/lollipopService';
-import { type TemporalGranularity } from '../../../types/domain';
-import { parseDateStringToTemporal } from '../../../util/temporalClass';
+import { parseDateStringToTemporal, type TemporalGranularity } from '../../../domain/temporal';
+import { UNDETERMINED, type DeconvolutionResult } from '../../../externalData/lollipop/lollipopService';
 
 const MARGIN = { top: 8, right: 12, bottom: 22, left: 40 };
 const Y_TICKS = [0, 0.25, 0.5, 0.75, 1];

@@ -1,12 +1,11 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
+import { useRhydbSchema } from '../../dataLayer/hooks/connection';
 import { useStringFieldOptions } from '../../dataLayer/hooks/lookups/stringFieldOptions';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
 import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 export type LocationMultiSelectProps = {
-    /** The column whose values are offered. */
-    field: string;
     /** The ticked locations. Empty means all of them, and says so. */
     value: string[];
     onChange: (value: string[]) => void;
@@ -20,7 +19,7 @@ export type LocationMultiSelectProps = {
  */
 export function LocationMultiSelect(props: LocationMultiSelectProps) {
     return (
-        <ErrorBoundary layout='horizontal' resetKeys={[props.field]}>
+        <ErrorBoundary layout='horizontal'>
             <div className='h-12'>
                 <LocationMultiSelectWithoutErrors {...props} />
             </div>
@@ -28,8 +27,8 @@ export function LocationMultiSelect(props: LocationMultiSelectProps) {
     );
 }
 
-function LocationMultiSelectWithoutErrors({ field, value, onChange }: LocationMultiSelectProps) {
-    const { data, error, isLoading } = useStringFieldOptions(field);
+function LocationMultiSelectWithoutErrors({ value, onChange }: LocationMultiSelectProps) {
+    const { data, error, isLoading } = useStringFieldOptions(useRhydbSchema().locationName);
 
     if (isLoading) {
         return <LoadingDisplay />;

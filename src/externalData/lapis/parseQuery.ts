@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
+import { lapisPost } from './http';
 import { rhydbFilterExpressionSchema } from '../../dataLayer/queries';
-import { lapisPost } from '../lapisApi/lapisApi';
 
 const parsedQueryResultSuccessSchema = z.object({
     type: z.literal('success'),

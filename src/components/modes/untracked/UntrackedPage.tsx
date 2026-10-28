@@ -1,19 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { UntrackedFilter } from './UntrackedFilter';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
-import { getCladeLineages } from '../../../externalData/lapis/getCladeLineages';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
+import { useCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { useUntrackedMutations } from '../../../externalData/lapis/useUntrackedMutations';
+import { UntrackedPageStateHandler } from '../../../pageState/handlers/UntrackedPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
-import { UntrackedPageStateHandler } from '../../../pageState/wasap/handlers/UntrackedPageStateHandler';
-import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
-import { WasapResults } from '../../layout/WasapResults';
+import { ModeResults } from '../../layout/ModeResults';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { MutationsResult } from '../../mutations/MutationsResult';
 
-export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracked'> }) {
+export function UntrackedPage({ config }: { config: OrganismConfigFor<'untracked'> }) {
     const pageStateHandler = useMemo(() => new UntrackedPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },
@@ -27,11 +26,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
     );
 
     const { lapisBaseUrl, cladeField, lineageField } = config.clinicalLapis;
-    // Keyed on the clinical-LAPIS coordinates the query actually targets, not just 'cladeLineages'.
-    const cladeLineageQueryResult = useQuery({
-        queryKey: ['cladeLineages', true, lapisBaseUrl, cladeField, lineageField],
-        queryFn: ({ signal }) => getCladeLineages(lapisBaseUrl, cladeField, lineageField, true, signal),
-    });
+    const cladeLineageQueryResult = useCladeLineages(lapisBaseUrl, cladeField, lineageField);
 
     return (
         <ModePageLayout
@@ -54,7 +49,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
                 </FilterSidebar>
             }
         >
-            <WasapResults data={data} error={error} isPending={isPending || isFilterPending}>
+            <ModeResults data={data} error={error} isPending={isPending || isFilterPending}>
                 {(displayMutations) => (
                     <MutationsResult
                         displayMutations={displayMutations}
@@ -65,7 +60,7 @@ export function UntrackedPage({ config }: { config: WasapPageConfigFor<'untracke
                         meanProportionInterval={meanProportionInterval}
                     />
                 )}
-            </WasapResults>
+            </ModeResults>
         </ModePageLayout>
     );
 }

@@ -3,13 +3,13 @@ import { describe, expect, test } from 'vitest';
 import { usesDefaultAmplicon, withDefaultAmplicon } from './CooccurrencePage';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
-import { type WasapCooccurrenceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { type CooccurrenceAnalysis } from '../../../pageState/analysisFilter';
 
 function amplicon(number: number, insertStart: number, insertEnd: number): Amplicon {
     return { chrom: 'ref', number, pool: '1', start: insertStart - 20, end: insertEnd + 20, insertStart, insertEnd };
 }
 
-const nothingPicked: WasapCooccurrenceFilter = { mode: 'cooccurrence', sequenceType: 'nucleotide' };
+const nothingPicked: CooccurrenceAnalysis = { mode: 'cooccurrence', sequenceType: 'nucleotide' };
 
 describe('usesDefaultAmplicon', () => {
     test('picks the default amplicon when nothing is picked', () => {

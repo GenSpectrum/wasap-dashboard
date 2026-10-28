@@ -115,15 +115,16 @@ building locally. The LolliPop service's image is published next to it, as
 ```
 src/
   main.tsx, AppShell.tsx    entry point + top-level chrome (organism dropdown)
-  routes/                   WasapRoute (fetches resistance data, wires per-organism config)
-  pageState/wasap/          the page state of the mode pages: a handler per mode + the shared base filter
+  routes/                   OrganismRoute (per-organism config, resistance data, lineage tree),
+                            ModeRoute (the page of the mode in the URL)
+  pageState/          the page state of the mode pages: a handler per mode + the shared base filter
   components/
     modes/<mode>/           what only one mode uses: its page, filter, results
     layout/                 app shell, mode page layout, header, result states
     filterSidebar/          the filter sidebar + shared field help texts
     inputs/                 generic filter widgets
     overTime/               over-time grids and their view settings
-    mutations/              mutation display, annotations, sorting
+    mutations/              mutation display, the annotations context
     ui/                     generic UI: modal, tooltip, dropdown, errors, loading
   dataLayer/
     transport/               the SaneQL AST builder + RhyDB HTTP client (vendored
@@ -135,21 +136,29 @@ src/
       lookups/               small single-query reads (date extent, counts, options, …)
       analyses/              the analysis hooks (mutations / queries over time,
                              co-occurrence, amplicon coverage, …)
-  query/                    legacy LAPIS-era serializer helpers, slimmed down
-                             but still shared by the over-time views
-                             (ProportionValue, getProportion, removeEmptyDatesInPlace)
+    overTime/                the over-time data maps the analysis hooks return
   externalData/             everything loaded from outside the app: clinical
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
                              collections
+    lollipop/               the client of the LolliPop service (`lollipop-service/`)
     fileBased/              data loaded from static files: amplicons (primer
                              BEDs), genome (Nextclade gene annotation),
-                             lineageTree (Nextclade tree.json, alias key)
+                             lineageTree (Nextclade tree.json, alias key,
+                             lineage signatures, panel matching)
+  domain/                   the domain's data structures: mutations, temporal buckets,
+                            date ranges, mutation annotations, symbols, ProportionValue
+  util/                     generic helpers (Map2d, UserFacingError)
   config/                   config.json loading + schema, per-organism types
-  clientLogger.ts, types/, util/, styles/
+  test/                     test helpers: the test config, route mockers, vitest setup
+  logging.ts, index.css
 lollipop-service/           the service that computes the Lineage Prevalence page with
                             LolliPop — Python, its own image, see lollipop-service/README.md
 ```
+
+The layers import downwards only: `components/` and `routes/`, then `pageState/`, then
+`dataLayer/` and `externalData/`, then `domain/`, then `util/`. ESLint enforces it
+(`import/no-restricted-paths` in `eslint.config.js`).
 
 ## License
 
@@ -159,4 +168,3 @@ AGPL-3.0-only (see [`LICENSE`](LICENSE)).
 
 - [`ROADMAP.md`](ROADMAP.md) — what's built, what's left, and the open product
   questions that block committing to the rest.
-- `TODO.md` — small in-progress code-level cleanups, not roadmap items.

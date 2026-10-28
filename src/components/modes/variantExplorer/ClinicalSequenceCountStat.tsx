@@ -1,18 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 
-import { getTotalCount } from '../../../externalData/lapis/getTotalCount';
+import { useTotalCount } from '../../../externalData/lapis/getTotalCount';
 import { getLapisFilterForTimeFrame } from '../../../externalData/lapis/useVariantSignature';
-import { variantTimeFrameLabel, type WasapVariantFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import { variantTimeFrameLabel, type VariantAnalysis } from '../../../pageState/analysisFilter';
 
 type ClinicalSequenceCountStatProps = {
     lineage: string;
-    analysis: WasapVariantFilter;
+    analysis: VariantAnalysis;
     clinicalLapisBaseUrl: string;
     clinicalLapisLineageField: string;
     clinicalLapisDateField: string;
     warningThreshold: number;
-    queryKeyPrefix: string;
     title: string;
     descriptionStart: string;
     warningMessage: string;
@@ -26,7 +24,6 @@ export const ClinicalSequenceCountStat: FC<ClinicalSequenceCountStatProps> = ({
     clinicalLapisLineageField,
     clinicalLapisDateField,
     warningThreshold,
-    queryKeyPrefix,
     title,
     descriptionStart,
     warningMessage,
@@ -37,13 +34,7 @@ export const ClinicalSequenceCountStat: FC<ClinicalSequenceCountStatProps> = ({
         [clinicalLapisLineageField]: lineage,
     };
 
-    const { data, isPending, isError, error } = useQuery({
-        // `clinicalLapisBaseUrl`/`lapisFilter` vary with the organism, not just
-        // `lineage`/`timeFrame` — without them in the key, switching organisms
-        // without changing lineage or time frame would serve the stale count.
-        queryKey: [queryKeyPrefix, lineage, analysis.timeFrame, clinicalLapisBaseUrl, lapisFilter],
-        queryFn: ({ signal }) => getTotalCount(clinicalLapisBaseUrl, lapisFilter, signal),
-    });
+    const { data, isPending, isError, error } = useTotalCount(clinicalLapisBaseUrl, lapisFilter);
 
     const isHighlighted = data !== undefined && data < warningThreshold;
 

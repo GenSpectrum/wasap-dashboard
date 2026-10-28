@@ -22,7 +22,6 @@
  */
 
 import { dateRangeExpression, scoped, type RhydbReadFilter } from './filter';
-import { groupingColumnsPassThrough } from './groupingColumns';
 import { type ReferenceSequence } from './referenceGenome';
 import type { RhydbSchema } from './schema';
 import { field, int, str } from '../transport/expression';
@@ -110,8 +109,7 @@ export type PositionRange = {
 
 /**
  * The symbol every read carries at one position, per day:
- * `filter(location, dates).map({<date> := <date>, sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`
- * (the `<date>` pass-through is `groupingColumnsPassThrough`).
+ * `filter(location, dates).map({sym := <seq>.at(<pos>)}).group(by := {<date>, sym}, aggs := {count := count()})`
  *
  * The computed `sym` column is `.map()`-ed *before* `group`, and both
  * grouping columns are named bare rather than re-assigned inline
@@ -126,10 +124,7 @@ export type PositionRange = {
  */
 export function positionOverTimeQuery(schema: RhydbSchema, filter: RhydbReadFilter, target: PositionTarget): Relation {
     return scoped(schema, filter)
-        .map({
-            ...groupingColumnsPassThrough([schema.groupingDate]),
-            sym: field(target.sequenceName).at(target.position),
-        })
+        .map({ sym: field(target.sequenceName).at(target.position) })
         .group({ count: count() }, [schema.groupingDate, 'sym']);
 }
 
@@ -173,10 +168,7 @@ export function positionsOverTimeQuery(
     return unionall(
         targets.map((target) =>
             location
-                .map({
-                    ...groupingColumnsPassThrough([schema.groupingDate]),
-                    sym: field(target.sequenceName).at(target.position),
-                })
+                .map({ sym: field(target.sequenceName).at(target.position) })
                 .group({ count: count() }, [schema.groupingDate, 'sym'])
                 .map({
                     day: field(schema.groupingDate),

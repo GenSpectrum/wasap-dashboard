@@ -20,16 +20,25 @@
 import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { sortSubstitutionsAndDeletions } from '../../../components/mutations/sortSubstitutionsAndDeletions';
 import {
-    BaseMutationOverTimeDataMap,
-    type MutationOverTimeDataMap,
-} from '../../../components/overTime/mutationsOverTime/MutationOverTimeData';
-import { removeEmptyDatesInPlace, type ProportionValue } from '../../../components/overTime/proportionValue';
-import { type SubstitutionOrDeletionEntry, type TemporalGranularity } from '../../../types/domain';
+    DeletionClass,
+    SubstitutionClass,
+    type Deletion,
+    type Substitution,
+    type SubstitutionOrDeletionEntry,
+} from '../../../domain/mutations';
+import { type ProportionValue } from '../../../domain/proportionValue';
+import { sortSubstitutionsAndDeletions } from '../../../domain/sortSubstitutionsAndDeletions';
+import { unknownSymbol } from '../../../domain/symbols';
+import {
+    parseDateStringToTemporal,
+    type Temporal,
+    type TemporalClass,
+    type TemporalGranularity,
+} from '../../../domain/temporal';
 import { Map2dView, type Map2DContents } from '../../../util/map2d';
-import { DeletionClass, SubstitutionClass, type Deletion, type Substitution } from '../../../util/mutations';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
+import { BaseMutationOverTimeDataMap, type MutationOverTimeDataMap } from '../../overTime/MutationOverTimeData';
+import { removeEmptyDatesInPlace } from '../../overTime/overTimeMap';
 import {
     OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,
@@ -54,10 +63,6 @@ import { fetchDateAxis } from '../lookups/dateAxis';
 import { useRhydbQueries, useRhydbQuery } from '../rhydbQuery';
 
 /** The symbol that means "the read did not call anything here". */
-export function unknownSymbol(sequenceType: OverTimeSequenceType): string {
-    return sequenceType === 'nucleotide' ? 'N' : 'X';
-}
-
 // --- metadata: the grid's frame ----------------------------------------------
 
 export type OverTimeMetadata = {

@@ -5,10 +5,10 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { DatasetFilterPanel } from './DatasetFilterPanel';
-import { it } from '../../../test-extend';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../dataLayer/queries/schema';
-import type { WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
+import type { DatasetFilter } from '../../pageState/analysisFilter';
+import { it } from '../../test/test-extend';
 
 const schema: RhydbSchema = {
     table: 'data',
@@ -23,18 +23,17 @@ const schema: RhydbSchema = {
 
 const DEFAULT_LOCATION = 'Zürich (ZH)';
 
-const dataset: WasapDatasetFilter = {
+const dataset: DatasetFilter = {
     locationNames: [DEFAULT_LOCATION],
     samplingDate: { label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' },
     granularity: 'day',
 };
 
-function Harness({ onChange }: { onChange: (value: WasapDatasetFilter) => void }) {
+function Harness({ onChange }: { onChange: (value: DatasetFilter) => void }) {
     const [value, setValue] = useState(dataset);
 
     return (
         <DatasetFilterPanel
-            config={{ locationNameField: 'locationName' }}
             value={value}
             onChange={(newValue) => {
                 onChange(newValue);
@@ -44,16 +43,17 @@ function Harness({ onChange }: { onChange: (value: WasapDatasetFilter) => void }
     );
 }
 
-function renderPanel(onChange = vi.fn()) {
+/** With the locations in RhyDB's column `locationColumn`, which needn't be named like the URL param. */
+function renderPanel(onChange = vi.fn(), locationColumn = schema.locationName) {
     vi.stubGlobal(
         'fetch',
         vi.fn().mockImplementation(() =>
             Promise.resolve(
                 new Response(
                     [
-                        { locationName: DEFAULT_LOCATION, n: 30 },
-                        { locationName: 'Basel (BS)', n: 10 },
-                        { locationName: 'Bern (BE)', n: 20 },
+                        { [locationColumn]: DEFAULT_LOCATION, n: 30 },
+                        { [locationColumn]: 'Basel (BS)', n: 10 },
+                        { [locationColumn]: 'Bern (BE)', n: 20 },
                     ]
                         .map((row) => JSON.stringify(row))
                         .join('\n'),
@@ -68,7 +68,10 @@ function renderPanel(onChange = vi.fn()) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
         <QueryClientProvider client={queryClient}>
-            <ConnectionProvider url='https://rhydb.example.org/covid' schema={schema}>
+            <ConnectionProvider
+                url='https://rhydb.example.org/covid'
+                schema={{ ...schema, locationName: locationColumn }}
+            >
                 <Harness onChange={onChange} />
             </ConnectionProvider>
         </QueryClientProvider>,
@@ -78,6 +81,15 @@ function renderPanel(onChange = vi.fn()) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('DatasetFilterPanel', () => {
+    it("offers the locations of RhyDB's location column, not of the URL param's name", async () => {
+        const { getByRole } = renderPanel(vi.fn(), 'city');
+
+        await getByRole('button', { name: DEFAULT_LOCATION }).click();
+        await expect.element(getByRole('checkbox', { name: 'Basel (BS)' })).toBeVisible();
+        const queries = vi.mocked(fetch).mock.calls.map(([, init]) => init?.body);
+        expect(queries).toContain('data.group(by := {city}, aggs := {n := count()})');
+    });
+
     it('applies the ticked locations when the dropdown is closed', async () => {
         const onChange = vi.fn();
         const { getByRole } = renderPanel(onChange);

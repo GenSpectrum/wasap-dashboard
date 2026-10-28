@@ -8,16 +8,16 @@
 import { queryOptions, type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { type TemporalGranularity } from '../../../types/domain';
 import {
     generateAllInRange,
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
-} from '../../../util/temporalClass';
+    type TemporalGranularity,
+} from '../../../domain/temporal';
+import { UserFacingError } from '../../../util/userFacingError';
 import { normalizeFilter, samplingDatesQuery, type RhydbReadFilter, type RhydbSchema } from '../../queries';
-import { readNamedCounts, type NamedCount } from '../../queries/rows';
+import { readNamedCounts, type NamedCount } from '../../queries/counts';
 import { type Connection } from '../../transport/connection';
 import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQuery } from '../rhydbQuery';

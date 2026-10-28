@@ -20,7 +20,7 @@
  * 12 node types `validateGenomeOnly` lets through, each to a `transport` builder.
  */
 
-import { READS } from './catalogue';
+import { READS } from './counts';
 import { scoped, type RhydbReadFilter } from './filter';
 import type { RhydbFilterExpression } from './rhydbFilterExpression';
 import type { RhydbSchema } from './schema';
@@ -37,6 +37,16 @@ import {
     nucleotideEquals,
 } from '../transport/functions';
 import { type Relation } from '../transport/relation';
+
+export type QueriesOverTimeQuery = {
+    /** Unique among the queries. */
+    displayLabel: string;
+    description?: string;
+    /** The advanced-query string, kept for display in the row-label tooltip. */
+    query: string;
+    /** The parsed, genome-only expression that RhyDB is asked. */
+    filter: RhydbFilterExpression;
+};
 
 /**
  * A genome-only `RhydbFilterExpression` as a SaneQL predicate.

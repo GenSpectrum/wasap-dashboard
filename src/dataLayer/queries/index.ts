@@ -6,8 +6,11 @@
 
 export * from './schema';
 export * from './filter';
-export * from './catalogue';
-export * from './rows';
+export * from './counts';
+export * from './totalCount';
+export * from './fieldValues';
+export * from './samplingDates';
+export * from './sampleOverview';
 export * from './rhydbFilterExpression';
 export * from './mutationsOverTime';
 export * from './queriesOverTime';

@@ -2,11 +2,11 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ResistanceMutationsFilter } from './ResistanceMutationsFilter';
-import { it } from '../../../../test-extend';
-import type { WasapResistanceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { ResistanceAnalysis } from '../../../pageState/analysisFilter';
+import { it } from '../../../test/test-extend';
 
 describe('ResistanceMutationsFilter', () => {
-    const defaultPageState: WasapResistanceFilter = {
+    const defaultPageState: ResistanceAnalysis = {
         mode: 'resistance',
         sequenceType: 'amino acid',
         resistanceSet: '3CLpro',

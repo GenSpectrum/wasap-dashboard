@@ -1,5 +1,4 @@
-import { type DateRangeOption } from '../components/inputs/dateRangeFilter/dateRangeOption';
-import { CustomDateRangeLabel } from '../types/DateWindow';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../domain/dateRange';
 
 export const setSearchFromString = (
     search: URLSearchParams,
@@ -25,7 +24,7 @@ export const setSearchFromDateRange = (
 ) => {
     if (dateRange !== null && dateRange !== undefined) {
         let serializedValue: string;
-        if (dateRange.label === CustomDateRangeLabel) {
+        if (dateRange.label === CUSTOM_DATE_RANGE_LABEL) {
             serializedValue = `${dateRange.dateFrom ?? ''}--${dateRange.dateTo ?? ''}`;
         } else {
             serializedValue = dateRange.label;

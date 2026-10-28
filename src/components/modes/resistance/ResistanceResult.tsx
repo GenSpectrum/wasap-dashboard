@@ -4,11 +4,8 @@ import { ProportionRangeTabs } from './ProportionRangeTabs';
 import { countByProportionRange, getProportionInterval } from './resistanceProportionRanges';
 import { useOverTimeMetadata } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
-import {
-    type ResistanceProportionRange,
-    type WasapResistanceFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type TemporalGranularity } from '../../../types/domain';
+import { type TemporalGranularity } from '../../../domain/temporal';
+import { type ResistanceProportionRange, type ResistanceAnalysis } from '../../../pageState/analysisFilter';
 import { MutationsResult } from '../../mutations/MutationsResult';
 
 /**
@@ -23,7 +20,7 @@ export function ResistanceResult({
     onProportionRangeChange,
 }: {
     displayMutations: string[];
-    analysis: WasapResistanceFilter;
+    analysis: ResistanceAnalysis;
     filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     onProportionRangeChange: (proportionRange: ResistanceProportionRange) => void;

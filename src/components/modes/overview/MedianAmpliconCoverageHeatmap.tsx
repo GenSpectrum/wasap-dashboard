@@ -5,10 +5,10 @@ import {
     type MedianAmpliconCoverageGrid,
     type SampleAmpliconCoverage,
 } from '../../../dataLayer/hooks/analyses/medianAmpliconCoverage';
+import { type TemporalClass } from '../../../domain/temporal';
 import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/ampliconsConfig';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
-import { type TemporalClass } from '../../../util/temporalClass';
 import { ErrorDisplay } from '../../ui/ErrorDisplay';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { TitledPanel } from '../../ui/TitledPanel';

@@ -1,10 +1,10 @@
+import { mutationType, type MutationType } from '../../../domain/mutations';
 import {
     effectiveMutationSource,
     MUTATION_SOURCE,
     type MutationSource,
-    type WasapManualFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
-import { mutationType, type MutationType } from '../../../types/domain';
+    type ManualAnalysis,
+} from '../../../pageState/analysisFilter';
 import { PositionRangeFilter } from '../../inputs/PositionRangeFilter';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
@@ -14,8 +14,8 @@ export function ManualAnalysisFilter({
     pageState,
     setPageState,
 }: {
-    pageState: WasapManualFilter;
-    setPageState: (newState: WasapManualFilter) => void;
+    pageState: ManualAnalysis;
+    setPageState: (newState: ManualAnalysis) => void;
 }) {
     const mutationSource = effectiveMutationSource(pageState);
     const enabledMutationTypes: MutationType[] =

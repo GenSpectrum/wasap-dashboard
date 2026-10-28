@@ -124,10 +124,7 @@ export class Map2dView<Key1 extends object | string, Key2 extends object | strin
         this.keysFirstAxis = new Map(map.keysFirstAxis);
         this.keysSecondAxis = new Map(map.keysSecondAxis);
 
-        if (map instanceof Map2dView) {
-            this.baseMap = map.baseMap;
-        }
-        this.baseMap = map;
+        this.baseMap = map instanceof Map2dView ? map.baseMap : map;
     }
 
     serializeFirstAxis(key: Key1) {

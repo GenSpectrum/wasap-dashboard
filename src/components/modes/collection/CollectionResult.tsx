@@ -1,7 +1,7 @@
 import { CollectionInfo } from './CollectionInfo';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../domain/temporal';
 import { type CollectionQueries } from '../../../externalData/useCollectionQueries';
-import { type TemporalGranularity } from '../../../types/domain';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { QueriesOverTime } from '../../overTime/queriesOverTime/QueriesOverTime';

@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { type CooccurrenceRow } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
-import { getClusterJaccards, type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
+import { useClusterJaccards, type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
 
 /**
  * The Jaccard index of the lineage and each row's cluster (the sequences with at least `atLeast` of
- * its mutations) in the clinical sequences, by row label; `undefined` without a `source`. All of them
- * from one request (`getClusterJaccards`), `isLoading` until it is answered.
+ * its mutations) in the clinical sequences, by row label; `undefined` without a `source`, and when
+ * there are no clinical sequences of the lineage, so no index is known and no row is to be left
+ * out for one. All of them from one request (`getClusterJaccards`), `isLoading` until it is answered.
  */
 export function useCooccurrenceJaccard(
     rows: CooccurrenceRow[],
@@ -18,21 +18,15 @@ export function useCooccurrenceJaccard(
         [rows],
     );
 
-    const { data, isPending } = useQuery({
-        enabled: source !== undefined && clusters.length > 0,
-        queryKey: ['cluster-jaccards', source, clusters],
-        staleTime: Infinity,
-        queryFn: ({ signal }) => getClusterJaccards(source!, clusters, signal),
-    });
+    const { data, isPending } = useClusterJaccards(source, clusters);
 
-    const jaccardIndices = useMemo(
-        () =>
-            source === undefined
-                ? undefined
-                : Object.fromEntries(
-                      data === undefined ? [] : rows.map((row, index) => [row.label, data[index]] as const),
-                  ),
-        [source, rows, data],
-    );
+    const jaccardIndices = useMemo(() => {
+        if (source === undefined || data?.every((index) => index === undefined) === true) {
+            return undefined;
+        }
+        return Object.fromEntries(
+            data === undefined ? [] : rows.map((row, index) => [row.label, data[index]] as const),
+        );
+    }, [source, rows, data]);
     return { jaccardIndices, isLoading: source !== undefined && clusters.length > 0 && isPending };
 }

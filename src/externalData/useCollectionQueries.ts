@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getClientLogger } from '../clientLogger';
-import { type QueriesOverTimeQuery } from '../components/overTime/queriesOverTime/QueriesOverTime';
-import { type WasapPageConfigFor } from '../config/wasapPageConfig';
-import { validateGenomeOnly } from '../dataLayer/queries';
+import { type OrganismConfigFor } from '../config/organismConfig';
+import { type QueriesOverTimeQuery, validateGenomeOnly } from '../dataLayer/queries';
+import { getClientLogger, getErrorLogMessage } from '../logging';
 import { getCollection } from './covSpectrum/getCollection';
 import type { CollectionVariant } from './covSpectrum/types';
 import { detailedMutationsToQuery } from './covSpectrum/variantConversionUtil';
@@ -11,14 +10,13 @@ import { getLineageFields, type FilterObject, type Variant } from './genSpectrum
 import { getApiServiceForClientside } from './genSpectrum/apiService';
 import { getCollection as getGenSpectrumCollection } from './genSpectrum/getCollection';
 import { parseQuery } from './lapis/parseQuery';
-import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/wasap/wasapAnalysisFilter';
-import { getErrorLogMessage } from '../util/getErrorLogMessage';
+import { COLLECTION_SOURCE, type CollectionSource } from '../pageState/analysisFilter';
 
 const logger = getClientLogger('useCollectionQueries');
 
 /** The queries of the collection of the collection page. Not fetched while no collection is selected. */
 export function useCollectionQueries(
-    config: WasapPageConfigFor<'collection'>,
+    config: OrganismConfigFor<'collection'>,
     source: CollectionSource,
     collectionId: number | undefined,
 ) {
@@ -42,7 +40,7 @@ export function useCollectionQueries(
 }
 
 export async function fetchCollectionQueries(
-    config: WasapPageConfigFor<'collection'>,
+    config: OrganismConfigFor<'collection'>,
     source: CollectionSource,
     collectionId: number,
     signal?: AbortSignal,

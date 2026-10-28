@@ -1,6 +1,6 @@
 import { getJson } from './getJson';
 import { collectionRawSchema, collectionVariantSchema, type Collection, type CollectionVariant } from './types';
-import { getClientLogger } from '../../clientLogger';
+import { getClientLogger } from '../../logging';
 
 const logger = getClientLogger('getCollection');
 

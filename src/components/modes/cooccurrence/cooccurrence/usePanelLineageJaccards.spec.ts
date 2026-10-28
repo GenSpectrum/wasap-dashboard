@@ -40,6 +40,17 @@ describe('jaccardsByRow', () => {
         );
     });
 
+    test('keeps a lineage without clinical sequences, with no index', () => {
+        const jaccards = jaccardsByRow(groupByLineage(rows), [[undefined], [0.9, 0.2]]);
+
+        expect(jaccards.get('a')).toEqual(
+            new Map([
+                ['XFG', undefined],
+                ['LP.8', 0.9],
+            ]),
+        );
+    });
+
     test('leaves out the lineages not answered yet', () => {
         const jaccards = jaccardsByRow(groupByLineage(rows), [undefined, [0.9, 0.2]]);
 

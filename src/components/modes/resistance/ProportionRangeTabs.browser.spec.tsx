@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ProportionRangeTabs } from './ProportionRangeTabs';
-import { it } from '../../../../test-extend';
+import { it } from '../../../test/test-extend';
 
 describe('ProportionRangeTabs', () => {
     const counts = { low: 139, medium: 14, high: 11, all: 164 };

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type WasapPageConfig, wasapPageConfigSchema } from './wasapPageConfig';
+import { type OrganismConfig, organismConfigSchema } from './organismConfig';
 
 /**
  * Runtime configuration for the standalone app.
@@ -9,7 +9,7 @@ import { type WasapPageConfig, wasapPageConfigSchema } from './wasapPageConfig';
  * `organisms` *is* the per-organism config — not a selector into hardcoded
  * data — and unlike `collectionsBackendUrl` it has **no built-in default**: a
  * deployment with no `config.json` (or one that omits `organisms`) genuinely
- * serves zero wastewater dashboards (`WasapRoute` says so), rather than
+ * serves zero wastewater dashboards (`OrganismRoute` says so), rather than
  * silently falling back to GenSpectrum's own data. `public/config.example.json`
  * (+ `public/config.prod.example.json`) are that data now, checked in
  * as *examples* to copy from, not defaults this module reaches for.
@@ -32,7 +32,7 @@ const appConfigSchema = z
          * segments (`covid`, `rsv-a`, …) onto entries of this array. No default:
          * an absent or organisms-less config.json means zero dashboards.
          */
-        organisms: z.array(wasapPageConfigSchema).default([]),
+        organisms: z.array(organismConfigSchema).default([]),
         /**
          * Base URL of the LolliPop service (`lollipop-service/`), which computes the deconvolution
          * mode's estimates. Without it, that mode is off for every organism.
@@ -45,7 +45,7 @@ const appConfigSchema = z
             : config,
     );
 
-function withoutDeconvolution(organism: WasapPageConfig): WasapPageConfig {
+function withoutDeconvolution(organism: OrganismConfig): OrganismConfig {
     return { ...organism, deconvolutionAnalysisModeEnabled: undefined };
 }
 

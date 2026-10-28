@@ -1,28 +1,24 @@
 import { useMemo } from 'react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { usePositionRangeMutations } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../domain/temporal';
+import { effectiveMutationSource, MUTATION_SOURCE, type ManualAnalysis } from '../../../pageState/analysisFilter';
+import { ManualPageStateHandler } from '../../../pageState/handlers/ManualPageStateHandler';
+import { usePositionRange } from '../../../pageState/positionRange';
 import { usePageState } from '../../../pageState/usePageState';
-import { ManualPageStateHandler } from '../../../pageState/wasap/handlers/ManualPageStateHandler';
-import { usePositionRange } from '../../../pageState/wasap/positionRange';
-import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
-import {
-    effectiveMutationSource,
-    MUTATION_SOURCE,
-    type WasapManualFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
-import { type TemporalGranularity } from '../../../types/domain';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
+import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { WasapResults } from '../../layout/WasapResults';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
-export function ManualPage({ config }: { config: WasapPageConfigFor<'manual'> }) {
+export function ManualPage({ config }: { config: OrganismConfigFor<'manual'> }) {
     const pageStateHandler = useMemo(() => new ManualPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },
@@ -69,7 +65,7 @@ function ManualResult({
     granularity,
     meanProportionInterval,
 }: {
-    analysis: WasapManualFilter;
+    analysis: ManualAnalysis;
     filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     meanProportionInterval: ProportionInterval;
@@ -100,12 +96,12 @@ function ManualResult({
         );
     }
     return (
-        <WasapResults
+        <ModeResults
             data={rangeMutations.data}
             error={referenceGenome.error ?? rangeMutations.error}
             isPending={referenceGenome.isPending || rangeMutations.isPending}
         >
             {result}
-        </WasapResults>
+        </ModeResults>
     );
 }

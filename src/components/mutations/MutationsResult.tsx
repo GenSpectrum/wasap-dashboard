@@ -2,8 +2,9 @@ import { type ReactElement, type ReactNode } from 'react';
 
 import { NoDataHelperText } from './NoDataHelperText';
 import { type RhydbReadFilter } from '../../dataLayer/queries';
-import { type WasapAnalysisFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { type SequenceType, type TemporalGranularity } from '../../types/domain';
+import { type SequenceType } from '../../domain/mutations';
+import { type TemporalGranularity } from '../../domain/temporal';
+import { type AnalysisFilter } from '../../pageState/analysisFilter';
 import { MutationsOverTime } from '../overTime/mutationsOverTime/MutationsOverTime';
 import { type ProportionInterval } from '../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { TitledPanel } from '../ui/TitledPanel';
@@ -30,7 +31,7 @@ export function MutationsResult({
     displayMutations: string[] | undefined;
     jaccardIndices?: Record<string, number>;
     /** For the note when there are no mutations, which says what to change to get some. */
-    analysis: WasapAnalysisFilter;
+    analysis: AnalysisFilter;
     filter: RhydbReadFilter;
     granularity: TemporalGranularity;
     sequenceType: SequenceType;

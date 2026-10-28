@@ -1,5 +1,19 @@
-import { lapisPost } from '../lapisApi/lapisApi';
-import { aggregatedResponse } from '../lapisApi/lapisTypes';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+
+import { lapisPost } from './http';
+import { aggregatedResponse } from './lapisTypes';
+
+/** `getCladeLineages`, with an asterisk on each lineage (so that it takes in its sublineages). */
+export function useCladeLineages(
+    lapisUrl: string,
+    cladeField: string,
+    lineageField: string,
+): UseQueryResult<Record<string, string>> {
+    return useQuery({
+        queryKey: ['lapis', 'clade-lineages', lapisUrl, cladeField, lineageField],
+        queryFn: ({ signal }) => getCladeLineages(lapisUrl, cladeField, lineageField, true, signal),
+    });
+}
 
 /**
  * Finds the lineage definition belonging to clades, by looking for the lineage that is most

@@ -4,35 +4,35 @@ import { type To } from 'react-router-dom';
 import { DeconvolutionFilter } from './DeconvolutionFilter';
 import { DeconvolutionPlot } from './DeconvolutionPlot';
 import { LineagePanelTree } from './LineagePanelTree';
+import { deconvolutionOptions } from './granularityOptions';
 import { lineageColors } from './lineageColors';
-import { isModeEnabled, type WasapPageConfigFor } from '../../../config/wasapPageConfig';
+import { poolFrequencies } from './poolFrequencies';
+import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismConfig';
 import { useMutationFrequencies } from '../../../dataLayer/hooks/analyses/mutationFrequencies';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
-import { deconvolutionOptions } from '../../../deconvolution/granularityOptions';
-import { lineageSignatures } from '../../../deconvolution/lineageSignatures';
-import { informativeMutations } from '../../../deconvolution/lollipopService';
-import { poolFrequencies } from '../../../deconvolution/poolFrequencies';
-import { useDeconvolution, useLollipopVersion } from '../../../deconvolution/useDeconvolution';
+import { type TemporalGranularity } from '../../../domain/temporal';
+import { lineageSignatures } from '../../../externalData/fileBased/lineageTree/lineageSignatures';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
+import { informativeMutations } from '../../../externalData/lollipop/lollipopService';
+import { useDeconvolution, useLollipopVersion } from '../../../externalData/lollipop/useDeconvolution';
+import { effectivePanel } from '../../../pageState/analysisFilter';
+import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
+import { DeconvolutionPageStateHandler } from '../../../pageState/handlers/DeconvolutionPageStateHandler';
+import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { datasetFilterSearchParams } from '../../../pageState/wasap/baseFilter';
-import { DeconvolutionPageStateHandler } from '../../../pageState/wasap/handlers/DeconvolutionPageStateHandler';
-import { useRhydbReadFilter } from '../../../pageState/wasap/useRhydbReadFilter';
-import { effectivePanel } from '../../../pageState/wasap/wasapAnalysisFilter';
-import { modePath } from '../../../pageState/wasap/wasapModes';
-import { type TemporalGranularity } from '../../../types/domain';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
-import { useWasapLayoutContext } from '../../layout/WasapLayout';
+import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { TitledPanel } from '../../ui/TitledPanel';
 
-export function DeconvolutionPage({ config }: { config: WasapPageConfigFor<'deconvolution'> }) {
+export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'deconvolution'> }) {
     const pageStateHandler = useMemo(() => new DeconvolutionPageStateHandler(config), [config]);
     const {
         pageState: { base, analysis },
         setPageState,
     } = usePageState(pageStateHandler);
-    const { lineageTree } = useWasapLayoutContext();
+    const { lineageTree } = useOrganismLayoutContext();
     const { filter, isPending: isFilterPending } = useRhydbReadFilter(base.locationNames);
     const panel = useMemo(() => effectivePanel(config.deconvolutionPanel, analysis), [config, analysis]);
     // of the lineages that are in the tree, as only those get into the deconvolution

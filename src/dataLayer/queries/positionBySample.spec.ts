@@ -17,9 +17,9 @@ const schema: RhydbSchema = {
 describe('positionsBySampleQuery', () => {
     test('tags each row with its position after the group, in one unionall', () => {
         const part = (position: number) =>
-            `data.map({sampleId := sampleId, sym := main.at(${position})})` +
+            `data.map({sym := main.at(${position})})` +
             '.group(by := {sampleId, sym}, aggs := {count := count()})' +
-            `.map({sampleId := sampleId, sym := sym, count := count, position := ${position}})`;
+            `.map({position := ${position}})`;
         expect(positionsBySampleQuery(schema, 'main', [241, 2083]).render()).toBe(
             `${part(241)}.unionall(${part(2083)})`,
         );

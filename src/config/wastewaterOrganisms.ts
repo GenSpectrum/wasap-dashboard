@@ -1,11 +1,11 @@
 import { getAppConfig } from './appConfig';
-import type { WasapPageConfig } from './wasapPageConfig';
+import type { OrganismConfig } from './organismConfig';
 
 /**
  * The organism-selection layer for the standalone app.
  *
  * A single `/:organismPath` route serves all three organisms, and this module maps the URL
- * segment (`covid` / `rsv-a` / `rsv-b`) to the per-organism `WasapPageConfig`.
+ * segment (`covid` / `rsv-a` / `rsv-b`) to the per-organism `OrganismConfig`.
  * The route path deliberately matches `config.path` so the links the wasap
  * code builds from it stay valid.
  *
@@ -17,7 +17,7 @@ import type { WasapPageConfig } from './wasapPageConfig';
  */
 
 export type WastewaterOrganismEntry = {
-    config: WasapPageConfig;
+    config: OrganismConfig;
     /** Last segment of `config.path`, used as the `:organismPath` route param. */
     pathSegment: string;
 };
@@ -29,7 +29,7 @@ export function listWastewaterOrganisms(): WastewaterOrganismEntry[] {
     }));
 }
 
-export function resolveWasapConfig(pathSegment: string | undefined): WasapPageConfig | undefined {
+export function resolveOrganismConfig(pathSegment: string | undefined): OrganismConfig | undefined {
     if (pathSegment === undefined) {
         return undefined;
     }

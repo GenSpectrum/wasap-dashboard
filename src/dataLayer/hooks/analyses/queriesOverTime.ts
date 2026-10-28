@@ -12,10 +12,14 @@
 
 import { useMemo } from 'react';
 
-import { type ProportionValue } from '../../../components/overTime/proportionValue';
-import { type TemporalGranularity } from '../../../types/domain';
+import { type ProportionValue } from '../../../domain/proportionValue';
+import {
+    parseDateStringToTemporal,
+    type Temporal,
+    type TemporalClass,
+    type TemporalGranularity,
+} from '../../../domain/temporal';
 import { type Map2DContents } from '../../../util/map2d';
-import { parseDateStringToTemporal, type Temporal, type TemporalClass } from '../../../util/temporalClass';
 import {
     countOverTimeQuery,
     coverageOverTimeQuery,
@@ -23,7 +27,7 @@ import {
     type RhydbFilterExpression,
     type RhydbReadFilter,
 } from '../../queries';
-import { readNamedCounts, type NamedCount } from '../../queries/rows';
+import { readNamedCounts, type NamedCount } from '../../queries/counts';
 import { allQueryData } from '../allQueryData';
 import { useConnection, useRhydbSchema } from '../connection';
 import { useDateAxis } from '../lookups/dateAxis';

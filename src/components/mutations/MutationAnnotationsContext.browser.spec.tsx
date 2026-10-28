@@ -2,14 +2,13 @@ import { renderHook } from '@testing-library/react';
 import { type FC, type PropsWithChildren } from 'react';
 import { describe, expect, it } from 'vitest';
 
+import { MutationAnnotationsContextProvider, useMutationAnnotationsProvider } from './MutationAnnotationsContext';
 import {
-    MutationAnnotationsContextProvider,
     type MutationAnnotation,
     type MutationAnnotations,
     type ResolvedMutationAnnotation,
-    useMutationAnnotationsProvider,
-} from './MutationAnnotationsContext';
-import { SubstitutionClass } from '../../util/mutations';
+} from '../../domain/mutationAnnotations';
+import { SubstitutionClass } from '../../domain/mutations';
 
 function resolved(annotation: MutationAnnotation): ResolvedMutationAnnotation {
     return { annotation, name: annotation.name, description: annotation.description };

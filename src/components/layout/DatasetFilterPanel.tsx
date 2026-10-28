@@ -1,6 +1,5 @@
-import { type WasapPageConfig } from '../../config/wasapPageConfig';
-import { type WasapDatasetFilter } from '../../pageState/wasap/wasapAnalysisFilter';
-import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
+import { recentDaysDateRangeOptions } from '../../domain/dateRange';
+import { type DatasetFilter } from '../../pageState/analysisFilter';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
 import { LabeledField } from '../inputs/LabeledField';
 import { LocationMultiSelect } from '../inputs/LocationMultiSelect';
@@ -11,13 +10,11 @@ import { RadioSelect } from '../inputs/RadioSelect';
  * grouped. It is the same for all the analysis modes, and changes apply right away.
  */
 export function DatasetFilterPanel({
-    config,
     value,
     onChange,
 }: {
-    config: Pick<WasapPageConfig, 'locationNameField'>;
-    value: WasapDatasetFilter;
-    onChange: (value: WasapDatasetFilter) => void;
+    value: DatasetFilter;
+    onChange: (value: DatasetFilter) => void;
 }) {
     return (
         // The date column is the widest: the select and the two dates of the date filter are in one row, which
@@ -26,7 +23,6 @@ export function DatasetFilterPanel({
             <div className='min-w-0 flex-[1_1_11rem]'>
                 <LabeledField label='Sampling locations'>
                     <LocationMultiSelect
-                        field={config.locationNameField}
                         value={value.locationNames}
                         onChange={(locationNames) => onChange({ ...value, locationNames })}
                     />

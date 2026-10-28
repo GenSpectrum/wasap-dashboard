@@ -11,8 +11,8 @@
 
 import { useConnection, useRhydbSchema } from '../connection';
 import { MAX_COOCCURRENCE_POSITIONS } from './cooccurrence';
-import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { type SequenceType } from '../../../types/domain';
+import { type SequenceType } from '../../../domain/mutations';
+import { UserFacingError } from '../../../util/userFacingError';
 import {
     ampliconPositionsQuery,
     normalizeFilter,

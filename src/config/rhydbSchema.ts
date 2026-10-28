@@ -1,12 +1,12 @@
-import type { RhydbInstanceConfig } from './wasapPageConfig';
+import type { RhydbInstanceConfig } from './organismConfig';
 import type { RhydbSchema } from '../dataLayer/queries';
 
 /**
  * The `RhydbSchema` the `queries/` query catalogue needs, derived from a
- * `WasapPageConfig.rhydb` block — same pattern as `appConfig.ts`/`wastewaterOrganisms.ts`
- * deriving app config from `WasapPageConfig`. Kept out of `queries/` itself: `components/`
- * already imports from `queries/`, so `queries/` importing `WasapPageConfig` back (from
- * `config/wasapPageConfig`) would be a cycle.
+ * `OrganismConfig.rhydb` block — same pattern as `appConfig.ts`/`wastewaterOrganisms.ts`
+ * deriving app config from `OrganismConfig`. Kept out of `queries/` itself: `components/`
+ * already imports from `queries/`, so `queries/` importing `OrganismConfig` back (from
+ * `config/organismConfig`) would be a cycle.
  */
 export function rhydbSchema(rhydb: RhydbInstanceConfig): RhydbSchema {
     return {

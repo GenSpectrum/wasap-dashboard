@@ -1,5 +1,4 @@
-import { type SubstitutionOrDeletionEntry } from '../../../types/domain';
-import type { Deletion, Substitution } from '../../../util/mutations';
+import { type Deletion, type Substitution, type SubstitutionOrDeletionEntry } from '../../../domain/mutations';
 
 /**
  * An interval of mean proportions. Both bounds are included, unless marked as exclusive,

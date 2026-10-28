@@ -2,14 +2,13 @@ import { useId } from 'react';
 
 import { SelectorHeadline } from './SelectorHeadline';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
-import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
     type SignatureType,
     type VariantTimeFrame,
-    type WasapVariantFilter,
-} from '../../../pageState/wasap/wasapAnalysisFilter';
+    type VariantAnalysis,
+} from '../../../pageState/analysisFilter';
 import { DefineClinicalSignatureInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
@@ -20,8 +19,8 @@ import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
 import { Inset } from '../../ui/Inset';
 
 interface VariantExplorerFilterProps {
-    pageState: WasapVariantFilter;
-    setPageState: (newState: WasapVariantFilter) => void;
+    pageState: VariantAnalysis;
+    setPageState: (newState: VariantAnalysis) => void;
     /**
      * The LAPIS base URL for the clinical sequence data used in the variant selector.
      * This is _not_ the same as the LAPIS providing the wastewater amplicon sequences.
@@ -143,8 +142,8 @@ function PredefinedSignature({
     setPageState,
     lineageTree,
 }: {
-    pageState: WasapVariantFilter;
-    setPageState: (newState: WasapVariantFilter) => void;
+    pageState: VariantAnalysis;
+    setPageState: (newState: VariantAnalysis) => void;
     lineageTree: LineageTree;
 }) {
     return (
@@ -188,8 +187,8 @@ function ComputedSignature({
     clinicalSequenceLapisBaseUrl,
     clinicalSequenceLapisLineageField,
 }: {
-    pageState: WasapVariantFilter;
-    setPageState: (newState: WasapVariantFilter) => void;
+    pageState: VariantAnalysis;
+    setPageState: (newState: VariantAnalysis) => void;
     clinicalSequenceLapisBaseUrl: string;
     clinicalSequenceLapisLineageField: string;
 }) {
@@ -197,20 +196,19 @@ function ComputedSignature({
         <>
             <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
             <LabeledField label='Variant'>
-                <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                    <LineageFilter
-                        field={clinicalSequenceLapisLineageField}
-                        placeholderText='Variant'
-                        value={pageState.variant}
-                        onLineageChange={(lineages) => {
-                            setPageState({
-                                ...pageState,
-                                variant: lineages[clinicalSequenceLapisLineageField],
-                            });
-                        }}
-                        hideCounts={true}
-                    />
-                </LapisClientProvider>
+                <LineageFilter
+                    lapisUrl={clinicalSequenceLapisBaseUrl}
+                    field={clinicalSequenceLapisLineageField}
+                    placeholderText='Variant'
+                    value={pageState.variant}
+                    onLineageChange={(lineages) => {
+                        setPageState({
+                            ...pageState,
+                            variant: lineages[clinicalSequenceLapisLineageField],
+                        });
+                    }}
+                    hideCounts={true}
+                />
             </LabeledField>
             <div className='mb-2'>
                 <NumericInput

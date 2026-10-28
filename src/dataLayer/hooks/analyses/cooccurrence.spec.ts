@@ -6,7 +6,7 @@ import {
     filterCooccurrenceByMinShare,
     sliceCooccurrenceRows,
 } from './cooccurrence';
-import { parseDateStringToTemporal } from '../../../util/temporalClass';
+import { parseDateStringToTemporal } from '../../../domain/temporal';
 import { type CooccurrenceRow } from '../../queries/cooccurrence';
 
 const granularity = 'day';

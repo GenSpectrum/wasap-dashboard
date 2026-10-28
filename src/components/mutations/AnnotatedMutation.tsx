@@ -3,8 +3,7 @@ import { Fragment, type FC } from 'react';
 
 import { useMutationAnnotationsProvider } from './MutationAnnotationsContext';
 import { useMutationLinkProvider } from './MutationLinkTemplateContext';
-import type { SequenceType } from '../../types/domain';
-import type { Deletion, Substitution } from '../../util/mutations';
+import { type Deletion, type Substitution, type SequenceType } from '../../domain/mutations';
 import { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../ui/Info';
 import { Modal } from '../ui/Modal';
 

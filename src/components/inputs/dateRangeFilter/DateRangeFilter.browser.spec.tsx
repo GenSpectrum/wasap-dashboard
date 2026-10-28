@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { DateRangeFilter } from './DateRangeFilter';
-import { type DateRangeValue } from './dateRangeOption';
+import { type DateRangeValue } from '../../../domain/dateRange';
 
 const options = [
     { label: 'Last week', dateFrom: '2026-06-24', dateTo: '2026-06-30' },

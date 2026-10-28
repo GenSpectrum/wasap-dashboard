@@ -1,7 +1,6 @@
 import { Fragment, type FC, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
-import { formatSymbol, type CooccurrenceOverTimeDataMap, type CooccurrencePattern } from './CooccurrenceOverTimeData';
 import { type ClinicalLapisSource, usePanelLineageJaccards } from './usePanelLineageJaccards';
 import {
     useAmpliconAnchor,
@@ -14,13 +13,20 @@ import {
     useCooccurrence,
 } from '../../../../dataLayer/hooks/analyses/cooccurrence';
 import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
+import {
+    type CooccurrenceOverTimeDataMap,
+    type CooccurrencePattern,
+} from '../../../../dataLayer/overTime/CooccurrenceOverTimeData';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
-import { lineagePanelSymbols, matchingPanelLineages } from '../../../../deconvolution/lineagePanelMatch';
+import { SubstitutionClass, type Substitution, type SequenceType } from '../../../../domain/mutations';
+import { type TemporalGranularity } from '../../../../domain/temporal';
+import {
+    lineagePanelSymbols,
+    matchingPanelLineages,
+} from '../../../../externalData/fileBased/lineageTree/lineagePanelMatch';
 import { type LineageTree } from '../../../../externalData/fileBased/lineageTree/lineageTree';
-import { type SequenceType, type TemporalGranularity } from '../../../../types/domain';
-import { SubstitutionClass, type Substitution } from '../../../../util/mutations';
-import { parsePositionToken } from '../../../../util/parsePositionToken';
+import { parsePositionToken } from '../../../inputs/positionFilter/parsePositionToken';
 import { useMutationLinkProvider } from '../../../mutations/MutationLinkTemplateContext';
 import {
     formatJaccardIndex,
@@ -595,15 +601,15 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
 
 /**
  * The panel lineages matching a row exactly, by their Jaccard index (highest first) and with it,
- * once known.
+ * once known; a dash for a lineage without clinical sequences, which has none.
  */
 const PanelMatchCell: FC<{
     matches: string[];
-    jaccards: ReadonlyMap<string, number> | undefined;
+    jaccards: ReadonlyMap<string, number | undefined> | undefined;
     isJaccardLoading: boolean;
     variantModeLink?: (lineage: string) => To;
 }> = ({ matches, jaccards, isJaccardLoading, variantModeLink }) => {
-    // Those without an index yet (loading, or failed) last, in panel order.
+    // Those without an index (loading, failed, or no clinical sequences) last, in panel order.
     const listed = [...matches].sort((a, b) => (jaccards?.get(b) ?? -1) - (jaccards?.get(a) ?? -1));
 
     if (listed.length === 0) {
@@ -613,6 +619,7 @@ const PanelMatchCell: FC<{
         <>
             {listed.map((lineage, index) => {
                 const jaccard = jaccards?.get(lineage);
+                const hasClinicalSequences = jaccard !== undefined;
                 return (
                     <Fragment key={lineage}>
                         {index > 0 && ', '}
@@ -623,10 +630,14 @@ const PanelMatchCell: FC<{
                         ) : (
                             lineage
                         )}
-                        {jaccard !== undefined && (
+                        {jaccards?.has(lineage) === true && (
                             <JaccardBadge
                                 jaccard={jaccard}
-                                title={`Jaccard index of ${lineage} and the sequences with all of this row's mutations`}
+                                title={
+                                    hasClinicalSequences
+                                        ? `Jaccard index of ${lineage} and the sequences with all of this row's mutations`
+                                        : `No Jaccard index: there are no clinical sequences of ${lineage}`
+                                }
                             />
                         )}
                     </Fragment>
@@ -638,7 +649,7 @@ const PanelMatchCell: FC<{
 };
 
 /** A Jaccard index as a small badge, shaded like the Jaccard index columns of the band grids, grey below. */
-const JaccardBadge: FC<{ jaccard: number; title?: string }> = ({ jaccard, title }) => (
+const JaccardBadge: FC<{ jaccard: number | undefined; title?: string }> = ({ jaccard, title }) => (
     <span
         className={`ml-1 rounded px-1 font-mono text-xs text-stone-700 ${jaccardIndexShading(jaccard) || 'bg-stone-100'}`}
         title={title}
@@ -713,4 +724,8 @@ function substitutionsOf(
         .filter((label) => referenceSymbols?.[label] !== patternSymbols[label])
         .map((label) => substitutionFor(label, patternSymbols[label], sequenceType, referenceSymbols))
         .filter((substitution): substitution is Substitution => substitution !== null);
+}
+
+function formatSymbol(symbol: string | null | undefined): string {
+    return symbol ?? '?';
 }

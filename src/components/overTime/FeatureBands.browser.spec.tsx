@@ -5,10 +5,11 @@ import { render } from 'vitest-browser-react';
 import { FeatureBands, type FeatureBandsProps } from './FeatureBands';
 import { DEFAULT_BAND_VIEW_SETTINGS } from './bandViewSettings';
 import { DEFAULT_FEATURE_SORT } from './featureSort';
-import { serializeTemporal, type ProportionValue } from './proportionValue';
-import { it } from '../../../test-extend';
+import { serializeTemporal } from '../../dataLayer/overTime/overTimeMap';
+import { type ProportionValue } from '../../domain/proportionValue';
+import { type Temporal, TemporalCache } from '../../domain/temporal';
+import { it } from '../../test/test-extend';
 import { Map2dBase } from '../../util/map2d';
-import { type Temporal, TemporalCache } from '../../util/temporalClass';
 
 const dates: Temporal[] = [
     TemporalCache.getInstance().getYearMonthDay('2024-01-01'),

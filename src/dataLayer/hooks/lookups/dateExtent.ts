@@ -1,12 +1,3 @@
-/**
- * `useDateExtent` — a Tier-1 RhyDB read, as a TanStack Query hook.
- *
- * Reads the instance from context (`useConnection` / `useRhydbSchema`), issues
- * one catalogue query, and hands back the parsed rows. Tier-1 reads are the
- * only layer that issues a query — components call these, never
- * `connection.query` directly (doc 04, "One mechanism").
- */
-
 import { type UseQueryResult } from '@tanstack/react-query';
 
 import { normalizeFilter, readValueExtent, samplingDatesQuery, type RhydbReadFilter } from '../../queries';

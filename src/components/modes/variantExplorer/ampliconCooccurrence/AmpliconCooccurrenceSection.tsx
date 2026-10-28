@@ -12,13 +12,13 @@ import {
 } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
 import { useDateAxis, type DateAxis } from '../../../../dataLayer/hooks/lookups/dateAxis';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../../domain/temporal';
 import { type AmpliconsConfig } from '../../../../externalData/fileBased/amplicons/ampliconsConfig';
 import { mutationsByAmplicon } from '../../../../externalData/fileBased/amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor } from '../../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../../externalData/fileBased/amplicons/useAmplicons';
 import { type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
-import { type TemporalGranularity } from '../../../../types/domain';
 import { ErrorDisplay } from '../../../ui/ErrorDisplay';
 import { LoadingDisplay } from '../../../ui/LoadingDisplay';
 import { NoDataDisplay } from '../../../ui/NoDataDisplay';

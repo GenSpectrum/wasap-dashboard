@@ -1,4 +1,4 @@
-import type { WasapResistanceFilter } from '../../../pageState/wasap/wasapAnalysisFilter';
+import type { ResistanceAnalysis } from '../../../pageState/analysisFilter';
 import { RadioSelect } from '../../inputs/RadioSelect';
 
 export function ResistanceMutationsFilter({
@@ -6,8 +6,8 @@ export function ResistanceMutationsFilter({
     setPageState,
     resistanceSetNames,
 }: {
-    pageState: WasapResistanceFilter;
-    setPageState: (newState: WasapResistanceFilter) => void;
+    pageState: ResistanceAnalysis;
+    setPageState: (newState: ResistanceAnalysis) => void;
     resistanceSetNames: string[];
 }) {
     if (resistanceSetNames.length === 0) {
