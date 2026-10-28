@@ -1,7 +1,7 @@
 import { type ZodSchema } from 'zod';
 
+import { type ProblemDetail, problemDetailSchema } from './problemDetail';
 import { getAppConfig } from '../../config/appConfig';
-import { type ProblemDetail, problemDetailSchema } from '../../types/ProblemDetail';
 
 const X_REQUEST_ID_HEADER = 'x-request-id';
 
