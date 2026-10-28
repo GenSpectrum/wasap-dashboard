@@ -123,8 +123,8 @@ src/
     layout/                 app shell, mode page layout, header, result states
     filterSidebar/          the filter sidebar + shared field help texts
     inputs/                 generic filter widgets
-    overTime/               over-time grids, their view settings, ProportionValue
-    mutations/              mutation display, annotations, sorting
+    overTime/               over-time grids and their view settings
+    mutations/              mutation display, the annotations context
     ui/                     generic UI: modal, tooltip, dropdown, errors, loading
   dataLayer/
     transport/               the SaneQL AST builder + RhyDB HTTP client (vendored
@@ -136,6 +136,7 @@ src/
       lookups/               small single-query reads (date extent, counts, options, …)
       analyses/              the analysis hooks (mutations / queries over time,
                              co-occurrence, amplicon coverage, …)
+    overTime/                the over-time data maps the analysis hooks return
   externalData/             everything loaded from outside the app: clinical
                              LAPIS, the W-ASAP LAPIS (query/parse only),
                              GenSpectrum collections backend, cov-spectrum
@@ -145,11 +146,19 @@ src/
                              BEDs), genome (Nextclade gene annotation),
                              lineageTree (Nextclade tree.json, alias key,
                              lineage signatures, panel matching)
+  domain/                   the domain's data structures: mutations, temporal buckets,
+                            date ranges, mutation annotations, symbols, ProportionValue
+  util/                     generic helpers (Map2d, UserFacingError)
   config/                   config.json loading + schema, per-organism types
-  logging.ts, index.css, util/
+  test/                     test helpers: the test config, route mockers, vitest setup
+  logging.ts, index.css
 lollipop-service/           the service that computes the Lineage Prevalence page with
                             LolliPop — Python, its own image, see lollipop-service/README.md
 ```
+
+The layers import downwards only: `components/` and `routes/`, then `pageState/`, then
+`dataLayer/` and `externalData/`, then `domain/`, then `util/`. ESLint enforces it
+(`import/no-restricted-paths` in `eslint.config.js`).
 
 ## License
 
