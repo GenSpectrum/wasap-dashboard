@@ -17,6 +17,37 @@ const importRules = {
     'import/no-deprecated': 'error',
     'import/no-extraneous-dependencies': 'error',
     'import/no-internal-modules': 'off',
+    // The layers, from the top: components and routes, then pageState, then dataLayer and externalData, then
+    // domain, then util. A layer only imports from the ones below it.
+    'import/no-restricted-paths': [
+        'error',
+        {
+            zones: [
+                {
+                    target: ['./src/pageState', './src/dataLayer', './src/externalData', './src/domain', './src/util'],
+                    from: ['./src/components', './src/routes'],
+                    message: 'Only components and routes import components and routes.',
+                },
+                // Not externalData yet: useUntrackedMutations, useVariantSignature and useCollectionQueries take
+                // the analysis of their mode.
+                {
+                    target: ['./src/dataLayer', './src/domain', './src/util'],
+                    from: './src/pageState',
+                    message: 'The page state is above the data layer.',
+                },
+                {
+                    target: ['./src/domain', './src/util'],
+                    from: ['./src/dataLayer', './src/externalData', './src/config', './src/test'],
+                    message: 'domain/ and util/ only import from domain/ and util/.',
+                },
+                {
+                    target: './src/util',
+                    from: './src/domain',
+                    message: 'util/ is below domain/.',
+                },
+            ],
+        },
+    ],
     'import/order': [
         'error',
         {
@@ -191,6 +222,9 @@ export default tseslint.config(
             react: {
                 version: 'detect',
             },
+            // Without these, the import rules can't parse or resolve `.ts` imports, and silently check nothing.
+            'import/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
+            'import/resolver': { typescript: true },
         },
     },
     {
