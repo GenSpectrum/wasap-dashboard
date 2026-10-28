@@ -1,11 +1,9 @@
 /**
  * How a wastewater RhyDB read is scoped, and the SaneQL predicate that scopes it.
  *
- * `RhydbReadFilter` is the one description of "which reads" the catalogue speaks
- * — the purpose-built replacement for the flat `LapisFilter` the components
- * used to take as a prop. wasap only ever narrows the wastewater dataset by
- * sampling location and a sampling-date window, so it is a small, closed record
- * (see doc 04, "The `RhydbReadFilter`").
+ * `RhydbReadFilter` is the one description of "which reads" the queries take.
+ * wasap only ever narrows the wastewater dataset by sampling location and a
+ * sampling-date window, so it is a small, closed record.
  */
 
 import z from 'zod';
@@ -115,7 +113,7 @@ function locationExpression(schema: RhydbSchema, locationNames: RhydbReadFilter[
 
 /**
  * The table, narrowed to the reads a filter admits, plus any extra predicate
- * the caller needs on top. Where every catalogue query starts; an unnarrowed
+ * the caller needs on top. Where every query starts; an unnarrowed
  * table stays bare.
  */
 export function scoped(
