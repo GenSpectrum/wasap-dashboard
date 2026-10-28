@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { LineageFilter } from './LineageFilter';
-import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
 
 /** Stubs the two clinical-LAPIS calls the lineage picker makes. */
 function stubLapis({ aggregated, lineageDefinition }: { aggregated: unknown; lineageDefinition: unknown }) {
@@ -20,11 +19,7 @@ function stubLapis({ aggregated, lineageDefinition }: { aggregated: unknown; lin
 
 function renderFilter(ui: ReactElement) {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    return render(
-        <QueryClientProvider client={queryClient}>
-            <LapisClientProvider url='https://lapis.clinical.example/open/v2'>{ui}</LapisClientProvider>
-        </QueryClientProvider>,
-    );
+    return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -42,6 +37,7 @@ describe('LineageFilter', () => {
         const onLineageChange = vi.fn();
         const screen = renderFilter(
             <LineageFilter
+                lapisUrl='https://lapis.clinical.example/open/v2'
                 field='nextcladePangoLineage'
                 value=''
                 placeholderText='Variant'

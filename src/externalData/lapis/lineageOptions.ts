@@ -1,8 +1,8 @@
 /**
  * The lineage / variant picker's option list, from clinical LAPIS.
  *
- * `useLineageOptions` reads the clinical-LAPIS client from context
- * (`useLapisClient`) and assembles the autocomplete list: every lineage, its
+ * `useLineageOptions` reads the lineage counts and definitions from the LAPIS at `lapisUrl` and
+ * assembles the autocomplete list: every lineage, its
  * wildcard form (`BA.3.2.1` and `BA.3.2.1*`), and the wildcard prefixes of
  * aliased lineages (`BA.3.2*`), each with a read count that for a wildcard
  * includes its sublineages.
@@ -10,29 +10,30 @@
 
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { useLapisClient } from './LapisClientContext';
 import type { LineageDefinitionResponse } from './LineageDefinition';
-import type { LapisClient } from './client';
+import { fetchAggregated, fetchLineageDefinition } from './http';
 
 export type LineageItem = { lineage: string; count: number };
 
-export function useLineageOptions(field: string): UseQueryResult<LineageItem[]> {
-    const client = useLapisClient();
-    // `client.url` stands in for `client` — it's memoized per url (see
-    // `useLapisClient`), so it fully determines the client's behaviour.
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+export function useLineageOptions(lapisUrl: string, field: string): UseQueryResult<LineageItem[]> {
     return useQuery({
-        queryKey: ['lapis', 'lineage-options', client.url, field],
-        queryFn: ({ signal }) => fetchLineageOptions(client, field, signal),
+        queryKey: ['lapis', 'lineage-options', lapisUrl, field],
+        queryFn: ({ signal }) => fetchLineageOptions(lapisUrl, field, signal),
     });
 }
 
-async function fetchLineageOptions(client: LapisClient, field: string, signal?: AbortSignal): Promise<LineageItem[]> {
-    const [counts, definitions] = await Promise.all([
-        client.aggregate(field, { signal }),
-        client.lineageDefinition(field, { signal }),
+async function fetchLineageOptions(lapisUrl: string, field: string, signal?: AbortSignal): Promise<LineageItem[]> {
+    const [{ data: counts }, definitions] = await Promise.all([
+        fetchAggregated(lapisUrl, { fields: [field] }, signal),
+        fetchLineageDefinition({ lapisUrl, lapisField: field, signal }),
     ]);
-    const countsByLineage = new Map(counts.map((entry) => [entry.value, entry.count]));
+    const countsByLineage = new Map<string, number>();
+    for (const row of counts) {
+        const lineage = row[field];
+        if (typeof lineage === 'string') {
+            countsByLineage.set(lineage, row.count);
+        }
+    }
     return assembleLineageOptions(countsByLineage, definitions);
 }
 

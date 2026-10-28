@@ -189,7 +189,6 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
                         <ClinicalSequenceCountStat
                             {...clinicalLapisProps}
                             lineage={analysis.variant}
-                            queryKeyPrefix='variantFetchInfo'
                             title={`Clinical sequences for ${analysis.variant}`}
                             descriptionStart={`The number of clinical sequences for ${analysis.variant}`}
                             warningMessage='. Clinical signature calculation with this few sequences is not recommended.'
@@ -199,7 +198,6 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
                         <ClinicalSequenceCountStat
                             {...clinicalLapisProps}
                             lineage={lineageForJaccard}
-                            queryKeyPrefix='jaccardFetchInfo'
                             title='Jaccard index'
                             descriptionStart={`Clinical sequences for ${lineageForJaccard}`}
                             warningMessage='. Low sequence count may lead to unreliable Jaccard scores.'

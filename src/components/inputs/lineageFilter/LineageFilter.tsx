@@ -6,6 +6,8 @@ import { LoadingDisplay } from '../../ui/LoadingDisplay';
 import { DownshiftCombobox, DownshiftMultiCombobox } from '../DownshiftCombobox';
 
 export type LineageFilterProps<Lineage extends string = string> = {
+    /** The LAPIS the lineages and their counts come from. */
+    lapisUrl: string;
     field: Lineage;
     placeholderText?: string;
     hideCounts?: boolean;
@@ -24,7 +26,7 @@ export type LineageFilterProps<Lineage extends string = string> = {
 
 export function LineageFilter<Lineage extends string = string>(props: LineageFilterProps<Lineage>) {
     return (
-        <ErrorBoundary layout='horizontal' resetKeys={[props.field]}>
+        <ErrorBoundary layout='horizontal' resetKeys={[props.lapisUrl, props.field]}>
             <div className='min-h-12'>
                 <LineageFilterWithoutErrors {...props} />
             </div>
@@ -33,7 +35,7 @@ export function LineageFilter<Lineage extends string = string>(props: LineageFil
 }
 
 function LineageFilterWithoutErrors<Lineage extends string>(props: LineageFilterProps<Lineage>) {
-    const { data, error, isLoading } = useLineageOptions(props.field);
+    const { data, error, isLoading } = useLineageOptions(props.lapisUrl, props.field);
 
     if (isLoading) {
         return <LoadingDisplay />;

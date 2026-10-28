@@ -2,7 +2,6 @@ import { useId } from 'react';
 
 import { SelectorHeadline } from './SelectorHeadline';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
-import { LapisClientProvider } from '../../../externalData/lapis/LapisClientContext';
 import {
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
@@ -197,20 +196,19 @@ function ComputedSignature({
         <>
             <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
             <LabeledField label='Variant'>
-                <LapisClientProvider url={clinicalSequenceLapisBaseUrl}>
-                    <LineageFilter
-                        field={clinicalSequenceLapisLineageField}
-                        placeholderText='Variant'
-                        value={pageState.variant}
-                        onLineageChange={(lineages) => {
-                            setPageState({
-                                ...pageState,
-                                variant: lineages[clinicalSequenceLapisLineageField],
-                            });
-                        }}
-                        hideCounts={true}
-                    />
-                </LapisClientProvider>
+                <LineageFilter
+                    lapisUrl={clinicalSequenceLapisBaseUrl}
+                    field={clinicalSequenceLapisLineageField}
+                    placeholderText='Variant'
+                    value={pageState.variant}
+                    onLineageChange={(lineages) => {
+                        setPageState({
+                            ...pageState,
+                            variant: lineages[clinicalSequenceLapisLineageField],
+                        });
+                    }}
+                    hideCounts={true}
+                />
             </LabeledField>
             <div className='mb-2'>
                 <NumericInput
