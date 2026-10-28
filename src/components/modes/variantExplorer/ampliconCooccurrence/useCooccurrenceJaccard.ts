@@ -1,8 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { type CooccurrenceRow } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
-import { getClusterJaccards, type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
+import { useClusterJaccards, type ClusterJaccardSource } from '../../../../externalData/lapis/getClusterJaccards';
 
 /**
  * The Jaccard index of the lineage and each row's cluster (the sequences with at least `atLeast` of
@@ -19,12 +18,7 @@ export function useCooccurrenceJaccard(
         [rows],
     );
 
-    const { data, isPending } = useQuery({
-        enabled: source !== undefined && clusters.length > 0,
-        queryKey: ['cluster-jaccards', source, clusters],
-        staleTime: Infinity,
-        queryFn: ({ signal }) => getClusterJaccards(source!, clusters, signal),
-    });
+    const { data, isPending } = useClusterJaccards(source, clusters);
 
     const jaccardIndices = useMemo(() => {
         if (source === undefined || data?.every((index) => index === undefined) === true) {

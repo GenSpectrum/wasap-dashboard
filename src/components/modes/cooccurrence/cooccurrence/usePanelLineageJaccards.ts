@@ -2,7 +2,7 @@ import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { type OrganismConfigFor } from '../../../../config/organismConfig';
-import { getClusterJaccards } from '../../../../externalData/lapis/getClusterJaccards';
+import { clusterJaccardsQuery } from '../../../../externalData/lapis/getClusterJaccards';
 
 /** The clinical sequences to compute the Jaccard indices in: the variant mode's. */
 export type ClinicalLapisSource = OrganismConfigFor<'variant'>['clinicalLapis'];
@@ -32,21 +32,15 @@ export function usePanelLineageJaccards(
         combine: dataByLineage,
         queries: [...rowsByLineage].map(([lineage, lineageRows]) => {
             const clusters = lineageRows.map(({ codes }) => ({ codes, atLeast: codes.length }));
-            return {
-                queryKey: ['panel-lineage-jaccards', source, lineage, clusters],
-                staleTime: Infinity,
-                queryFn: ({ signal }: { signal: AbortSignal }) =>
-                    getClusterJaccards(
-                        {
-                            lapisBaseUrl: source!.lapisBaseUrl,
-                            lineageQuery: `${source!.lineageField}=${lineage}*`,
-                            dateField: source!.dateField,
-                            dateFrom: undefined,
-                        },
-                        clusters,
-                        signal,
-                    ),
-            };
+            return clusterJaccardsQuery(
+                {
+                    lapisBaseUrl: source!.lapisBaseUrl,
+                    lineageQuery: `${source!.lineageField}=${lineage}*`,
+                    dateField: source!.dateField,
+                    dateFrom: undefined,
+                },
+                clusters,
+            );
         }),
     });
 

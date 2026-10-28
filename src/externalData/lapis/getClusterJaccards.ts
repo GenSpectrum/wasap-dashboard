@@ -1,3 +1,4 @@
+import { queryOptions, skipToken, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
@@ -24,6 +25,28 @@ const queriesOverTimeResponseSchema = z.object({
         data: z.array(z.array(z.object({ count: z.number(), coverage: z.number() }))),
     }),
 });
+
+/**
+ * The query of `getClusterJaccards`, for `useQuery` / `useQueries`; skipped without a `source` or
+ * clusters. Never stale.
+ */
+export function clusterJaccardsQuery(source: ClusterJaccardSource | undefined, clusters: readonly ClusterQuery[]) {
+    return queryOptions({
+        queryKey: ['lapis', 'cluster-jaccards', source, clusters],
+        staleTime: Infinity,
+        queryFn:
+            source === undefined || clusters.length === 0
+                ? skipToken
+                : ({ signal }) => getClusterJaccards(source, clusters, signal),
+    });
+}
+
+export function useClusterJaccards(
+    source: ClusterJaccardSource | undefined,
+    clusters: readonly ClusterQuery[],
+): UseQueryResult<(number | undefined)[]> {
+    return useQuery(clusterJaccardsQuery(source, clusters));
+}
 
 /**
  * The Jaccard index of the lineage and each cluster (the sequences with all of its mutations, or
