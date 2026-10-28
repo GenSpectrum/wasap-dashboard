@@ -54,7 +54,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Zürich (ZH)')" +
-                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+                '.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
@@ -67,13 +67,13 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(date >= '2026-06-03' && date <= '2026-06-30')" +
-                '.map({date := date, sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+                '.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
     test('no location narrows nothing; amino acid uses the gene column', () => {
         expect(positionOverTimeQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
-            'data.map({date := date, sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',
+            'data.map({sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',
         );
     });
 
@@ -101,7 +101,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Geneva')" +
-                '.map({samplingDate := samplingDate, sym := main.at(848)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
+                '.map({sym := main.at(848)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
         );
     });
 });
@@ -140,7 +140,7 @@ describe('readers', () => {
 describe('positionsOverTimeQuery (many positions in one unionall)', () => {
     const part = (position: number) =>
         "data.filter(locationName = 'Zürich (ZH)')" +
-        `.map({date := date, sym := main.at(${position})}).group(by := {date, sym}, aggs := {count := count()})` +
+        `.map({sym := main.at(${position})}).group(by := {date, sym}, aggs := {count := count()})` +
         `.map({day := date, sequenceName := 'main', position := ${position}})` +
         ".filter(day >= '2026-06-03' && day <= '2026-06-30')" +
         '.project({day, sym, count, sequenceName, position})';
@@ -166,7 +166,7 @@ describe('positionsOverTimeQuery (many positions in one unionall)', () => {
                 [{ sequenceName: 'main', position: 241 }],
             ).render(),
         ).toBe(
-            'data.map({samplingDate := samplingDate, sym := main.at(241)})' +
+            'data.map({sym := main.at(241)})' +
                 '.group(by := {samplingDate, sym}, aggs := {count := count()})' +
                 ".map({day := samplingDate, sequenceName := 'main', position := 241}).filter(day >= '2026-06-03'::date)" +
                 '.project({day, sym, count, sequenceName, position})',
@@ -175,7 +175,7 @@ describe('positionsOverTimeQuery (many positions in one unionall)', () => {
 
     test('without dates or locations, nothing is filtered', () => {
         expect(positionsOverTimeQuery(schema, {}, [{ sequenceName: 'S', position: 19 }]).render()).toBe(
-            'data.map({date := date, sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})' +
+            'data.map({sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})' +
                 ".map({day := date, sequenceName := 'S', position := 19}).project({day, sym, count, sequenceName, position})",
         );
     });
