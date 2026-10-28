@@ -1,4 +1,3 @@
-import { type OrganismConfig } from '../../config/organismConfig';
 import { type DatasetFilter } from '../../pageState/analysisFilter';
 import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
@@ -11,11 +10,9 @@ import { RadioSelect } from '../inputs/RadioSelect';
  * grouped. It is the same for all the analysis modes, and changes apply right away.
  */
 export function DatasetFilterPanel({
-    config,
     value,
     onChange,
 }: {
-    config: Pick<OrganismConfig, 'locationNameField'>;
     value: DatasetFilter;
     onChange: (value: DatasetFilter) => void;
 }) {
@@ -26,7 +23,6 @@ export function DatasetFilterPanel({
             <div className='min-w-0 flex-[1_1_11rem]'>
                 <LabeledField label='Sampling locations'>
                     <LocationMultiSelect
-                        field={config.locationNameField}
                         value={value.locationNames}
                         onChange={(locationNames) => onChange({ ...value, locationNames })}
                     />
