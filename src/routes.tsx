@@ -2,7 +2,8 @@ import { Navigate, type RouteObject } from 'react-router-dom';
 
 import { AppShell } from './AppShell';
 import { LandingPage } from './routes/LandingPage';
-import { ModeRoute, OverviewRoute, OrganismRoute } from './routes/OrganismRoute';
+import { ModeRoute, OverviewRoute } from './routes/ModeRoute';
+import { OrganismRoute } from './routes/OrganismRoute';
 
 /**
  * The route tree. Real paths (see `main.tsx`) — no `#`.
