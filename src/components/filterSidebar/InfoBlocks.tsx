@@ -1,5 +1,4 @@
-import 'katex/dist/katex.min.css';
-import { BlockMath, InlineMath } from 'react-katex';
+import { BlockMath, InlineMath } from '../ui/Math';
 
 /**
  * A text block to be put into a Modal as helper information for labeled filter fields.
