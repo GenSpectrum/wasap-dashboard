@@ -11,6 +11,7 @@
 
 import { useMemo } from 'react';
 
+import { COVERING_NUCLEOTIDES } from '../../../domain/symbols';
 import {
     normalizeFilter,
     POSITIONS_PER_QUERY,
@@ -24,8 +25,6 @@ import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQueries } from '../rhydbQuery';
 
 export const MIN_COVERAGE = 20;
-
-const COVERING_SYMBOLS = new Set(['A', 'C', 'G', 'T', '-']);
 
 export type SampleMutationFrequency = {
     sampleId: string;
@@ -108,7 +107,7 @@ export function mutationFrequencies(
         for (const row of rowsByPosition.get(positionOf(mutation)) ?? []) {
             const sample = samples.get(row.sampleId) ?? { date: row.date, coverage: 0, count: 0 };
             samples.set(row.sampleId, sample);
-            if (row.sym !== null && COVERING_SYMBOLS.has(row.sym)) {
+            if (row.sym !== null && COVERING_NUCLEOTIDES.has(row.sym)) {
                 sample.coverage += row.count;
             }
             if (row.sym === base) {

@@ -14,10 +14,8 @@
 
 import { useMemo } from 'react';
 
-import { allQueryData } from '../allQueryData';
-import { useConnection, useRhydbSchema } from '../connection';
-import { unknownSymbol } from './mutationsOverTime';
 import { type ProportionValue } from '../../../components/overTime/proportionValue';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     parseDateStringToTemporal,
     type Temporal,
@@ -36,6 +34,8 @@ import {
     type HaplotypeOverTimeRow,
     type RhydbReadFilter,
 } from '../../queries';
+import { allQueryData } from '../allQueryData';
+import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQueries } from '../rhydbQuery';
 
 /** Reads with one particular set of the amplicon's mutations. */

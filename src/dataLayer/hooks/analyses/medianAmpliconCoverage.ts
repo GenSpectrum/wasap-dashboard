@@ -15,8 +15,7 @@
 
 import { useMemo } from 'react';
 
-import { useConnection, useRhydbSchema } from '../connection';
-import { unknownSymbol } from './mutationsOverTime';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     generateAllInRange,
     getMinMaxTemporal,
@@ -31,6 +30,7 @@ import {
     type PositionBySampleRow,
     type SampleOverview,
 } from '../../queries';
+import { useConnection, useRhydbSchema } from '../connection';
 import { useSampleOverview } from '../lookups/sampleOverview';
 import { useRhydbQuery } from '../rhydbQuery';
 

@@ -33,6 +33,7 @@ import {
     type SubstitutionOrDeletionEntry,
 } from '../../../domain/mutations';
 import { sortSubstitutionsAndDeletions } from '../../../domain/sortSubstitutionsAndDeletions';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     parseDateStringToTemporal,
     type Temporal,
@@ -64,10 +65,6 @@ import { fetchDateAxis } from '../lookups/dateAxis';
 import { useRhydbQueries, useRhydbQuery } from '../rhydbQuery';
 
 /** The symbol that means "the read did not call anything here". */
-export function unknownSymbol(sequenceType: OverTimeSequenceType): string {
-    return sequenceType === 'nucleotide' ? 'N' : 'X';
-}
-
 // --- metadata: the grid's frame ----------------------------------------------
 
 export type OverTimeMetadata = {

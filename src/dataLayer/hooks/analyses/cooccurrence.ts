@@ -17,6 +17,7 @@ import {
 } from '../../../components/modes/cooccurrence/cooccurrence/CooccurrenceOverTimeData';
 import { type ProportionValue, removeEmptyDatesInPlace } from '../../../components/overTime/proportionValue';
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     parseDateStringToTemporal,
     type Temporal,
@@ -172,10 +173,6 @@ export function sliceCooccurrenceRows(
 }
 
 /** The symbol that means "the read did not call anything at this position". */
-function unknownSymbol(sequenceType: OverTimeSequenceType): string {
-    return sequenceType === 'nucleotide' ? 'N' : 'X';
-}
-
 // --- pure helpers (exported for tests) --------------------------------------
 
 type CountedGroup = { symbols: Record<string, string | null>; count: number };
