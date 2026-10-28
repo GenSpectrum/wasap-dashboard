@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchAggregated, LapisError, UnknownLapisError } from './lapisApi';
+import { fetchAggregated, LapisError, UnknownLapisError } from './http';
 
 function stubFetch(respond: () => Promise<Response>) {
     vi.stubGlobal('fetch', vi.fn(respond));

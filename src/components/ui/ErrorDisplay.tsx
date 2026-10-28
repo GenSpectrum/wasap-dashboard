@@ -4,7 +4,7 @@ import { InfoHeadline1, InfoParagraph } from './Info';
 import { Modal } from './Modal';
 import { RhydbError } from '../../dataLayer/transport/query';
 import { BackendError, BackendNotAvailable, UnknownBackendError } from '../../externalData/genSpectrum/apiService';
-import { LapisError, UnknownLapisError } from '../../externalData/lapisApi/lapisApi';
+import { LapisError, UnknownLapisError } from '../../externalData/lapis/http';
 
 export class UserFacingError extends Error {
     constructor(

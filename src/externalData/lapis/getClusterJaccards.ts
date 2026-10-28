@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-import { lapisPost } from '../lapisApi/lapisApi';
+import { lapisPost } from './http';
 
 /** Where the clinical sequences are, and which lineage the Jaccard indices are of. */
 export type ClusterJaccardSource = {

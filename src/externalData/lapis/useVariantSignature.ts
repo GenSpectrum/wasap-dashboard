@@ -3,12 +3,12 @@ import dayjs from 'dayjs';
 
 import { getClusterJaccardsWithLineageCount } from './getClusterJaccards';
 import { getMutationsForVariant } from './getMutations';
+import { type LapisFilter } from './lapisTypes';
 import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
 import type { VariantTimeFrame, VariantAnalysis } from '../../pageState/analysisFilter';
 import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
-import { type LapisFilter } from '../lapisApi/lapisTypes';
 
 const logger = getClientLogger('useVariantSignature');
 
