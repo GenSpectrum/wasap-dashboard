@@ -193,8 +193,9 @@ export function FeatureBands<F>({
                             )}
                             <th className='w-full p-0'>
                                 {/* One equally wide slot per bucket, like the band's own
-                                    hover columns, so a label sits above its bucket. */}
-                                <div className='flex'>
+                                    hover columns, so a label sits above its bucket. The minimum width keeps
+                                    the bands readable on a phone, where the table then scrolls sideways. */}
+                                <div className='flex min-w-40'>
                                     {columns.map((column, index) => (
                                         <div key={column.dateString} className='@container min-w-0 flex-1'>
                                             <DateHeaderLabel
