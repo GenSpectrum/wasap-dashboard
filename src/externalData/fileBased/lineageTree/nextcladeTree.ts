@@ -1,6 +1,6 @@
 // zod 4 rather than the zod 3 of the rest of the app, because it parses the ~7000 nodes of the
 // SARS-CoV-2 tree about ten times faster (~20 ms instead of ~200 ms), and the app waits for it
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 /* eslint-disable @typescript-eslint/naming-convention -- the field names of the Auspice JSON format */
 

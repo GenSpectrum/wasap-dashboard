@@ -10,7 +10,7 @@ export function useRhydbReadFilter(locationNames: string[]) {
     const { samplingDate, isSamplingDatePending } = useOrganismLayoutContext();
 
     const filter: RhydbReadFilter = {
-        ...(locationNames.length > 0 && { locationNames: locationNames as [string, ...string[]] }),
+        ...(locationNames.length > 0 && { locationNames }),
         ...(samplingDate.dateFrom && { samplingDateFrom: samplingDate.dateFrom }),
         ...(samplingDate.dateTo && { samplingDateTo: samplingDate.dateTo }),
     };
