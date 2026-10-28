@@ -1,4 +1,5 @@
-import { NavLink, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { NavLink, useLocation, useParams, useSearchParams } from 'react-router-dom';
 
 import { enabledAnalysisModes } from '../../../config/organismConfig';
 import { resolveOrganismConfig } from '../../../config/wastewaterOrganisms';
@@ -20,6 +21,13 @@ export function ModeTabs() {
     const { organismPath } = useParams();
     const [searchParams] = useSearchParams();
     const config = resolveOrganismConfig(organismPath);
+    const navRef = useRef<HTMLElement>(null);
+    const { pathname } = useLocation();
+
+    // On a narrow page the row of tabs scrolls sideways, so the tab of the open page may be out of view.
+    useEffect(() => {
+        navRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }, [pathname]);
 
     if (config === undefined) {
         return null;
@@ -28,8 +36,13 @@ export function ModeTabs() {
     const search = datasetFilterSearchParams(parseDatasetFilter(searchParams, config), config).toString();
 
     return (
-        <div className='flex flex-wrap items-center gap-1'>
-            <nav aria-label='Analysis mode' className='flex flex-wrap items-center gap-1'>
+        // On a narrow page, the tabs stay in one row that scrolls sideways, rather than wrapping into many.
+        <div className='flex items-center gap-1 lg:flex-wrap'>
+            <nav
+                ref={navRef}
+                aria-label='Analysis mode'
+                className='flex min-w-0 items-center gap-1 overflow-x-auto lg:flex-wrap'
+            >
                 {/* No search params: the overview page doesn't read the dataset filter, unlike the modes. */}
                 <Tab to={config.path} label='Overview' end />
                 {enabledAnalysisModes(config).map((mode) => (
@@ -38,7 +51,7 @@ export function ModeTabs() {
             </nav>
             {/* Nudged down: the tabs have their underline below the text, which centers the row lower than the text. */}
             <Modal
-                buttonClassName='translate-y-[3.5px] p-1 text-gray-700 hover:bg-stone-300'
+                buttonClassName='shrink-0 translate-y-[3.5px] p-1 text-gray-700 hover:bg-stone-300'
                 buttonAriaLabel='Show information about the analysis modes'
                 modalContent={<ExplorationModeInfo />}
                 size='large'
@@ -55,7 +68,7 @@ function Tab({ to, label, end }: { to: string | { pathname: string; search: stri
             to={to}
             end={end}
             className={({ isActive }) =>
-                `px-3 py-1 text-sm font-semibold ${isActive ? 'text-brand-700' : 'text-gray-700 hover:bg-stone-300'}`
+                `px-3 py-1 text-sm font-semibold whitespace-nowrap ${isActive ? 'text-brand-700' : 'text-gray-700 hover:bg-stone-300'}`
             }
         >
             {({ isActive }) => (

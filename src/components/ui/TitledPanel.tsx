@@ -6,7 +6,8 @@ import { HoverTooltip } from './HoverTooltip';
  * A box around a plot or table with its title above it, so that they look alike across the pages.
  * With `info`, a help button next to the title shows it on hover or focus. `flush` drops the box's padding,
  * for content that should reach its border, such as a table with row lines. `boxed={false}` drops the
- * box altogether, for content that draws its own, such as the feature bands.
+ * box altogether, for content that draws its own, such as the feature bands. Content wider than the
+ * box, like a wide table on a phone, scrolls sideways inside it.
  */
 export function TitledPanel({
     title,
@@ -38,7 +39,9 @@ export function TitledPanel({
                 )}
             </div>
             {boxed ? (
-                <div className={`border border-stone-300 bg-white ${flush ? '' : 'p-4'}`}>{children}</div>
+                <div className={`overflow-x-auto border border-stone-300 bg-white ${flush ? '' : 'p-4'}`}>
+                    {children}
+                </div>
             ) : (
                 children
             )}
