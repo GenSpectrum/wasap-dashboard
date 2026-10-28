@@ -20,7 +20,7 @@
  * 12 node types `validateGenomeOnly` lets through, each to a `transport` builder.
  */
 
-import { READS } from './catalogue';
+import { READS } from './counts';
 import { scoped, type RhydbReadFilter } from './filter';
 import type { RhydbFilterExpression } from './rhydbFilterExpression';
 import type { RhydbSchema } from './schema';

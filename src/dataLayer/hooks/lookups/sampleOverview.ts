@@ -1,21 +1,11 @@
 /**
- * `useSampleOverview` — a Tier-1 RhyDB read, as a TanStack Query hook.
- *
- * Reads the instance from context (`useConnection` / `useRhydbSchema`), issues
- * one catalogue query, and hands back the parsed rows. Tier-1 reads are the
- * only layer that issues a query — components call these, never
- * `connection.query` directly (doc 04, "One mechanism").
+ * The samples the instance holds, for the overview page: as they are, and folded into one entry
+ * per location. Both read off the same cached query.
  */
 
 import { type UseQueryResult } from '@tanstack/react-query';
 
-import {
-    readLocationOverview,
-    readSampleOverview,
-    sampleOverviewQuery,
-    type LocationOverview,
-    type SampleOverview,
-} from '../../queries';
+import { readSampleOverview, sampleOverviewQuery, type SampleOverview } from '../../queries';
 import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQuery } from '../rhydbQuery';
 
@@ -46,4 +36,41 @@ function useSampleOverviewQuery<T = SampleOverview[]>(select?: (samples: SampleO
         },
         select,
     });
+}
+
+export type LocationOverview = {
+    name: string;
+    sampleCount: number;
+    /** The reads (amplicon sequences) of all its samples together. */
+    totalReads: number;
+    /** The sampling date of the most recently collected sample at this location. */
+    mostRecentSampleDate: string;
+};
+
+/**
+ * `readSampleOverview`'s one-entry-per-sample result, folded into one entry per location — how
+ * many samples it has, how many reads they have together, and the most recent of their sampling
+ * dates. Sorted by location name.
+ */
+export function readLocationOverview(samples: readonly SampleOverview[]): LocationOverview[] {
+    const byLocation = new Map<string, { sampleCount: number; totalReads: number; mostRecentSampleDate: string }>();
+    for (const sample of samples) {
+        const existing = byLocation.get(sample.locationName);
+        if (existing === undefined) {
+            byLocation.set(sample.locationName, {
+                sampleCount: 1,
+                totalReads: sample.reads,
+                mostRecentSampleDate: sample.date,
+            });
+        } else {
+            existing.sampleCount += 1;
+            existing.totalReads += sample.reads;
+            if (sample.date > existing.mostRecentSampleDate) {
+                existing.mostRecentSampleDate = sample.date;
+            }
+        }
+    }
+    return [...byLocation.entries()]
+        .map(([name, stats]) => ({ name, ...stats }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 }

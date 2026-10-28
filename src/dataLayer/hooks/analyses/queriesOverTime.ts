@@ -27,7 +27,7 @@ import {
     type RhydbFilterExpression,
     type RhydbReadFilter,
 } from '../../queries';
-import { readNamedCounts, type NamedCount } from '../../queries/rows';
+import { readNamedCounts, type NamedCount } from '../../queries/counts';
 import { allQueryData } from '../allQueryData';
 import { useConnection, useRhydbSchema } from '../connection';
 import { useDateAxis } from '../lookups/dateAxis';

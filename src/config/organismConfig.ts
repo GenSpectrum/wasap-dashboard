@@ -33,7 +33,7 @@ export const rhydbInstanceConfigSchema = z.object({
      * carries a dictionary-encoded `date` column (cheap to group); rsv-a / rsv-b
      * have only `samplingDate` (DATE32), which RhyDB groups pathologically slowly —
      * so date-bucketed RSV views stay blocked until those instances gain a dict
-     * date column (doc 04, "Date axis"). `samplingDateColumn` is the DATE32 column
+     * date column. `samplingDateColumn` is the DATE32 column
      * everywhere, for the min/max date-extent read.
      */
     dateColumn: z.string(),
