@@ -116,7 +116,3 @@ the areas they touch:
   assumed to be? Does the eventual 64-bit WASM build realistically cover
   that range, or does desktop's value proposition rest mainly on
   look-and-feel rather than capacity? Not measured yet.
-
-## Also see
-
-- `TODO.md` — small in-flight code-level cleanups (not roadmap-level).
