@@ -10,11 +10,11 @@ export const dateRangeOptionSchema = z.object({
     /**
      * The start date of the date range in the format `YYYY-MM-DD`.
      */
-    dateFrom: z.string().date().optional(),
+    dateFrom: z.iso.date().optional(),
     /**
      * The end date of the date range in the format `YYYY-MM-DD`.
      */
-    dateTo: z.string().date().optional(),
+    dateTo: z.iso.date().optional(),
 });
 
 export type DateRangeOption = z.infer<typeof dateRangeOptionSchema>;
@@ -23,8 +23,8 @@ export const dateRangeValueSchema = z
     .union([
         z.string(),
         z.object({
-            dateFrom: z.string().date().optional(),
-            dateTo: z.string().date().optional(),
+            dateFrom: z.iso.date().optional(),
+            dateTo: z.iso.date().optional(),
         }),
     ])
     .nullable();

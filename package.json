@@ -23,12 +23,11 @@
         "dompurify": "^3.4.14",
         "downshift": "^9.3.3",
         "flatpickr": "^4.6.13",
-        "katex": "^0.17.0",
+        "katex": "^0.19.1",
         "react": "^19.2.8",
         "react-dom": "^19.2.8",
-        "react-katex": "^3.1.0",
         "react-router-dom": "^7.18.2",
-        "zod": "^3.25.74"
+        "zod": "^4.6.7"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.5",
@@ -42,7 +41,6 @@
         "@types/node": "^26.2.0",
         "@types/react": "^19.2.18",
         "@types/react-dom": "^19.2.4",
-        "@types/react-katex": "^3.0.4",
         "@vitejs/plugin-react": "^6.0.5",
         "@vitest/browser": "^4.1.10",
         "@vitest/browser-playwright": "^4.1.10",
