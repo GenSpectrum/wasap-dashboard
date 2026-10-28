@@ -1,5 +1,5 @@
-import { type DateRangeOption, type DateRangeValue } from './dateRangeOption';
 import { getSelectableOptions } from './selectableOptions';
+import { type DateRangeOption, type DateRangeValue } from '../../../domain/dateRange';
 import { UserFacingError } from '../../ui/ErrorDisplay';
 
 export function computeInitialValues(value: DateRangeValue, dateRangeOptions: DateRangeOption[]) {

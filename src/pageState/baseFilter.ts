@@ -1,10 +1,9 @@
 import { type BaseFilter, type DatasetFilter, type MeanProportion } from './analysisFilter';
 import { enumParam, listParam } from './urlParams';
 import { getStringFromSearch, setSearchFromDateRange, setSearchFromString } from './urlSearchParams';
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../components/inputs/dateRangeFilter/dateRangeOption';
 import { type OrganismConfig } from '../config/organismConfig';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL, DEFAULT_RECENT_DAYS_LABEL } from '../domain/dateRange';
 import { temporalGranularitySchema } from '../domain/temporal';
-import { DEFAULT_RECENT_DAYS_LABEL } from '../util/recentDaysDateRangeOptions';
 
 const granularityParam = enumParam(temporalGranularitySchema);
 

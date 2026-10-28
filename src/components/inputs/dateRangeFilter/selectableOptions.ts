@@ -1,4 +1,4 @@
-import { type DateRangeOption } from './dateRangeOption';
+import { type DateRangeOption } from '../../../domain/dateRange';
 
 export const getSelectableOptions = (dateRangeOptions: DateRangeOption[]) => {
     return dateRangeOptions.map((customSelectOption) => {

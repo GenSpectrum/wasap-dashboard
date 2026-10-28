@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 import { DateRangeFilter } from './dateRangeFilter/DateRangeFilter';
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from './dateRangeFilter/dateRangeOption';
 import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../../domain/dateRange';
 import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**

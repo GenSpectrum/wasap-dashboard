@@ -5,12 +5,12 @@ import { RhydbUnreachableWrapper } from './RhydbUnreachableWrapper';
 import type { OrganismConfig } from '../../config/organismConfig';
 import { rhydbSchema } from '../../config/rhydbSchema';
 import { ConnectionProvider, createRhydbQueryClient } from '../../dataLayer/hooks/connection';
+import { type DateRangeOption } from '../../domain/dateRange';
 import { type LineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { type ResistanceData } from '../../externalData/genSpectrum/resistanceData';
 import { type DatasetFilter } from '../../pageState/analysisFilter';
 import { parseDatasetFilter, withDatasetFilter } from '../../pageState/baseFilter';
 import { useResolvedSamplingDate } from '../../pageState/useResolvedSamplingDate';
-import { type DateRangeOption } from '../inputs/dateRangeFilter/dateRangeOption';
 import { MutationAnnotationsContextProvider } from '../mutations/MutationAnnotationsContext';
 import { MutationLinkTemplateContextProvider } from '../mutations/MutationLinkTemplateContext';
 

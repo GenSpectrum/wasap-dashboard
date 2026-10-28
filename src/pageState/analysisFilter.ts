@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { type DateRangeOption } from '../components/inputs/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption } from '../domain/dateRange';
 import { sequenceTypeSchema } from '../domain/mutations';
 import { type TemporalGranularity } from '../domain/temporal';
 

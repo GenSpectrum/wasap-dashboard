@@ -1,4 +1,4 @@
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../components/inputs/dateRangeFilter/dateRangeOption';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../domain/dateRange';
 
 export const setSearchFromString = (
     search: URLSearchParams,
