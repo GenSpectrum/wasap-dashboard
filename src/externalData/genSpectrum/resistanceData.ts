@@ -1,8 +1,8 @@
 import type { Collection } from './Collection';
 import type { ApiService } from './apiService';
 import { getCollection } from './getCollection';
-import { type MutationAnnotations } from '../../components/mutations/MutationAnnotationsContext';
 import type { ResistanceMutationCollectionConfig, OrganismConfig } from '../../config/organismConfig';
+import { type MutationAnnotations } from '../../domain/mutationAnnotations';
 
 /**
  * Data about resistance mutations, used by the wastewater dashboards.
