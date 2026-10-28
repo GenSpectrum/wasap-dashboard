@@ -146,7 +146,7 @@ src/
                              lineageTree (Nextclade tree.json, alias key,
                              lineage signatures, panel matching)
   config/                   config.json loading + schema, per-organism types
-  logging.ts, index.css, types/, util/
+  logging.ts, index.css, util/
 lollipop-service/           the service that computes the Lineage Prevalence page with
                             LolliPop — Python, its own image, see lollipop-service/README.md
 ```
