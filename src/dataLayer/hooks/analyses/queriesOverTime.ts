@@ -12,7 +12,7 @@
 
 import { useMemo } from 'react';
 
-import { type ProportionValue } from '../../../components/overTime/proportionValue';
+import { type ProportionValue } from '../../../domain/proportionValue';
 import {
     parseDateStringToTemporal,
     type Temporal,

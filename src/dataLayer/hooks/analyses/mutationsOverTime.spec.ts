@@ -7,7 +7,7 @@ import {
     positionTargets,
     toMutationEntries,
 } from './mutationsOverTime';
-import { getProportion } from '../../../components/overTime/proportionValue';
+import { getProportion } from '../../../domain/proportionValue';
 import { type OverallMutationRow, type PositionOverTimeRow } from '../../queries';
 import { buildDateAxis } from '../lookups/dateAxis';
 

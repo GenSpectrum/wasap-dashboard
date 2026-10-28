@@ -1,7 +1,8 @@
-import type { Deletion, Substitution } from '../../../domain/mutations';
-import type { Temporal, TemporalClass } from '../../../domain/temporal';
-import { type Map2d, Map2dBase, type Map2DContents } from '../../../util/map2d';
-import { type ProportionValue, serializeSubstitutionOrDeletion, serializeTemporal } from '../proportionValue';
+import { serializeSubstitutionOrDeletion, serializeTemporal } from './overTimeMap';
+import type { Deletion, Substitution } from '../../domain/mutations';
+import { type ProportionValue } from '../../domain/proportionValue';
+import type { Temporal, TemporalClass } from '../../domain/temporal';
+import { type Map2d, Map2dBase, type Map2DContents } from '../../util/map2d';
 
 export type TemporalDataMap<D, T extends Temporal | TemporalClass = Temporal> = Map2d<D, T, ProportionValue>;
 

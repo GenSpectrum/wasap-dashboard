@@ -4,10 +4,10 @@ import { FeatureBands, type FeatureBandsProps } from './FeatureBands';
 import { ViewSettingsControls } from './ViewSettingsControls';
 import { useBandViewSettings } from './bandViewSettings';
 import { DEFAULT_FEATURE_SORT, type FeatureSort } from './featureSort';
-import { CsvDownloadButton, type DataValue } from '../ui/CsvDownloadButton';
-import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
-import { getProportion } from './proportionValue';
+import { type TemporalDataMap } from '../../dataLayer/overTime/MutationOverTimeData';
+import { getProportion } from '../../domain/proportionValue';
 import { toTemporalClass } from '../../domain/temporal';
+import { CsvDownloadButton, type DataValue } from '../ui/CsvDownloadButton';
 
 /**
  * What the user chose in an over-time grid: the sort, the page and the page size. Hold it above

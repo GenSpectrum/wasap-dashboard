@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
 import { getMeanProportions, QueryOverTimeDataMap } from './getFilteredQueriesOverTimeData';
+import { type ProportionValue } from '../../../domain/proportionValue';
 import { type Temporal, TemporalCache } from '../../../domain/temporal';
 import { type Map2dBase } from '../../../util/map2d';
-import { type ProportionValue } from '../proportionValue';
 
 const dates = [
     TemporalCache.getInstance().getYearMonthDay('2024-01-01'),

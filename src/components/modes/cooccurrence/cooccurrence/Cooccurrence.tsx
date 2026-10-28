@@ -1,7 +1,6 @@
 import { Fragment, type FC, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
-import { formatSymbol, type CooccurrenceOverTimeDataMap, type CooccurrencePattern } from './CooccurrenceOverTimeData';
 import { type ClinicalLapisSource, usePanelLineageJaccards } from './usePanelLineageJaccards';
 import {
     useAmpliconAnchor,
@@ -14,6 +13,10 @@ import {
     useCooccurrence,
 } from '../../../../dataLayer/hooks/analyses/cooccurrence';
 import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
+import {
+    type CooccurrenceOverTimeDataMap,
+    type CooccurrencePattern,
+} from '../../../../dataLayer/overTime/CooccurrenceOverTimeData';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
 import { SubstitutionClass, type Substitution, type SequenceType } from '../../../../domain/mutations';
@@ -721,4 +724,8 @@ function substitutionsOf(
         .filter((label) => referenceSymbols?.[label] !== patternSymbols[label])
         .map((label) => substitutionFor(label, patternSymbols[label], sequenceType, referenceSymbols))
         .filter((substitution): substitution is Substitution => substitution !== null);
+}
+
+function formatSymbol(symbol: string | null | undefined): string {
+    return symbol ?? '?';
 }

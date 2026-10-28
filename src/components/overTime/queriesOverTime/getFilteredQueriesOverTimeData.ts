@@ -1,7 +1,8 @@
+import { removeEmptyDatesInPlace, serializeTemporal } from '../../../dataLayer/overTime/overTimeMap';
+import { type ProportionValue } from '../../../domain/proportionValue';
 import { type Temporal } from '../../../domain/temporal';
 import { Map2dBase, Map2dView, type Map2DContents } from '../../../util/map2d';
 import { isInProportionInterval, type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
-import { removeEmptyDatesInPlace, type ProportionValue, serializeTemporal } from '../proportionValue';
 
 export type GetFilteredQueryOverTimeDataArgs = {
     data: Map2DContents<string, Temporal, ProportionValue>;

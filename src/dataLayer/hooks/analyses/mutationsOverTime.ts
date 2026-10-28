@@ -21,17 +21,13 @@ import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import {
-    BaseMutationOverTimeDataMap,
-    type MutationOverTimeDataMap,
-} from '../../../components/overTime/mutationsOverTime/MutationOverTimeData';
-import { removeEmptyDatesInPlace, type ProportionValue } from '../../../components/overTime/proportionValue';
-import {
     DeletionClass,
     SubstitutionClass,
     type Deletion,
     type Substitution,
     type SubstitutionOrDeletionEntry,
 } from '../../../domain/mutations';
+import { type ProportionValue } from '../../../domain/proportionValue';
 import { sortSubstitutionsAndDeletions } from '../../../domain/sortSubstitutionsAndDeletions';
 import { unknownSymbol } from '../../../domain/symbols';
 import {
@@ -41,6 +37,8 @@ import {
     type TemporalGranularity,
 } from '../../../domain/temporal';
 import { Map2dView, type Map2DContents } from '../../../util/map2d';
+import { BaseMutationOverTimeDataMap, type MutationOverTimeDataMap } from '../../overTime/MutationOverTimeData';
+import { removeEmptyDatesInPlace } from '../../overTime/overTimeMap';
 import {
     OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,

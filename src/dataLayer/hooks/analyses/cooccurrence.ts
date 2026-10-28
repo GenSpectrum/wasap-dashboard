@@ -11,12 +11,8 @@
  * component, over the already-fetched result.
  */
 
-import {
-    CooccurrenceOverTimeDataMap,
-    type CooccurrencePattern,
-} from '../../../components/modes/cooccurrence/cooccurrence/CooccurrenceOverTimeData';
-import { type ProportionValue, removeEmptyDatesInPlace } from '../../../components/overTime/proportionValue';
 import { UserFacingError } from '../../../components/ui/ErrorDisplay';
+import { type ProportionValue } from '../../../domain/proportionValue';
 import { unknownSymbol } from '../../../domain/symbols';
 import {
     parseDateStringToTemporal,
@@ -25,6 +21,8 @@ import {
     type TemporalGranularity,
 } from '../../../domain/temporal';
 import { Map2dView } from '../../../util/map2d';
+import { CooccurrenceOverTimeDataMap, type CooccurrencePattern } from '../../overTime/CooccurrenceOverTimeData';
+import { removeEmptyDatesInPlace } from '../../overTime/overTimeMap';
 import {
     normalizeFilter,
     positionsCooccurrenceQuery,

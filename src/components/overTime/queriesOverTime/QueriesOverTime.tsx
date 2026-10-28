@@ -4,6 +4,7 @@ import { QueriesOverTimeRowLabelTooltip } from './QueriesOverTimeRowLabelTooltip
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/analyses/queriesOverTime';
 import { type RhydbFilterExpression, type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type ProportionValue } from '../../../domain/proportionValue';
 import { type Temporal, type TemporalGranularity } from '../../../domain/temporal';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
@@ -16,7 +17,6 @@ import { TotalInDateRange } from '../OverTimeGridTooltip';
 import { useBandViewSettings } from '../bandViewSettings';
 import { sortRowLabels } from '../featureSort';
 import { type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
-import { type ProportionValue } from '../proportionValue';
 
 export type QueriesOverTimeQuery = {
     /** Unique among the queries. */

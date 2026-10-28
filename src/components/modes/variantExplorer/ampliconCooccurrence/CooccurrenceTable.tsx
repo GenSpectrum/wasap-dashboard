@@ -9,6 +9,7 @@ import {
     type CooccurrenceRow,
 } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
 import { type Substitution } from '../../../../domain/mutations';
+import { type ProportionValue } from '../../../../domain/proportionValue';
 import { type Temporal, type TemporalClass } from '../../../../domain/temporal';
 import { type Amplicon } from '../../../../externalData/fileBased/amplicons/primerBed';
 import { Map2dView } from '../../../../util/map2d';
@@ -17,7 +18,6 @@ import { LegendEntry, LegendSwatch, type FeatureRenderer, type RowStyle } from '
 import { OverTimeGrid, proportionsByDate, useOverTimeGridState } from '../../../overTime/OverTimeGrid';
 import { useBandViewSettings } from '../../../overTime/bandViewSettings';
 import { DEFAULT_FEATURE_SORT, sortRowLabels } from '../../../overTime/featureSort';
-import { type ProportionValue } from '../../../overTime/proportionValue';
 import {
     getFilteredQueryOverTimeData,
     getMeanProportions,
