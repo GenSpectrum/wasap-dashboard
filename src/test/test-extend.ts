@@ -29,7 +29,7 @@ const workerFixture = itBase.extend<{ mswWorker: never }>({
 /**
  * Test extension to access the mocks. Import it:
  *
- *     import { it } from '../../../test-extend';
+ *     import { it } from '../../test/test-extend';
  *
  * use like this:
  *
