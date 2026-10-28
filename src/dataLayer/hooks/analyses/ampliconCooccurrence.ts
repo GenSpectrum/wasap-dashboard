@@ -14,21 +14,19 @@
 
 import { useMemo } from 'react';
 
-import { allQueryData } from '../allQueryData';
-import { useConnection, useRhydbSchema } from '../connection';
-import { unknownSymbol } from './mutationsOverTime';
-import { type ProportionValue } from '../../../components/overTime/proportionValue';
-import {
-    type AmpliconMutation,
-    type AmpliconMutations,
-} from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
-import { type Map2DContents } from '../../../util/map2d';
+import { type ProportionValue } from '../../../domain/proportionValue';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     parseDateStringToTemporal,
     type Temporal,
     type TemporalClass,
     type TemporalGranularity,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
+import {
+    type AmpliconMutation,
+    type AmpliconMutations,
+} from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
+import { type Map2DContents } from '../../../util/map2d';
 import {
     haplotypesOverTimeQuery,
     normalizeFilter,
@@ -36,6 +34,8 @@ import {
     type HaplotypeOverTimeRow,
     type RhydbReadFilter,
 } from '../../queries';
+import { allQueryData } from '../allQueryData';
+import { useConnection, useRhydbSchema } from '../connection';
 import { useRhydbQueries } from '../rhydbQuery';
 
 /** Reads with one particular set of the amplicon's mutations. */

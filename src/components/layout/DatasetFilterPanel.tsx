@@ -1,5 +1,5 @@
+import { recentDaysDateRangeOptions } from '../../domain/dateRange';
 import { type DatasetFilter } from '../../pageState/analysisFilter';
-import { recentDaysDateRangeOptions } from '../../util/recentDaysDateRangeOptions';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
 import { LabeledField } from '../inputs/LabeledField';
 import { LocationMultiSelect } from '../inputs/LocationMultiSelect';

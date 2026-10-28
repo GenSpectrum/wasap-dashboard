@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react';
 
 import { ViewSettingsControls } from './ViewSettingsControls';
 import { DEFAULT_BAND_VIEW_SETTINGS } from './bandViewSettings';
-import { it } from '../../../test-extend';
+import { it } from '../../test/test-extend';
 
 describe('ViewSettingsControls', () => {
     it('toggles the empty dates with a button, off by default', async () => {

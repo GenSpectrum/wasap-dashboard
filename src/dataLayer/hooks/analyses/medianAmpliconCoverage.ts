@@ -15,22 +15,22 @@
 
 import { useMemo } from 'react';
 
-import { useConnection, useRhydbSchema } from '../connection';
-import { unknownSymbol } from './mutationsOverTime';
-import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
-import { samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     generateAllInRange,
     getMinMaxTemporal,
     parseDateStringToTemporal,
     type TemporalClass,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
+import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
+import { samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import {
     positionsBySampleQuery,
     readPositionsBySample,
     type PositionBySampleRow,
     type SampleOverview,
 } from '../../queries';
+import { useConnection, useRhydbSchema } from '../connection';
 import { useSampleOverview } from '../lookups/sampleOverview';
 import { useRhydbQuery } from '../rhydbQuery';
 

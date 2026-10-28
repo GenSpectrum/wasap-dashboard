@@ -1,10 +1,10 @@
+import { mutationType, type MutationType } from '../../../domain/mutations';
 import {
     effectiveMutationSource,
     MUTATION_SOURCE,
     type MutationSource,
     type ManualAnalysis,
 } from '../../../pageState/analysisFilter';
-import { mutationType, type MutationType } from '../../../util/mutations';
 import { PositionRangeFilter } from '../../inputs/PositionRangeFilter';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';

@@ -6,10 +6,10 @@ import { useCladeLineages } from '../../../externalData/lapis/getCladeLineages';
 import { useUntrackedMutations } from '../../../externalData/lapis/useUntrackedMutations';
 import { UntrackedPageStateHandler } from '../../../pageState/handlers/UntrackedPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { ModeResults } from '../../layout/ModeResults';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { MutationsResult } from '../../mutations/MutationsResult';
 
 export function UntrackedPage({ config }: { config: OrganismConfigFor<'untracked'> }) {

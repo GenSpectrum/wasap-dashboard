@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { type QueriesOverTimeQuery } from '../components/overTime/queriesOverTime/QueriesOverTime';
 import { type OrganismConfigFor } from '../config/organismConfig';
-import { validateGenomeOnly } from '../dataLayer/queries';
-import { getClientLogger } from '../logging';
-import { getErrorLogMessage } from '../logging';
+import { type QueriesOverTimeQuery, validateGenomeOnly } from '../dataLayer/queries';
+import { getClientLogger, getErrorLogMessage } from '../logging';
 import { getCollection } from './covSpectrum/getCollection';
 import type { CollectionVariant } from './covSpectrum/types';
 import { detailedMutationsToQuery } from './covSpectrum/variantConversionUtil';

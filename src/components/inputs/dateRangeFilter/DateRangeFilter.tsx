@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { DatePicker } from './DatePicker';
 import { computeInitialValues } from './computeInitialValues';
 import { toYYYYMMDD } from './dateConversion';
-import { type DateRangeOption, type DateRangeValue } from './dateRangeOption';
+import { type DateRangeOption, type DateRangeValue } from '../../../domain/dateRange';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
 import { ClearableSelect } from '../ClearableSelect';
 

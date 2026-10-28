@@ -2,9 +2,9 @@ import { type ReactElement, type ReactNode } from 'react';
 
 import { NoDataHelperText } from './NoDataHelperText';
 import { type RhydbReadFilter } from '../../dataLayer/queries';
+import { type SequenceType } from '../../domain/mutations';
+import { type TemporalGranularity } from '../../domain/temporal';
 import { type AnalysisFilter } from '../../pageState/analysisFilter';
-import { type SequenceType } from '../../util/mutations';
-import { type TemporalGranularity } from '../../util/temporal';
 import { MutationsOverTime } from '../overTime/mutationsOverTime/MutationsOverTime';
 import { type ProportionInterval } from '../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { TitledPanel } from '../ui/TitledPanel';

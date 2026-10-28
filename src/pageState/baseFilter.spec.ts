@@ -8,8 +8,7 @@ import {
     setBaseFilterSearchParams,
     withDatasetFilter,
 } from './baseFilter';
-import { CUSTOM_DATE_RANGE_LABEL } from '../components/inputs/dateRangeFilter/dateRangeOption';
-import { DEFAULT_RECENT_DAYS_LABEL } from '../util/recentDaysDateRangeOptions';
+import { CUSTOM_DATE_RANGE_LABEL, DEFAULT_RECENT_DAYS_LABEL } from '../domain/dateRange';
 
 const config = {
     locationNameField: 'locationName',

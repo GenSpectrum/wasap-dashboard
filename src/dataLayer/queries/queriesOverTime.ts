@@ -38,6 +38,16 @@ import {
 } from '../transport/functions';
 import { type Relation } from '../transport/relation';
 
+export type QueriesOverTimeQuery = {
+    /** Unique among the queries. */
+    displayLabel: string;
+    description?: string;
+    /** The advanced-query string, kept for display in the row-label tooltip. */
+    query: string;
+    /** The parsed, genome-only expression that RhyDB is asked. */
+    filter: RhydbFilterExpression;
+};
+
 /**
  * A genome-only `RhydbFilterExpression` as a SaneQL predicate.
  *

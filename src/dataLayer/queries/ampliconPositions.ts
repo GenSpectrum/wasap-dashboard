@@ -10,6 +10,7 @@
 import { scoped, type RhydbReadFilter } from './filter';
 import { type OverTimeSequenceType, type PositionTarget } from './mutationsOverTime';
 import type { RhydbSchema } from './schema';
+import { unknownSymbol } from '../../domain/symbols';
 import { not } from '../transport/expression';
 import { aminoAcidEquals, nucleotideEquals } from '../transport/functions';
 import { type Relation } from '../transport/relation';
@@ -18,17 +19,13 @@ import { readCount, readOptionalText, readText, type RhydbRow } from '../transpo
 const AMPLICON_POSITIONS_FIELDS = ['mutationFrom', 'mutationTo', 'position', 'count', 'coverage'] as const;
 
 /** The symbol that means "the read did not call anything at this position". */
-export function unknownSymbolFor(sequenceType: OverTimeSequenceType): string {
-    return sequenceType === 'nucleotide' ? 'N' : 'X';
-}
-
 export function ampliconPositionsQuery(
     schema: RhydbSchema,
     filter: RhydbReadFilter,
     anchor: PositionTarget,
     sequenceType: OverTimeSequenceType,
 ): Relation {
-    const unknown = unknownSymbolFor(sequenceType);
+    const unknown = unknownSymbol(sequenceType);
     const options = { position: anchor.position, symbol: unknown, sequenceName: anchor.sequenceName };
     const coversAnchor = not(sequenceType === 'nucleotide' ? nucleotideEquals(options) : aminoAcidEquals(options));
 

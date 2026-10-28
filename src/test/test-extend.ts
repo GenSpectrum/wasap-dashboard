@@ -2,7 +2,7 @@ import { setupWorker } from 'msw/browser';
 import '@testing-library/jest-dom/vitest';
 import { it as itBase } from 'vitest';
 
-import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker, RhydbRouteMocker } from './routeMocker.ts';
+import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker, RhydbRouteMocker } from './routeMocker';
 
 export const worker = setupWorker();
 
@@ -29,7 +29,7 @@ const workerFixture = itBase.extend<{ mswWorker: never }>({
 /**
  * Test extension to access the mocks. Import it:
  *
- *     import { it } from '../../../test-extend';
+ *     import { it } from '../../test/test-extend';
  *
  * use like this:
  *

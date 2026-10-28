@@ -11,19 +11,18 @@
  * component, over the already-fetched result.
  */
 
-import {
-    CooccurrenceOverTimeDataMap,
-    type CooccurrencePattern,
-} from '../../../components/modes/cooccurrence/cooccurrence/CooccurrenceOverTimeData';
-import { type ProportionValue, removeEmptyDatesInPlace } from '../../../components/overTime/proportionValue';
-import { UserFacingError } from '../../../components/ui/ErrorDisplay';
-import { Map2dView } from '../../../util/map2d';
+import { type ProportionValue } from '../../../domain/proportionValue';
+import { unknownSymbol } from '../../../domain/symbols';
 import {
     parseDateStringToTemporal,
     type Temporal,
     type TemporalClass,
     type TemporalGranularity,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
+import { Map2dView } from '../../../util/map2d';
+import { UserFacingError } from '../../../util/userFacingError';
+import { CooccurrenceOverTimeDataMap, type CooccurrencePattern } from '../../overTime/CooccurrenceOverTimeData';
+import { removeEmptyDatesInPlace } from '../../overTime/overTimeMap';
 import {
     normalizeFilter,
     positionsCooccurrenceQuery,
@@ -172,10 +171,6 @@ export function sliceCooccurrenceRows(
 }
 
 /** The symbol that means "the read did not call anything at this position". */
-function unknownSymbol(sequenceType: OverTimeSequenceType): string {
-    return sequenceType === 'nucleotide' ? 'N' : 'X';
-}
-
 // --- pure helpers (exported for tests) --------------------------------------
 
 type CountedGroup = { symbols: Record<string, string | null>; count: number };

@@ -3,14 +3,14 @@ import { beforeEach, describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ModeTabs } from './ModeTabs';
-import { it } from '../../../../test-extend';
 import { setAppConfigForTesting } from '../../../config/appConfig';
+import { it } from '../../../test/test-extend';
 import {
     testConfig,
     testConfigWithCollection,
     testConfigWithCooccurrence,
     testConfigWithDeconvolution,
-} from '../../../pageState/testConfig';
+} from '../../../test/testConfig';
 
 const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
 

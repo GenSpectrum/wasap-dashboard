@@ -3,9 +3,9 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ModeRoute } from './ModeRoute';
-import { it } from '../../test-extend';
 import type { OrganismConfig } from '../config/organismConfig';
-import { testConfig } from '../pageState/testConfig';
+import { it } from '../test/test-extend';
+import { testConfig } from '../test/testConfig';
 
 // the real pages need RhyDB; stand-ins that say which page it is are enough here
 /* eslint-disable @typescript-eslint/naming-convention -- the names of the mocked components */

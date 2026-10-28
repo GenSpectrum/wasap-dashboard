@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { CooccurrencePageStateHandler } from './CooccurrencePageStateHandler';
-import { testConfigWithCooccurrence } from '../testConfig';
+import { testConfigWithCooccurrence } from '../../test/testConfig';
 
 describe('CooccurrencePageStateHandler', () => {
     const handler = new CooccurrencePageStateHandler(testConfigWithCooccurrence);

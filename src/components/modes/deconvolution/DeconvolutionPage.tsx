@@ -10,6 +10,7 @@ import { poolFrequencies } from './poolFrequencies';
 import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismConfig';
 import { useMutationFrequencies } from '../../../dataLayer/hooks/analyses/mutationFrequencies';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../domain/temporal';
 import { lineageSignatures } from '../../../externalData/fileBased/lineageTree/lineageSignatures';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { informativeMutations } from '../../../externalData/lollipop/lollipopService';
@@ -19,11 +20,10 @@ import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../../pageState/handlers/DeconvolutionPageStateHandler';
 import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
-import { type TemporalGranularity } from '../../../util/temporal';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { TitledPanel } from '../../ui/TitledPanel';
 
 export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'deconvolution'> }) {

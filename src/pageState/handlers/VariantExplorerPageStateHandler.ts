@@ -1,6 +1,6 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { sequenceTypeSchema } from '../../util/mutations';
+import { sequenceTypeSchema } from '../../domain/mutations';
 import { signatureTypeSchema, variantTimeFrameSchema, type VariantAnalysis } from '../analysisFilter';
 import { booleanParam, enumParam, listParam, numberParam, optional, stringParam } from '../urlParams';
 

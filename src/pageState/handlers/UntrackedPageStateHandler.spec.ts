@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { UntrackedPageStateHandler } from './UntrackedPageStateHandler';
-import { testConfig } from '../testConfig';
+import { testConfig } from '../../test/testConfig';
 
 describe('UntrackedPageStateHandler', () => {
     const handler = new UntrackedPageStateHandler(testConfig);

@@ -1,6 +1,7 @@
 import { type FC, useState } from 'react';
 
 import { type OrganismConfigFor } from '../../../config/organismConfig';
+import { type SequenceType } from '../../../domain/mutations';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor, samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
@@ -14,7 +15,6 @@ import {
     type PositionSource,
     type CooccurrenceAnalysis,
 } from '../../../pageState/analysisFilter';
-import { type SequenceType } from '../../../util/mutations';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';

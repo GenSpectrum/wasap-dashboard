@@ -5,10 +5,10 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { DatasetFilterPanel } from './DatasetFilterPanel';
-import { it } from '../../../test-extend';
 import { ConnectionProvider } from '../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../dataLayer/queries/schema';
 import type { DatasetFilter } from '../../pageState/analysisFilter';
+import { it } from '../../test/test-extend';
 
 const schema: RhydbSchema = {
     table: 'data',

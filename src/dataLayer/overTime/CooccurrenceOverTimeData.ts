@@ -1,6 +1,7 @@
-import { Map2dBase, type Map2DContents } from '../../../../util/map2d';
-import type { Temporal } from '../../../../util/temporal';
-import { type ProportionValue, serializeTemporal } from '../../../overTime/proportionValue';
+import { serializeTemporal } from './overTimeMap';
+import { type ProportionValue } from '../../domain/proportionValue';
+import type { Temporal } from '../../domain/temporal';
+import { Map2dBase, type Map2DContents } from '../../util/map2d';
 
 /**
  * A specific combination of symbols observed across the queried positions, keyed
@@ -16,10 +17,6 @@ export class CooccurrenceOverTimeDataMap extends Map2dBase<CooccurrencePattern, 
     constructor(initialContent?: Map2DContents<CooccurrencePattern, Temporal, ProportionValue>) {
         super(serializeCooccurrencePattern, serializeTemporal, initialContent);
     }
-}
-
-export function formatSymbol(symbol: string | null | undefined): string {
-    return symbol ?? '?';
 }
 
 export function serializeCooccurrencePattern(pattern: CooccurrencePattern): string {

@@ -4,11 +4,11 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ManualAnalysisFilter } from './ManualAnalysisFilter';
-import { DUMMY_RHYDB_URL } from '../../../../routeMocker';
-import { it, rhydbRouteMocker } from '../../../../test-extend';
 import { ConnectionProvider } from '../../../dataLayer/hooks/connection';
 import type { RhydbSchema } from '../../../dataLayer/queries/schema';
 import type { ManualAnalysis } from '../../../pageState/analysisFilter';
+import { DUMMY_RHYDB_URL } from '../../../test/routeMocker';
+import { it, rhydbRouteMocker } from '../../../test/test-extend';
 
 const schema: RhydbSchema = {
     table: 'data',

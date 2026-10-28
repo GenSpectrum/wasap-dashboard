@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { SegmentedSelect } from './SegmentedSelect';
-import { it } from '../../../test-extend';
+import { it } from '../../test/test-extend';
 
 describe('SegmentedSelect', () => {
     const options = [

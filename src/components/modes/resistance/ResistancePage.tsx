@@ -5,9 +5,9 @@ import { ResistanceResult } from './ResistanceResult';
 import { type OrganismConfigFor } from '../../../config/organismConfig';
 import { ResistancePageStateHandler } from '../../../pageState/handlers/ResistancePageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
 
 export function ResistancePage({ config }: { config: OrganismConfigFor<'resistance'> }) {

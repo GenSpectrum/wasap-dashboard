@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ManualPageStateHandler } from './ManualPageStateHandler';
-import { testConfig } from '../testConfig';
+import { testConfig } from '../../test/testConfig';
 
 describe('ManualPageStateHandler', () => {
     const handler = new ManualPageStateHandler(testConfig);

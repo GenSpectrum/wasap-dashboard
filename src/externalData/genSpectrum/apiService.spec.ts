@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { ApiService, BackendError, BackendNotAvailable, UnknownBackendError } from './apiService';
-import { testServer } from '../../../vitest.setup';
+import { testServer } from '../../test/vitest.setup';
 
 const BASE_URL = 'http://backend.example.org/';
 

@@ -4,9 +4,9 @@ import type { SetupWorker } from 'msw/browser';
 import type { SetupServer } from 'msw/node';
 import { expect } from 'vitest';
 
-import type { CollectionRaw } from './src/externalData/covSpectrum/types.ts';
-import type { Collection, CollectionSummary } from './src/externalData/genSpectrum/Collection.ts';
-import type { ParsedQueryResult, ParseQueryRequest } from './src/externalData/lapis/parseQuery.ts';
+import type { CollectionRaw } from '../externalData/covSpectrum/types';
+import type { Collection, CollectionSummary } from '../externalData/genSpectrum/Collection';
+import type { ParsedQueryResult, ParseQueryRequest } from '../externalData/lapis/parseQuery';
 
 // Standalone: the AstroApiRouteMocker (the `/api` proxy), the Subscription
 // mockers, and testOrganismsConfig (which needed the dashboards YAML config

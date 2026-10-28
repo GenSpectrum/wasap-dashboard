@@ -1,5 +1,5 @@
-import { VARIANT_TIME_FRAME } from './analysisFilter';
 import { type OrganismConfig } from '../config/organismConfig';
+import { VARIANT_TIME_FRAME } from '../pageState/analysisFilter';
 
 /** An organism config with the manual, variant, resistance and untracked modes enabled. */
 export const testConfig = {
