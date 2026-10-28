@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { type QueriesOverTimeQuery } from '../components/overTime/queriesOverTime/QueriesOverTime';
 import { type OrganismConfigFor } from '../config/organismConfig';
+import { type QueriesOverTimeQuery } from '../dataLayer/queries';
 import { validateGenomeOnly } from '../dataLayer/queries';
 import { getClientLogger } from '../logging';
 import { getErrorLogMessage } from '../logging';

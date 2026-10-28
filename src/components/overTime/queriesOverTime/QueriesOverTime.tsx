@@ -3,7 +3,7 @@ import { type FC, useEffect, useMemo } from 'react';
 import { QueriesOverTimeRowLabelTooltip } from './QueriesOverTimeRowLabelTooltip';
 import { getFilteredQueryOverTimeData, getMeanProportions } from './getFilteredQueriesOverTimeData';
 import { useQueriesOverTime } from '../../../dataLayer/hooks/analyses/queriesOverTime';
-import { type RhydbFilterExpression, type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type QueriesOverTimeQuery, type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type ProportionValue } from '../../../domain/proportionValue';
 import { type Temporal, type TemporalGranularity } from '../../../domain/temporal';
 import { type Map2DContents, Map2dView } from '../../../util/map2d';
@@ -17,16 +17,6 @@ import { TotalInDateRange } from '../OverTimeGridTooltip';
 import { useBandViewSettings } from '../bandViewSettings';
 import { sortRowLabels } from '../featureSort';
 import { type ProportionInterval } from '../mutationsOverTime/getFilteredMutationCodes';
-
-export type QueriesOverTimeQuery = {
-    /** Unique among the queries. */
-    displayLabel: string;
-    description?: string;
-    /** The advanced-query string, kept for display in the row-label tooltip. */
-    query: string;
-    /** The parsed, genome-only expression that RhyDB is asked (see `dataLayer/queries/queriesOverTime.ts`). */
-    filter: RhydbFilterExpression;
-};
 
 export type QueriesOverTimeProps = {
     filter: RhydbReadFilter;
