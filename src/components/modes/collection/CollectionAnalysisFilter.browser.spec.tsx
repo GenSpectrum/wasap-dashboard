@@ -3,10 +3,10 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { CollectionAnalysisFilter } from './CollectionAnalysisFilter';
-import { DUMMY_BACKEND_URL } from '../../../../routeMocker';
-import { it } from '../../../../test-extend';
 import type * as ApiServiceModule from '../../../externalData/genSpectrum/apiService';
 import type { CollectionAnalysis } from '../../../pageState/analysisFilter';
+import { DUMMY_BACKEND_URL } from '../../../test/routeMocker';
+import { it } from '../../../test/test-extend';
 
 vi.mock('../../../externalData/genSpectrum/apiService.ts', async (importOriginal) => {
     const mod = await importOriginal<typeof ApiServiceModule>();

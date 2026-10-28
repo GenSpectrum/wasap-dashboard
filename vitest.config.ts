@@ -39,7 +39,7 @@ export default defineConfig({
                 test: {
                     name: 'node',
                     exclude: [...configDefaults.exclude, ...BROWSER_SPEC_PATTERNS],
-                    setupFiles: 'vitest.setup.ts',
+                    setupFiles: 'src/test/vitest.setup.ts',
                 },
             },
             {

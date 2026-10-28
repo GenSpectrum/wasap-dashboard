@@ -2,10 +2,10 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { FilterSidebar } from './FilterSidebar';
-import { it } from '../../../test-extend';
 import type { BaseFilter, ManualAnalysis } from '../../pageState/analysisFilter';
 import { ManualPageStateHandler } from '../../pageState/handlers/ManualPageStateHandler';
-import { testConfig } from '../../pageState/testConfig';
+import { it } from '../../test/test-extend';
+import { testConfig } from '../../test/testConfig';
 
 const handler = new ManualPageStateHandler(testConfig);
 

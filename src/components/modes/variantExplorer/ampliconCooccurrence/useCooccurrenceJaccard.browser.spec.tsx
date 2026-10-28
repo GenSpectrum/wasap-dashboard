@@ -5,11 +5,11 @@ import { type FC, type PropsWithChildren } from 'react';
 import { describe, expect } from 'vitest';
 
 import { useCooccurrenceJaccard } from './useCooccurrenceJaccard';
-import { DUMMY_LAPIS_URL } from '../../../../../routeMocker';
-import { it } from '../../../../../test-extend';
 import { type CooccurrenceRow } from '../../../../dataLayer/hooks/analyses/ampliconCooccurrence';
 import { mutationsByAmplicon } from '../../../../externalData/fileBased/amplicons/mutationsByAmplicon';
 import { type Amplicon } from '../../../../externalData/fileBased/amplicons/primerBed';
+import { DUMMY_LAPIS_URL } from '../../../../test/routeMocker';
+import { it } from '../../../../test/test-extend';
 
 const amplicon: Amplicon = { chrom: 'ref', number: 7, pool: '1', start: 1, end: 400, insertStart: 30, insertEnd: 370 };
 const { mutations } = mutationsByAmplicon(['C100T', 'G300A'], [amplicon]).groups[0];

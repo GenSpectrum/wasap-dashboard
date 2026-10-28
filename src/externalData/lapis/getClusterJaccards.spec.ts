@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import { describe, expect, test } from 'vitest';
 
 import { getClusterJaccards } from './getClusterJaccards';
-import { DUMMY_LAPIS_URL } from '../../../routeMocker';
-import { lapisRouteMocker } from '../../../vitest.setup';
+import { DUMMY_LAPIS_URL } from '../../test/routeMocker';
+import { lapisRouteMocker } from '../../test/vitest.setup';
 
 const source = {
     lapisBaseUrl: DUMMY_LAPIS_URL,

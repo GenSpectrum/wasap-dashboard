@@ -2,8 +2,8 @@ import { describe, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ResistanceMutationsFilter } from './ResistanceMutationsFilter';
-import { it } from '../../../../test-extend';
 import type { ResistanceAnalysis } from '../../../pageState/analysisFilter';
+import { it } from '../../../test/test-extend';
 
 describe('ResistanceMutationsFilter', () => {
     const defaultPageState: ResistanceAnalysis = {

@@ -3,9 +3,9 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { LineageTreeCombobox, sortedLineageNames } from './LineageTreeCombobox';
-import { it } from '../../../test-extend';
 import { buildLineageTree } from '../../externalData/fileBased/lineageTree/lineageTree';
 import { type NextcladeTreeNode } from '../../externalData/fileBased/lineageTree/nextcladeTree';
+import { it } from '../../test/test-extend';
 
 /* eslint-disable @typescript-eslint/naming-convention -- the field names of the Auspice JSON format */
 

@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import { describe, expect, test } from 'vitest';
 
 import { fetchVariantSignature, getLapisFilterForTimeFrame, isVariantSelected } from './useVariantSignature';
-import { DUMMY_LAPIS_URL } from '../../../routeMocker';
-import { lapisRouteMocker } from '../../../vitest.setup';
 import type { OrganismConfig } from '../../config/organismConfig';
 import { SEQUENCE_TYPE, SIGNATURE_TYPE, VARIANT_TIME_FRAME, ANALYSIS_MODE } from '../../pageState/analysisFilter';
+import { DUMMY_LAPIS_URL } from '../../test/routeMocker';
+import { lapisRouteMocker } from '../../test/vitest.setup';
 import { buildLineageTree } from '../fileBased/lineageTree/lineageTree';
 
 // these fields have no effect on data fetching, but need to be present to have a correct type.

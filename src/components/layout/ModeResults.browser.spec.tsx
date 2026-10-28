@@ -2,7 +2,7 @@ import { describe, expect } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { ModeResults } from './ModeResults';
-import { it } from '../../../test-extend';
+import { it } from '../../test/test-extend';
 
 const ERROR_TEXT = 'Oops! Something went wrong.';
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { VariantExplorerPageStateHandler } from './VariantExplorerPageStateHandler';
+import { testConfig } from '../../test/testConfig';
 import { VARIANT_TIME_FRAME } from '../analysisFilter';
-import { testConfig } from '../testConfig';
 
 describe('VariantExplorerPageStateHandler', () => {
     const handler = new VariantExplorerPageStateHandler(testConfig);

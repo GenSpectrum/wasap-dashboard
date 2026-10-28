@@ -2,7 +2,7 @@ import { setupWorker } from 'msw/browser';
 import '@testing-library/jest-dom/vitest';
 import { it as itBase } from 'vitest';
 
-import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker, RhydbRouteMocker } from './routeMocker.ts';
+import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker, RhydbRouteMocker } from './routeMocker';
 
 export const worker = setupWorker();
 

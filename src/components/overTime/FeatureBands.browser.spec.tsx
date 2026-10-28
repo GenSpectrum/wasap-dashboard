@@ -6,7 +6,7 @@ import { FeatureBands, type FeatureBandsProps } from './FeatureBands';
 import { DEFAULT_BAND_VIEW_SETTINGS } from './bandViewSettings';
 import { DEFAULT_FEATURE_SORT } from './featureSort';
 import { serializeTemporal, type ProportionValue } from './proportionValue';
-import { it } from '../../../test-extend';
+import { it } from '../../test/test-extend';
 import { Map2dBase } from '../../util/map2d';
 import { type Temporal, TemporalCache } from '../../util/temporal';
 

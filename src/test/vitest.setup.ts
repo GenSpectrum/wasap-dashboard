@@ -2,7 +2,7 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 
-import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker } from './routeMocker.ts';
+import { BackendRouteMocker, CovSpectrumRouteMocker, LapisRouteMocker } from './routeMocker';
 
 export const testServer = setupServer();
 

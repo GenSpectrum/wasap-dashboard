@@ -195,13 +195,7 @@ export default tseslint.config(
     },
     {
         // Test files: relax the type-unsafety rules, as both upstream repos do.
-        files: [
-            '**/*.spec.{ts,tsx}',
-            '**/*.browser.spec.{ts,tsx}',
-            '**/*.fixture.ts',
-            'test-extend.ts',
-            'vitest.setup.ts',
-        ],
+        files: ['**/*.spec.{ts,tsx}', '**/*.browser.spec.{ts,tsx}', '**/*.fixture.ts', 'src/test/**'],
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-unsafe-member-access': 'off',
