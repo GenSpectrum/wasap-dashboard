@@ -1,13 +1,12 @@
 /**
  * The symbol every read carries at one position, per sample, over the whole instance:
- * `map({<sampleId> := <sampleId>, sym := <seq>.at(<pos>)}).group(by := {<sampleId>, sym}, aggs := {count := count()})`.
+ * `map({sym := <seq>.at(<pos>)}).group(by := {<sampleId>, sym}, aggs := {count := count()})`.
  *
  * The same shape as `positionOverTimeQuery`, grouped by sample instead of date, and unfiltered.
  * Backs the overview's median amplicon coverage, all amplicons in one `unionall`
  * (`positionsBySampleQuery`).
  */
 
-import { groupingColumnsPassThrough } from './groupingColumns';
 import type { RhydbSchema } from './schema';
 import { field, int } from '../transport/expression';
 import { count } from '../transport/functions';
@@ -16,7 +15,7 @@ import { readCount, readOptionalText, readText, type RhydbRow } from '../transpo
 
 function positionBySampleQuery(schema: RhydbSchema, sequenceName: string, position: number): Relation {
     return table(schema.table)
-        .map({ ...groupingColumnsPassThrough([schema.sampleId]), sym: field(sequenceName).at(position) })
+        .map({ sym: field(sequenceName).at(position) })
         .group({ count: count() }, [schema.sampleId, 'sym']);
 }
 
@@ -32,10 +31,7 @@ export function positionsBySampleQuery(
 ): Relation {
     return unionall(
         positions.map((position) =>
-            positionBySampleQuery(schema, sequenceName, position).map({
-                ...groupingColumnsPassThrough([schema.sampleId, 'sym', 'count']),
-                position: int(position),
-            }),
+            positionBySampleQuery(schema, sequenceName, position).map({ position: int(position) }),
         ),
     );
 }

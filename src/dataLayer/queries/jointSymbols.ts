@@ -4,7 +4,7 @@
  *
  * ```
  * filter(<scope>)
- *   .map({<grouping columns> := <grouping columns>, p241 := main.at(241), p670 := main.at(670), …})
+ *   .map({p241 := main.at(241), p670 := main.at(670), …})
  *   .group(by := {<grouping columns>, p241, p670, …}, aggs := {count := count()})
  * ```
  *
@@ -20,7 +20,6 @@
  */
 
 import { scoped, type RhydbReadFilter } from './filter';
-import { groupingColumnsPassThrough } from './groupingColumns';
 import type { RhydbSchema } from './schema';
 import { field } from '../transport/expression';
 import { count } from '../transport/functions';
@@ -39,11 +38,10 @@ export function jointSymbolsQuery(
     groupBy: readonly string[],
 ): Relation {
     return scoped(schema, filter)
-        .map({
-            ...groupingColumnsPassThrough(groupBy),
-            ...Object.fromEntries(
+        .map(
+            Object.fromEntries(
                 positions.map((position) => [positionColumn(position), field(sequenceName).at(position)]),
             ),
-        })
+        )
         .group({ count: count() }, [...groupBy, ...positions.map(positionColumn)]);
 }
