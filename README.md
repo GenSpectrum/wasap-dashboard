@@ -159,4 +159,3 @@ AGPL-3.0-only (see [`LICENSE`](LICENSE)).
 
 - [`ROADMAP.md`](ROADMAP.md) — what's built, what's left, and the open product
   questions that block committing to the rest.
-- `TODO.md` — small in-progress code-level cleanups, not roadmap items.
