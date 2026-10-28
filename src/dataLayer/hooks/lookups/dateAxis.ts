@@ -15,7 +15,7 @@ import {
     parseDateStringToTemporal,
     type TemporalClass,
     type TemporalGranularity,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
 import { normalizeFilter, samplingDatesQuery, type RhydbReadFilter, type RhydbSchema } from '../../queries';
 import { readNamedCounts, type NamedCount } from '../../queries/counts';
 import { type Connection } from '../../transport/connection';

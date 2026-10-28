@@ -1,6 +1,6 @@
 import { type Deletion, type Substitution } from '../../domain/mutations';
+import { type Temporal } from '../../domain/temporal';
 import { type Map2dView } from '../../util/map2d';
-import { type Temporal } from '../../util/temporal';
 
 /**
  * One cell of an over-time grid: a feature (mutation or query) in one date bucket.

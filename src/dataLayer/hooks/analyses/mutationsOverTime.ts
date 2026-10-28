@@ -33,13 +33,13 @@ import {
     type SubstitutionOrDeletionEntry,
 } from '../../../domain/mutations';
 import { sortSubstitutionsAndDeletions } from '../../../domain/sortSubstitutionsAndDeletions';
-import { Map2dView, type Map2DContents } from '../../../util/map2d';
 import {
     parseDateStringToTemporal,
     type Temporal,
     type TemporalClass,
     type TemporalGranularity,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
+import { Map2dView, type Map2DContents } from '../../../util/map2d';
 import {
     OVER_TIME_MIN_PROPORTION,
     overallMutationsQuery,

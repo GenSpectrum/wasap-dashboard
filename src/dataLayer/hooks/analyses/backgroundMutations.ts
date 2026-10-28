@@ -15,8 +15,8 @@ import {
     type SubstitutionOrDeletionEntry,
     type SequenceType,
 } from '../../../domain/mutations';
+import { type TemporalGranularity } from '../../../domain/temporal';
 import { type VariantSignature } from '../../../externalData/lapis/useVariantSignature';
-import { type TemporalGranularity } from '../../../util/temporal';
 import { type RhydbReadFilter } from '../../queries';
 
 /** A mutation with at least this mean proportion over the time range is background. */

@@ -17,12 +17,12 @@ import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
 import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
 import { SubstitutionClass, type Substitution, type SequenceType } from '../../../../domain/mutations';
+import { type TemporalGranularity } from '../../../../domain/temporal';
 import {
     lineagePanelSymbols,
     matchingPanelLineages,
 } from '../../../../externalData/fileBased/lineageTree/lineagePanelMatch';
 import { type LineageTree } from '../../../../externalData/fileBased/lineageTree/lineageTree';
-import { type TemporalGranularity } from '../../../../util/temporal';
 import { parsePositionToken } from '../../../inputs/positionFilter/parsePositionToken';
 import { useMutationLinkProvider } from '../../../mutations/MutationLinkTemplateContext';
 import {

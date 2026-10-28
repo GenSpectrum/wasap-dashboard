@@ -18,7 +18,7 @@ import { type BandViewSettings } from './bandViewSettings';
 import { nextSort, type FeatureSort, type SortColumn } from './featureSort';
 import { type TemporalDataMap } from './mutationsOverTime/MutationOverTimeData';
 import { getProportion, type ProportionValue } from './proportionValue';
-import { type Temporal } from '../../util/temporal';
+import { type Temporal } from '../../domain/temporal';
 import { FloatingTooltip, HoverTooltip } from '../ui/HoverTooltip';
 import { Pagination, type PaginationProps } from '../ui/Pagination';
 import { formatProportion } from '../ui/formatProportion';

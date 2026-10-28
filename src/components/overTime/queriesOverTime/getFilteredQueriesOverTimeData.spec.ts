@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
 import { getMeanProportions, QueryOverTimeDataMap } from './getFilteredQueriesOverTimeData';
+import { type Temporal, TemporalCache } from '../../../domain/temporal';
 import { type Map2dBase } from '../../../util/map2d';
-import { type Temporal, TemporalCache } from '../../../util/temporal';
 import { type ProportionValue } from '../proportionValue';
 
 const dates = [

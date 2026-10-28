@@ -19,16 +19,16 @@ import { useConnection, useRhydbSchema } from '../connection';
 import { unknownSymbol } from './mutationsOverTime';
 import { type ProportionValue } from '../../../components/overTime/proportionValue';
 import {
-    type AmpliconMutation,
-    type AmpliconMutations,
-} from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
-import { type Map2DContents } from '../../../util/map2d';
-import {
     parseDateStringToTemporal,
     type Temporal,
     type TemporalClass,
     type TemporalGranularity,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
+import {
+    type AmpliconMutation,
+    type AmpliconMutations,
+} from '../../../externalData/fileBased/amplicons/mutationsByAmplicon';
+import { type Map2DContents } from '../../../util/map2d';
 import {
     haplotypesOverTimeQuery,
     normalizeFilter,

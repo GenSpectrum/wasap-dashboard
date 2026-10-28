@@ -13,13 +13,13 @@
 import { useMemo } from 'react';
 
 import { type ProportionValue } from '../../../components/overTime/proportionValue';
-import { type Map2DContents } from '../../../util/map2d';
 import {
     parseDateStringToTemporal,
     type Temporal,
     type TemporalClass,
     type TemporalGranularity,
-} from '../../../util/temporal';
+} from '../../../domain/temporal';
+import { type Map2DContents } from '../../../util/map2d';
 import {
     countOverTimeQuery,
     coverageOverTimeQuery,

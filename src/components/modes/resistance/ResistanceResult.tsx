@@ -4,8 +4,8 @@ import { ProportionRangeTabs } from './ProportionRangeTabs';
 import { countByProportionRange, getProportionInterval } from './resistanceProportionRanges';
 import { useOverTimeMetadata } from '../../../dataLayer/hooks/analyses/mutationsOverTime';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type TemporalGranularity } from '../../../domain/temporal';
 import { type ResistanceProportionRange, type ResistanceAnalysis } from '../../../pageState/analysisFilter';
-import { type TemporalGranularity } from '../../../util/temporal';
 import { MutationsResult } from '../../mutations/MutationsResult';
 
 /**
