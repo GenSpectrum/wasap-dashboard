@@ -11,7 +11,6 @@
  * component, over the already-fetched result.
  */
 
-import { UserFacingError } from '../../../components/ui/ErrorDisplay';
 import { type ProportionValue } from '../../../domain/proportionValue';
 import { unknownSymbol } from '../../../domain/symbols';
 import {
@@ -21,6 +20,7 @@ import {
     type TemporalGranularity,
 } from '../../../domain/temporal';
 import { Map2dView } from '../../../util/map2d';
+import { UserFacingError } from '../../../util/userFacingError';
 import { CooccurrenceOverTimeDataMap, type CooccurrencePattern } from '../../overTime/CooccurrenceOverTimeData';
 import { removeEmptyDatesInPlace } from '../../overTime/overTimeMap';
 import {

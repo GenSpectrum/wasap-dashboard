@@ -1,6 +1,6 @@
 import { getSelectableOptions } from './selectableOptions';
 import { type DateRangeOption, type DateRangeValue } from '../../../domain/dateRange';
-import { UserFacingError } from '../../ui/ErrorDisplay';
+import { UserFacingError } from '../../../util/userFacingError';
 
 export function computeInitialValues(value: DateRangeValue, dateRangeOptions: DateRangeOption[]) {
     if (value === null) {

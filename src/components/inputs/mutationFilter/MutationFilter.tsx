@@ -14,8 +14,8 @@ import {
     type MutationType,
 } from '../../../domain/mutations';
 import { type MutationsFilter } from '../../../externalData/lapis/lapisTypes';
+import { UserFacingError } from '../../../util/userFacingError';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
-import { UserFacingError } from '../../ui/ErrorDisplay';
 import { singleGraphColorRGBByName } from '../../ui/charts/colors';
 import { WithReferenceGenome } from '../WithReferenceGenome';
 
