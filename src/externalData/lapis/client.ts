@@ -1,20 +1,15 @@
 /**
- * The minimal LAPIS client for the one read that stays on clinical LAPIS: the
- * lineage / variant picker.
+ * A LAPIS client in React context (`LapisClientContext`), for the lineage / variant picker: the
+ * picker in `variant` / `untracked` mode filters the wastewater dataset, but reads its lineage list
+ * from the clinical LAPIS.
  *
- * The lineage picker in `variant` / `untracked` mode filters the *wastewater*
- * dataset but reads its lineage list from the **clinical** LAPIS — someone
- * else's dataset, which has no RhyDB. So this one component reads from LAPIS
- * while every other reads from RhyDB, through the same client-in-context →
- * data-hook mechanism.
- *
- * Just the two calls that read need — an aggregate over one field for the
- * counts, and the lineage-definition DAG — wrapping the kept `lapisApi`
- * functions. Everything else in `lapisApi` is on the RhyDB chopping block.
+ * Just the two calls the picker needs — an aggregate over one field for the counts, and the
+ * lineage-definition DAG — wrapping the functions in `http.ts`. The other LAPIS reads in this
+ * folder take the URL and call `http.ts` directly.
  */
 
-import type { LineageDefinitionResponse } from '../lapisApi/LineageDefinition';
-import { fetchAggregated, fetchLineageDefinition } from '../lapisApi/lapisApi';
+import type { LineageDefinitionResponse } from './LineageDefinition';
+import { fetchAggregated, fetchLineageDefinition } from './http';
 
 export type FieldCount = { value: string; count: number };
 

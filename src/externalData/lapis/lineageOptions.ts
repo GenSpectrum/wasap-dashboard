@@ -11,8 +11,8 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { useLapisClient } from './LapisClientContext';
+import type { LineageDefinitionResponse } from './LineageDefinition';
 import type { LapisClient } from './client';
-import type { LineageDefinitionResponse } from '../lapisApi/LineageDefinition';
 
 export type LineageItem = { lineage: string; count: number };
 

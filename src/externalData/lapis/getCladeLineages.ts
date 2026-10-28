@@ -1,5 +1,5 @@
-import { lapisPost } from '../lapisApi/lapisApi';
-import { aggregatedResponse } from '../lapisApi/lapisTypes';
+import { lapisPost } from './http';
+import { aggregatedResponse } from './lapisTypes';
 
 /**
  * Finds the lineage definition belonging to clades, by looking for the lineage that is most
