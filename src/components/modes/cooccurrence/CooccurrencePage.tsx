@@ -12,11 +12,11 @@ import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
 import { CooccurrencePageStateHandler } from '../../../pageState/handlers/CooccurrencePageStateHandler';
 import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 
 function isNothingSelected(analysis: CooccurrenceAnalysis): boolean {
     return effectivePositionSource(analysis) === 'amplicon'

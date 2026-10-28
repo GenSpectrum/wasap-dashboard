@@ -20,10 +20,10 @@ import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../../pageState/handlers/DeconvolutionPageStateHandler';
 import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
 import { useOrganismLayoutContext } from '../../layout/OrganismLayout';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { TitledPanel } from '../../ui/TitledPanel';
 
 export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'deconvolution'> }) {

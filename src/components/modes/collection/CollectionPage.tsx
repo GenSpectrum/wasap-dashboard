@@ -7,11 +7,11 @@ import { useCollectionQueries } from '../../../externalData/useCollectionQueries
 import { COLLECTION_SOURCE } from '../../../pageState/analysisFilter';
 import { CollectionPageStateHandler } from '../../../pageState/handlers/CollectionPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 
 export function CollectionPage({ config }: { config: OrganismConfigFor<'collection'> }) {
     const pageStateHandler = useMemo(() => new CollectionPageStateHandler(config), [config]);

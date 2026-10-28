@@ -9,11 +9,11 @@ import { effectiveMutationSource, MUTATION_SOURCE, type ManualAnalysis } from '.
 import { ManualPageStateHandler } from '../../../pageState/handlers/ManualPageStateHandler';
 import { usePositionRange } from '../../../pageState/positionRange';
 import { usePageState } from '../../../pageState/usePageState';
-import { useRhydbReadFilter } from '../../../pageState/useRhydbReadFilter';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
+import { useRhydbReadFilter } from '../../layout/useRhydbReadFilter';
 import { MutationsResult } from '../../mutations/MutationsResult';
 import { type ProportionInterval } from '../../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { LoadingDisplay } from '../../ui/LoadingDisplay';
