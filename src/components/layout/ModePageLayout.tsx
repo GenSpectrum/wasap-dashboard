@@ -17,7 +17,7 @@ export function ModePageLayout({ sidebar, children }: { sidebar: ReactNode; chil
 
     return (
         <div className='flex-1 grid-cols-[300px_1fr] lg:grid'>
-            <div className='bg-stone-200 px-4 py-3 lg:p-6'>
+            <div className='bg-stone-200 px-4 py-3 lg:px-6'>
                 <button
                     type='button'
                     className='flex w-full items-center justify-between py-1 text-sm font-semibold text-gray-700 lg:hidden'

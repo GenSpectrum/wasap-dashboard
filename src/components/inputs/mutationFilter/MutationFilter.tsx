@@ -62,7 +62,7 @@ export const MutationFilter: FC<MutationFilterProps> = (props) => {
         // accessible-name-based test/a11y-tooling queries. A plain <div> (same daisyUI classes, purely
         // visual) restores "not actually a label" instead of "accidentally the wrong one".
         <div>
-            <div className='label'>
+            <div className='label flex'>
                 <span>Mutations</span>
             </div>
             <WithReferenceGenome referenceGenome={referenceGenome}>
