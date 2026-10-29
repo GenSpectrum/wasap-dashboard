@@ -72,6 +72,18 @@
     --noise: 0;
 }
 
+/* Compact form fields: daisyUI's default (md) inputs and selects are 40px tall with 16px
+   labels, which towers over the rest of the UI. 32px is daisyUI's own sm height. Kept off
+   --size-field, which would also shrink every btn-xs. */
+.input,
+.select {
+    --size: calc(var(--size-field, 0.25rem) * 8);
+}
+
+.label {
+    font-size: 0.875rem;
+}
+
 /* The toast library and the date picker popup ship their own rounding, and rules like
    .flatpickr-day.startRange, so a plain override would lose to them. */
 .Toastify__toast,

@@ -33,7 +33,7 @@ export function SegmentedSelect<T extends string | number>({
                         <label
                             key={String(option.value)}
                             title={option.title}
-                            className={`has-focus-visible:outline-brand-700 flex-1 cursor-pointer border bg-white py-1.5 text-center has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 ${
+                            className={`has-focus-visible:outline-brand-700 flex-1 cursor-pointer border bg-white py-1.25 text-center has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 ${
                                 index > 0 ? '-ml-px' : ''
                             } ${isChecked ? 'border-primary relative z-10' : 'border-gray-300 hover:bg-stone-100'}`}
                         >
