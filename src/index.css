@@ -59,10 +59,12 @@
     --color-primary-content: var(--color-brand-50);
 
     /* Sharp corners: these drive the rounding of every daisyUI control (select,
-       input, btn, checkbox, modal, ...) without touching each call site. */
-    --radius-selector: 0;
-    --radius-field: 0;
-    --radius-box: 0;
+       input, btn, checkbox, modal, ...) without touching each call site. With a unit:
+       daisyUI uses them in calc()s like clamp(1px, var(--radius-field) / 8, 2px), which a
+       bare 0 makes invalid (it put the tooltip arrow apart from its bubble). */
+    --radius-selector: 0px;
+    --radius-field: 0px;
+    --radius-box: 0px;
 
     /* No shadows: --depth is what daisyUI's buttons, inputs, selects, toggles,
        checkboxes and tabs draw theirs with. */
