@@ -51,6 +51,14 @@ describe('AppHeader', () => {
         expect(getByRole('link', { name: 'About' }).elements()).toHaveLength(0);
     });
 
+    it('links the title to the landing page', async () => {
+        const { getByRole } = renderHeader('/wastewater/covid/manual');
+
+        const href = getByRole('link', { name: /W-ASAP/ }).element().getAttribute('href');
+
+        expect(href).toBe('/');
+    });
+
     it('shows no mode tabs where no organism is open', async () => {
         const { getByRole } = renderHeader('/');
 
