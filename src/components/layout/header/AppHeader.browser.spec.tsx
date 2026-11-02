@@ -26,7 +26,7 @@ describe('AppHeader', () => {
     it('shows the title and the organism selector', async () => {
         const { getByText, getByLabelText } = renderHeader('/');
 
-        await expect.element(getByText('Wastewater Dashboard')).toBeVisible();
+        await expect.element(getByText('W-ASAP')).toBeVisible();
         await expect.element(getByLabelText('Organism')).toBeVisible();
     });
 
@@ -34,7 +34,7 @@ describe('AppHeader', () => {
         const { getByRole } = renderHeader('/wastewater/covid/manual');
 
         await expect.element(getByRole('link', { name: 'Manual' })).toBeVisible();
-        await expect.element(getByRole('link', { name: 'Resistance Mutations' })).toBeVisible();
+        await expect.element(getByRole('link', { name: 'Resistance' })).toBeVisible();
     });
 
     it('shows no mode tabs where no organism is open', async () => {

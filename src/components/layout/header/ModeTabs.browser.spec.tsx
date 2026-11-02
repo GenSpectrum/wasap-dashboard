@@ -36,14 +36,35 @@ describe('ModeTabs', () => {
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
         await expect.element(tabs.nth(0)).toHaveTextContent('Overview');
-        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
-        await expect.element(tabs.nth(2)).toHaveTextContent('Resistance Mutations');
-        await expect.element(tabs.nth(3)).toHaveTextContent('Manual');
-        await expect.element(tabs.nth(4)).toHaveTextContent('Untracked Mutations');
+        await expect.element(tabs.nth(1)).toHaveTextContent('Explorer');
+        await expect.element(tabs.nth(2)).toHaveTextContent('Resistance');
+        await expect.element(tabs.nth(3)).toHaveTextContent('Untracked');
+        await expect.element(tabs.nth(4)).toHaveTextContent('Manual');
         expect(tabs.elements()).toHaveLength(5);
     });
 
-    it('has the Lineage Prevalence tab right after the overview', async () => {
+    it('groups the tabs of the modes', async () => {
+        const { getByRole } = renderTabs();
+
+        const lineageTabs = getByRole('group', { name: 'Lineages' }).getByRole('link');
+        const mutationTabs = getByRole('group', { name: 'Mutations' }).getByRole('link');
+
+        expect(lineageTabs.elements().map((tab) => tab.textContent)).toEqual(['Explorer']);
+        expect(mutationTabs.elements().map((tab) => tab.textContent)).toEqual(['Resistance', 'Untracked', 'Manual']);
+    });
+
+    it('leaves out a group without any enabled mode', async () => {
+        setAppConfigForTesting({
+            organisms: [{ ...testConfig, variantAnalysisModeEnabled: undefined }],
+            lollipopServiceUrl: undefined,
+        });
+        const { getByRole } = renderTabs();
+
+        await expect.element(getByRole('group', { name: 'Mutations' })).toBeVisible();
+        expect(getByRole('group', { name: 'Lineages' }).elements()).toHaveLength(0);
+    });
+
+    it('has the Prevalence tab right after the overview', async () => {
         setAppConfigForTesting({
             organisms: [testConfigWithDeconvolution],
             lollipopServiceUrl: 'http://lollipop.test',
@@ -52,28 +73,38 @@ describe('ModeTabs', () => {
 
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
-        await expect.element(tabs.nth(1)).toHaveTextContent('Lineage Prevalence');
+        await expect.element(tabs.nth(1)).toHaveTextContent('Prevalence');
         expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/lineagePrevalence\?/);
     });
 
-    it('has the Co-occurrence tab right after the Variant Explorer', async () => {
+    it('has the Co-occurrence tab right after the Explorer tab', async () => {
         setAppConfigForTesting({ organisms: [testConfigWithCooccurrence] });
         const { getByRole } = renderTabs();
 
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
-        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
+        await expect.element(tabs.nth(1)).toHaveTextContent('Explorer');
         await expect.element(tabs.nth(2)).toHaveTextContent('Co-occurrence');
     });
 
-    it('leaves the Lineage Prevalence tab out without a LolliPop service', async () => {
+    it('has the Co-occurrence tab in no group', async () => {
+        setAppConfigForTesting({ organisms: [testConfigWithCooccurrence] });
+        const { getByRole } = renderTabs();
+
+        const lineageTabs = getByRole('group', { name: 'Lineages' }).getByRole('link');
+
+        await expect.element(getByRole('link', { name: 'Co-occurrence' })).toBeVisible();
+        expect(lineageTabs.elements().map((tab) => tab.textContent)).not.toContain('Co-occurrence');
+    });
+
+    it('leaves the Prevalence tab out without a LolliPop service', async () => {
         setAppConfigForTesting({ organisms: [testConfigWithDeconvolution] });
         const { getByRole } = renderTabs();
 
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
-        await expect.element(tabs.nth(1)).toHaveTextContent('Variant Explorer');
-        expect(tabs.elements().map((tab) => tab.textContent)).not.toContain('Lineage Prevalence');
+        await expect.element(tabs.nth(1)).toHaveTextContent('Explorer');
+        expect(tabs.elements().map((tab) => tab.textContent)).not.toContain('Prevalence');
     });
 
     it('links the overview tab to the bare organism URL, with no search params', async () => {
@@ -96,7 +127,7 @@ describe('ModeTabs', () => {
             `/wastewater/covid/manual?${DATASET_SEARCH}&meanProportionLower=0.3&meanProportionUpper=0.6&sequenceType=amino+acid`,
         );
 
-        const href = getByRole('link', { name: 'Variant Explorer' }).element().getAttribute('href');
+        const href = getByRole('link', { name: 'Explorer' }).element().getAttribute('href');
 
         expect(href).toBe(`/wastewater/covid/variantExplorer?${DATASET_SEARCH}`);
     });
@@ -104,9 +135,7 @@ describe('ModeTabs', () => {
     it('marks the tab of the current mode', async () => {
         const { getByRole } = renderTabs(`/wastewater/covid/resistance?${DATASET_SEARCH}`);
 
-        await expect
-            .element(getByRole('link', { name: 'Resistance Mutations' }))
-            .toHaveAttribute('aria-current', 'page');
+        await expect.element(getByRole('link', { name: 'Resistance' })).toHaveAttribute('aria-current', 'page');
         await expect.element(getByRole('link', { name: 'Manual' })).not.toHaveAttribute('aria-current');
         // Not the overview tab either: it only matches the bare organism URL exactly, not every path below it.
         await expect.element(getByRole('link', { name: 'Overview' })).not.toHaveAttribute('aria-current');

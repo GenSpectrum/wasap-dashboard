@@ -10,6 +10,16 @@
     prefixes: mdi;
 }
 
+/*
+ * Icons of our own, used like the Iconify ones (`iconify wasap--…`).
+ * mutation-row: a row of positions, the middle one mutated.
+ */
+.wasap--mutation-row {
+    /* Wider than square, so that the squares of the row can be about as big as the shapes of the other icons. */
+    width: 1.25em;
+    --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 24'%3E%3Crect x='1' y='8.5' width='7' height='7' rx='0.6' fill='none' stroke='black' stroke-width='2'/%3E%3Crect x='10.5' y='7.5' width='9' height='9' rx='1'/%3E%3Crect x='22' y='8.5' width='7' height='7' rx='0.6' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E");
+}
+
 /* The app's colour palette. */
 @theme {
     --color-indigo: rgba(51, 34, 136, 0.9);

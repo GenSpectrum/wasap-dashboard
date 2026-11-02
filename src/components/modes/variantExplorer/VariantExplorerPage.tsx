@@ -111,6 +111,7 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
 
     return (
         <ModePageLayout
+            mode='variant'
             sidebar={
                 <FilterSidebar
                     withMeanProportion={false}

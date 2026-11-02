@@ -29,6 +29,7 @@ export function CollectionPage({ config }: { config: OrganismConfigFor<'collecti
 
     return (
         <ModePageLayout
+            mode='collection'
             sidebar={
                 <FilterSidebar
                     pageStateHandler={pageStateHandler}
