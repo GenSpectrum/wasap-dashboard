@@ -6,18 +6,15 @@ Additionally, it allows experts to break down a variant's signal by amplicon and
 
 ## Development
 
-The application is a standalone **Vite + React
-SPA**, extracted from `GenSpectrum/dashboards`. Renders the
-`covid` / `rsvA` / `rsvB` wastewater dashboards — organism dropdown, six
-analysis modes (manual, variant, resistance, untracked, collection,
-co-occurrence), mutations-/queries-over-time grids.
+The application is a **Vite + React SPA**.
 
 ```sh
 npm install
 npm run dev           # vite dev server, http://localhost:4321
 npm run build         # tsc --noEmit && vite build -> dist/
 npm run preview       # serve the built bundle
-npm test              # vitest (node project)
+npm test              # vitest, node + browser projects
+npm run test:watch    # vitest in watch mode
 npm run typecheck
 npm run format         # eslint . --fix && prettier --write .  (run before every commit)
 npm run check-lint     # eslint ., no fixes
@@ -34,7 +31,7 @@ Runtime config is a `config.json` containing:
 
 - LAPIS/RhyDB/backend URLs
 - per-organism settings
-- enabled analysis modes are
+- the enabled analysis modes
 
 An example config can be found in `public/config.example.json`. If no config is found, the website will display an error.
 
@@ -73,8 +70,7 @@ location / {
 }
 ```
 
-Other hosts need the equivalent (Tauri's custom-protocol handler is a
-separate case — see `ROADMAP.md`, step 4).
+Other hosts need the equivalent.
 
 ## Running with Docker
 
@@ -83,22 +79,14 @@ cp public/config.example.json config.json   # then edit config.json
 docker compose up --build
 ```
 
-Serves the app at `http://localhost:8080`, and the LolliPop service
-([`lollipop-service/`](lollipop-service/README.md)), which the Lineage
-Prevalence page needs, at `http://localhost:8000`. The example configs use the
-deployed service, `https://dashboard.wasap.genspectrum.org/lollipop`; set
-`lollipopServiceUrl` to `http://localhost:8000` to use the local one. Without a
-`lollipopServiceUrl`, that page is left out.
-`docker-compose.yml` bind-mounts
-`./config.json` into the built image, so editing it and restarting the
-container is enough to point the same image at different data — no rebuild
-needed.
+Serves the app at `http://localhost:8080` and the LolliPop service
+([`lollipop-service/`](lollipop-service/README.md)), which the Lineage Prevalence page needs,
+at `http://localhost:8000`. To use the local service, set `lollipopServiceUrl` to
+`http://localhost:8000`. The example configs point at the deployed one. `config.json` is
+bind-mounted, so editing it and restarting the container is enough. No rebuild is needed.
 
-CI publishes the image to `ghcr.io/genspectrum/wasap-dashboard` on every push
-to `main`, so `--build` above can be swapped for `image:
-ghcr.io/genspectrum/wasap-dashboard:latest` in `docker-compose.yml` to skip
-building locally. The LolliPop service's image is published next to it, as
-`ghcr.io/genspectrum/wasap-dashboard-lollipop-service`, with the same tags.
+CI publishes both images on every push to `main`:
+`ghcr.io/genspectrum/wasap-dashboard` and `ghcr.io/genspectrum/wasap-dashboard-lollipop-service`.
 
 ## Source layout
 
