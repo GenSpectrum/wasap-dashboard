@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ANALYSIS_MODE } from './analysisFilter';
-import { modeLabel, modeToSegment, segmentToMode } from './modes';
+import { MODE_GROUPS, modeLabel, modeToSegment, segmentToMode } from './modes';
 
 describe('modes', () => {
     const modes = Object.values(ANALYSIS_MODE);
@@ -36,5 +36,11 @@ describe('modes', () => {
         for (const mode of modes) {
             expect(modeLabel(mode)).not.toBe('');
         }
+    });
+
+    it('puts every mode in exactly one group', () => {
+        const grouped = MODE_GROUPS.flatMap((group) => group.modes);
+
+        expect(grouped.toSorted()).toEqual(modes.toSorted());
     });
 });
