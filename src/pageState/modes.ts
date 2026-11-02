@@ -16,13 +16,24 @@ const MODE_SEGMENTS = {
 
 const MODE_LABELS = {
     manual: 'Manual',
-    variant: 'Variant Explorer',
-    resistance: 'Resistance Mutations',
-    untracked: 'Untracked Mutations',
+    variant: 'Explorer',
+    resistance: 'Resistance',
+    untracked: 'Untracked',
     collection: 'Collection',
-    deconvolution: 'Lineage Prevalence',
+    deconvolution: 'Prevalence',
     cooccurrence: 'Co-occurrence',
 } as const satisfies Record<AnalysisMode, string>;
+
+/**
+ * The groups the navigation lists the modes in, in its order. Every mode is in exactly one
+ * group; the modes an organism doesn't have are left out of the navigation.
+ */
+export const MODE_GROUPS: { label?: string; modes: AnalysisMode[] }[] = [
+    { label: 'Lineages', modes: ['deconvolution', 'variant'] },
+    // Neither about lineages nor about single mutations, so on its own, without a label.
+    { modes: ['cooccurrence'] },
+    { label: 'Mutations', modes: ['resistance', 'untracked', 'manual', 'collection'] },
+];
 
 export function modeToSegment(mode: AnalysisMode): string {
     return MODE_SEGMENTS[mode];

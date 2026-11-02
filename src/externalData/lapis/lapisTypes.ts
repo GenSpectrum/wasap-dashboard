@@ -1,4 +1,4 @@
-import z, { type ZodTypeAny } from 'zod';
+import z, { type ZodType } from 'zod';
 
 const orderByType = z.enum(['ascending', 'descending']);
 
@@ -24,7 +24,7 @@ const baseResponseValueSchema = z.union([z.string(), z.number(), z.boolean(), z.
 export const aggregatedItem = z.object({ count: z.number() }).catchall(baseResponseValueSchema);
 export const aggregatedResponse = makeLapisResponse(z.array(aggregatedItem));
 
-function makeLapisResponse<T extends ZodTypeAny>(data: T) {
+function makeLapisResponse<T extends ZodType>(data: T) {
     return z.object({
         data,
     });
@@ -53,6 +53,6 @@ export const mutationsFilterSchema = z.object({
 export type MutationsFilter = z.infer<typeof mutationsFilterSchema>;
 
 export const lapisFilterSchema = z
-    .record(z.union([z.string(), z.array(z.string()), z.number(), z.null(), z.boolean(), z.undefined()]))
+    .record(z.string(), z.union([z.string(), z.array(z.string()), z.number(), z.null(), z.boolean(), z.undefined()]))
     .and(mutationsFilterSchema.partial());
 export type LapisFilter = z.infer<typeof lapisFilterSchema>;

@@ -25,6 +25,7 @@ export function ResistancePage({ config }: { config: OrganismConfigFor<'resistan
 
     return (
         <ModePageLayout
+            mode='resistance'
             sidebar={
                 // The only setting is the resistance set, so it is applied right away, without a button.
                 <ResistanceMutationsFilter

@@ -15,14 +15,14 @@ import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/
  */
 export function OverviewPage({ amplicons }: { amplicons?: AmpliconsConfig }) {
     return (
-        <div className='flex-1 space-y-6 bg-stone-50 p-6'>
+        <div className='flex-1 space-y-6 bg-stone-50 p-4 lg:p-6'>
             <OverviewStats />
             <SamplesOverTimePlot />
             {amplicons === undefined ? (
                 <LocationOverviewTable />
             ) : (
                 // Side by side where there is room for both, the table first.
-                <div className='grid items-start gap-6 xl:grid-cols-2'>
+                <div className='grid grid-cols-1 items-start gap-6 xl:grid-cols-2'>
                     <LocationOverviewTable />
                     <MedianAmpliconCoverageHeatmap amplicons={amplicons} />
                 </div>

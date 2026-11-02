@@ -98,7 +98,7 @@ function MutationGroup({
 
 function ExcludedMutationsInfo() {
     return (
-        <div className='w-96 space-y-2 text-sm font-normal text-gray-700'>
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p>
                 The variant&apos;s mutations left out of the mutations and the co-occurrence above, as the background
                 the variant stands on rather than what tells it apart, each with its mean proportion over the time

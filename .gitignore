@@ -9,3 +9,6 @@ __screenshots__/
 
 # runtime config — copy public/config.example.json
 public/config.json
+
+# tsc build cache
+*.tsbuildinfo

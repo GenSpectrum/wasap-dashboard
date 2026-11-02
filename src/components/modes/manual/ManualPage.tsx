@@ -32,6 +32,7 @@ export function ManualPage({ config }: { config: OrganismConfigFor<'manual'> }) 
 
     return (
         <ModePageLayout
+            mode='manual'
             sidebar={
                 <FilterSidebar
                     pageStateHandler={pageStateHandler}

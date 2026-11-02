@@ -10,6 +10,16 @@
     prefixes: mdi;
 }
 
+/*
+ * Icons of our own, used like the Iconify ones (`iconify wasap--…`).
+ * mutation-row: a row of positions, the middle one mutated.
+ */
+.wasap--mutation-row {
+    /* Wider than square, so that the squares of the row can be about as big as the shapes of the other icons. */
+    width: 1.25em;
+    --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 24'%3E%3Crect x='1' y='8.5' width='7' height='7' rx='0.6' fill='none' stroke='black' stroke-width='2'/%3E%3Crect x='10.5' y='7.5' width='9' height='9' rx='1'/%3E%3Crect x='22' y='8.5' width='7' height='7' rx='0.6' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E");
+}
+
 /* The app's colour palette. */
 @theme {
     --color-indigo: rgba(51, 34, 136, 0.9);
@@ -59,15 +69,29 @@
     --color-primary-content: var(--color-brand-50);
 
     /* Sharp corners: these drive the rounding of every daisyUI control (select,
-       input, btn, checkbox, modal, ...) without touching each call site. */
-    --radius-selector: 0;
-    --radius-field: 0;
-    --radius-box: 0;
+       input, btn, checkbox, modal, ...) without touching each call site. With a unit:
+       daisyUI uses them in calc()s like clamp(1px, var(--radius-field) / 8, 2px), which a
+       bare 0 makes invalid (it put the tooltip arrow apart from its bubble). */
+    --radius-selector: 0px;
+    --radius-field: 0px;
+    --radius-box: 0px;
 
     /* No shadows: --depth is what daisyUI's buttons, inputs, selects, toggles,
        checkboxes and tabs draw theirs with. */
     --depth: 0;
     --noise: 0;
+}
+
+/* Compact form fields: daisyUI's default (md) inputs and selects are 40px tall with 16px
+   labels, which towers over the rest of the UI. 32px is daisyUI's own sm height. Kept off
+   --size-field, which would also shrink every btn-xs. */
+.input,
+.select {
+    --size: calc(var(--size-field, 0.25rem) * 8);
+}
+
+.label {
+    font-size: 0.875rem;
 }
 
 /* The toast library and the date picker popup ship their own rounding, and rules like

@@ -15,11 +15,8 @@
             "variantAnalysisModeEnabled": true,
             "resistanceAnalysisModeEnabled": true,
             "untrackedAnalysisModeEnabled": true,
-            "covSpectrumCollectionSourceEnabled": true,
-            "collectionAnalysisModeEnabled": true,
             "deconvolutionAnalysisModeEnabled": true,
             "cooccurrenceAnalysisModeEnabled": true,
-            "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/covid/{{id}}",
             "deconvolutionPanel": ["NB.1.8.1", "XFG", "XFG.1", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"],
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/tree.json",
@@ -71,8 +68,6 @@
             },
             "browseDataUrl": "https://db.wasap.genspectrum.org/covid/search",
             "browseDataDescription": "Browse the data in the W-ASAP Loculus instance.",
-            "collectionsApiBaseUrl": "https://cov-spectrum.org/api/v2",
-            "collectionTitleFilter": "wastewater",
             "defaultLocationName": "Zürich (ZH)",
             "clinicalSequenceCountWarningThreshold": 50,
             "cooccurrenceDefaultAmplicon": 74,
@@ -103,14 +98,6 @@
                     "sequenceType": "nucleotide",
                     "excludeSet": "predefined"
                 },
-                "covSpectrumCollection": {
-                    "mode": "covSpectrumCollection",
-                    "collectionId": 1
-                },
-                "collection": {
-                    "mode": "collection",
-                    "source": "genSpectrum"
-                },
                 "cooccurrence": {
                     "mode": "cooccurrence",
                     "sequenceType": "nucleotide",
@@ -131,8 +118,6 @@
             "manualAnalysisModeEnabled": true,
             "variantAnalysisModeEnabled": true,
             "resistanceAnalysisModeEnabled": true,
-            "collectionAnalysisModeEnabled": true,
-            "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-a/{{id}}",
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/tree.json",
                 "lineageAttribute": "clade_membership"
@@ -193,10 +178,6 @@
                     "mode": "resistance",
                     "sequenceType": "amino acid",
                     "resistanceSet": "Nirsevimab"
-                },
-                "collection": {
-                    "mode": "collection",
-                    "source": "genSpectrum"
                 }
             }
         },
@@ -212,8 +193,6 @@
             "manualAnalysisModeEnabled": true,
             "variantAnalysisModeEnabled": true,
             "resistanceAnalysisModeEnabled": true,
-            "collectionAnalysisModeEnabled": true,
-            "genSpectrumCollectionLinkOut": "https://genspectrum.org/collections/rsv-b/{{id}}",
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/tree.json",
                 "lineageAttribute": "clade_membership"
@@ -274,10 +253,6 @@
                     "mode": "resistance",
                     "sequenceType": "amino acid",
                     "resistanceSet": "Nirsevimab"
-                },
-                "collection": {
-                    "mode": "collection",
-                    "source": "genSpectrum"
                 }
             }
         }

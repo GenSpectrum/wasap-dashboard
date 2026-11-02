@@ -51,6 +51,7 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
 
     return (
         <ModePageLayout
+            mode='deconvolution'
             sidebar={
                 // The extra lineage is the only setting, so it is applied right away, without a button.
                 <div className='flex flex-col gap-6'>

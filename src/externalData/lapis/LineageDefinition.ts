@@ -5,5 +5,5 @@ const lineage = z.object({
     aliases: z.array(z.string()).optional(),
 });
 
-export const lineageDefinitionResponseSchema = z.record(lineage);
+export const lineageDefinitionResponseSchema = z.record(z.string(), lineage);
 export type LineageDefinitionResponse = z.infer<typeof lineageDefinitionResponseSchema>;

@@ -111,6 +111,7 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
 
     return (
         <ModePageLayout
+            mode='variant'
             sidebar={
                 <FilterSidebar
                     withMeanProportion={false}
@@ -219,7 +220,7 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
 
 function MutationsInfo() {
     return (
-        <div className='w-96 text-sm font-normal text-gray-700'>
+        <div className='w-96 max-w-full text-sm font-normal text-gray-700'>
             The variant&apos;s mutations with a Jaccard index of at least the minimum, each on its own: the share of the
             reads covering its position that carry it.
         </div>

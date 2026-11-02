@@ -49,7 +49,7 @@ export function DynamicDateFilter({
 
     return (
         <label>
-            <div className='label'>
+            <div className='label flex'>
                 <span>{label}</span>
             </div>
             {isPending ? (

@@ -262,31 +262,6 @@ export type OrganismConfig = z.infer<typeof organismConfigSchema>;
 /**
  * Convenience function to get the list of enabled modes, in the order of their tabs.
  */
-export function enabledAnalysisModes(config: OrganismConfig): AnalysisMode[] {
-    const result: AnalysisMode[] = [];
-    if (config.deconvolutionAnalysisModeEnabled) {
-        result.push('deconvolution');
-    }
-    if (config.variantAnalysisModeEnabled) {
-        result.push('variant');
-    }
-    if (config.cooccurrenceAnalysisModeEnabled) {
-        result.push('cooccurrence');
-    }
-    if (config.resistanceAnalysisModeEnabled) {
-        result.push('resistance');
-    }
-    if (config.manualAnalysisModeEnabled) {
-        result.push('manual');
-    }
-    if (config.untrackedAnalysisModeEnabled) {
-        result.push('untracked');
-    }
-    if (config.collectionAnalysisModeEnabled) {
-        result.push('collection');
-    }
-    return result;
-}
 
 const MODE_ENABLED_FLAGS = {
     manual: 'manualAnalysisModeEnabled',

@@ -50,7 +50,7 @@ export function MedianAmpliconCoverageHeatmap({ amplicons: ampliconsConfig }: { 
 
 function CoverageInfo() {
     return (
-        <div className='w-96 space-y-2 text-sm font-normal text-gray-700'>
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p>
                 For each location and week, how many reads a typical amplicon got: the median number of reads per
                 amplicon in each sample, and the median of that over the week&apos;s samples.

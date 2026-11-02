@@ -86,7 +86,7 @@ function SectionLoading() {
 
 function CooccurrenceInfo() {
     return (
-        <div className='w-96 space-y-2 text-sm font-normal text-gray-700'>
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p>
                 A read comes from one amplicon, so the variant&apos;s mutations in the same amplicon can be checked for
                 being on the same read. A row is a cluster of them that reads carry together: the share of the reads

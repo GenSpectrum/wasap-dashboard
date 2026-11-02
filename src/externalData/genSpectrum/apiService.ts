@@ -1,4 +1,4 @@
-import { type ZodSchema } from 'zod';
+import { type ZodType } from 'zod';
 
 import { type ProblemDetail, problemDetailSchema } from './problemDetail';
 import { getAppConfig } from '../../config/appConfig';
@@ -10,7 +10,7 @@ type EndpointParameters<Response> = {
     url: string;
     /** The query parameters; an array becomes the same parameter repeated. */
     requestParams?: Record<string, string | string[] | boolean | undefined>;
-    schema: ZodSchema<Response>;
+    schema: ZodType<Response>;
     signal?: AbortSignal;
 };
 
