@@ -11,7 +11,7 @@ import { OrganismRoute } from './routes/OrganismRoute';
  * `/:organismPath` matches the per-organism `config.path` so the URLs the
  * wasap code builds stay valid. It is the organism's overview page (the bare
  * URL, no redirect); every analysis mode is a page below it, `/:organismPath/:mode`, and so is
- * the about page, `/:organismPath/about`.
+ * the about page, `/:organismPath/about`. The about page is also at `/about`, for the landing page.
  */
 export const routes: RouteObject[] = [
     {
@@ -19,6 +19,8 @@ export const routes: RouteObject[] = [
         element: <AppShell />,
         children: [
             { index: true, element: <LandingPage /> },
+            // The about page without an organism, for the landing page. Under an organism it keeps the mode tabs.
+            { path: 'about', element: <AboutPage /> },
             {
                 path: ':organismPath',
                 element: <OrganismRoute />,

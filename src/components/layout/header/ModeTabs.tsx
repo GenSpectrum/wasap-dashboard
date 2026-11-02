@@ -94,10 +94,9 @@ export function ModeTabs() {
 export function AboutLink() {
     const { organismPath } = useParams();
     const config = resolveOrganismConfig(organismPath);
-    if (config === undefined) {
-        return null;
-    }
-    return <Tab to={`${config.path}/about`} label='About' icon='mdi--information-outline' />;
+    // Under the organism that is open, so that its mode tabs stay; on the landing page, the one without.
+    const to = config === undefined ? '/about' : `${config.path}/about`;
+    return <Tab to={to} label='About' icon='mdi--information-outline' />;
 }
 
 function Tab({
