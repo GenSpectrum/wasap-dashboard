@@ -30,6 +30,7 @@ export function UntrackedPage({ config }: { config: OrganismConfigFor<'untracked
 
     return (
         <ModePageLayout
+            mode='untracked'
             sidebar={
                 <FilterSidebar
                     pageStateHandler={pageStateHandler}

@@ -1,3 +1,6 @@
+import { type ReactNode } from 'react';
+
+import { type AnalysisMode } from '../../pageState/analysisFilter';
 import { BlockMath, InlineMath } from '../ui/Math';
 
 /**
@@ -123,47 +126,10 @@ export function CollectionInfo() {
     );
 }
 
-export function ExplorationModeInfo() {
+/** How the data shown in all the modes came about, and where to get all of it. Without a title of its own. */
+export function DataProcessingInfo() {
     return (
-        <InfoBlock title='Exploration Modes'>
-            <p className='mb-4 text-gray-700'>
-                These exploration views allow visualising the mutations found in the recent past by:
-            </p>
-            <ul className='mb-4 list-inside list-disc space-y-2 text-gray-700'>
-                <li>
-                    <span className='font-semibold text-gray-900'>Manual:</span> explore freely, using the filters on
-                    the plot, i.e., search by minimal proportion.
-                </li>
-                <li>
-                    <span className='font-semibold text-gray-900'>Resistance Mutations:</span> lookup of mutations known
-                    to confer resistance to antiviral drugs.
-                </li>
-                <li>
-                    <span className='font-semibold text-gray-900'>Variant Explorer:</span> track variant-specific
-                    mutations over time. Variants can be defined in two ways: by selecting a predefined variant from a
-                    curated list, or by filtering clinical sequences from{' '}
-                    <a className='link' href='https://cov-spectrum.org'>
-                        CovSpectrum
-                    </a>{' '}
-                    based on user parameters.
-                </li>
-                <li>
-                    <span className='font-semibold text-gray-900'>Untracked Mutations:</span> novel mutations not yet
-                    attributed to major variants. Variant-specific mutations are computed from clinical sequences from{' '}
-                    <a className='link' href='https://cov-spectrum.org'>
-                        CovSpectrum
-                    </a>
-                    .
-                </li>
-                <li>
-                    <span className='font-semibold text-gray-900'>Collection:</span> explore mutations defined by a{' '}
-                    <a className='link' href='https://cov-spectrum.org/collections'>
-                        CovSpectrum collection
-                    </a>
-                    .
-                </li>
-            </ul>
-
+        <div>
             <p className='text-gray-700'>
                 The visualized data consists of aligned sequencing reads from virus-specific next-generation sequencing,
                 displayed in both nucleotide and amino acid formats.
@@ -203,8 +169,48 @@ export function ExplorationModeInfo() {
                 </a>
                 .
             </p>
-        </InfoBlock>
+        </div>
     );
+}
+
+const cspLink = (
+    <a className='link' href='https://cov-spectrum.org'>
+        CovSpectrum
+    </a>
+);
+
+// What each mode shows, for the bottom of its sidebar.
+const MODE_ABOUT = {
+    deconvolution: <>The share of each lineage of the panel, estimated from the mutation frequencies in the samples.</>,
+    variant: (
+        <>
+            Track variant-specific mutations over time. Variants can be defined in two ways: by selecting a predefined
+            variant from a curated list, or by filtering clinical sequences from {cspLink} based on user parameters.
+        </>
+    ),
+    cooccurrence: <>Which mutations occur together on the same reads, within an amplicon or a range of positions.</>,
+    resistance: <>Lookup of mutations known to confer resistance to antiviral drugs.</>,
+    untracked: (
+        <>
+            Novel mutations not yet attributed to major variants. Variant-specific mutations are computed from clinical
+            sequences from {cspLink}.
+        </>
+    ),
+    manual: <>Explore freely, using the filters on the plot, i.e., search by minimal proportion.</>,
+    collection: (
+        <>
+            Explore mutations defined by a{' '}
+            <a className='link' href='https://cov-spectrum.org/collections'>
+                CovSpectrum collection
+            </a>
+            .
+        </>
+    ),
+} as const satisfies Record<AnalysisMode, ReactNode>;
+
+/** What a mode shows, in a sentence or two. */
+export function ModeAbout({ mode }: { mode: AnalysisMode }) {
+    return <p>{MODE_ABOUT[mode]}</p>;
 }
 
 export function LineagePanelInfo() {

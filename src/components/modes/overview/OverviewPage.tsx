@@ -3,6 +3,8 @@ import { MedianAmpliconCoverageHeatmap } from './MedianAmpliconCoverageHeatmap';
 import { OverviewStats } from './OverviewStats';
 import { SamplesOverTimePlot } from './SamplesOverTimePlot';
 import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/ampliconsConfig';
+import { DataProcessingInfo } from '../../filterSidebar/InfoBlocks';
+import { TitledPanel } from '../../ui/TitledPanel';
 
 /**
  * The landing page of an organism: whole-instance stats, which location was sampled on which
@@ -12,6 +14,7 @@ import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/
  * use `ModePageLayout` for the same reason: there is no sidebar filter to lay out next to.
  *
  * With a primer scheme (`amplicons`), also the median amplicon coverage per location and week, a proxy of the viral load.
+ * At the end, how the data came about.
  */
 export function OverviewPage({ amplicons }: { amplicons?: AmpliconsConfig }) {
     return (
@@ -27,6 +30,9 @@ export function OverviewPage({ amplicons }: { amplicons?: AmpliconsConfig }) {
                     <MedianAmpliconCoverageHeatmap amplicons={amplicons} />
                 </div>
             )}
+            <TitledPanel title='About the data'>
+                <DataProcessingInfo />
+            </TitledPanel>
         </div>
     );
 }

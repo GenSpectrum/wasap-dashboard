@@ -5,8 +5,6 @@ import { enabledAnalysisModes } from '../../../config/organismConfig';
 import { resolveOrganismConfig } from '../../../config/wastewaterOrganisms';
 import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/baseFilter';
 import { modeLabel, modePath } from '../../../pageState/modes';
-import { ExplorationModeInfo } from '../../filterSidebar/InfoBlocks';
-import { Modal } from '../../ui/Modal';
 
 /**
  * The menu to pick the analysis mode of the organism whose page is open, which is a page
@@ -37,28 +35,17 @@ export function ModeTabs() {
 
     return (
         // On a narrow page, the tabs stay in one row that scrolls sideways, rather than wrapping into many.
-        <div className='flex items-center gap-1 lg:flex-wrap'>
-            <nav
-                ref={navRef}
-                aria-label='Analysis mode'
-                className='flex min-w-0 items-center gap-1 overflow-x-auto lg:flex-wrap'
-            >
-                {/* No search params: the overview page doesn't read the dataset filter, unlike the modes. */}
-                <Tab to={config.path} label='Overview' end />
-                {enabledAnalysisModes(config).map((mode) => (
-                    <Tab key={mode} to={{ pathname: modePath(config.path, mode), search }} label={modeLabel(mode)} />
-                ))}
-            </nav>
-            {/* Nudged down: the tabs have their underline below the text, which centers the row lower than the text. */}
-            <Modal
-                buttonClassName='shrink-0 translate-y-[3.5px] p-1 text-gray-700 hover:bg-stone-300'
-                buttonAriaLabel='Show information about the analysis modes'
-                modalContent={<ExplorationModeInfo />}
-                size='large'
-            >
-                <span className='iconify mdi--help-circle-outline text-xl' />
-            </Modal>
-        </div>
+        <nav
+            ref={navRef}
+            aria-label='Analysis mode'
+            className='flex min-w-0 items-center gap-1 overflow-x-auto lg:flex-wrap'
+        >
+            {/* No search params: the overview page doesn't read the dataset filter, unlike the modes. */}
+            <Tab to={config.path} label='Overview' end />
+            {enabledAnalysisModes(config).map((mode) => (
+                <Tab key={mode} to={{ pathname: modePath(config.path, mode), search }} label={modeLabel(mode)} />
+            ))}
+        </nav>
     );
 }
 

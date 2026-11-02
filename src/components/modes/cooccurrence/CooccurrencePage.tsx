@@ -94,6 +94,7 @@ export function CooccurrencePage({ config }: { config: OrganismConfigFor<'cooccu
 
     return (
         <ModePageLayout
+            mode='cooccurrence'
             sidebar={
                 <FilterSidebar
                     withMeanProportion={false}
