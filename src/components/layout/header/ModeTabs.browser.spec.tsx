@@ -38,9 +38,30 @@ describe('ModeTabs', () => {
         await expect.element(tabs.nth(0)).toHaveTextContent('Overview');
         await expect.element(tabs.nth(1)).toHaveTextContent('Explorer');
         await expect.element(tabs.nth(2)).toHaveTextContent('Resistance');
-        await expect.element(tabs.nth(3)).toHaveTextContent('Manual');
-        await expect.element(tabs.nth(4)).toHaveTextContent('Untracked');
+        await expect.element(tabs.nth(3)).toHaveTextContent('Untracked');
+        await expect.element(tabs.nth(4)).toHaveTextContent('Manual');
         expect(tabs.elements()).toHaveLength(5);
+    });
+
+    it('groups the tabs of the modes', async () => {
+        const { getByRole } = renderTabs();
+
+        const lineageTabs = getByRole('group', { name: 'Lineages' }).getByRole('link');
+        const mutationTabs = getByRole('group', { name: 'Mutations' }).getByRole('link');
+
+        expect(lineageTabs.elements().map((tab) => tab.textContent)).toEqual(['Explorer']);
+        expect(mutationTabs.elements().map((tab) => tab.textContent)).toEqual(['Resistance', 'Untracked', 'Manual']);
+    });
+
+    it('leaves out a group without any enabled mode', async () => {
+        setAppConfigForTesting({
+            organisms: [{ ...testConfig, variantAnalysisModeEnabled: undefined }],
+            lollipopServiceUrl: undefined,
+        });
+        const { getByRole } = renderTabs();
+
+        await expect.element(getByRole('group', { name: 'Mutations' })).toBeVisible();
+        expect(getByRole('group', { name: 'Lineages' }).elements()).toHaveLength(0);
     });
 
     it('has the Prevalence tab right after the overview', async () => {
@@ -64,6 +85,16 @@ describe('ModeTabs', () => {
 
         await expect.element(tabs.nth(1)).toHaveTextContent('Explorer');
         await expect.element(tabs.nth(2)).toHaveTextContent('Co-occurrence');
+    });
+
+    it('has the Co-occurrence tab in no group', async () => {
+        setAppConfigForTesting({ organisms: [testConfigWithCooccurrence] });
+        const { getByRole } = renderTabs();
+
+        const lineageTabs = getByRole('group', { name: 'Lineages' }).getByRole('link');
+
+        await expect.element(getByRole('link', { name: 'Co-occurrence' })).toBeVisible();
+        expect(lineageTabs.elements().map((tab) => tab.textContent)).not.toContain('Co-occurrence');
     });
 
     it('leaves the Prevalence tab out without a LolliPop service', async () => {
@@ -104,9 +135,7 @@ describe('ModeTabs', () => {
     it('marks the tab of the current mode', async () => {
         const { getByRole } = renderTabs(`/wastewater/covid/resistance?${DATASET_SEARCH}`);
 
-        await expect
-            .element(getByRole('link', { name: 'Resistance' }))
-            .toHaveAttribute('aria-current', 'page');
+        await expect.element(getByRole('link', { name: 'Resistance' })).toHaveAttribute('aria-current', 'page');
         await expect.element(getByRole('link', { name: 'Manual' })).not.toHaveAttribute('aria-current');
         // Not the overview tab either: it only matches the bare organism URL exactly, not every path below it.
         await expect.element(getByRole('link', { name: 'Overview' })).not.toHaveAttribute('aria-current');
