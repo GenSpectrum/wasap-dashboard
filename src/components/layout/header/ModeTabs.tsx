@@ -87,6 +87,19 @@ export function ModeTabs() {
     );
 }
 
+/**
+ * The link to the about page of the organism that is open, looking like a tab. It is not among the
+ * tabs: it is about the dashboard, not an analysis. None where no organism is open.
+ */
+export function AboutLink() {
+    const { organismPath } = useParams();
+    const config = resolveOrganismConfig(organismPath);
+    if (config === undefined) {
+        return null;
+    }
+    return <Tab to={`${config.path}/about`} label='About' icon='mdi--information-outline' />;
+}
+
 function Tab({
     to,
     label,

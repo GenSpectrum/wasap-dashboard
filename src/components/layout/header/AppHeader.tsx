@@ -1,9 +1,10 @@
-import { ModeTabs } from './ModeTabs';
+import { AboutLink, ModeTabs } from './ModeTabs';
 import { OrganismSelect } from './OrganismSelect';
 
 /**
  * The header of every page: the title, the tabs to pick the analysis mode of the organism
- * that is open (if one is) in the middle, and the organism selector at the far end.
+ * that is open (if one is) in the middle, and the link to the about page and the organism selector
+ * at the far end.
  */
 export function AppHeader() {
     return (
@@ -17,7 +18,8 @@ export function AppHeader() {
                 <div className='min-w-0'>
                     <ModeTabs />
                 </div>
-                <div className='justify-self-end'>
+                <div className='flex items-center gap-4 justify-self-end'>
+                    <AboutLink />
                     <OrganismSelect />
                 </div>
             </div>
