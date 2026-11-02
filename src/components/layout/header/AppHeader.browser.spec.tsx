@@ -45,16 +45,20 @@ describe('AppHeader', () => {
         expect(href).toBe('/wastewater/covid/about');
     });
 
-    it('has no about link where no organism is open', async () => {
+    it('links to the about page without an organism where no organism is open', async () => {
         const { getByRole } = renderHeader('/');
 
-        expect(getByRole('link', { name: 'About' }).elements()).toHaveLength(0);
+        const href = getByRole('link', { name: 'About' }).element().getAttribute('href');
+
+        expect(href).toBe('/about');
     });
 
     it('links the title to the landing page', async () => {
         const { getByRole } = renderHeader('/wastewater/covid/manual');
 
-        const href = getByRole('link', { name: /W-ASAP/ }).element().getAttribute('href');
+        const href = getByRole('link', { name: /W-ASAP/ })
+            .element()
+            .getAttribute('href');
 
         expect(href).toBe('/');
     });
