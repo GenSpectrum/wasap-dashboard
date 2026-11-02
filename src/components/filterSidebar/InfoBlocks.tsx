@@ -126,53 +126,6 @@ export function CollectionInfo() {
     );
 }
 
-/** How the data shown in all the modes came about, and where to get all of it. Without a title of its own. */
-export function DataProcessingInfo() {
-    return (
-        <div>
-            <p className='text-gray-700'>
-                The visualized data consists of aligned sequencing reads from virus-specific next-generation sequencing,
-                displayed in both nucleotide and amino acid formats.
-            </p>
-
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Subsampling Strategy</h2>
-            <p className='text-gray-700'>
-                Wastewater surveillance processes samples with highly variable read depths. To ensure consistent
-                performance, we cap amplicon sequences at 4.5 million reads per sample through random subsampling,
-                preserving Variant Allele Frequency and Haplotype Structure for reliable and predictable operations.
-            </p>
-
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Alignment</h2>
-            <p className='text-gray-700'>
-                Align reads to reference genome{' '}
-                <a className='link' href='https://www.ncbi.nlm.nih.gov/nuccore/1798174254'>
-                    Wuhan-Hu-1, NC_045512.2
-                </a>{' '}
-                using{' '}
-                <a className='link' href='https://github.com/lh3/bwa?rgh-link-date=2025-11-11T16%3A12%3A21.000Z'>
-                    BWA
-                </a>{' '}
-                (Nucleotides) and{' '}
-                <a
-                    className='link'
-                    href='https://github.com/bbuchfink/diamond?rgh-link-date=2025-11-11T16%3A12%3A21.000Z'
-                >
-                    DIAMOND
-                </a>{' '}
-                (Amino acids).
-            </p>
-
-            <p className='mt-2 text-gray-700'>
-                For the full data for download, visit{' '}
-                <a className='link' href='https://db.wasap.genspectrum.org'>
-                    db.wasap.genspectrum.org
-                </a>
-                .
-            </p>
-        </div>
-    );
-}
-
 const cspLink = (
     <a className='link' href='https://cov-spectrum.org'>
         CovSpectrum
