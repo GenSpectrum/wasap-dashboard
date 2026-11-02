@@ -31,6 +31,7 @@ installs the Playwright browser first (see `.github/workflows/ci.yml`).
 ### Configuration
 
 Runtime config is a `config.json` containing:
+
 - LAPIS/RhyDB/backend URLs
 - per-organism settings
 - enabled analysis modes are
@@ -50,7 +51,7 @@ that serve from a sub-path. Defaults to `/`.
 ### URLs
 
 The bare `/<organism>` is the organism's overview page displaying whole-instance stats and
-an unfiltered table of its sampling locations. 
+an unfiltered table of its sampling locations.
 
 Every organism also has a page per analysis mode: `/<organism>/<mode>`, for example `/covid/manual`,
 `/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`, `/covid/collection`,
