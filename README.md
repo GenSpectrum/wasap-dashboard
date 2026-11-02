@@ -92,51 +92,20 @@ CI publishes both images on every push to `main`:
 
 ```
 src/
-  main.tsx, AppShell.tsx    entry point + top-level chrome (organism dropdown)
-  routes/                   OrganismRoute (per-organism config, resistance data, lineage tree),
-                            ModeRoute (the page of the mode in the URL)
-  pageState/          the page state of the mode pages: a handler per mode + the shared base filter
-  components/
-    modes/<mode>/           what only one mode uses: its page, filter, results
-    layout/                 app shell, mode page layout, header, result states
-    filterSidebar/          the filter sidebar + shared field help texts
-    inputs/                 generic filter widgets
-    overTime/               over-time grids and their view settings
-    mutations/              mutation display, the annotations context
-    ui/                     generic UI: modal, tooltip, dropdown, errors, loading
-  dataLayer/
-    transport/               the SaneQL AST builder + RhyDB HTTP client (vendored
-                             from wastewater-analytics-experiment): connection,
-                             retry, concurrency limit
-    queries/                 SaneQL query catalogue + RhydbReadFilter + per-organism
-                             RhydbSchema (dict- vs. DATE32-encoded date columns)
-    hooks/                   the RhyDB React Query hooks: connection + query plumbing,
-      lookups/               small single-query reads (date extent, counts, options, …)
-      analyses/              the analysis hooks (mutations / queries over time,
-                             co-occurrence, amplicon coverage, …)
-    overTime/                the over-time data maps the analysis hooks return
-  externalData/             everything loaded from outside the app: clinical
-                             LAPIS, the W-ASAP LAPIS (query/parse only),
-                             GenSpectrum collections backend, cov-spectrum
-                             collections
-    lollipop/               the client of the LolliPop service (`lollipop-service/`)
-    fileBased/              data loaded from static files: amplicons (primer
-                             BEDs), genome (Nextclade gene annotation),
-                             lineageTree (Nextclade tree.json, alias key,
-                             lineage signatures, panel matching)
-  domain/                   the domain's data structures: mutations, temporal buckets,
-                            date ranges, mutation annotations, symbols, ProportionValue
-  util/                     generic helpers (Map2d, UserFacingError)
-  config/                   config.json loading + schema, per-organism types
-  test/                     test helpers: the test config, route mockers, vitest setup
-  logging.ts, index.css
-lollipop-service/           the service that computes the Lineage Prevalence page with
-                            LolliPop — Python, its own image, see lollipop-service/README.md
+  routes/          the pages: organism overview, mode pages, about
+  components/      React components; modes/<mode>/ holds what only one mode uses
+  pageState/       each mode page's state, kept in the URL search params
+  dataLayer/       RhyDB: HTTP client, SaneQL queries, React Query hooks
+  externalData/    everything else loaded from outside: clinical LAPIS, collections
+                   backends, LolliPop service, static files (primers, genome, lineage tree)
+  domain/          domain data structures (mutations, date ranges, temporal buckets, …)
+  config/          config.json loading and schema
+  util/, test/     generic helpers, test setup
+lollipop-service/  the Python service behind the Lineage Prevalence page
 ```
 
-The layers import downwards only: `components/` and `routes/`, then `pageState/`, then
-`dataLayer/` and `externalData/`, then `domain/`, then `util/`. ESLint enforces it
-(`import/no-restricted-paths` in `eslint.config.js`).
+Imports only go downwards: `routes/` + `components/` → `pageState/` → `dataLayer/` +
+`externalData/` → `domain/` → `util/`. ESLint enforces it (`import/no-restricted-paths`).
 
 ## License
 
