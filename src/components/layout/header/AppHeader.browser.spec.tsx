@@ -37,6 +37,20 @@ describe('AppHeader', () => {
         await expect.element(getByRole('link', { name: 'Resistance' })).toBeVisible();
     });
 
+    it('links to the about page of the organism that is open', async () => {
+        const { getByRole } = renderHeader('/wastewater/covid/manual');
+
+        const href = getByRole('link', { name: 'About' }).element().getAttribute('href');
+
+        expect(href).toBe('/wastewater/covid/about');
+    });
+
+    it('has no about link where no organism is open', async () => {
+        const { getByRole } = renderHeader('/');
+
+        expect(getByRole('link', { name: 'About' }).elements()).toHaveLength(0);
+    });
+
     it('shows no mode tabs where no organism is open', async () => {
         const { getByRole } = renderHeader('/');
 
