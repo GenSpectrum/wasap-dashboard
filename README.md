@@ -1,26 +1,16 @@
 # Wastewater Analytics
 
-The GenSpectrum wastewater ("W‑ASAP") dashboards as a standalone **Vite + React
+The W-ASAP dashboard is an interactive dashboard for exploring swiss wastewater sequencing data.
+It enables monitoring of known variants and discovery of emerging variants.
+Additionally, it allows experts to break down a variant's signal by amplicon and mutational information.
+
+## Development
+
+The application is a standalone **Vite + React
 SPA**, extracted from `GenSpectrum/dashboards`. Renders the
 `covid` / `rsvA` / `rsvB` wastewater dashboards — organism dropdown, six
 analysis modes (manual, variant, resistance, untracked, collection,
 co-occurrence), mutations-/queries-over-time grids.
-
-From a service to a tool: today this hosts _our_ data for _our_ users. The goal
-is a tool other people can point at their own data, in three run modes:
-
-1. **Hosted** — a statically served SPA talking to a remote LAPIS/RhyDB over
-   HTTP (how it runs today).
-2. **In-browser** — the same SPA bundling a WASM build of RhyDB
-   (`@rhydb/rhydb-wasm`), queries run entirely client-side against a dataset
-   loaded in the browser. Blocked on an upstream 64-bit WASM RhyDB build — see
-   [`ROADMAP.md`](ROADMAP.md).
-3. **Desktop (Tauri)** — the SPA shipped with a dedicated native RhyDB process.
-   Not started — see [`ROADMAP.md`](ROADMAP.md).
-
-Only mode 1 is built today.
-
-## Development
 
 ```sh
 npm install
