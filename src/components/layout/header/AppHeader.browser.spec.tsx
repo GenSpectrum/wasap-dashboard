@@ -34,7 +34,7 @@ describe('AppHeader', () => {
         const { getByRole } = renderHeader('/wastewater/covid/manual');
 
         await expect.element(getByRole('link', { name: 'Manual' })).toBeVisible();
-        await expect.element(getByRole('link', { name: 'Resistance Mutations' })).toBeVisible();
+        await expect.element(getByRole('link', { name: 'Resistance' })).toBeVisible();
     });
 
     it('shows no mode tabs where no organism is open', async () => {

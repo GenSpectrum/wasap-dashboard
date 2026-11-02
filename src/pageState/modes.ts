@@ -16,11 +16,11 @@ const MODE_SEGMENTS = {
 
 const MODE_LABELS = {
     manual: 'Manual',
-    variant: 'Variant Explorer',
-    resistance: 'Resistance Mutations',
-    untracked: 'Untracked Mutations',
+    variant: 'Explorer',
+    resistance: 'Resistance',
+    untracked: 'Untracked',
     collection: 'Collection',
-    deconvolution: 'Lineage Prevalence',
+    deconvolution: 'Prevalence',
     cooccurrence: 'Co-occurrence',
 } as const satisfies Record<AnalysisMode, string>;
 
