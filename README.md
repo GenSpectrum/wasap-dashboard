@@ -141,8 +141,3 @@ The layers import downwards only: `components/` and `routes/`, then `pageState/`
 ## License
 
 AGPL-3.0-only (see [`LICENSE`](LICENSE)).
-
-## Further reading
-
-- [`ROADMAP.md`](ROADMAP.md) — what's built, what's left, and the open product
-  questions that block committing to the rest.
