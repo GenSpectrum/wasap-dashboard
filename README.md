@@ -40,11 +40,12 @@ installs the Playwright browser first (see `.github/workflows/ci.yml`).
 
 ### Configuration
 
-Runtime config — LAPIS/RhyDB/backend URLs, per-organism settings, which
-analysis modes are enabled — is a `config.json` fetched at startup and
-zod-validated (`src/config/`). `public/config.example.json` documents the
-shape; the real file is gitignored. No config present ⇒ the app renders with
-no organisms (fail loud, not a hardcoded default).
+Runtime config is a `config.json` containing:
+- LAPIS/RhyDB/backend URLs
+- per-organism settings
+- enabled analysis modes are
+
+An example config can be found in `public/config.example.json`. If no config is found, the website will display an error.
 
 An organism can name the primer scheme its data was sequenced with, under
 `amplicons`: either a vendored scheme (`{ "scheme": "artic-sars-cov-2/400/v5.3.2" }`,
@@ -58,18 +59,16 @@ that serve from a sub-path. Defaults to `/`.
 
 ### URLs
 
-The bare `/<organism>` is the organism's overview page (whole-instance stats and a table of
-its sampling locations, unfiltered) — the first tab, and the landing page. Every organism also
-has a page per analysis mode: `/<organism>/<mode>`, for example `/covid/manual`,
+The bare `/<organism>` is the organism's overview page displaying whole-instance stats and
+an unfiltered table of its sampling locations. 
+
+Every organism also has a page per analysis mode: `/<organism>/<mode>`, for example `/covid/manual`,
 `/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`, `/covid/collection`,
 `/covid/lineagePrevalence`, and `/covid/cooccurrence`. The modes are the ones that are enabled
-in the organism's config; a `/<organism>/<mode>` URL whose mode isn't one of them shows a 404.
+in the organism's config.
 Location, sampling date and granularity are search params that stay the same when going from one
-mode to another (the overview page ignores them); the settings of a mode are search params of its
-own page. The collection mode itself has two sources, GenSpectrum's own collections (always
-available) and CoV-Spectrum's (an organism-level opt-in, since not every organism has a
-CoV-Spectrum instance) — which one is picked is a `source` search param of that page, not a
-separate mode.
+mode to another.
+The settings of a mode are search params of its own page.
 
 ### SPA fallback
 
