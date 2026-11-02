@@ -17,7 +17,8 @@ export function AppHeader() {
                     <span className='text-lg font-bold text-gray-900'>W-ASAP</span>
                     <span className='text-xs text-gray-600'>Wastewater Dashboard</span>
                 </Link>
-                <div className='min-w-0'>
+                {/* As tall as the grouped tabs even where there are none, so that the header keeps its height across pages. */}
+                <div className='min-h-[3.25rem] min-w-0'>
                     <ModeTabs />
                 </div>
                 <div className='flex items-center gap-4 justify-self-end'>
