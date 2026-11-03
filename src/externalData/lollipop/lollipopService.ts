@@ -86,7 +86,7 @@ export async function fetchDeconvolution(
     return deconvolutionResultSchema.parse(await response.json());
 }
 
-/** The version of LolliPop the service runs, like `0.5.3`. */
+/** The version of LolliPop the service runs, like `0.6.0`. */
 export async function fetchLollipopVersion(serviceUrl: string): Promise<string> {
     const response = await fetch(`${serviceUrl.replace(/\/$/, '')}/version`);
     if (!response.ok) {

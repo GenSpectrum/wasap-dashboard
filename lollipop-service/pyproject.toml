@@ -8,8 +8,8 @@ dependencies = [
     "fastapi>=0.115",
     "uvicorn>=0.34",
     # LolliPop isn't on PyPI (the `lollipop` there is an unrelated package).
-    "lollipop @ git+https://github.com/cbg-ethz/LolliPop@v0.5.3",
-    # LolliPop 0.5.3 predates pandas 3, which breaks parts of it.
+    "lollipop @ git+https://github.com/cbg-ethz/LolliPop@v0.6.0",
+    # LolliPop 0.6.0 predates pandas 3, which breaks parts of it.
     "pandas>=2.2,<3",
     "threadpoolctl>=3.5",
 ]

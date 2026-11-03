@@ -12,8 +12,7 @@ import pandas as pd
 
 from .models import UNDETERMINED, DateEstimates, DeconvolutionRequest, DeconvolutionResponse, Estimate
 
-# The CLI's `--seed` never reaches the global generator that `resample_mutations` draws from; seeded
-# here, the same request always gets the same intervals.
+# Seeded, the same request always gets the same intervals: those of the CLI's `--seed 1`.
 SEED = 1
 
 
@@ -37,14 +36,15 @@ def fit_rounds(request: DeconvolutionRequest, first: int, count: int) -> list[pd
     options = request.options
     bootstrap = options.bootstraps > 1
     mutations = tally["mutations"].unique()
-    np.random.seed(SEED)
+    # The CLI's generator for a single location.
+    rng = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
     # Each round of `resample_mutations` draws once, the same number of indices; drawing them for
     # the rounds before `first` gets the generator to where they would have left it.
     for _ in range(first if bootstrap else 0):
-        np.random.randint(0, high=len(mutations) // 2, size=len(mutations) // 2)
+        rng.integers(0, high=len(mutations) // 2, size=len(mutations) // 2)
     rounds = []
     for _ in range(count):
-        resampled = ll.resample_mutations(tally, mutations)[0] if bootstrap else tally
+        resampled = ll.resample_mutations(tally, mutations, "mutations", rng)[0] if bootstrap else tally
         fit = ll.KernelDeconv(
             resampled[variants],
             resampled["frac"],
@@ -53,6 +53,7 @@ def fit_rounds(request: DeconvolutionRequest, first: int, count: int) -> list[pd
             kernel=ll.GaussianKernel(bandwidth=options.bandwidth),
             reg=ll.RobustReg(f_scale=options.f_scale),
             confint=ll.NullConfint(),
+            rng=rng,
         ).deconv_all(min_tol=options.min_tol)
         rounds.append(fit.fitted)
     return rounds

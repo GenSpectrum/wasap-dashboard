@@ -134,8 +134,8 @@ wheels = [
 
 [[package]]
 name = "lollipop"
-version = "0.5.3"
-source = { git = "https://github.com/cbg-ethz/LolliPop?rev=v0.5.3#caeb51b75f8bbe3ed832dfd753b125fa71d43362" }
+version = "0.6.0"
+source = { git = "https://github.com/cbg-ethz/LolliPop?rev=v0.6.0#49ff735749c28b0397a73267371086e58db48f94" }
 dependencies = [
     { name = "numpy" },
     { name = "pandas" },
@@ -165,7 +165,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
-    { name = "lollipop", git = "https://github.com/cbg-ethz/LolliPop?rev=v0.5.3" },
+    { name = "lollipop", git = "https://github.com/cbg-ethz/LolliPop?rev=v0.6.0" },
     { name = "pandas", specifier = ">=2.2,<3" },
     { name = "threadpoolctl", specifier = ">=3.5" },
     { name = "uvicorn", specifier = ">=0.34" },
