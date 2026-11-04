@@ -11,6 +11,18 @@ export function LandingPage() {
 
     return (
         <div className='mx-auto max-w-3xl p-6'>
+            <p className='mb-6 text-gray-700'>
+                Welcome to the Swiss W-ASAP instance, a highly interactive dashboard for exploring and analyzing viral
+                sequencing data obtained from wastewater. More information can be found on the{' '}
+                <Link className='link' to='/about'>
+                    About page
+                </Link>
+                . The code is open-source and available on{' '}
+                <a className='link' href='https://github.com/GenSpectrum/wasap-dashboard'>
+                    GitHub
+                </a>
+                .
+            </p>
             <h1 className='mb-6 text-2xl font-semibold'>Choose an organism</h1>
             <ul className='grid gap-4 sm:grid-cols-2'>
                 {organisms.map((entry) => (
