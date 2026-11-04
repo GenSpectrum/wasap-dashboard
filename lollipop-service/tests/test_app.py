@@ -138,7 +138,7 @@ def test_allows_cross_origin_requests(client):
 
 def test_health_and_version(client):
     assert client.get("/health").json() == {"status": "ok"}
-    assert client.get("/version").json() == {"lollipop": "0.5.3"}
+    assert client.get("/version").json() == {"lollipop": "0.6.0"}
 
 
 def test_split():
