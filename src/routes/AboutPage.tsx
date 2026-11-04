@@ -115,8 +115,25 @@ function DataProcessingInfo() {
             <h3 className='mt-4 mb-2 text-base font-semibold'>Subsampling</h3>
             <p className='text-gray-700'>
                 Read depth varies a lot between samples. To keep queries fast and predictable, each sample is randomly
-                subsampled to at most 4.5 million reads. Random subsampling keeps the variant allele frequencies and the
-                haplotype structure intact.
+                subsampled to at most 4.5 million BAM records. The cap counts BAM records, not fragments: both mates of
+                a pair count separately, and mates are always kept or dropped together. Random subsampling keeps the
+                variant allele frequencies and the haplotype structure intact.
+            </p>
+
+            <h3 className='mt-4 mb-2 text-base font-semibold'>Merging paired-end reads</h3>
+            <p className='text-gray-700'>
+                In paired-end sequencing, each DNA fragment is read from both ends, giving two reads (mates) with the
+                same read name.{' '}
+                <a className='link' href='https://github.com/cbg-ethz/sr2silo'>
+                    sr2silo
+                </a>{' '}
+                merges each pair into one read that spans the whole fragment, using <code>paired_end_read_merger</code>{' '}
+                from{' '}
+                <a className='link' href='https://github.com/cbg-ethz/smallgenomeutilities'>
+                    smallgenomeutilities
+                </a>
+                ; reads without a mate are kept as they are. Because of merging, the read count is roughly half the
+                number of subsampled BAM records: the largest samples end up with about 2.25 million reads.
             </p>
 
             <h3 className='mt-4 mb-2 text-base font-semibold'>Alignment</h3>
