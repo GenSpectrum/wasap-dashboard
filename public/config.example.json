@@ -17,7 +17,7 @@
             "untrackedAnalysisModeEnabled": true,
             "deconvolutionAnalysisModeEnabled": true,
             "cooccurrenceAnalysisModeEnabled": true,
-            "deconvolutionPanel": ["NB.1.8.1", "XFG", "XFG.1", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"],
+            "deconvolutionPanel": ["NB.1.8.1", "XFG", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"],
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/tree.json",
                 "lineageAttribute": "Nextclade_pango",
@@ -103,7 +103,7 @@
                     "mode": "cooccurrence",
                     "sequenceType": "nucleotide",
                     "minShare": 0.001,
-                    "panel": ["NB.1.8.1", "XFG", "XFG.1", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"]
+                    "panel": ["NB.1.8.1", "XFG", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"]
                 }
             }
         },
