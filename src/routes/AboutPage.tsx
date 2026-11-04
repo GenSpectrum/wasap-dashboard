@@ -2,11 +2,13 @@ type Person = { name: string; github: string };
 
 // By last name.
 const CORE_TEAM: Person[] = [
-    { name: 'Chaoran Chen', github: 'chaoran-chen' },
-    { name: 'Fabian Engelniederhammer', github: 'fengelniederhammer' },
     { name: 'Felix Hennig', github: 'fhennig' },
     { name: 'Alexander Taepper', github: 'taepper' },
     { name: 'Ivan Topolsky', github: 'DrYak' },
+    { name: 'Fabian Engelniederhammer', github: 'fengelniederhammer' },
+    { name: 'Chaoran Chen', github: 'chaoran-chen' },
+    { name: 'Tanja Stadler', github: 'tanja819' },
+    { name: 'Niko Beerenwinkel', github: 'beerenwinkel' },
 ];
 
 const FORMER_MEMBERS: Person[] = [{ name: 'Gordon J. Koehn', github: 'gordonkoehn' }];
@@ -184,6 +186,55 @@ export function AboutPage() {
                         .
                     </p>
                 </div>
+
+                <section>
+                    <h2 className='mb-3 text-xl font-semibold'>Contact</h2>
+                    <p className='text-gray-700'>
+                        For any questions and suggestions, please create an issue in our{' '}
+                        <a className='link' href='https://github.com/GenSpectrum/wasap-dashboard/issues'>
+                            GitHub repository
+                        </a>
+                        .
+                    </p>
+                </section>
+
+                <section>
+                    <h2 className='mb-3 text-xl font-semibold'>Funding statement</h2>
+                    <p className='text-gray-700'>
+                        We received funding from{' '}
+                        <a className='link' href='https://ethz.ch/en.html'>
+                            ETH Zurich
+                        </a>
+                        , the{' '}
+                        <a className='link' href='https://www.sib.swiss/'>
+                            Swiss Institute of Bioinformatics (SIB)
+                        </a>
+                        ,{' '}
+                        <a className='link' href='http://swissuniversities.ch/'>
+                            swissuniversities
+                        </a>{' '}
+                        and NIH* through the{' '}
+                        <a className='link' href='https://pathogendatanetwork.org/'>
+                            Pathogen Data Network
+                        </a>
+                        .
+                    </p>
+                    <p className='mt-2'>
+                        <small className='text-gray-700'>
+                            * This resource is supported as a whole or in part by the National Institute Of Allergy And
+                            Infectious Diseases of the National Institutes of Health under grant n°
+                            <a
+                                className='link'
+                                href='https://reporter.nih.gov/search/JHbtQB-XeUu8wvs3vUlFFw/project-details/10913643'
+                            >
+                                U24AI183840
+                            </a>
+                            , awarded to the SIB Swiss Institute of Bioinformatics. The content is solely the
+                            responsibility of the authors and does not necessarily represent the official views of the
+                            National Institutes of Health.
+                        </small>
+                    </p>
+                </section>
 
                 <section>
                     <h2 className='mb-3 text-xl font-semibold'>Data processing</h2>
