@@ -1,9 +1,13 @@
+import { z } from 'zod';
+
 import { type BaseFilter, type DatasetFilter, type MeanProportion } from './analysisFilter';
 import { enumParam, listParam } from './urlParams';
 import { getStringFromSearch, setSearchFromDateRange, setSearchFromString } from './urlSearchParams';
 import { type OrganismConfig } from '../config/organismConfig';
 import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL, DEFAULT_RECENT_DAYS_LABEL } from '../domain/dateRange';
 import { temporalGranularitySchema } from '../domain/temporal';
+
+const isoDate = z.iso.date();
 
 const granularityParam = enumParam(temporalGranularitySchema);
 
@@ -144,11 +148,9 @@ function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRa
     }
     if (value.includes('--')) {
         const [from, to] = value.split('--').map((part) => part.trim());
-        return {
-            label: CUSTOM_DATE_RANGE_LABEL,
-            dateFrom: from === '' ? undefined : from,
-            dateTo: to === '' ? undefined : to,
-        };
+        // A date that isn't one (e.g. `2026-13-45`) leaves that end of the range open.
+        const toDate = (date: string) => (isoDate.safeParse(date).success ? date : undefined);
+        return { label: CUSTOM_DATE_RANGE_LABEL, dateFrom: toDate(from), dateTo: toDate(to) };
     }
     return { label: value };
 }
