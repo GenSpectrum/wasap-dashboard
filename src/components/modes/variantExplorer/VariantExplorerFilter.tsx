@@ -16,6 +16,7 @@ import {
     MinJaccardInfo,
     MinProportionInfo,
     TimeFrameInfo,
+    TreeVariantInfo,
 } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
@@ -150,7 +151,7 @@ function PredefinedSignature({
 }) {
     return (
         <>
-            <LabeledField label='Variant'>
+            <LabeledField label='Variant' info={<TreeVariantInfo />}>
                 <LineageTreeCombobox
                     lineageTree={lineageTree}
                     value={pageState.lineage}

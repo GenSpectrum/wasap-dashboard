@@ -26,6 +26,17 @@ export function DefineClinicalSignatureInfo() {
     );
 }
 
+export function TreeVariantInfo() {
+    return (
+        <div className={HINT}>
+            <p>
+                Select a lineage of the Nextclade tree. Its mutations compared to the reference make up the mutation
+                signature.
+            </p>
+        </div>
+    );
+}
+
 export function ClinicalVariantInfo() {
     return (
         <div className={HINT}>
