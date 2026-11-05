@@ -220,9 +220,15 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
 
 function MutationsInfo() {
     return (
-        <div className='w-96 max-w-full text-sm font-normal text-gray-700'>
-            The variant&apos;s mutations with a Jaccard index of at least the minimum, each on its own: the share of the
-            reads covering its position that carry it.
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Mutation proportion over time. The cells show whether the mutation position has coverage and how much,
+                and then also how often the mutation occurs at that position.
+            </p>
+            <p>
+                Shows whether the variant is in the wastewater and how its share changes: its mutations rise and fall
+                together.
+            </p>
         </div>
     );
 }

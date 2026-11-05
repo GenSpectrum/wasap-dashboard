@@ -181,26 +181,16 @@ function DeconvolutionResults({
         );
     }
 
-    const sampleCount = new Set(frequencies.data.map((frequency) => frequency.sampleId)).size;
     return (
         <>
             {notes}
-            <TitledPanel
-                title='Estimated prevalence'
-                info={
-                    <DeconvolutionInfo
-                        sampleCount={sampleCount}
-                        locationNames={filter.locationNames}
-                        granularity={granularity}
-                        signatures={signatures.signatures}
-                    />
-                }
-            >
+            <TitledPanel title='Estimated prevalence' info={<DeconvolutionInfo />}>
                 <DeconvolutionPlot
                     result={deconvolution.result}
                     colors={colors}
                     granularity={granularity}
                     lineageLink={lineageLink}
+                    legendNote={<LollipopCredit />}
                 />
             </TitledPanel>
         </>
@@ -222,44 +212,34 @@ function PrevalenceLoading() {
 }
 
 /** What the plot shows and how it is computed, for the help button of its panel. */
-function DeconvolutionInfo({
-    sampleCount,
-    locationNames,
-    granularity,
-    signatures,
-}: {
-    sampleCount: number;
-    locationNames: string[] | undefined;
-    granularity: TemporalGranularity;
-    signatures: Record<string, string[]>;
-}) {
-    const informative = new Set(informativeMutations(signatures));
-    const lollipopVersion = useLollipopVersion();
+function DeconvolutionInfo() {
     return (
-        <div className='w-[32rem] space-y-2 text-sm font-normal text-gray-700'>
-            <p>
-                The share of each lineage of the panel among the virus {locationsText(locationNames)}, estimated from{' '}
-                {sampleCount} samples on the {informative.size} mutations that tell the lineages apart. Each point is an
-                estimate for a{' '}
-                {granularity === 'day' ? 'sampling date' : `${granularity}, from the reads of its samples pooled`}; the
-                band is its 95% confidence interval. <em>Undetermined</em> is what the panel doesn&apos;t explain.
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Estimated share of each lineage of the panel, with the 95% confidence interval as a band.
             </p>
-            <p>Computed with LolliPop{lollipopVersion !== undefined && ` ${lollipopVersion}`}.</p>
+            <p>
+                Shows which lineages are circulating and how their shares change. <em>Undetermined</em> is what the
+                panel doesn&apos;t explain; if it grows, a lineage that isn&apos;t in the panel may be spreading.
+            </p>
         </div>
+    );
+}
+
+/** Credits LolliPop, with the version the service runs once it is known. */
+function LollipopCredit() {
+    const version = useLollipopVersion();
+    return (
+        <span className='text-xs text-gray-500'>
+            Computed with{' '}
+            <a className='link' href='https://github.com/cbg-ethz/LolliPop' target='_blank' rel='noopener noreferrer'>
+                LolliPop
+            </a>
+            {version !== undefined && ` ${version}`}
+        </span>
     );
 }
 
 function Message({ children }: { children: ReactNode }) {
     return <div className='border border-amber-300 bg-amber-50 p-3 text-sm'>{children}</div>;
-}
-
-/** Where the reads come from: "at Basel (BS)", "at Basel (BS) and Chur (GR)", or "at all locations". */
-function locationsText(locationNames: string[] | undefined): string {
-    if (locationNames === undefined) {
-        return 'at all locations, pooled';
-    }
-    if (locationNames.length === 1) {
-        return `at ${locationNames[0]}`;
-    }
-    return `at ${locationNames.slice(0, -1).join(', ')} and ${locationNames[locationNames.length - 1]}, pooled`;
 }

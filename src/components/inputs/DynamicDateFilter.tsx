@@ -62,7 +62,7 @@ export function DynamicDateFilter({
                 </div>
             ) : (
                 <DateRangeFilter
-                    onDateRangeChange={(dateRange: DateRangeOption | null) => onChange(dateRange ?? undefined)}
+                    onDateRangeChange={onChange}
                     value={(isCustom ? normalizedValue : normalizedValue?.label) ?? null}
                     dateRangeOptions={generatedOptions}
                 />

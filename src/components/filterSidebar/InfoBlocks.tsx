@@ -3,142 +3,126 @@ import { type ReactNode } from 'react';
 import { type AnalysisMode } from '../../pageState/analysisFilter';
 import { BlockMath, InlineMath } from '../ui/Math';
 
-/**
- * A text block to be put into a Modal as helper information for labeled filter fields.
- */
-function InfoBlock({ title, children }: { title: string; children: React.ReactNode }) {
+export function KnownVariantsExclusionInfo() {
     return (
-        <div>
-            <h1 className='mb-2 text-xl font-semibold'>{title}</h1>
-            {children}
+        <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Leaves out the mutations of these variants: those in at least 80% and at least 9 of their clinical
+                sequences, sublineages included. For the Nextstrain clades, each clade&apos;s most common lineage is
+                used.
+            </p>
+            <p>What remains are mutations the known variants don&apos;t explain, which can point to a new variant.</p>
         </div>
     );
 }
 
-export function KnownVariantsExclusionInfo() {
-    return (
-        <InfoBlock title='How It Works'>
-            <p className='text-gray-700'>
-                Mutations that are characteristic of selected lineages are excluded based on clinical sequences on{' '}
-                <a className='link' href='https://cov-spectrum.org/'>
-                    CovSpectrum
-                </a>
-                .
-            </p>
-            <p className='text-gray-700'>
-                For each lineage, mutations appearing in sequences assigned to this lineage are excluded if two criteria
-                are met. First, the mutation appears in at least 9 sequences; second, it appears in at least 80 % of
-                sequences assigned to that lineage. This is an empirical definition of characteristic mutations. For
-                each lineage, mutations appearing at least 9 times and in ≥80% of its samples are excluded.
-            </p>
-        </InfoBlock>
-    );
-}
+const HINT = 'w-80 max-w-full space-y-2 text-sm font-normal text-gray-700';
 
 export function DefineClinicalSignatureInfo() {
+    return (
+        <div className={HINT}>
+            <p>Set the parameters to select which mutations make up the mutation signature of the selected variant.</p>
+        </div>
+    );
+}
+
+export function TreeVariantInfo() {
+    return (
+        <div className={HINT}>
+            <p>
+                Select a lineage of the Nextclade tree. Its mutations compared to the reference make up the mutation
+                signature.
+            </p>
+        </div>
+    );
+}
+
+export function ClinicalVariantInfo() {
+    return (
+        <div className={HINT}>
+            <p>Select clinical sequences assigned to the selected variant. Use the * option to include sublineages.</p>
+        </div>
+    );
+}
+
+export function MinProportionInfo() {
+    return (
+        <div className={HINT}>
+            <p className='text-gray-500 italic'>
+                Only mutations found in at least this share of the variant&apos;s clinical sequences.
+            </p>
+            <p>Higher values keep only the mutations nearly every sequence of the variant has.</p>
+        </div>
+    );
+}
+
+export function MinCountInfo() {
+    return (
+        <div className={HINT}>
+            <p className='text-gray-500 italic'>
+                Only mutations found in at least this many of the variant&apos;s clinical sequences.
+            </p>
+            <p>Leaves out sequencing errors in variants with few sequences.</p>
+        </div>
+    );
+}
+
+export function MinJaccardInfo() {
     const m = (math: string) => <InlineMath math={math} />;
-
     return (
-        <InfoBlock title='Define Variant Signature based on Clinical Sequences from CovSpectrum'>
-            <p className='text-gray-700'>
-                Fetch characteristic mutations from clinical sequences assigned a given variant.
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Only mutations with at least this Jaccard index with the variant in clinical sequences:
             </p>
-            <p className='mt-2 text-gray-700'>
-                Enter a{' '}
-                <a className='link' href='https://cov-spectrum.org/'>
-                    CovSpectrum
-                </a>{' '}
-                variant query to filter for a given Pango variant (e.g. "BA.5").
+            <BlockMath math='J_{m,v} = \frac{|S_m \cap S_v|}{|S_m \cup S_v|} = \frac{|S_m \cap S_v|}{|S_m| + |S_v| - |S_m \cap S_v|}' />
+            <p className='text-gray-500 italic'>
+                with {m('S_m')} the sequences with mutation {m('m')} and {m('S_v')} those of variant {m('v')}. At 1,
+                every sequence of the variant has the mutation, and no other sequence does. Lower values mean that not
+                all sequences of the variant have it, or that sequences of other lineages have it too (or both).
             </p>
-
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Minimum Proportion</h2>
-            <p className='text-gray-700'>
-                The minimum proportion threshold filters mutations based on their frequency within the selected variant.
-            </p>
-            <p className='mt-2 text-gray-700'>
-                Only mutations that appear in at least this proportion of sequences belonging to the variant will be
-                included. For example, a value of 0.8 means the mutation must appear in at least 80% of the variant's
-                sequences.
-            </p>
-
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Minimum Count</h2>
-            <p className='text-gray-700'>
-                The minimum count threshold filters mutations based on their occurrence across clinical sequences
-                assigned to a selected variant. Only mutations that appear in at least this many clinical sequences of
-                the selected variant will be included.
-            </p>
-
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Jaccard Index</h2>
-            <p className='text-gray-700'>
-                The Jaccard index measures how specific a mutation is to a variant. A mutation has a high Jaccard index
-                if it appears frequently within a variant and <span className='italic'>rarely</span> outside the
-                variant.
-            </p>
-            <div className='text-gray-700'>
-                <BlockMath math='Jaccard_{s,m} = \frac{|S_{m,v}|}{|S_m| + |S_v| - |S_{m,v}|}' />
-                with:
-            </div>
-            <ul className='mt-2 list-disc pl-8 text-gray-700'>
-                <li>
-                    {m('S_m')}: The set of sequences with the mutation {m('m')}
-                </li>
-                <li>
-                    {m('S_v')}: The set of sequences of variant {m('v')}
-                </li>
-                <li>
-                    {m('S_{m,v}')}: The intersection {m('S_m \\cap S_v')} of {m('S_m')} and {m('S_v')}; the set of
-                    sequences of variant {m('v')} with mutation {m('m')}
-                </li>
-            </ul>
-            <p className='mt-2 text-gray-700'>
-                An index of 1 indicates that all sequences of variant {m('v')} have the mutation {m('m')} and all
-                sequences with the mutation {m('m')} belong to the variant {m('v')} (perfect overlap). Lesser values
-                indicate that either not all sequences of the variant have the mutation or not all sequences with the
-                mutation belong to the variant (or both).
-            </p>
-
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Time Frame</h2>
-            <p className='text-gray-700'>
-                Time frame for sequence selection. Shorter windows reduce dominance of well-sequenced historical
-                variants, yielding higher Jaccard values for emerging variants with fewer clinical sequences. Use this
-                filter to exclude variants no longer in circulation when assessing significance of current mutations.
-            </p>
-        </InfoBlock>
+            <p>Leaves out mutations the variant shares with other lineages, which can&apos;t tell it apart.</p>
+        </div>
     );
 }
 
-export function CollectionInfo() {
+export function TimeFrameInfo() {
     return (
-        <InfoBlock title='Collection'>
-            <p className='text-gray-700'>
-                Collections are sourced from{' '}
-                <a className='link' href='https://cov-spectrum.org/collections'>
-                    CovSpectrum
-                </a>
-                . Only collections whose title contains the word <span className='font-semibold'>wastewater</span> are
-                shown here.
+        <div className={HINT}>
+            <p className='text-gray-500 italic'>The date range from which to include clinical samples.</p>
+            <p>
+                A shorter time frame leaves out lineages that no longer circulate, so mutations shared only with them
+                count as specific to the variant.
             </p>
-            <p className='mt-2 text-gray-700'>
-                To add a new collection, create it on CovSpectrum and make sure its title includes the word
-                &ldquo;wastewater&rdquo; so it appears in this list.
-            </p>
-        </InfoBlock>
+        </div>
     );
 }
 
-const cspLink = (
-    <a className='link' href='https://cov-spectrum.org'>
-        CovSpectrum
-    </a>
-);
+/** About the collection field: with a `titleFilter`, of CoV-Spectrum's collections, else of GenSpectrum's. */
+export function CollectionInfo({ titleFilter }: { titleFilter?: string }) {
+    return (
+        <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                {titleFilter === undefined
+                    ? 'The GenSpectrum collections of this organism.'
+                    : `The CoV-Spectrum collections with “${titleFilter}” in their title.`}{' '}
+                Each variant of the collection is shown over time.
+            </p>
+            <p>
+                {titleFilter === undefined
+                    ? 'To track your own set of variants, create a collection on GenSpectrum.'
+                    : `To track your own set of variants, create a collection on CoV-Spectrum with “${titleFilter}” in its title.`}
+            </p>
+        </div>
+    );
+}
 
 // What each mode shows, for the bottom of its sidebar.
 const MODE_ABOUT = {
     deconvolution: <>The share of each lineage of the panel, estimated from the mutation frequencies in the samples.</>,
     variant: (
         <>
-            Track variant-specific mutations over time. Variants can be defined in two ways: by selecting a predefined
-            variant from a curated list, or by filtering clinical sequences from {cspLink} based on user parameters.
+            Track a variant&apos;s mutations over time. The variant is defined by a lineage of the Nextclade tree, or by
+            the mutations common in its clinical sequences.
         </>
     ),
     cooccurrence: <>Which mutations occur together on the same reads, within an amplicon or a range of positions.</>,
@@ -146,35 +130,49 @@ const MODE_ABOUT = {
     untracked: (
         <>
             Novel mutations not yet attributed to major variants. Variant-specific mutations are computed from clinical
-            sequences from {cspLink}.
+            sequences.
         </>
     ),
-    manual: <>Explore freely, using the filters on the plot, i.e., search by minimal proportion.</>,
-    collection: (
+    manual: (
         <>
-            Explore mutations defined by a{' '}
-            <a className='link' href='https://cov-spectrum.org/collections'>
-                CovSpectrum collection
-            </a>
-            .
+            Track any mutations you choose over time: a list of mutations, or all mutations in a range of positions. Use
+            Mean proportion to leave out the rare or the (nearly) fixed ones.
         </>
     ),
+    collection: <CollectionModeAbout withCovSpectrum={false} />,
 } as const satisfies Record<AnalysisMode, ReactNode>;
 
-/** What a mode shows, in a sentence or two. */
-export function ModeAbout({ mode }: { mode: AnalysisMode }) {
-    return <p>{MODE_ABOUT[mode]}</p>;
+/** The collection mode's about text; it names CoV-Spectrum only where the organism has its collections. */
+export function CollectionModeAbout({ withCovSpectrum }: { withCovSpectrum: boolean }) {
+    const link = (href: string, label: string) => (
+        <a className='link' href={href} target='_blank' rel='noopener noreferrer'>
+            {label}
+        </a>
+    );
+    return (
+        <>
+            Track the variants of a collection over time. Collections are shared sets of variants, made and browsed on{' '}
+            {link('https://genspectrum.org/collections', 'GenSpectrum')}
+            {withCovSpectrum && <> or {link('https://cov-spectrum.org/collections', 'CoV-Spectrum')}</>}.
+        </>
+    );
+}
+
+/** What a mode shows, in a sentence or two; `about` in place of the mode's usual text. */
+export function ModeAbout({ mode, about }: { mode: AnalysisMode; about?: ReactNode }) {
+    return <p>{about ?? MODE_ABOUT[mode]}</p>;
 }
 
 export function LineagePanelInfo() {
     return (
-        <InfoBlock title='Panel of lineages'>
-            <p className='text-gray-700'>
-                The deconvolution explains each sample as a mix of the lineages in the panel, and only of those. Virus
-                of a lineage that is not in the panel is attributed to the panel lineages that resemble it most, so they
-                may show a high prevalence that isn&apos;t really there. With a panel that misses the lineages actually
-                circulating, the plot can be misleading.
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                The lineages whose shares are estimated. The panel is fixed; one more lineage can be added below.
             </p>
-        </InfoBlock>
+            <p>
+                Virus of a lineage that isn&apos;t in the panel is counted towards the panel lineages most like it, so
+                their shares can be too high. If you suspect a missing lineage, add it.
+            </p>
+        </div>
     );
 }

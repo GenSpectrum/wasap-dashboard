@@ -51,14 +51,16 @@ export function MedianAmpliconCoverageHeatmap({ amplicons: ampliconsConfig }: { 
 function CoverageInfo() {
     return (
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
-            <p>
-                For each location and week, how many reads a typical amplicon got: the median number of reads per
-                amplicon in each sample, and the median of that over the week&apos;s samples.
+            <p className='text-gray-500 italic'>
+                For each location and week, the median number of reads per amplicon in each sample, then the median of
+                that over the week&apos;s samples. Hover over a cell to see its samples.
             </p>
             <p>
-                The less virus a sample has, the more amplicons fail to amplify, so a low value points to a low viral
-                load. The mutation proportions of such a sample rest on only a few virus genomes.
+                Shows where the sequencing data can be trusted. Low values mean many amplicons failed to amplify,
+                usually because there was little virus in the sample. The mutation proportions for that week then rest
+                on only a few virus genomes.
             </p>
+            <p>This is not a viral concentration, since it also depends on how deeply each sample was sequenced.</p>
         </div>
     );
 }

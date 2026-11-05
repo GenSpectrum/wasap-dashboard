@@ -5,7 +5,7 @@ import { LabeledField } from './LabeledField';
 import { it } from '../../test/test-extend';
 
 describe('LabeledField', () => {
-    it('opens modal when info button is clicked', async () => {
+    it('shows info on hover of the help button', async () => {
         const { getByLabelText, getByText } = render(
             <LabeledField label='Test Field' info={<div>This is helpful information</div>}>
                 <input type='text' />
@@ -14,13 +14,10 @@ describe('LabeledField', () => {
 
         const infoButton = getByLabelText('Show information about Test Field');
         await expect.element(infoButton).toBeInTheDocument();
+        await expect.element(getByText('This is helpful information')).not.toBeInTheDocument();
 
-        const getInfoTest = () => getByText('This is helpful information');
+        await infoButton.hover();
 
-        await expect.element(getInfoTest()).not.toBeVisible();
-
-        await infoButton.click();
-
-        await expect.element(getInfoTest()).toBeVisible();
+        await expect.element(getByText('This is helpful information')).toBeVisible();
     });
 });

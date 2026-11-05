@@ -326,18 +326,18 @@ const SelectedFilter = ({ handleRemoveValue, mutationFilter }: SelectedFilterPro
     return (
         <span
             key={mutationFilter.value.toString()}
-            className='center inline-flex px-2 py-1 text-black'
+            className='inline-flex items-center px-2 py-1 text-black'
             style={{
                 backgroundColor: backgroundColorMap(mutationFilter),
             }}
         >
             {mutationFilter.value.toString()}
             <button
-                className='ml-1 cursor-pointer'
+                className='ml-1 flex cursor-pointer items-center text-gray-600 hover:text-black'
                 aria-label={`remove mutation filter ${mutationFilter.value.code}`}
                 onClick={() => handleRemoveValue(mutationFilter)}
             >
-                ×
+                <span className='iconify mdi--close text-sm' />
             </button>
         </span>
     );

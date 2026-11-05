@@ -40,14 +40,11 @@ describe('DateRangeFilter', () => {
         expect(screen.getByRole('option', { name: 'Custom' }).elements()).toHaveLength(0);
     });
 
-    it('reports the preset picked, and null when cleared', async () => {
+    it('reports the preset picked', async () => {
         const onDateRangeChange = vi.fn();
         const screen = renderFilter('Last month', onDateRangeChange);
 
         await screen.getByRole('combobox').selectOptions('Last week');
         expect(onDateRangeChange).toHaveBeenLastCalledWith(options[0]);
-
-        await screen.getByRole('button', { name: 'Clear' }).click();
-        expect(onDateRangeChange).toHaveBeenLastCalledWith(null);
     });
 });

@@ -136,6 +136,8 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
     }
 
     const diversePositions = selectDiversePositions(positionsByEntropy, entropyCutoff);
+    // The positions above the cutoff, of which only the most variable are used (`selectDiversePositions`).
+    const aboveCutoffCount = positionsByEntropy.filter((p) => p.entropyBits > entropyCutoff).length;
     if (diversePositions.length < 2) {
         return (
             <NoDataDisplay
@@ -162,8 +164,10 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
             Amplicon <span className='font-mono font-medium text-black'>{amplicon.start.toLocaleString()}</span>
             &ndash;<span className='font-mono font-medium text-black'>{amplicon.end.toLocaleString()}</span> (
             {(amplicon.end - amplicon.start + 1).toLocaleString()} {sequenceType === 'nucleotide' ? 'bp' : 'aa'})
-            &middot; {diversePositions.length} of {positionsByEntropy.length} positions exceed {entropyCutoff} bits of
-            entropy.
+            &middot; {aboveCutoffCount} of {positionsByEntropy.length} positions exceed {entropyCutoff} bits of entropy
+            {aboveCutoffCount > diversePositions.length
+                ? `; showing the ${diversePositions.length} most variable.`
+                : '.'}
         </p>
     );
 

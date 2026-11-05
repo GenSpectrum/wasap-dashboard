@@ -135,9 +135,10 @@ function LocationDropdown({
                 onClick={() => (isOpen ? close() : setDraft(value))}
             >
                 <SelectionSummary value={shown} />
-                <span aria-hidden className='px-2'>
-                    {isOpen ? '↑' : '↓'}
-                </span>
+                <span
+                    aria-hidden
+                    className={`iconify mx-1 shrink-0 text-xl text-gray-500 ${isOpen ? 'mdi--chevron-up' : 'mdi--chevron-down'}`}
+                />
             </button>
             {isOpen && (
                 <div

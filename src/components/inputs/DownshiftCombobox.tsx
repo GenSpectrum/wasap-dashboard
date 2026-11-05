@@ -250,7 +250,7 @@ export function DownshiftMultiCombobox<Item>({
                             {formatSelectedItem ? formatSelectedItem(selectedItem) : itemToString(selectedItem)}
                             <button
                                 aria-label={`remove ${itemToString(selectedItem)}`}
-                                className='cursor-pointer hover:text-red-600'
+                                className='flex cursor-pointer items-center text-gray-600 hover:text-black'
                                 type='button'
                                 onClick={() => {
                                     removeSelectedItem(selectedItem);
@@ -258,7 +258,7 @@ export function DownshiftMultiCombobox<Item>({
                                 }}
                                 tabIndex={-1}
                             >
-                                ×
+                                <span className='iconify mdi--close text-sm' />
                             </button>
                         </span>
                     ))}
@@ -310,8 +310,8 @@ function ToggleButton({
     // button would stop opening the menu on click.
     const props = getToggleButtonProps ? getToggleButtonProps({ ref: buttonRef }) : { onClick, ref: buttonRef };
     return (
-        <button aria-label='toggle menu' className='px-2' type='button' {...props}>
-            {isOpen ? <>↑</> : <>↓</>}
+        <button aria-label='toggle menu' className='flex items-center px-1 text-gray-500' type='button' {...props}>
+            <span className={`iconify text-xl ${isOpen ? 'mdi--chevron-up' : 'mdi--chevron-down'}`} />
         </button>
     );
 }
@@ -320,7 +320,7 @@ function ClearButton({ onClick, isHidden }: { onClick: () => void; isHidden: boo
     return (
         <button
             aria-label='clear selection'
-            className={`px-2 ${isHidden ? 'hidden' : ''}`}
+            className={`flex items-center px-1 ${isHidden ? 'hidden' : ''}`}
             type='button'
             onClick={onClick}
             tabIndex={-1}

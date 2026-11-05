@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode } from 'react';
 
-import { HoverTooltip } from './HoverTooltip';
+import { HelpButton } from './HelpButton';
 
 /**
  * A box around a plot or table with its title above it, so that they look alike across the pages.
@@ -26,17 +26,7 @@ export function TitledPanel({
         <section>
             <div className='mb-2 flex items-center gap-2'>
                 <h2 className='text-lg font-semibold'>{title}</h2>
-                {info !== undefined && (
-                    <HoverTooltip content={info} placement='bottom-start'>
-                        <button
-                            type='button'
-                            className='relative top-0.5 flex items-center text-gray-500 hover:text-gray-800'
-                            aria-label='What this shows'
-                        >
-                            <span className='iconify mdi--help-circle-outline text-xl' />
-                        </button>
-                    </HoverTooltip>
-                )}
+                {info !== undefined && <HelpButton info={info} ariaLabel='What this shows' />}
             </div>
             {boxed ? (
                 <div className={`overflow-x-auto border border-stone-300 bg-white ${flush ? '' : 'p-4'}`}>
