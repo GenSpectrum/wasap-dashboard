@@ -94,11 +94,11 @@ export const PositionFilter: FC<PositionFilterProps> = ({ sequenceType, initialV
                     >
                         {token}
                         <button
-                            className='ml-1 cursor-pointer'
+                            className='ml-1 flex cursor-pointer items-center text-gray-600 hover:text-black'
                             aria-label={`remove position ${token}`}
                             onClick={() => removeToken(token)}
                         >
-                            ×
+                            <span className='iconify mdi--close text-sm' />
                         </button>
                     </span>
                 ))}

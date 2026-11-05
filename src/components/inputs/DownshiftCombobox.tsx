@@ -250,7 +250,7 @@ export function DownshiftMultiCombobox<Item>({
                             {formatSelectedItem ? formatSelectedItem(selectedItem) : itemToString(selectedItem)}
                             <button
                                 aria-label={`remove ${itemToString(selectedItem)}`}
-                                className='cursor-pointer hover:text-red-600'
+                                className='flex cursor-pointer items-center text-gray-600 hover:text-black'
                                 type='button'
                                 onClick={() => {
                                     removeSelectedItem(selectedItem);
@@ -258,7 +258,7 @@ export function DownshiftMultiCombobox<Item>({
                                 }}
                                 tabIndex={-1}
                             >
-                                ×
+                                <span className='iconify mdi--close text-sm' />
                             </button>
                         </span>
                     ))}
