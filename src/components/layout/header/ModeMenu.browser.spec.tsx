@@ -78,13 +78,26 @@ describe('ModeMenu', () => {
         expect(getByRole('navigation').elements()).toHaveLength(0);
     });
 
-    it('closes on Escape', async () => {
+    it('closes on Escape, with the focus back on the button', async () => {
         const { getByRole } = renderMenu();
 
         await getByRole('button', { name: 'Manual' }).click();
+        (getByRole('link', { name: 'Resistance' }).element() as HTMLElement).focus();
         await userEvent.keyboard('{Escape}');
 
         expect(getByRole('navigation').elements()).toHaveLength(0);
+        await expect.element(getByRole('button', { name: 'Manual' })).toHaveFocus();
+    });
+
+    it('points the button at the list only while it is open', async () => {
+        const { getByRole } = renderMenu();
+        const button = getByRole('button', { name: 'Manual' });
+
+        await expect.element(button).not.toHaveAttribute('aria-controls');
+        await button.click();
+
+        const listId = button.element().getAttribute('aria-controls');
+        expect(getByRole('navigation').element().id).toBe(listId);
     });
 
     it('is not there where no organism is open', async () => {

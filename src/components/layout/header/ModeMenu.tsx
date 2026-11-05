@@ -1,8 +1,8 @@
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { ABOUT_ICON, type ModeNavigation, OVERVIEW_ICON, useAboutPath, useModeNavigation } from './modeNavigation';
-import { useCloseOnClickOutside, useCloseOnEsc } from '../../ui/floatingUiHooks';
+import { useCloseOnClickOutside } from '../../ui/floatingUiHooks';
 
 /**
  * The navigation of a narrow page, in place of the `ModeTabs`: a button that names the page that is open,
@@ -21,7 +21,22 @@ export function ModeMenu() {
     const listId = useId();
 
     useCloseOnClickOutside(listRef, buttonRef, setIsOpen);
-    useCloseOnEsc(setIsOpen);
+
+    // Escape closes the list and puts the focus back on the button, so that the keyboard doesn't lose its place.
+    // Only listening while open: otherwise Escape anywhere on the page would move the focus here.
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+                buttonRef.current?.focus();
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen]);
 
     if (navigation === undefined) {
         return null;
@@ -36,7 +51,8 @@ export function ModeMenu() {
                 type='button'
                 className='flex max-w-full items-center gap-1.5 border border-stone-300 bg-white px-2.5 py-1.5 text-sm font-semibold whitespace-nowrap text-gray-800 hover:bg-stone-100'
                 aria-expanded={isOpen}
-                aria-controls={listId}
+                // The list is only there while open.
+                aria-controls={isOpen ? listId : undefined}
                 onClick={() => setIsOpen((wasOpen) => !wasOpen)}
             >
                 <span className='iconify mdi--menu shrink-0 text-lg' />

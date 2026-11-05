@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { ModeMenu } from './ModeMenu';
 import { AboutLink, ModeTabs } from './ModeTabs';
 import { OrganismSelect } from './OrganismSelect';
-import { useModeNavigation } from './modeNavigation';
+import { resolveOrganismConfig } from '../../../config/wastewaterOrganisms';
 
 /**
  * The header of every page: the title (a link to the landing page), the navigation between the pages of
@@ -13,7 +13,8 @@ import { useModeNavigation } from './modeNavigation';
  * it is the `ModeMenu` next to the title instead, which has the about page in it as well.
  */
 export function AppHeader() {
-    const hasNavigation = useModeNavigation() !== undefined;
+    const { organismPath } = useParams();
+    const isOrganismOpen = resolveOrganismConfig(organismPath) !== undefined;
 
     return (
         <header className='relative border-b-2 border-b-stone-300 bg-stone-200'>
@@ -32,7 +33,7 @@ export function AppHeader() {
                     <ModeMenu />
                 </div>
                 <div className='ml-auto flex shrink-0 items-center gap-4 justify-self-end'>
-                    <div className={hasNavigation ? 'hidden xl:block' : ''}>
+                    <div className={isOrganismOpen ? 'hidden xl:block' : ''}>
                         <AboutLink />
                     </div>
                     <OrganismSelect />
