@@ -3,7 +3,7 @@ import { type DatasetFilter } from '../../pageState/analysisFilter';
 import { DynamicDateFilter } from '../inputs/DynamicDateFilter';
 import { LabeledField } from '../inputs/LabeledField';
 import { LocationMultiSelect } from '../inputs/LocationMultiSelect';
-import { RadioSelect } from '../inputs/RadioSelect';
+import { SegmentedSelect } from '../inputs/SegmentedSelect';
 
 /**
  * Selects the dataset that is analyzed: locations, dates and how they are
@@ -39,7 +39,7 @@ export function DatasetFilterPanel({
             </div>
 
             <div className='min-w-0 flex-[1_1_9rem]'>
-                <RadioSelect
+                <SegmentedSelect
                     label='Granularity'
                     value={value.granularity}
                     options={[
