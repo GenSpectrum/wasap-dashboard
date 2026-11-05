@@ -320,7 +320,7 @@ function ClearButton({ onClick, isHidden }: { onClick: () => void; isHidden: boo
     return (
         <button
             aria-label='clear selection'
-            className={`px-2 ${isHidden ? 'hidden' : ''}`}
+            className={`flex items-center px-1 ${isHidden ? 'hidden' : ''}`}
             type='button'
             onClick={onClick}
             tabIndex={-1}
