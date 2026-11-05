@@ -131,9 +131,13 @@ const MODE_ABOUT = {
     manual: <>Explore freely, using the filters on the plot, i.e., search by minimal proportion.</>,
     collection: (
         <>
-            Explore mutations defined by a{' '}
-            <a className='link' href='https://cov-spectrum.org/collections'>
-                CovSpectrum collection
+            Track the variants of a collection over time. Collections are shared sets of variants, made and browsed on{' '}
+            <a className='link' href='https://genspectrum.org/collections' target='_blank' rel='noopener noreferrer'>
+                GenSpectrum
+            </a>{' '}
+            or{' '}
+            <a className='link' href='https://cov-spectrum.org/collections' target='_blank' rel='noopener noreferrer'>
+                CoV-Spectrum
             </a>
             .
         </>
