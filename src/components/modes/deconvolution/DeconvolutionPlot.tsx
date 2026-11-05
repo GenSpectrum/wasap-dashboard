@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { type ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { Link, type To } from 'react-router-dom';
 
 import { UNDETERMINED_COLOR } from './lineageColors';
@@ -22,6 +22,7 @@ export function DeconvolutionPlot({
     colors,
     granularity,
     lineageLink,
+    legendNote,
 }: {
     result: DeconvolutionResult;
     /** The colour of each lineage of the panel (see `lineageColors`). */
@@ -30,6 +31,8 @@ export function DeconvolutionPlot({
     granularity: TemporalGranularity;
     /** Where the name of a lineage in the legend links to (not "Undetermined", which isn't one). */
     lineageLink?: (lineage: string) => To | undefined;
+    /** Shown at the right end of the legend's row, or on a row of its own below where there's no room. */
+    legendNote?: ReactNode;
 }) {
     const [container, { width, height }] = useSize();
     const colorOf = (variant: string) => colors.get(variant) ?? UNDETERMINED_COLOR;
@@ -226,6 +229,7 @@ export function DeconvolutionPlot({
                         </LegendLabel>
                     </span>
                 ))}
+                {legendNote !== undefined && <span className='ml-auto self-center'>{legendNote}</span>}
             </figcaption>
         </figure>
     );

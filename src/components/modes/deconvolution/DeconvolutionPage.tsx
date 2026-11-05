@@ -14,7 +14,7 @@ import { type TemporalGranularity } from '../../../domain/temporal';
 import { lineageSignatures } from '../../../externalData/fileBased/lineageTree/lineageSignatures';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { informativeMutations } from '../../../externalData/lollipop/lollipopService';
-import { useDeconvolution } from '../../../externalData/lollipop/useDeconvolution';
+import { useDeconvolution, useLollipopVersion } from '../../../externalData/lollipop/useDeconvolution';
 import { effectivePanel } from '../../../pageState/analysisFilter';
 import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../../pageState/handlers/DeconvolutionPageStateHandler';
@@ -190,6 +190,7 @@ function DeconvolutionResults({
                     colors={colors}
                     granularity={granularity}
                     lineageLink={lineageLink}
+                    legendNote={<LollipopCredit />}
                 />
             </TitledPanel>
         </>
@@ -222,6 +223,20 @@ function DeconvolutionInfo() {
                 panel doesn&apos;t explain; if it grows, a lineage that isn&apos;t in the panel may be spreading.
             </p>
         </div>
+    );
+}
+
+/** Credits LolliPop, with the version the service runs once it is known. */
+function LollipopCredit() {
+    const version = useLollipopVersion();
+    return (
+        <span className='text-xs text-gray-500'>
+            Computed with{' '}
+            <a className='link' href='https://github.com/cbg-ethz/LolliPop' target='_blank' rel='noopener noreferrer'>
+                LolliPop
+            </a>
+            {version !== undefined && ` ${version}`}
+        </span>
     );
 }
 
