@@ -5,15 +5,15 @@ import { computeInitialValues } from './computeInitialValues';
 import { toYYYYMMDD } from './dateConversion';
 import { type DateRangeOption, type DateRangeValue } from '../../../domain/dateRange';
 import { ErrorBoundary } from '../../ui/ErrorBoundary';
-import { ClearableSelect } from '../ClearableSelect';
 
 const CUSTOM_OPTION = 'Custom';
+const NOTHING_SELECTED = '__undefined__';
 
 export type DateRangeFilterProps = {
     dateRangeOptions: DateRangeOption[];
     value: DateRangeValue;
     placeholder?: string;
-    onDateRangeChange?: (value: DateRangeOption | null) => void;
+    onDateRangeChange?: (value: DateRangeOption) => void;
 };
 
 type DateRangeFilterState = {
@@ -73,22 +73,25 @@ const DateRangeFilterWithoutErrors = ({
 
     return (
         <div className='grid grid-cols-[minmax(0,40fr)_minmax(0,30fr)_minmax(0,30fr)]'>
-            <ClearableSelect
-                items={options.map((item) => item.label)}
-                placeholderText={placeholder}
-                onChange={(label) => {
-                    if (label === null) {
-                        onDateRangeChange?.(null);
-                        return;
-                    }
-                    const option = dateRangeOptions.find((item) => item.label === label);
+            <select
+                className='select w-full'
+                value={state?.label ?? NOTHING_SELECTED}
+                onChange={(event) => {
+                    const option = dateRangeOptions.find((item) => item.label === event.currentTarget.value);
                     if (option !== undefined) {
                         onDateRangeChange?.(option);
                     }
                 }}
-                value={state?.label ?? null}
-                className='w-full'
-            />
+            >
+                <option value={NOTHING_SELECTED} disabled>
+                    {placeholder ?? 'Select an option'}
+                </option>
+                {options.map(({ label }) => (
+                    <option key={label} value={label}>
+                        {label}
+                    </option>
+                ))}
+            </select>
             <DatePicker
                 className='w-full'
                 value={state?.dateFrom}
