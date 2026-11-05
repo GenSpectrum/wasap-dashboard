@@ -94,12 +94,15 @@ export function CooccurrenceFilter({
                         )}
                         <NumericInput
                             label='Entropy cutoff (bits)'
-                            infoModal={
-                                <p>
-                                    Only positions inside the detected amplicon whose Shannon entropy exceeds this
-                                    cutoff are used for co-occurrence. 0 bits means a position always carries the same
-                                    symbol; 1 bit means it&apos;s split roughly evenly between two symbols.
-                                </p>
+                            info={
+                                <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+                                    <p className='text-gray-500 italic'>
+                                        Only positions in the amplicon whose Shannon entropy is above this cutoff are
+                                        included. At 0 bits, all reads have the same base at a position; at 1 bit, the
+                                        reads are split evenly between two.
+                                    </p>
+                                    <p>Lower it to see more positions, raise it to see only the most variable ones.</p>
+                                </div>
                             }
                             value={pageState.entropyCutoff ?? DEFAULT_ENTROPY_CUTOFF_BITS}
                             min={0}
