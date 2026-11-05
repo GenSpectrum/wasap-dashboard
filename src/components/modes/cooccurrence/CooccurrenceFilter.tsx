@@ -126,12 +126,14 @@ export function CooccurrenceFilter({
             {lineageTree !== undefined && (
                 <LabeledField
                     label='Panel of lineages'
-                    infoModal={
-                        <p>
-                            Checks which of these lineages&apos; signatures match each co-occurrence pattern at the
-                            queried positions, so patterns the panel doesn&apos;t explain stand out. Only works with the
-                            amplicon source, which knows the reference base at each position.
-                        </p>
+                    info={
+                        <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+                            <p className='text-gray-500 italic'>
+                                Adds a Panel match column: the lineages of the panel whose signature has exactly the
+                                row&apos;s pattern at these positions. Only with the amplicon source.
+                            </p>
+                            <p>Patterns that no lineage of the panel explains stand out.</p>
+                        </div>
                     }
                 >
                     <LineageTreeCombobox
