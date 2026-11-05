@@ -133,7 +133,12 @@ const MODE_ABOUT = {
             sequences.
         </>
     ),
-    manual: <>Explore freely, using the filters on the plot, i.e., search by minimal proportion.</>,
+    manual: (
+        <>
+            Track any mutations you choose over time: a list of mutations, or all mutations in a range of positions. Use
+            Mean proportion to leave out the rare or the (nearly) fixed ones.
+        </>
+    ),
     collection: <CollectionModeAbout withCovSpectrum={false} />,
 } as const satisfies Record<AnalysisMode, ReactNode>;
 
