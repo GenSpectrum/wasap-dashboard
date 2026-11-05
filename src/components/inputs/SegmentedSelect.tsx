@@ -3,10 +3,10 @@ import { useId } from 'react';
 import { LabeledField } from './LabeledField';
 
 /**
- * A pick of one of a few short options, as a row of connected segments: for a handful of values
- * on a scale, like thresholds, where separate buttons (`RadioSelect`) would take too much room.
- * The picked one has a coloured border, like in `RadioSelect`. No segment is marked where `value`
- * is none of the options.
+ * A pick of one of a few short options, as a row of segments in one grey track: for a handful
+ * of values, like thresholds or a choice of two, where separate buttons would take too much room.
+ * The picked one is a white tile in the track. No segment is marked where `value` is none of the
+ * options.
  */
 export function SegmentedSelect<T extends string | number>({
     label,
@@ -24,18 +24,18 @@ export function SegmentedSelect<T extends string | number>({
 
     return (
         <LabeledField label={label}>
-            {/* `isolate`: the picked segment's z-index stays inside, under dropdowns opening over it. */}
-            <div className='isolate flex text-sm'>
-                {options.map((option, index) => {
+            <div className='flex h-8 gap-0.5 border border-gray-300 bg-stone-100 p-0.5 text-sm'>
+                {options.map((option) => {
                     const isChecked = value === option.value;
                     return (
-                        // The segments overlap by their borders, the picked one on top, so its border shows all around.
                         <label
                             key={String(option.value)}
                             title={option.title}
-                            className={`has-focus-visible:outline-brand-700 flex-1 cursor-pointer border bg-white py-1.25 text-center has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 ${
-                                index > 0 ? '-ml-px' : ''
-                            } ${isChecked ? 'border-primary relative z-10' : 'border-gray-300 hover:bg-stone-100'}`}
+                            className={`has-focus-visible:outline-brand-700 flex flex-1 cursor-pointer items-center justify-center border has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 ${
+                                isChecked
+                                    ? 'border-gray-300 bg-white font-medium text-stone-900'
+                                    : 'border-transparent text-stone-600 hover:bg-stone-200'
+                            }`}
                         >
                             <input
                                 type='radio'
