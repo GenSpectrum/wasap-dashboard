@@ -7,7 +7,7 @@ import { getCollections as getGenSpectrumCollections } from '../../../externalDa
 import { COLLECTION_SOURCE, type CollectionAnalysis } from '../../../pageState/analysisFilter';
 import { CollectionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
-import { RadioSelect } from '../../inputs/RadioSelect';
+import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 
 type CollectionAnalysisFilterProps = {
     pageState: CollectionAnalysis;
@@ -35,7 +35,7 @@ export function CollectionAnalysisFilter({
     return (
         <>
             {covSpectrum !== undefined && (
-                <RadioSelect
+                <SegmentedSelect
                     label='Collection source'
                     value={pageState.source}
                     options={[
