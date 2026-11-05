@@ -87,21 +87,14 @@ function SectionLoading() {
 function CooccurrenceInfo() {
     return (
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
-            <p>
-                A read comes from one amplicon, so the variant&apos;s mutations in the same amplicon can be checked for
-                being on the same read. A row is a cluster of them that reads carry together: the share of the reads
-                covering all of the amplicon&apos;s mutation positions that carry at least the cluster&apos;s mutations.
+            <p className='text-gray-500 italic'>
+                Coverage and proportion over time, like in the Mutations panel, but for multiple mutations together.
+                Grouped by amplicon, since mutations can only co-occur on the same amplicon.
             </p>
             <p>
-                The clusters are looked for among all of the variant&apos;s mutations, also those that aren&apos;t
-                specific to it on their own, and only those with a Jaccard index of at least the minimum are shown.
-            </p>
-            <p>
-                A row per amplicon, of all of its mutations together, opens up (click it) to its other rows: where all
-                of its mutations together are specific enough, also the rows leaving one of them out, whatever their
-                Jaccard index: a mutation whose row has a much lower one is what tells the variant apart, one whose row
-                has about the same adds little. &quot;Any 3&quot; counts the reads and sequences with at least 3 of the
-                4 mutations, whichever they are.
+                Mutations that aren&apos;t specific to the variant on their own can be in combination. Only combinations
+                with a Jaccard index of at least the minimum are shown. Click an amplicon&apos;s row to see the
+                combinations that leave one mutation out.
             </p>
         </div>
     );
