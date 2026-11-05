@@ -19,18 +19,6 @@ export const dateRangeOptionSchema = z.object({
 
 export type DateRangeOption = z.infer<typeof dateRangeOptionSchema>;
 
-export const dateRangeValueSchema = z
-    .union([
-        z.string(),
-        z.object({
-            dateFrom: z.iso.date().optional(),
-            dateTo: z.iso.date().optional(),
-        }),
-    ])
-    .nullable();
-
-export type DateRangeValue = z.infer<typeof dateRangeValueSchema>;
-
 export const CUSTOM_DATE_RANGE_LABEL = 'Custom';
 
 /** The "no restriction" date-range option label — deliberate, not the default (see doc on `DEFAULT_RECENT_DAYS_LABEL`). */
@@ -75,4 +63,22 @@ export function recentDaysDateRangeOptions({
     });
 
     return [...recentDaysOptions, { label: ALL_TIMES_LABEL, dateFrom: startDate }];
+}
+
+/**
+ * `value` with concrete dates, looked up in `dateRangeOptions`: a preset named by its label alone (as in
+ * the URL) gets its dates, and a custom range with the dates of a preset is that preset (e.g. after typing
+ * the dates of the most recent 30 days). A label that names no preset falls back to "All times".
+ */
+export function resolveDateRange(value: DateRangeOption, dateRangeOptions: DateRangeOption[]): DateRangeOption {
+    if (value.label === CUSTOM_DATE_RANGE_LABEL) {
+        return (
+            dateRangeOptions.find((option) => option.dateFrom === value.dateFrom && option.dateTo === value.dateTo) ??
+            value
+        );
+    }
+    return (
+        dateRangeOptions.find((option) => option.label === value.label) ??
+        dateRangeOptions.find((option) => option.label === ALL_TIMES_LABEL) ?? { label: ALL_TIMES_LABEL }
+    );
 }

@@ -1,6 +1,11 @@
 import { isUnresolvedSamplingDate } from './baseFilter';
 import { useDateExtent } from '../dataLayer/hooks/lookups/dateExtent';
-import { type DateRangeOption, ALL_TIMES_LABEL, recentDaysDateRangeOptions } from '../domain/dateRange';
+import {
+    type DateRangeOption,
+    ALL_TIMES_LABEL,
+    recentDaysDateRangeOptions,
+    resolveDateRange,
+} from '../domain/dateRange';
 
 const allTimes: DateRangeOption = { label: ALL_TIMES_LABEL };
 
@@ -9,7 +14,7 @@ const allTimes: DateRangeOption = { label: ALL_TIMES_LABEL };
  * 14 days", from a URL loaded fresh) into concrete dates, by reading the
  * dataset's actual date range from RhyDB (`useDateExtent`) and matching the
  * label against the same options `DynamicDateFilter` generates for the
- * dropdown.
+ * dropdown (`resolveDateRange`, which the dropdown uses too).
  *
  * If `samplingDate` already has concrete dates, this returns it immediately —
  * only label-only values pay for the read. If the date extent can't be read,
@@ -40,10 +45,5 @@ export function useResolvedSamplingDate(samplingDateFromPageState: DateRangeOpti
     }
 
     const options = recentDaysDateRangeOptions({ startDate: dateExtent.min, endDate: dateExtent.max });
-    const resolved = options.find((option) => option.label === samplingDate.label);
-
-    return {
-        samplingDate: resolved ?? options.find((option) => option.label === ALL_TIMES_LABEL) ?? allTimes,
-        isPending: false,
-    };
+    return { samplingDate: resolveDateRange(samplingDate, options), isPending: false };
 }
