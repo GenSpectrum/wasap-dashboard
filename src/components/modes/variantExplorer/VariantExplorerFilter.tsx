@@ -24,6 +24,7 @@ import { NumericInput } from '../../inputs/NumericInput';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
 import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
+import { HoverTooltip } from '../../ui/HoverTooltip';
 import { Inset } from '../../ui/Inset';
 
 interface VariantExplorerFilterProps {
@@ -285,11 +286,15 @@ function CheckboxWithTooltip({ checked, onChange, tooltip, label, className }: C
                 checked={checked}
                 onChange={(e) => onChange(e.target.checked)}
             />
-            <div className='tooltip tooltip-right inline' data-tip={tooltip}>
+            <HoverTooltip
+                className='inline'
+                placement='right'
+                content={<p className='w-64 max-w-full text-sm font-normal text-gray-700'>{tooltip}</p>}
+            >
                 <label htmlFor={id} className='cursor-pointer pl-2'>
                     {label}
                 </label>
-            </div>
+            </HoverTooltip>
         </div>
     );
 }
