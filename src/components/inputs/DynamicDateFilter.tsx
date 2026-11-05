@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import { DateRangeFilter } from './dateRangeFilter/DateRangeFilter';
+import { DateRangeDropdown } from './dateRangeFilter/DateRangeDropdown';
 import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
-import { type DateRangeOption, ALL_TIMES_LABEL, resolveDateRange } from '../../domain/dateRange';
+import { type DateRangeOption } from '../../domain/dateRange';
 import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**
@@ -30,7 +30,8 @@ export function DynamicDateFilter({
     }, [dateExtent, generateOptions]);
 
     return (
-        <label>
+        // Not a <label>: it would forward its clicks to the first control in the dropdown.
+        <div>
             <div className='label flex'>
                 <span>{label}</span>
             </div>
@@ -43,12 +44,8 @@ export function DynamicDateFilter({
                     Failed to load date range: {error instanceof Error ? error.message : String(error)}
                 </div>
             ) : (
-                <DateRangeFilter
-                    dateRangeOptions={generatedOptions}
-                    value={resolveDateRange(value ?? { label: ALL_TIMES_LABEL }, generatedOptions)}
-                    onChange={onChange}
-                />
+                <DateRangeDropdown dateRangeOptions={generatedOptions} value={value} onChange={onChange} />
             )}
-        </label>
+        </div>
     );
 }
