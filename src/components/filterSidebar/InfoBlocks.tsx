@@ -168,13 +168,14 @@ export function ModeAbout({ mode }: { mode: AnalysisMode }) {
 
 export function LineagePanelInfo() {
     return (
-        <InfoBlock title='Panel of lineages'>
-            <p className='text-gray-700'>
-                The deconvolution explains each sample as a mix of the lineages in the panel, and only of those. Virus
-                of a lineage that is not in the panel is attributed to the panel lineages that resemble it most, so they
-                may show a high prevalence that isn&apos;t really there. With a panel that misses the lineages actually
-                circulating, the plot can be misleading.
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                The lineages whose shares are estimated. The panel is fixed; one more lineage can be added below.
             </p>
-        </InfoBlock>
+            <p>
+                Virus of a lineage that isn&apos;t in the panel is counted towards the panel lineages most like it, so
+                their shares can be too high. If you suspect a missing lineage, add it.
+            </p>
+        </div>
     );
 }
