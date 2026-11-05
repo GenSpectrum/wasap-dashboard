@@ -8,8 +8,8 @@ export function KnownVariantsExclusionInfo() {
         <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p className='text-gray-500 italic'>
                 Leaves out the mutations of these variants: those in at least 80% and at least 9 of their clinical
-                sequences on CovSpectrum, sublineages included. For the Nextstrain clades, each clade&apos;s most common
-                lineage is used.
+                sequences, sublineages included. For the Nextstrain clades, each clade&apos;s most common lineage is
+                used.
             </p>
             <p>What remains are mutations the known variants don&apos;t explain, which can point to a new variant.</p>
         </div>
@@ -105,19 +105,13 @@ export function CollectionInfo({ titleFilter }: { titleFilter?: string }) {
     );
 }
 
-const cspLink = (
-    <a className='link' href='https://cov-spectrum.org'>
-        CovSpectrum
-    </a>
-);
-
 // What each mode shows, for the bottom of its sidebar.
 const MODE_ABOUT = {
     deconvolution: <>The share of each lineage of the panel, estimated from the mutation frequencies in the samples.</>,
     variant: (
         <>
-            Track variant-specific mutations over time. Variants can be defined in two ways: by selecting a predefined
-            variant from a curated list, or by filtering clinical sequences from {cspLink} based on user parameters.
+            Track a variant&apos;s mutations over time. The variant is defined by a lineage of the Nextclade tree, or by
+            the mutations common in its clinical sequences.
         </>
     ),
     cooccurrence: <>Which mutations occur together on the same reads, within an amplicon or a range of positions.</>,
@@ -125,28 +119,32 @@ const MODE_ABOUT = {
     untracked: (
         <>
             Novel mutations not yet attributed to major variants. Variant-specific mutations are computed from clinical
-            sequences from {cspLink}.
+            sequences.
         </>
     ),
     manual: <>Explore freely, using the filters on the plot, i.e., search by minimal proportion.</>,
-    collection: (
-        <>
-            Track the variants of a collection over time. Collections are shared sets of variants, made and browsed on{' '}
-            <a className='link' href='https://genspectrum.org/collections' target='_blank' rel='noopener noreferrer'>
-                GenSpectrum
-            </a>{' '}
-            or{' '}
-            <a className='link' href='https://cov-spectrum.org/collections' target='_blank' rel='noopener noreferrer'>
-                CoV-Spectrum
-            </a>
-            .
-        </>
-    ),
+    collection: <CollectionModeAbout withCovSpectrum={false} />,
 } as const satisfies Record<AnalysisMode, ReactNode>;
 
-/** What a mode shows, in a sentence or two. */
-export function ModeAbout({ mode }: { mode: AnalysisMode }) {
-    return <p>{MODE_ABOUT[mode]}</p>;
+/** The collection mode's about text; it names CoV-Spectrum only where the organism has its collections. */
+export function CollectionModeAbout({ withCovSpectrum }: { withCovSpectrum: boolean }) {
+    const link = (href: string, label: string) => (
+        <a className='link' href={href} target='_blank' rel='noopener noreferrer'>
+            {label}
+        </a>
+    );
+    return (
+        <>
+            Track the variants of a collection over time. Collections are shared sets of variants, made and browsed on{' '}
+            {link('https://genspectrum.org/collections', 'GenSpectrum')}
+            {withCovSpectrum && <> or {link('https://cov-spectrum.org/collections', 'CoV-Spectrum')}</>}.
+        </>
+    );
+}
+
+/** What a mode shows, in a sentence or two; `about` in place of the mode's usual text. */
+export function ModeAbout({ mode, about }: { mode: AnalysisMode; about?: ReactNode }) {
+    return <p>{about ?? MODE_ABOUT[mode]}</p>;
 }
 
 export function LineagePanelInfo() {

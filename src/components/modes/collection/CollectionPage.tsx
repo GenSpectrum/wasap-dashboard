@@ -8,6 +8,7 @@ import { COLLECTION_SOURCE } from '../../../pageState/analysisFilter';
 import { CollectionPageStateHandler } from '../../../pageState/handlers/CollectionPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
+import { CollectionModeAbout } from '../../filterSidebar/InfoBlocks';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { ModeResults } from '../../layout/ModeResults';
 import { NothingSelected } from '../../layout/NothingSelected';
@@ -30,6 +31,7 @@ export function CollectionPage({ config }: { config: OrganismConfigFor<'collecti
     return (
         <ModePageLayout
             mode='collection'
+            about={<CollectionModeAbout withCovSpectrum={config.covSpectrumCollectionSourceEnabled === true} />}
             sidebar={
                 <FilterSidebar
                     pageStateHandler={pageStateHandler}

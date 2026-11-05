@@ -16,10 +16,13 @@ import { ModeAbout } from '../filterSidebar/InfoBlocks';
  */
 export function ModePageLayout({
     mode,
+    about,
     sidebar,
     children,
 }: {
     mode: AnalysisMode;
+    /** In place of the mode's usual about text, where it depends on the organism. */
+    about?: ReactNode;
     sidebar: ReactNode;
     children: ReactNode;
 }) {
@@ -47,7 +50,7 @@ export function ModePageLayout({
                             <span className='iconify mdi--chevron-down text-xl group-open:rotate-180' />
                         </summary>
                         <div className='mt-2 text-sm text-gray-600'>
-                            <ModeAbout mode={mode} />
+                            <ModeAbout mode={mode} about={about} />
                         </div>
                     </details>
                 </div>
