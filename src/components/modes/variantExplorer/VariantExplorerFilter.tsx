@@ -160,7 +160,6 @@ function PredefinedSignature({
                 />
             </LabeledField>
             <CheckboxWithTooltip
-                className='pt-2'
                 checked={pageState.newMutationsOnly ?? false}
                 onChange={(checked) => setPageState({ ...pageState, newMutationsOnly: checked })}
                 tooltip='Only show mutations that were not observed in the parent variant'
