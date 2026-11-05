@@ -26,7 +26,7 @@ export function HelpButton({
     return (
         <HoverTooltip content={info} placement={placement}>
             <button type='button' className={className} aria-label={ariaLabel}>
-                <span className='iconify mdi--help-circle-outline' />
+                <span className='iconify mdi--information-outline' />
             </button>
         </HoverTooltip>
     );
