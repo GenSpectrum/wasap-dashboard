@@ -86,7 +86,7 @@ function GenSpectrumCollectionSelect({
     }, [firstCollectionId, pageState, setPageState]);
 
     return (
-        <LabeledField label='Collection'>
+        <LabeledField label='Collection' info={<CollectionInfo />}>
             {isPending ? (
                 <div className='text-sm text-gray-500'>Loading collections...</div>
             ) : isError ? (
@@ -136,7 +136,7 @@ function CovSpectrumCollectionSelect({
     });
 
     return (
-        <LabeledField label='Collection' infoModal={<CollectionInfo />}>
+        <LabeledField label='Collection' info={<CollectionInfo titleFilter={collectionTitleFilter} />}>
             {isPending ? (
                 <div className='text-sm text-gray-500'>Loading collections...</div>
             ) : isError ? (

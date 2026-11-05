@@ -3,18 +3,6 @@ import { type ReactNode } from 'react';
 import { type AnalysisMode } from '../../pageState/analysisFilter';
 import { BlockMath, InlineMath } from '../ui/Math';
 
-/**
- * A text block to be put into a Modal as helper information for labeled filter fields.
- */
-function InfoBlock({ title, children }: { title: string; children: React.ReactNode }) {
-    return (
-        <div>
-            <h1 className='mb-2 text-xl font-semibold'>{title}</h1>
-            {children}
-        </div>
-    );
-}
-
 export function KnownVariantsExclusionInfo() {
     return (
         <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
@@ -98,22 +86,22 @@ export function TimeFrameInfo() {
     );
 }
 
-export function CollectionInfo() {
+/** About the collection field: with a `titleFilter`, of CoV-Spectrum's collections, else of GenSpectrum's. */
+export function CollectionInfo({ titleFilter }: { titleFilter?: string }) {
     return (
-        <InfoBlock title='Collection'>
-            <p className='text-gray-700'>
-                Collections are sourced from{' '}
-                <a className='link' href='https://cov-spectrum.org/collections'>
-                    CovSpectrum
-                </a>
-                . Only collections whose title contains the word <span className='font-semibold'>wastewater</span> are
-                shown here.
+        <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                {titleFilter === undefined
+                    ? 'The GenSpectrum collections of this organism.'
+                    : `The CoV-Spectrum collections with “${titleFilter}” in their title.`}{' '}
+                Each variant of the collection is shown over time.
             </p>
-            <p className='mt-2 text-gray-700'>
-                To add a new collection, create it on CovSpectrum and make sure its title includes the word
-                &ldquo;wastewater&rdquo; so it appears in this list.
+            <p>
+                {titleFilter === undefined
+                    ? 'To track your own set of variants, create a collection on GenSpectrum.'
+                    : `To track your own set of variants, create a collection on CoV-Spectrum with “${titleFilter}” in its title.`}
             </p>
-        </InfoBlock>
+        </div>
     );
 }
 
