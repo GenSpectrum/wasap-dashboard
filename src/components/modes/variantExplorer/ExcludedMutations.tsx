@@ -99,16 +99,14 @@ function MutationGroup({
 function ExcludedMutationsInfo() {
     return (
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
-            <p>
-                The variant&apos;s mutations left out of the mutations and the co-occurrence above, as the background
-                the variant stands on rather than what tells it apart, each with its mean proportion over the time
-                range.
+            <p className='text-gray-500 italic'>
+                The variant&apos;s mutations left out of the panels above, grouped by why, each with its mean proportion
+                over the time range.
             </p>
             <p>
-                Those in the signature of a background lineage (picked in the filters), put down to the first of them
-                that has it; of the rest the deletions, which are hard to call on the reads; and then those with a mean
-                proportion of at least {`${BACKGROUND_MIN_PROPORTION * 100}%`}: (nearly) every read carries them, so
-                they tell nothing about how much of the variant there is.
+                They don&apos;t tell the variant apart: they are shared with a background lineage, or nearly every read
+                carries them anyway. Deletions are left out because they are called less reliably on reads. Change what
+                is excluded in the filters under Exclude mutations.
             </p>
         </div>
     );

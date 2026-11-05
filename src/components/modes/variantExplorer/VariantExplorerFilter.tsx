@@ -120,18 +120,13 @@ export function VariantExplorerFilter({
 function ExcludeMutationsInfo() {
     return (
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
-            <p>
-                Mutations left out of the variant&apos;s as the background it stands on, rather than what tells it
-                apart. They are listed at the bottom of the page.
+            <p className='text-gray-500 italic'>
+                Leaves some of the variant&apos;s mutations out of the panels. They are listed under Excluded mutations
+                at the bottom of the page.
             </p>
             <p>
-                Those on 99% or more of the reads (their mean proportion over the time range) tell nothing about how
-                much of the variant there is. Those in the signature of a background lineage (all of its mutations
-                against the reference, from the Nextclade tree) are shared with it.
-            </p>
-            <p>
-                Deletions are hard to call on the reads: they can be aligned differently than in the clinical sequences,
-                and a read ending in one looks like it.
+                Use a background lineage for a lineage the variant descends from that is also circulating: the mutations
+                they share can&apos;t tell the two apart.
             </p>
         </div>
     );
