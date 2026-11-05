@@ -1,4 +1,4 @@
-import { RadioSelect } from './RadioSelect';
+import { SegmentedSelect } from './SegmentedSelect';
 import { type SequenceType } from '../../domain/mutations';
 
 export function SequenceTypeSelector({
@@ -9,7 +9,7 @@ export function SequenceTypeSelector({
     onChange: (newType: SequenceType) => void;
 }) {
     return (
-        <RadioSelect
+        <SegmentedSelect
             label='Sequence type'
             value={value}
             options={[

@@ -1,5 +1,5 @@
 import type { ResistanceAnalysis } from '../../../pageState/analysisFilter';
-import { RadioSelect } from '../../inputs/RadioSelect';
+import { SegmentedSelect } from '../../inputs/SegmentedSelect';
 
 export function ResistanceMutationsFilter({
     pageState,
@@ -15,7 +15,7 @@ export function ResistanceMutationsFilter({
     }
 
     return (
-        <RadioSelect
+        <SegmentedSelect
             label='Resistance mutation set'
             value={pageState.resistanceSet}
             options={resistanceSetNames.map((name) => ({ value: name, label: name }))}
