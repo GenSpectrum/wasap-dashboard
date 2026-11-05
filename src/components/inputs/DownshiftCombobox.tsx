@@ -310,8 +310,8 @@ function ToggleButton({
     // button would stop opening the menu on click.
     const props = getToggleButtonProps ? getToggleButtonProps({ ref: buttonRef }) : { onClick, ref: buttonRef };
     return (
-        <button aria-label='toggle menu' className='px-2' type='button' {...props}>
-            {isOpen ? <>↑</> : <>↓</>}
+        <button aria-label='toggle menu' className='flex items-center px-1 text-gray-500' type='button' {...props}>
+            <span className={`iconify text-xl ${isOpen ? 'mdi--chevron-up' : 'mdi--chevron-down'}`} />
         </button>
     );
 }
