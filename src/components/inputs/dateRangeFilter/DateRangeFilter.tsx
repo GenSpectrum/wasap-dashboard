@@ -51,25 +51,8 @@ const DateRangeFilterWithoutErrors = ({
     // "Custom" is only an option while a custom range is chosen: it can't be picked, only typed.
     const options = state?.label === CUSTOM_OPTION ? [...dateRangeOptions, { label: CUSTOM_OPTION }] : dateRangeOptions;
 
-    const changeCustomRange = (dateFrom: Date | undefined, dateTo: Date | undefined) => {
-        onDateRangeChange?.({
-            label: CUSTOM_OPTION,
-            dateFrom: dateFrom !== undefined ? toYYYYMMDD(dateFrom) : undefined,
-            dateTo: dateTo !== undefined ? toYYYYMMDD(dateTo) : undefined,
-        });
-    };
-
-    const onChangeDateFrom = (date: Date | undefined) => {
-        if (date?.toDateString() !== state?.dateFrom?.toDateString()) {
-            changeCustomRange(date, state?.dateTo);
-        }
-    };
-
-    const onChangeDateTo = (date: Date | undefined) => {
-        if (date?.toDateString() !== state?.dateTo?.toDateString()) {
-            changeCustomRange(state?.dateFrom, date);
-        }
-    };
+    const dateFrom = state?.dateFrom !== undefined ? toYYYYMMDD(state.dateFrom) : undefined;
+    const dateTo = state?.dateTo !== undefined ? toYYYYMMDD(state.dateTo) : undefined;
 
     return (
         <div className='grid grid-cols-[minmax(0,40fr)_minmax(0,30fr)_minmax(0,30fr)]'>
@@ -94,16 +77,16 @@ const DateRangeFilterWithoutErrors = ({
             </select>
             <DatePicker
                 className='w-full'
-                value={state?.dateFrom}
-                onChange={onChangeDateFrom}
-                maxDate={state?.dateTo}
+                value={dateFrom}
+                onChange={(date) => onDateRangeChange?.({ label: CUSTOM_OPTION, dateFrom: date, dateTo })}
+                maxDate={dateTo}
                 placeholderText={'Date from'}
             />
             <DatePicker
                 className='w-full'
-                value={state?.dateTo}
-                onChange={onChangeDateTo}
-                minDate={state?.dateFrom}
+                value={dateTo}
+                onChange={(date) => onDateRangeChange?.({ label: CUSTOM_OPTION, dateFrom, dateTo: date })}
+                minDate={dateFrom}
                 placeholderText={'Date to'}
             />
         </div>
