@@ -35,75 +35,73 @@ export function KnownVariantsExclusionInfo() {
     );
 }
 
+const HINT = 'w-80 max-w-full space-y-2 text-sm font-normal text-gray-700';
+
 export function DefineClinicalSignatureInfo() {
-    const m = (math: string) => <InlineMath math={math} />;
-
     return (
-        <InfoBlock title='Define Variant Signature based on Clinical Sequences from CovSpectrum'>
-            <p className='text-gray-700'>
-                Fetch characteristic mutations from clinical sequences assigned a given variant.
-            </p>
-            <p className='mt-2 text-gray-700'>
-                Enter a{' '}
-                <a className='link' href='https://cov-spectrum.org/'>
-                    CovSpectrum
-                </a>{' '}
-                variant query to filter for a given Pango variant (e.g. "BA.5").
-            </p>
+        <div className={HINT}>
+            <p>Set the parameters to select which mutations make up the mutation signature of the selected variant.</p>
+        </div>
+    );
+}
 
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Minimum Proportion</h2>
-            <p className='text-gray-700'>
-                The minimum proportion threshold filters mutations based on their frequency within the selected variant.
-            </p>
-            <p className='mt-2 text-gray-700'>
-                Only mutations that appear in at least this proportion of sequences belonging to the variant will be
-                included. For example, a value of 0.8 means the mutation must appear in at least 80% of the variant's
-                sequences.
-            </p>
+export function ClinicalVariantInfo() {
+    return (
+        <div className={HINT}>
+            <p>Select clinical sequences assigned to the selected variant. Use the * option to include sublineages.</p>
+        </div>
+    );
+}
 
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Minimum Count</h2>
-            <p className='text-gray-700'>
-                The minimum count threshold filters mutations based on their occurrence across clinical sequences
-                assigned to a selected variant. Only mutations that appear in at least this many clinical sequences of
-                the selected variant will be included.
+export function MinProportionInfo() {
+    return (
+        <div className={HINT}>
+            <p className='text-gray-500 italic'>
+                Only mutations found in at least this share of the variant&apos;s clinical sequences.
             </p>
+            <p>Higher values keep only the mutations nearly every sequence of the variant has.</p>
+        </div>
+    );
+}
 
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Jaccard Index</h2>
-            <p className='text-gray-700'>
-                The Jaccard index measures how specific a mutation is to a variant. A mutation has a high Jaccard index
-                if it appears frequently within a variant and <span className='italic'>rarely</span> outside the
-                variant.
+export function MinCountInfo() {
+    return (
+        <div className={HINT}>
+            <p className='text-gray-500 italic'>
+                Only mutations found in at least this many of the variant&apos;s clinical sequences.
             </p>
-            <div className='text-gray-700'>
-                <BlockMath math='Jaccard_{s,m} = \frac{|S_{m,v}|}{|S_m| + |S_v| - |S_{m,v}|}' />
-                with:
-            </div>
-            <ul className='mt-2 list-disc pl-8 text-gray-700'>
-                <li>
-                    {m('S_m')}: The set of sequences with the mutation {m('m')}
-                </li>
-                <li>
-                    {m('S_v')}: The set of sequences of variant {m('v')}
-                </li>
-                <li>
-                    {m('S_{m,v}')}: The intersection {m('S_m \\cap S_v')} of {m('S_m')} and {m('S_v')}; the set of
-                    sequences of variant {m('v')} with mutation {m('m')}
-                </li>
-            </ul>
-            <p className='mt-2 text-gray-700'>
-                An index of 1 indicates that all sequences of variant {m('v')} have the mutation {m('m')} and all
-                sequences with the mutation {m('m')} belong to the variant {m('v')} (perfect overlap). Lesser values
-                indicate that either not all sequences of the variant have the mutation or not all sequences with the
-                mutation belong to the variant (or both).
-            </p>
+            <p>Leaves out sequencing errors in variants with few sequences.</p>
+        </div>
+    );
+}
 
-            <h2 className='mt-4 mb-2 text-base font-semibold'>Time Frame</h2>
-            <p className='text-gray-700'>
-                Time frame for sequence selection. Shorter windows reduce dominance of well-sequenced historical
-                variants, yielding higher Jaccard values for emerging variants with fewer clinical sequences. Use this
-                filter to exclude variants no longer in circulation when assessing significance of current mutations.
+export function MinJaccardInfo() {
+    const m = (math: string) => <InlineMath math={math} />;
+    return (
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Only mutations with at least this Jaccard index with the variant in clinical sequences:
             </p>
-        </InfoBlock>
+            <BlockMath math='J_{m,v} = \frac{|S_m \cap S_v|}{|S_m \cup S_v|} = \frac{|S_m \cap S_v|}{|S_m| + |S_v| - |S_m \cap S_v|}' />
+            <p className='text-gray-500 italic'>
+                with {m('S_m')} the sequences with mutation {m('m')} and {m('S_v')} those of variant {m('v')}. At 1,
+                every sequence of the variant has the mutation, and no other sequence does. Lower values mean that not
+                all sequences of the variant have it, or that sequences of other lineages have it too (or both).
+            </p>
+            <p>Leaves out mutations the variant shares with other lineages, which can&apos;t tell it apart.</p>
+        </div>
+    );
+}
+
+export function TimeFrameInfo() {
+    return (
+        <div className={HINT}>
+            <p className='text-gray-500 italic'>The date range from which to include clinical samples.</p>
+            <p>
+                A shorter time frame leaves out lineages that no longer circulate, so mutations shared only with them
+                count as specific to the variant.
+            </p>
+        </div>
     );
 }
 

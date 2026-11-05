@@ -9,7 +9,14 @@ import {
     type VariantTimeFrame,
     type VariantAnalysis,
 } from '../../../pageState/analysisFilter';
-import { DefineClinicalSignatureInfo } from '../../filterSidebar/InfoBlocks';
+import {
+    ClinicalVariantInfo,
+    DefineClinicalSignatureInfo,
+    MinCountInfo,
+    MinJaccardInfo,
+    MinProportionInfo,
+    TimeFrameInfo,
+} from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { LineageTreeCombobox } from '../../inputs/LineageTreeCombobox';
 import { NumericInput } from '../../inputs/NumericInput';
@@ -160,6 +167,7 @@ function PredefinedSignature({
             <div className='mt-4'>
                 <NumericInput
                     label='Min. Jaccard index'
+                    info={<MinJaccardInfo />}
                     value={pageState.minJaccard}
                     min={0}
                     max={1}
@@ -189,8 +197,8 @@ function ComputedSignature({
 }) {
     return (
         <>
-            <SelectorHeadline infoModal={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
-            <LabeledField label='Variant'>
+            <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
+            <LabeledField label='Variant' info={<ClinicalVariantInfo />}>
                 <LineageFilter
                     lapisUrl={clinicalSequenceLapisBaseUrl}
                     field={clinicalSequenceLapisLineageField}
@@ -208,6 +216,7 @@ function ComputedSignature({
             <div className='mb-2'>
                 <NumericInput
                     label='Min. proportion'
+                    info={<MinProportionInfo />}
                     value={pageState.minProportion}
                     min={0}
                     max={1}
@@ -218,6 +227,7 @@ function ComputedSignature({
             <div className='mb-2'>
                 <NumericInput
                     label='Min. count'
+                    info={<MinCountInfo />}
                     value={pageState.minCount}
                     min={1}
                     max={250}
@@ -228,6 +238,7 @@ function ComputedSignature({
             <div className='mb-2'>
                 <NumericInput
                     label='Min. Jaccard index'
+                    info={<MinJaccardInfo />}
                     value={pageState.minJaccard}
                     min={0}
                     max={1}
@@ -235,7 +246,7 @@ function ComputedSignature({
                     onChange={(v) => setPageState({ ...pageState, minJaccard: v })}
                 />
             </div>
-            <LabeledField label='Time frame'>
+            <LabeledField label='Time frame' info={<TimeFrameInfo />}>
                 <select
                     className='select'
                     value={pageState.timeFrame}
