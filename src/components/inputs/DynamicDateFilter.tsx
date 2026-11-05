@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { DateRangeFilter } from './dateRangeFilter/DateRangeFilter';
 import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../../domain/dateRange';
+import { type DateRangeOption, ALL_TIMES_LABEL, resolveDateRange } from '../../domain/dateRange';
 import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**
@@ -29,24 +29,6 @@ export function DynamicDateFilter({
         return generateOptions({ startDate: dateExtent.min, endDate: dateExtent.max });
     }, [dateExtent, generateOptions]);
 
-    // When the value has a "Custom" label, try to match it back to one of the generated options
-    // by comparing dateFrom and dateTo. If there's a match, use that option's label instead of "Custom".
-    const normalizedValue = useMemo(() => {
-        if (value?.label !== CUSTOM_DATE_RANGE_LABEL) {
-            return value;
-        }
-
-        const matchingOption = generatedOptions.find(
-            (option) => option.dateFrom === value.dateFrom && option.dateTo === value.dateTo,
-        );
-
-        return matchingOption ?? value;
-    }, [value, generatedOptions]);
-
-    // DateRangeFilter's `value` takes a preset's bare label, or the raw dates for a custom
-    // range (never both) - collapse the resolved DateRangeOption into that shape.
-    const isCustom = normalizedValue?.label === CUSTOM_DATE_RANGE_LABEL;
-
     return (
         <label>
             <div className='label flex'>
@@ -62,9 +44,9 @@ export function DynamicDateFilter({
                 </div>
             ) : (
                 <DateRangeFilter
-                    onDateRangeChange={onChange}
-                    value={(isCustom ? normalizedValue : normalizedValue?.label) ?? null}
                     dateRangeOptions={generatedOptions}
+                    value={resolveDateRange(value ?? { label: ALL_TIMES_LABEL }, generatedOptions)}
+                    onChange={onChange}
                 />
             )}
         </label>
