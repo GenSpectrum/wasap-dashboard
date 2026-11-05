@@ -1,6 +1,7 @@
 import { type FC, useState } from 'react';
 
 import { type OrganismConfigFor } from '../../../config/organismConfig';
+import { MAX_COOCCURRENCE_POSITIONS } from '../../../dataLayer/hooks/analyses/cooccurrence';
 import { type SequenceType } from '../../../domain/mutations';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor, samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
@@ -101,7 +102,10 @@ export function CooccurrenceFilter({
                                         included. At 0 bits, all reads have the same base at a position; at 1 bit, the
                                         reads are split evenly between two.
                                     </p>
-                                    <p>Lower it to see more positions, raise it to see only the most variable ones.</p>
+                                    <p>
+                                        Lower it to see more positions, raise it to see only the most variable ones. At
+                                        most the {MAX_COOCCURRENCE_POSITIONS} most variable positions are used.
+                                    </p>
                                 </div>
                             }
                             value={pageState.entropyCutoff ?? DEFAULT_ENTROPY_CUTOFF_BITS}
