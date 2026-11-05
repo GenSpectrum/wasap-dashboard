@@ -20,23 +20,4 @@ describe('LabeledField', () => {
 
         await expect.element(getByText('This is helpful information')).toBeVisible();
     });
-
-    it('opens modal when the help button is clicked', async () => {
-        const { getByLabelText, getByText } = render(
-            <LabeledField label='Test Field' infoModal={<div>This is helpful information</div>}>
-                <input type='text' />
-            </LabeledField>,
-        );
-
-        const infoButton = getByLabelText('Show information about Test Field');
-        await expect.element(infoButton).toBeInTheDocument();
-
-        const getInfoTest = () => getByText('This is helpful information');
-
-        await expect.element(getInfoTest()).not.toBeVisible();
-
-        await infoButton.click();
-
-        await expect.element(getInfoTest()).toBeVisible();
-    });
 });

@@ -8,7 +8,6 @@ import { LabeledField } from './LabeledField';
 export function NumericInput({
     label,
     info,
-    infoModal,
     value,
     min,
     max,
@@ -17,7 +16,6 @@ export function NumericInput({
 }: {
     label: string;
     info?: ReactNode;
-    infoModal?: ReactNode;
     value: number;
     min: number;
     max: number;
@@ -27,7 +25,7 @@ export function NumericInput({
     const stepBy = (direction: 1 | -1) => onChange(stepValue(value, direction, { min, max, step }));
 
     return (
-        <LabeledField label={label} info={info} infoModal={infoModal}>
+        <LabeledField label={label} info={info}>
             {/* One box: the slider for coarse changes, the number with its step buttons for exact ones. */}
             <div className='input w-full gap-0 px-0'>
                 <div className='flex h-full min-w-0 grow items-center bg-stone-100 px-3'>

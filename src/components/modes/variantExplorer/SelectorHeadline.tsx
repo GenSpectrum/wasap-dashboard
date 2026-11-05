@@ -5,12 +5,10 @@ import { HelpButton } from '../../ui/HelpButton';
 type SelectorHeadlineProps = PropsWithChildren<{
     /** Help shown on hover or focus of a help icon next to the headline. */
     info?: ReactNode;
-    /** Long help, opened in a large dialog by a click on the help icon (instead of `info`). */
-    infoModal?: ReactNode;
 }>;
 
-export function SelectorHeadline({ children, info, infoModal }: SelectorHeadlineProps) {
-    if (info === undefined && infoModal === undefined) {
+export function SelectorHeadline({ children, info }: SelectorHeadlineProps) {
+    if (info === undefined) {
         return <h1 className='mb-2 font-bold capitalize'>{children}</h1>;
     }
 
@@ -19,7 +17,6 @@ export function SelectorHeadline({ children, info, infoModal }: SelectorHeadline
             <h1 className='font-bold capitalize'>{children}</h1>
             <HelpButton
                 info={info}
-                infoModal={infoModal}
                 ariaLabel={`Show information about ${typeof children === 'string' ? children : 'this'}`}
                 size='small'
                 placement='right-start'

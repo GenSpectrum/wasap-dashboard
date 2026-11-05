@@ -13,22 +13,18 @@ interface LabeledFieldProps {
     children: React.ReactNode;
     /** Help shown on hover or focus of a help icon next to the label. */
     info?: ReactNode;
-    /** Long help, opened in a large dialog by a click on the help icon (instead of `info`). */
-    infoModal?: ReactNode;
 }
 
-export function LabeledField({ label, children, info, infoModal }: LabeledFieldProps) {
-    const hasHelp = info !== undefined || infoModal !== undefined;
+export function LabeledField({ label, children, info }: LabeledFieldProps) {
     return (
         <div>
-            <div className={`flex flex-row items-center justify-between gap-2 ${hasHelp ? 'mb-2' : ''}`}>
+            <div className={`flex flex-row items-center justify-between gap-2 ${info !== undefined ? 'mb-2' : ''}`}>
                 <label className='label'>
                     <span>{label}</span>
                 </label>
-                {hasHelp && (
+                {info !== undefined && (
                     <HelpButton
                         info={info}
-                        infoModal={infoModal}
                         ariaLabel={`Show information about ${label}`}
                         size='small'
                         placement='right-start'
