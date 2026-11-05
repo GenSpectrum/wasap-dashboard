@@ -35,7 +35,7 @@ export function UntrackedFilter({
                 value={pageState.sequenceType}
                 onChange={(sequenceType) => setPageState({ ...pageState, sequenceType })}
             />
-            <LabeledField label='Known variants to exclude' info={<KnownVariantsExclusionInfo />}>
+            <LabeledField label='Known variants to exclude' infoModal={<KnownVariantsExclusionInfo />}>
                 <select
                     className='select'
                     value={pageState.excludeSet}

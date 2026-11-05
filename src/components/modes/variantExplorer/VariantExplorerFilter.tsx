@@ -189,7 +189,7 @@ function ComputedSignature({
 }) {
     return (
         <>
-            <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
+            <SelectorHeadline infoModal={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
             <LabeledField label='Variant'>
                 <LineageFilter
                     lapisUrl={clinicalSequenceLapisBaseUrl}

@@ -136,7 +136,7 @@ function CovSpectrumCollectionSelect({
     });
 
     return (
-        <LabeledField label='Collection' info={<CollectionInfo />}>
+        <LabeledField label='Collection' infoModal={<CollectionInfo />}>
             {isPending ? (
                 <div className='text-sm text-gray-500'>Loading collections...</div>
             ) : isError ? (

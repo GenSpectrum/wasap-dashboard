@@ -94,7 +94,7 @@ export function CooccurrenceFilter({
                         )}
                         <NumericInput
                             label='Entropy cutoff (bits)'
-                            info={
+                            infoModal={
                                 <p>
                                     Only positions inside the detected amplicon whose Shannon entropy exceeds this
                                     cutoff are used for co-occurrence. 0 bits means a position always carries the same
@@ -119,7 +119,7 @@ export function CooccurrenceFilter({
             {lineageTree !== undefined && (
                 <LabeledField
                     label='Panel of lineages'
-                    info={
+                    infoModal={
                         <p>
                             Checks which of these lineages&apos; signatures match each co-occurrence pattern at the
                             queried positions, so patterns the panel doesn&apos;t explain stand out. Only works with the
