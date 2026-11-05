@@ -1,28 +1,40 @@
 import { Link } from 'react-router-dom';
 
+import { ModeMenu } from './ModeMenu';
 import { AboutLink, ModeTabs } from './ModeTabs';
 import { OrganismSelect } from './OrganismSelect';
+import { useModeNavigation } from './modeNavigation';
 
 /**
- * The header of every page: the title (a link to the landing page), the tabs to pick the analysis mode of the organism
- * that is open (if one is) in the middle, and the link to the about page and the organism selector
- * at the far end.
+ * The header of every page: the title (a link to the landing page), the navigation between the pages of
+ * the organism that is open (if one is), and the link to the about page and the organism selector at the far end.
+ *
+ * On a wide page, the navigation is the mode tabs, in the middle. On a narrower one, where they don't fit,
+ * it is the `ModeMenu` next to the title instead, which has the about page in it as well.
  */
 export function AppHeader() {
+    const hasNavigation = useModeNavigation() !== undefined;
+
     return (
-        <header className='border-b-2 border-b-stone-300 bg-stone-200'>
-            {/* The sides take the same width, so that the tabs are centered on the page. Where there isn't room, the tabs shrink and scroll. */}
-            <div className='mx-auto grid w-full max-w-[110rem] grid-cols-[minmax(max-content,1fr)_minmax(0,auto)_minmax(max-content,1fr)] items-center gap-4 px-4 py-3 lg:px-6'>
+        <header className='relative border-b-2 border-b-stone-300 bg-stone-200'>
+            {/* On a wide page, the sides take the same width, so that the tabs are centered on the page. */}
+            <div className='mx-auto flex w-full max-w-[110rem] items-center gap-3 px-4 py-3 sm:gap-4 lg:px-6 xl:grid xl:grid-cols-[minmax(max-content,1fr)_auto_minmax(max-content,1fr)]'>
                 <Link to='/' className='flex flex-col justify-self-start leading-tight whitespace-nowrap'>
                     <span className='text-lg font-bold text-gray-900'>W-ASAP</span>
-                    <span className='text-xs text-gray-600'>Wastewater Dashboard</span>
+                    {/* Not on a phone, where the menu and the organism selector need the room. */}
+                    <span className='hidden text-xs text-gray-600 sm:inline'>Wastewater Dashboard</span>
                 </Link>
                 {/* As tall as the grouped tabs even where there are none, so that the header keeps its height across pages. */}
-                <div className='min-h-[3.25rem] min-w-0'>
+                <div className='hidden min-h-[3.25rem] xl:block'>
                     <ModeTabs />
                 </div>
-                <div className='flex items-center gap-4 justify-self-end'>
-                    <AboutLink />
+                <div className='min-w-0 xl:hidden'>
+                    <ModeMenu />
+                </div>
+                <div className='ml-auto flex shrink-0 items-center gap-4 justify-self-end'>
+                    <div className={hasNavigation ? 'hidden xl:block' : ''}>
+                        <AboutLink />
+                    </div>
                     <OrganismSelect />
                 </div>
             </div>

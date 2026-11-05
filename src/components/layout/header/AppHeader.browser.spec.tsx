@@ -37,6 +37,13 @@ describe('AppHeader', () => {
         await expect.element(getByRole('link', { name: 'Resistance' })).toBeVisible();
     });
 
+    it('has the menu for a narrow page as well, naming the page that is open', async () => {
+        const { getByRole } = renderHeader('/wastewater/covid/manual');
+
+        // Which of the two shows is up to the CSS, which these tests don't load.
+        await expect.element(getByRole('button', { name: 'Manual' })).toBeInTheDocument();
+    });
+
     it('links to the about page of the organism that is open', async () => {
         const { getByRole } = renderHeader('/wastewater/covid/manual');
 
