@@ -2,11 +2,13 @@ type Person = { name: string; github: string };
 
 // By last name.
 const CORE_TEAM: Person[] = [
-    { name: 'Chaoran Chen', github: 'chaoran-chen' },
-    { name: 'Fabian Engelniederhammer', github: 'fengelniederhammer' },
     { name: 'Felix Hennig', github: 'fhennig' },
     { name: 'Alexander Taepper', github: 'taepper' },
     { name: 'Ivan Topolsky', github: 'DrYak' },
+    { name: 'Fabian Engelniederhammer', github: 'fengelniederhammer' },
+    { name: 'Chaoran Chen', github: 'chaoran-chen' },
+    { name: 'Tanja Stadler', github: 'tanja819' },
+    { name: 'Niko Beerenwinkel', github: 'beerenwinkel' },
 ];
 
 const FORMER_MEMBERS: Person[] = [{ name: 'Gordon J. Koehn', github: 'gordonkoehn' }];
@@ -113,8 +115,25 @@ function DataProcessingInfo() {
             <h3 className='mt-4 mb-2 text-base font-semibold'>Subsampling</h3>
             <p className='text-gray-700'>
                 Read depth varies a lot between samples. To keep queries fast and predictable, each sample is randomly
-                subsampled to at most 4.5 million reads. Random subsampling keeps the variant allele frequencies and the
-                haplotype structure intact.
+                subsampled to at most 4.5 million BAM records. The cap counts BAM records, not fragments: both mates of
+                a pair count separately, and mates are always kept or dropped together. Random subsampling keeps the
+                variant allele frequencies and the haplotype structure intact.
+            </p>
+
+            <h3 className='mt-4 mb-2 text-base font-semibold'>Merging paired-end reads</h3>
+            <p className='text-gray-700'>
+                In paired-end sequencing, each DNA fragment is read from both ends, giving two reads (mates) with the
+                same read name.{' '}
+                <a className='link' href='https://github.com/cbg-ethz/sr2silo'>
+                    sr2silo
+                </a>{' '}
+                merges each pair into one read that spans the whole fragment, using <code>paired_end_read_merger</code>{' '}
+                from{' '}
+                <a className='link' href='https://github.com/cbg-ethz/smallgenomeutilities'>
+                    smallgenomeutilities
+                </a>
+                ; reads without a mate are kept as they are. Because of merging, the read count is roughly half the
+                number of subsampled BAM records: the largest samples end up with about 2.25 million reads.
             </p>
 
             <h3 className='mt-4 mb-2 text-base font-semibold'>Alignment</h3>
@@ -184,6 +203,55 @@ export function AboutPage() {
                         .
                     </p>
                 </div>
+
+                <section>
+                    <h2 className='mb-3 text-xl font-semibold'>Contact</h2>
+                    <p className='text-gray-700'>
+                        For any questions and suggestions, please create an issue in our{' '}
+                        <a className='link' href='https://github.com/GenSpectrum/wasap-dashboard/issues'>
+                            GitHub repository
+                        </a>
+                        .
+                    </p>
+                </section>
+
+                <section>
+                    <h2 className='mb-3 text-xl font-semibold'>Funding statement</h2>
+                    <p className='text-gray-700'>
+                        We received funding from{' '}
+                        <a className='link' href='https://ethz.ch/en.html'>
+                            ETH Zurich
+                        </a>
+                        , the{' '}
+                        <a className='link' href='https://www.sib.swiss/'>
+                            Swiss Institute of Bioinformatics (SIB)
+                        </a>
+                        ,{' '}
+                        <a className='link' href='http://swissuniversities.ch/'>
+                            swissuniversities
+                        </a>{' '}
+                        and NIH* through the{' '}
+                        <a className='link' href='https://pathogendatanetwork.org/'>
+                            Pathogen Data Network
+                        </a>
+                        .
+                    </p>
+                    <p className='mt-2'>
+                        <small className='text-gray-700'>
+                            * This resource is supported as a whole or in part by the National Institute Of Allergy And
+                            Infectious Diseases of the National Institutes of Health under grant n°
+                            <a
+                                className='link'
+                                href='https://reporter.nih.gov/search/JHbtQB-XeUu8wvs3vUlFFw/project-details/10913643'
+                            >
+                                U24AI183840
+                            </a>
+                            , awarded to the SIB Swiss Institute of Bioinformatics. The content is solely the
+                            responsibility of the authors and does not necessarily represent the official views of the
+                            National Institutes of Health.
+                        </small>
+                    </p>
+                </section>
 
                 <section>
                     <h2 className='mb-3 text-xl font-semibold'>Data processing</h2>
