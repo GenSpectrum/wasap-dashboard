@@ -17,21 +17,14 @@ function InfoBlock({ title, children }: { title: string; children: React.ReactNo
 
 export function KnownVariantsExclusionInfo() {
     return (
-        <InfoBlock title='How It Works'>
-            <p className='text-gray-700'>
-                Mutations that are characteristic of selected lineages are excluded based on clinical sequences on{' '}
-                <a className='link' href='https://cov-spectrum.org/'>
-                    CovSpectrum
-                </a>
-                .
+        <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Leaves out the mutations of these variants: those in at least 80% and at least 9 of their clinical
+                sequences on CovSpectrum, sublineages included. For the Nextstrain clades, each clade&apos;s most common
+                lineage is used.
             </p>
-            <p className='text-gray-700'>
-                For each lineage, mutations appearing in sequences assigned to this lineage are excluded if two criteria
-                are met. First, the mutation appears in at least 9 sequences; second, it appears in at least 80 % of
-                sequences assigned to that lineage. This is an empirical definition of characteristic mutations. For
-                each lineage, mutations appearing at least 9 times and in ≥80% of its samples are excluded.
-            </p>
-        </InfoBlock>
+            <p>What remains are mutations the known variants don&apos;t explain, which can point to a new variant.</p>
+        </div>
     );
 }
 
