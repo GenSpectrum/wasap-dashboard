@@ -1,5 +1,6 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 
+import { useDraftDropdown } from './useDraftDropdown';
 import { useRhydbSchema } from '../../dataLayer/hooks/connection';
 import { useStringFieldOptions } from '../../dataLayer/hooks/lookups/stringFieldOptions';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
@@ -50,53 +51,15 @@ function LocationDropdown({
     value: string[];
     onChange: (value: string[]) => void;
 }) {
-    // The ticks while the dropdown is open, `undefined` while it is closed.
-    const [draft, setDraft] = useState<string[]>();
-    const isOpen = draft !== undefined;
-    const [search, setSearch] = useState('');
-    const rootRef = useRef<HTMLDivElement>(null);
-    const buttonRef = useRef<HTMLButtonElement>(null);
-    const menuId = useId();
-
-    const close = () => {
-        if (draft === undefined) {
-            return;
-        }
-        setDraft(undefined);
-        setSearch('');
+    const dropdown = useDraftDropdown(value, (draft) => {
         if (draft.length !== value.length || draft.some((name, index) => name !== value[index])) {
             onChange(draft);
         }
-    };
+    });
+    const { isOpen, shown } = dropdown;
+    const [search, setSearch] = useState('');
+    const menuId = useId();
 
-    // The listeners below are added once per opening, but have to apply the current draft.
-    const closeRef = useRef(close);
-    closeRef.current = close;
-    useEffect(() => {
-        if (!isOpen) {
-            return;
-        }
-        const closeOnOutsideClick = (event: PointerEvent) => {
-            if (rootRef.current?.contains(event.target as Node) !== true) {
-                closeRef.current();
-            }
-        };
-        // On the document, not the dropdown: "Clear" disables itself, which leaves the focus nowhere.
-        const closeOnEscape = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                closeRef.current();
-                buttonRef.current?.focus();
-            }
-        };
-        document.addEventListener('pointerdown', closeOnOutsideClick);
-        document.addEventListener('keydown', closeOnEscape);
-        return () => {
-            document.removeEventListener('pointerdown', closeOnOutsideClick);
-            document.removeEventListener('keydown', closeOnEscape);
-        };
-    }, [isOpen]);
-
-    const shown = draft ?? value;
     const selected = useMemo(() => new Set(shown), [shown]);
     const visibleOptions = useMemo(() => {
         const term = search.trim().toLowerCase();
@@ -104,7 +67,8 @@ function LocationDropdown({
     }, [options, search]);
 
     // In the order of the options, so that the URL doesn't depend on the order of the clicks.
-    const change = (names: Set<string>) => setDraft(options.map(({ name }) => name).filter((name) => names.has(name)));
+    const change = (names: Set<string>) =>
+        dropdown.setDraft(options.map(({ name }) => name).filter((name) => names.has(name)));
 
     const toggle = (name: string) => {
         const next = new Set(selected);
@@ -115,24 +79,20 @@ function LocationDropdown({
     };
 
     return (
-        <div
-            ref={rootRef}
-            className='relative w-full'
-            onBlur={(event) => {
-                // Tabbing out of the dropdown; a click outside is handled above.
-                if (event.relatedTarget !== null && !event.currentTarget.contains(event.relatedTarget)) {
-                    close();
-                }
-            }}
-        >
+        <div ref={dropdown.rootRef} className='relative w-full' onBlur={dropdown.onBlur}>
             <button
-                ref={buttonRef}
+                ref={dropdown.buttonRef}
                 type='button'
                 className='input flex w-full min-w-32 cursor-pointer items-center gap-2 text-left'
                 aria-haspopup='true'
                 aria-expanded={isOpen}
                 aria-controls={menuId}
-                onClick={() => (isOpen ? close() : setDraft(value))}
+                onClick={() => {
+                    if (!isOpen) {
+                        setSearch('');
+                    }
+                    dropdown.toggle();
+                }}
             >
                 <SelectionSummary value={shown} />
                 <span
@@ -157,7 +117,7 @@ function LocationDropdown({
                         <button
                             type='button'
                             className='btn btn-ghost btn-xs'
-                            onClick={() => setDraft([])}
+                            onClick={() => dropdown.setDraft([])}
                             disabled={shown.length === 0}
                         >
                             Clear
