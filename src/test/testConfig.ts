@@ -6,7 +6,6 @@ export const testConfig = {
     genSpectrumOrganismName: 'covid',
     name: 'SARS-CoV-2',
     path: `/wastewater/covid`,
-    description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',
     linkTemplate: {
         nucleotideMutation:
             'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}',

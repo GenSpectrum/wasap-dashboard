@@ -84,11 +84,6 @@ export const organismConfigBaseSchema = z.object({
     path: z.string(),
 
     /**
-     * A description of the page to display in the menu.
-     */
-    description: z.string(),
-
-    /**
      * Object with templates to generate URLs to specific mutations.
      */
     linkTemplate: linkTemplateSchema,
