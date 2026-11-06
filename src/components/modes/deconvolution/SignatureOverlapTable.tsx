@@ -5,7 +5,7 @@ import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
  * The overlap of the signatures of the lineages of a panel, as a matrix: each cell has the number
- * of mutations that tell two lineages apart (those only one of the two has). The first column has the size of the signature, the last one the
+ * of mutations that tell two lineages apart (those only one of the two has). Then the size of the signature, and the
  * mutations only that lineage of the panel has.
  */
 export function SignatureOverlapTable({
@@ -24,12 +24,12 @@ export function SignatureOverlapTable({
                 <thead>
                     <tr>
                         <th />
-                        <th className='px-2 pb-1 text-right align-bottom font-medium'>Signature</th>
                         {lineages.map((lineage) => (
                             <th key={lineage} className='px-1 pb-1 align-bottom font-medium whitespace-nowrap'>
                                 {lineage}
                             </th>
                         ))}
+                        <th className='pr-2 pb-1 pl-3 text-left align-bottom font-medium'>Signature</th>
                         <th className='px-2 pb-1 text-left align-bottom font-medium'>Unique</th>
                     </tr>
                 </thead>
@@ -39,7 +39,6 @@ export function SignatureOverlapTable({
                             <th className='pr-2 text-left font-medium whitespace-nowrap'>
                                 <LineageName lineage={row} color={colors.get(row)} />
                             </th>
-                            <td className='px-2 text-right tabular-nums'>{sizes[i]}</td>
                             {lineages.map((column, j) =>
                                 i === j ? (
                                     <td key={column} className='p-px' />
@@ -68,6 +67,7 @@ export function SignatureOverlapTable({
                                     </td>
                                 ),
                             )}
+                            <td className='pr-2 pl-3 tabular-nums'>{sizes[i]}</td>
                             <td className='px-2'>
                                 <HoverTooltip
                                     focusable
