@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { SelectorHeadline } from './SelectorHeadline';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import {
+    predefinedLineage,
     VARIANT_TIME_FRAME,
     variantTimeFrameLabel,
     type SignatureType,
@@ -155,8 +156,8 @@ function PredefinedSignature({
             <LabeledField label='Variant' info={<TreeVariantInfo />}>
                 <LineageTreeCombobox
                     lineageTree={lineageTree}
-                    value={pageState.lineage}
-                    onChange={(lineage) => setPageState({ ...pageState, lineage })}
+                    value={predefinedLineage(pageState.variant)}
+                    onChange={(variant) => setPageState({ ...pageState, variant })}
                 />
             </LabeledField>
             <CheckboxWithTooltip

@@ -49,7 +49,10 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
     );
     const lineageLink = isModeEnabled(config, 'variant')
         ? (lineage: string): To =>
-              new VariantExplorerPageStateHandler(config).linkTo(base, { signatureType: 'predefined', lineage })
+              new VariantExplorerPageStateHandler(config).linkTo(base, {
+                  signatureType: 'predefined',
+                  variant: lineage,
+              })
         : undefined;
 
     return (

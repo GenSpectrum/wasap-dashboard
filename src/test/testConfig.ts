@@ -72,7 +72,6 @@ export const testConfig = {
             minCount: 15,
             minJaccard: 0.75,
             timeFrame: VARIANT_TIME_FRAME.all,
-            lineage: 'XFG',
         },
         resistance: {
             mode: 'resistance',

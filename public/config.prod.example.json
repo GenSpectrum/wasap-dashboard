@@ -82,7 +82,6 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "lineage": "XFG",
                     "backgroundLineages": ["B.1.1.529"]
                 },
                 "resistance": {
@@ -165,8 +164,7 @@
                     "minProportion": 0.8,
                     "minCount": 15,
                     "minJaccard": 0.75,
-                    "timeFrame": "all",
-                    "lineage": "A.D.1"
+                    "timeFrame": "all"
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -237,8 +235,7 @@
                     "minProportion": 0.8,
                     "minCount": 15,
                     "minJaccard": 0.75,
-                    "timeFrame": "all",
-                    "lineage": "B.D.E.1"
+                    "timeFrame": "all"
                 },
                 "resistance": {
                     "mode": "resistance",

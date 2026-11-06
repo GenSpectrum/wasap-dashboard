@@ -24,14 +24,14 @@ export class VariantExplorerPageStateHandler extends ModePageStateHandler<Varian
     protected readonly params = {
         signatureType: enumParam(signatureTypeSchema),
         sequenceType: sequenceTypeParam,
-        // computed signature
+        // either
         variant: optional(stringParam),
+        // computed signature
         minProportion: numberParam({ min: 0, max: 1 }),
         minCount: numberParam({ min: 0, integer: true }),
         minJaccard: numberParam({ min: 0, max: 1 }),
         timeFrame: tokenParam<VariantTimeFrame>({ all: 'all', '6months': '6m', '3months': '3m' }),
         // predefined signature
-        lineage: optional(stringParam),
         newMutationsOnly: optional(booleanParam),
         includeSublineagesForJaccard: named('jaccardSublineages', optional(booleanParam)),
         // either

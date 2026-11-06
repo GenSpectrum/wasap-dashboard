@@ -91,14 +91,18 @@ export const variantAnalysisSchema = z.object({
     mode: z.literal('variant'),
     signatureType: signatureTypeSchema,
     sequenceType: sequenceTypeSchema,
-    // computed signature fields
+    /**
+     * The variant, for either type of signature: a lineage query of the clinical data like `XFG*`
+     * for a computed one, a lineage of the lineage tree like `XFG` for a predefined one (a `*` at the
+     * end is left out then, see `predefinedLineage`), so that it stays when the type is changed.
+     */
     variant: z.string().optional(),
+    // computed signature fields
     minProportion: z.number(),
     minCount: z.number(),
     minJaccard: z.number(),
     timeFrame: variantTimeFrameSchema,
     // predefined signature fields
-    lineage: z.string().optional(),
     newMutationsOnly: z.boolean().optional(),
     includeSublineagesForJaccard: z.boolean().optional(),
     /**
@@ -112,6 +116,13 @@ export const variantAnalysisSchema = z.object({
     excludeDeletions: z.boolean().optional(),
 });
 export type VariantAnalysis = z.infer<typeof variantAnalysisSchema>;
+
+/** The lineage of the lineage tree for the variant of a predefined signature: without a `*` at the end. */
+export function predefinedLineage(variant: string): string;
+export function predefinedLineage(variant: string | undefined): string | undefined;
+export function predefinedLineage(variant: string | undefined): string | undefined {
+    return variant?.replace(/\*$/, '');
+}
 
 /**
  * Which mutations of a resistance set are shown, by their mean proportion: all of them,

@@ -18,6 +18,7 @@ import {
     isVariantSelected,
     useVariantSignature,
 } from '../../../externalData/lapis/useVariantSignature';
+import { predefinedLineage } from '../../../pageState/analysisFilter';
 import { CooccurrencePageStateHandler } from '../../../pageState/handlers/CooccurrencePageStateHandler';
 import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
@@ -47,7 +48,7 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
 
     // Opens an amplicon in the co-occurrence mode, to see all of its variable positions there, with
     // the variant added to the mode's default panel, to tell which patterns are the variant's.
-    const variantName = analysis.signatureType === 'computed' ? analysis.variant : analysis.lineage;
+    const variantName = analysis.signatureType === 'computed' ? analysis.variant : predefinedLineage(analysis.variant);
     const cooccurrenceModeLink = isModeEnabled(config, 'cooccurrence')
         ? (anchorPosition: string): To => {
               const defaultPanel = config.filterDefaults.cooccurrence.panel ?? [];

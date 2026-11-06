@@ -81,7 +81,10 @@ export function CooccurrencePage({ config }: { config: OrganismConfigFor<'cooccu
     // Opens a panel-match lineage in the variant explorer, predefined signature.
     const variantModeLink = isModeEnabled(config, 'variant')
         ? (lineage: string): To =>
-              new VariantExplorerPageStateHandler(config).linkTo(base, { signatureType: 'predefined', lineage })
+              new VariantExplorerPageStateHandler(config).linkTo(base, {
+                  signatureType: 'predefined',
+                  variant: lineage,
+              })
         : undefined;
 
     return (

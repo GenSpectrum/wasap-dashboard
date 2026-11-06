@@ -196,7 +196,7 @@ describe('VariantExplorerFilter', () => {
         await vi.waitFor(() => {
             expect(mockSetPageState).toHaveBeenCalledWith({
                 ...predefinedPageState,
-                lineage: 'XBB.1.5',
+                variant: 'XBB.1.5',
             });
         });
     });
