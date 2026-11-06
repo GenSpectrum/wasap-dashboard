@@ -55,9 +55,10 @@ export function ModePageLayout({
                     </details>
                 </div>
             </div>
-            <div className='flex min-w-0 flex-col'>
+            {/* The dataset filter heads the results, on their background. */}
+            <div className='flex min-w-0 flex-col bg-stone-50'>
                 <DatasetFilterPanel value={dataset} onChange={onDatasetChange} />
-                <div className='flex-1 space-y-4 bg-stone-50 p-4 lg:p-6'>{children}</div>
+                <div className='flex-1 space-y-4 p-4 lg:p-6'>{children}</div>
             </div>
         </div>
     );
