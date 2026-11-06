@@ -20,7 +20,7 @@ export function SignatureOverlapTable({
 
     return (
         <div className='flex flex-col gap-3'>
-            <table className='text-sm'>
+            <table className='self-start text-sm'>
                 <thead>
                     <tr>
                         <th />
@@ -42,12 +42,12 @@ export function SignatureOverlapTable({
                             <td className='px-2 text-right tabular-nums'>{sizes[i]}</td>
                             {lineages.map((column, j) =>
                                 i === j ? (
-                                    <td key={column} className='p-0.5' />
+                                    <td key={column} className='p-px' />
                                 ) : (
-                                    <td key={column} className='p-0.5'>
+                                    <td key={column} className='p-px'>
                                         <HoverTooltip
                                             focusable
-                                            className='flex h-10 min-w-14 items-center justify-center tabular-nums'
+                                            className='flex h-7 min-w-12 items-center justify-center tabular-nums'
                                             content={
                                                 <PairDetails
                                                     a={row}
@@ -59,7 +59,7 @@ export function SignatureOverlapTable({
                                             }
                                         >
                                             <span
-                                                className='flex h-full w-full items-center justify-center font-medium'
+                                                className='flex h-full w-full items-center justify-center'
                                                 style={cellStyle(distinguishing[i][j])}
                                             >
                                                 {distinguishing[i][j]}
