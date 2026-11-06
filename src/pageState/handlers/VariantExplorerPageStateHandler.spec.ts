@@ -19,7 +19,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'minProportion=0.5&' +
             'minCount=10&' +
             'minJaccard=0.6&' +
-            'timeFrame=3months&';
+            'timeFrame=3m&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('variant');
@@ -47,7 +47,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'lineage=XFG&' +
             'minJaccard=0.8&' +
             'timeFrame=all&' +
-            'backgroundLineages=JN.1,BA.2&';
+            'background=JN.1,BA.2&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.backgroundLineages).toEqual(['JN.1', 'BA.2']);
@@ -72,12 +72,10 @@ describe('VariantExplorerPageStateHandler', () => {
             );
 
         expect(parse('').analysis.backgroundLineages).toEqual(['B.1.1.529']);
-        expect(withDefault.toUrl(parse(''))).not.toContain('backgroundLineages');
-        const cleared = parse('backgroundLineages=');
+        expect(withDefault.toUrl(parse(''))).not.toContain('background');
+        const cleared = parse('background=');
         expect(cleared.analysis.backgroundLineages).toEqual([]);
-        expect(new URL(withDefault.toUrl(cleared), 'http://example.com').searchParams.get('backgroundLineages')).toBe(
-            '',
-        );
+        expect(new URL(withDefault.toUrl(cleared), 'http://example.com').searchParams.get('background')).toBe('');
     });
 
     it('excludes the nearly fixed mutations unless told not to, and only writes that down', () => {
@@ -181,7 +179,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
     });
 
-    it('parses and encodes includeSublineagesForJaccard=false in predefined variant mode (round-trip)', () => {
+    it('parses and encodes jaccardSublineages=false in predefined variant mode (round-trip)', () => {
         const url =
             '/wastewater/covid/variant?' +
             'locations=Z%C3%BCrich+%28ZH%29&' +
@@ -190,7 +188,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'sequenceType=nuc&' +
             'signatureType=predefined&' +
             'lineage=XEC&' +
-            'includeSublineagesForJaccard=false&' +
+            'jaccardSublineages=false&' +
             'minJaccard=0.75&' +
             'timeFrame=all&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
