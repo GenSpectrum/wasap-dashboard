@@ -98,7 +98,7 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
             )}
             {lineageTree !== undefined && panel.length > 0 && (
                 // The tree in one column, so that the signature overlap fits next to it.
-                <div className='grid items-start gap-6 xl:grid-cols-2'>
+                <div className='grid items-start gap-6 xl:grid-cols-[1fr_2fr]'>
                     <TitledPanel title='Lineage tree'>
                         <LineagePanelTree
                             lineageTree={lineageTree}
