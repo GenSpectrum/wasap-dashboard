@@ -12,7 +12,7 @@ import {
     testConfigWithDeconvolution,
 } from '../../../test/testConfig';
 
-const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
+const DATASET_SEARCH = 'locations=Basel&date=2024-01-01--2024-12-31&granularity=week';
 
 function renderTabs(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
     return render(

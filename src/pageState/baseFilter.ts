@@ -7,6 +7,12 @@ import { temporalGranularitySchema } from '../domain/temporal';
 
 const granularityParam = enumParam(temporalGranularitySchema);
 
+/** The URL params of the dataset filter, which are the same on the pages of all modes. */
+const LOCATIONS_PARAM = 'locations';
+const DATE_PARAM = 'date';
+const GRANULARITY_PARAM = 'granularity';
+const DEFAULT_GRANULARITY = 'day';
+
 /**
  * Parsing and serializing of the settings that every analysis mode page has in
  * common (location, sampling date, granularity, ...), so that the page state
@@ -16,7 +22,7 @@ const granularityParam = enumParam(temporalGranularitySchema);
  */
 export function parseBaseFilter(
     search: URLSearchParams,
-    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
+    config: Pick<OrganismConfig, 'defaultLocationName'>,
     defaultMeanProportion: MeanProportion,
 ): BaseFilter {
     return {
@@ -31,22 +37,22 @@ export function parseBaseFilter(
 /** The part of the base filter that selects the dataset, and is the same for all modes. */
 export function parseDatasetFilter(
     search: URLSearchParams,
-    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField' | 'defaultLocationName'>,
+    config: Pick<OrganismConfig, 'defaultLocationName'>,
 ): DatasetFilter {
-    const samplingDate = parseSamplingDateFromUrl(search, config.samplingDateField);
+    const samplingDate = parseSamplingDateFromUrl(search);
 
     // An unrestricted date range at 'day' granularity can span more days than
     // mutations-over-time supports (it refuses past 200 columns, "Too many
     // dates"), so a bare URL defaults to a recent window instead. Users can
     // still pick "All times" explicitly from the date filter's dropdown.
-    const defaultSamplingDate: DateRangeOption = { label: DEFAULT_RECENT_DAYS_LABEL };
-
     return {
-        locationNames: parseLocationNames(search, config.locationNameField, config.defaultLocationName),
-        samplingDate: samplingDate ?? defaultSamplingDate,
-        granularity: granularityParam.parse(search.get('granularity') ?? '')?.value ?? 'day',
+        locationNames: parseLocationNames(search, config.defaultLocationName),
+        samplingDate: samplingDate ?? DEFAULT_SAMPLING_DATE,
+        granularity: granularityParam.parse(search.get(GRANULARITY_PARAM) ?? '')?.value ?? DEFAULT_GRANULARITY,
     };
 }
+
+const DEFAULT_SAMPLING_DATE: DateRangeOption = { label: DEFAULT_RECENT_DAYS_LABEL };
 
 /**
  * Writes the base filter into `search`, which the analysis mode then adds its
@@ -55,7 +61,7 @@ export function parseDatasetFilter(
 export function setBaseFilterSearchParams(
     search: URLSearchParams,
     base: BaseFilter,
-    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'defaultLocationName'>,
     defaultMeanProportion: MeanProportion,
 ) {
     setDatasetFilterSearchParams(search, base, config);
@@ -71,16 +77,24 @@ export function setBaseFilterSearchParams(
 export function setDatasetFilterSearchParams(
     search: URLSearchParams,
     dataset: DatasetFilter,
-    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'defaultLocationName'>,
 ) {
-    search.set(config.locationNameField, listParam.write(dataset.locationNames));
+    // Like the mode's settings, the dataset filter is only in the URL where it isn't the default.
+    const locations = listParam.write(dataset.locationNames);
+    if (locations !== config.defaultLocationName) {
+        search.set(LOCATIONS_PARAM, locations);
+    }
     // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
     // the URL re-resolves them against the dataset's current date range instead of
     // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
     // still serialize as literal dates — setSearchFromDateRange already branches
     // on the label.
-    setSearchFromDateRange(search, config.samplingDateField, dataset.samplingDate);
-    setSearchFromString(search, 'granularity', dataset.granularity);
+    if (dataset.samplingDate?.label !== DEFAULT_SAMPLING_DATE.label) {
+        setSearchFromDateRange(search, DATE_PARAM, dataset.samplingDate);
+    }
+    if (dataset.granularity !== DEFAULT_GRANULARITY) {
+        setSearchFromString(search, GRANULARITY_PARAM, dataset.granularity);
+    }
 }
 
 /**
@@ -90,7 +104,7 @@ export function setDatasetFilterSearchParams(
  */
 export function datasetFilterSearchParams(
     dataset: DatasetFilter,
-    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'defaultLocationName'>,
 ): URLSearchParams {
     const search = new URLSearchParams();
     setDatasetFilterSearchParams(search, dataset, config);
@@ -104,9 +118,9 @@ export function datasetFilterSearchParams(
 export function withDatasetFilter(
     search: URLSearchParams,
     dataset: DatasetFilter,
-    config: Pick<OrganismConfig, 'locationNameField' | 'samplingDateField'>,
+    config: Pick<OrganismConfig, 'defaultLocationName'>,
 ): URLSearchParams {
-    const datasetParams = [config.locationNameField, config.samplingDateField, 'granularity'];
+    const datasetParams = [LOCATIONS_PARAM, DATE_PARAM, GRANULARITY_PARAM];
 
     const result = datasetFilterSearchParams(dataset, config);
     for (const [name, value] of search) {
@@ -121,13 +135,13 @@ export function withDatasetFilter(
  * The locations as one list param, like `Basel (BS)|Zürich (ZH)`. A URL without it means the
  * default location, so all locations — an empty selection — are written as an empty value.
  */
-function parseLocationNames(search: URLSearchParams, name: string, defaultLocationName: string): string[] {
-    const raw = search.get(name);
+function parseLocationNames(search: URLSearchParams, defaultLocationName: string): string[] {
+    const raw = search.get(LOCATIONS_PARAM);
     return raw === null ? [defaultLocationName] : (listParam.parse(raw)?.value ?? [defaultLocationName]);
 }
 
 /**
- * Parses the `samplingDate` URL param, which is either literal `dateFrom--dateTo`
+ * Parses the `date` URL param, which is either literal `dateFrom--dateTo`
  * dates or a preset's label (e.g. "Most recent 14 days") written by `toUrl`. A
  * label-only value has no concrete dates yet: WASAP's presets are relative to
  * the dataset's actual latest sample date (which can lag behind today), not to
@@ -137,8 +151,8 @@ function parseLocationNames(search: URLSearchParams, name: string, defaultLocati
  * `{ type: 'date', dateRangeOptions: () => [] }` mechanism never had one to
  * match against, which is why a preset label from the URL never resolved).
  */
-function parseSamplingDateFromUrl(search: URLSearchParams, name: string): DateRangeOption | undefined {
-    const value = search.get(name);
+function parseSamplingDateFromUrl(search: URLSearchParams): DateRangeOption | undefined {
+    const value = search.get(DATE_PARAM);
     if (value === null) {
         return undefined;
     }

@@ -29,7 +29,7 @@ const serialize = (base: BaseFilter) => {
 describe('baseFilter', () => {
     describe('parseBaseFilter', () => {
         it('parses all fields', () => {
-            const base = parse('locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week');
+            const base = parse('locations=Berlin&date=2024-01-01--2024-12-31&granularity=week');
 
             expect(base.locationNames).toEqual(['Berlin']);
             expect(base.samplingDate).toEqual({ label: 'Custom', dateFrom: '2024-01-01', dateTo: '2024-12-31' });
@@ -48,50 +48,42 @@ describe('baseFilter', () => {
             expect(parse('granularity=quarter').granularity).toBe('day');
         });
 
-        it('reads the location from the configured field', () => {
-            const base = parseBaseFilter(
-                new URLSearchParams('site=Basel'),
-                { ...config, locationNameField: 'site' },
-                defaultMeanProportion,
-            );
-
-            expect(base.locationNames).toEqual(['Basel']);
-        });
-
         it('reads several locations from one list param', () => {
-            expect(parse('locationName=Basel|Bern').locationNames).toEqual(['Basel', 'Bern']);
+            expect(parse('locations=Basel|Bern').locationNames).toEqual(['Basel', 'Bern']);
         });
 
         it('reads an empty location as all locations, not the default one', () => {
-            expect(parse('locationName=').locationNames).toEqual([]);
+            expect(parse('locations=').locationNames).toEqual([]);
         });
     });
 
     describe('sampling date', () => {
         it('does not override an explicit preset from the URL with the default', () => {
-            expect(parse('samplingDate=Most+recent+14+days').samplingDate).toEqual({ label: 'Most recent 14 days' });
+            expect(parse('date=Most+recent+14+days').samplingDate).toEqual({ label: 'Most recent 14 days' });
         });
 
         it('parses a preset label from the URL without concrete dates (unresolved)', () => {
-            expect(parse('samplingDate=All+times').samplingDate).toEqual({ label: 'All times' });
+            expect(parse('date=All+times').samplingDate).toEqual({ label: 'All times' });
         });
 
         it('parses an open-ended custom range', () => {
-            expect(parse('samplingDate=2024-01-01--').samplingDate).toEqual({
+            expect(parse('date=2024-01-01--').samplingDate).toEqual({
                 label: CUSTOM_DATE_RANGE_LABEL,
                 dateFrom: '2024-01-01',
                 dateTo: undefined,
             });
         });
 
-        it('round-trips the default preset label through the URL instead of pinning literal dates', () => {
-            expect(serialize(parse(''))).toContain('samplingDate=Most+recent+90+days');
+        it('leaves the default date range out of the URL', () => {
+            expect(serialize(parse(''))).toBe('');
+        });
+
+        it('round-trips another preset label through the URL instead of pinning literal dates', () => {
+            expect(serialize(parse('date=Most+recent+30+days'))).toBe('date=Most+recent+30+days');
         });
 
         it('serializes an explicit custom date range as literal dates', () => {
-            expect(serialize(parse('samplingDate=2024-01-01--2024-12-31'))).toContain(
-                'samplingDate=2024-01-01--2024-12-31',
-            );
+            expect(serialize(parse('date=2024-01-01--2024-12-31'))).toContain('date=2024-01-01--2024-12-31');
         });
 
         it('knows which sampling dates still have to be resolved', () => {
@@ -132,19 +124,23 @@ describe('baseFilter', () => {
     describe('setBaseFilterSearchParams', () => {
         it('round-trips a fully specified base filter', () => {
             const query =
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7';
+                'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7';
 
             expect(serialize(parse(query))).toBe(new URLSearchParams(query).toString());
         });
 
         it('round-trips several locations', () => {
-            const query = 'locationName=Basel%7CBern&samplingDate=Most+recent+90+days&granularity=day';
+            const query = 'locations=Basel%7CBern';
 
             expect(serialize(parse(query))).toBe(query);
         });
 
+        it('leaves the default location out of the URL', () => {
+            expect(serialize(parse('locations=Z%C3%BCrich+%28ZH%29'))).toBe('');
+        });
+
         it('round-trips all locations', () => {
-            const query = 'locationName=&samplingDate=Most+recent+90+days&granularity=day';
+            const query = 'locations=';
 
             expect(serialize(parse(query))).toBe(query);
         });
@@ -153,11 +149,11 @@ describe('baseFilter', () => {
     describe('datasetFilterSearchParams', () => {
         it('has the dataset filter but not the mean proportion', () => {
             const base = parse(
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7',
+                'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7',
             );
 
             expect(datasetFilterSearchParams(base, config).toString()).toBe(
-                'locationName=Berlin&samplingDate=2024-01-01--2024-12-31&granularity=week',
+                'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week',
             );
         });
 
@@ -174,16 +170,14 @@ describe('baseFilter', () => {
     describe('withDatasetFilter', () => {
         it('replaces the dataset filter and leaves the rest', () => {
             const search = new URLSearchParams(
-                'locationName=Berlin&granularity=week&resistanceSet=Spike&meanProportionLower=0.2',
+                'locations=Berlin&granularity=week&resistanceSet=Spike&meanProportionLower=0.2',
             );
-            const dataset = { ...parse('locationName=Basel') };
+            const dataset = { ...parse('locations=Basel') };
 
             const result = withDatasetFilter(search, dataset, config);
 
             expect(Object.fromEntries(result)).toEqual({
-                locationName: 'Basel',
-                samplingDate: 'Most recent 90 days',
-                granularity: 'day',
+                locations: 'Basel',
                 resistanceSet: 'Spike',
                 meanProportionLower: '0.2',
             });

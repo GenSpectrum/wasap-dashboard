@@ -14,8 +14,8 @@ describe('ManualPageStateHandler', () => {
 
     it('parses and encodes manual filter', () => {
         const query =
-            'locationName=Z%C3%BCrich+%28ZH%29&' +
-            'samplingDate=2024-01-01--2024-12-31&' +
+            'locations=Z%C3%BCrich+%28ZH%29&' +
+            'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
             'sequenceType=nucleotide&';
 

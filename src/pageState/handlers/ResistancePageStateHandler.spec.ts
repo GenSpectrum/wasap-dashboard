@@ -9,8 +9,8 @@ describe('ResistancePageStateHandler', () => {
     it('parses and encodes resistance filter', () => {
         const url =
             '/wastewater/covid/resistance?' +
-            'locationName=Z%C3%BCrich+%28ZH%29&' +
-            'samplingDate=2024-01-01--2024-12-31&' +
+            'locations=Z%C3%BCrich+%28ZH%29&' +
+            'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
             'resistanceSet=3CLpro&' +
             'proportionRange=high&';
