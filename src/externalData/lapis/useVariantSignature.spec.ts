@@ -14,8 +14,6 @@ const unusedBaseConfigFields = {
     name: '',
     path: '',
     linkTemplate: { nucleotideMutation: '', aminoAcidMutation: '' },
-    samplingDateField: '',
-    locationNameField: '',
     rhydb: {
         url: '',
         table: 'data',

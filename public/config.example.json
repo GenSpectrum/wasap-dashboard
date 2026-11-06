@@ -45,8 +45,6 @@
                 }
             ],
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/covid",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/covid",
                 "table": "data",
@@ -123,8 +121,6 @@
                 "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/rsva",
                 "table": "data",
@@ -198,8 +194,6 @@
                 "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/rsvb",
                 "table": "data",

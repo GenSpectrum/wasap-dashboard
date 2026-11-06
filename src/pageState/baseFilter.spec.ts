@@ -11,8 +11,6 @@ import {
 import { CUSTOM_DATE_RANGE_LABEL, DEFAULT_RECENT_DAYS_LABEL } from '../domain/dateRange';
 
 const config = {
-    locationNameField: 'locationName',
-    samplingDateField: 'samplingDate',
     defaultLocationName: 'Zürich (ZH)',
 };
 

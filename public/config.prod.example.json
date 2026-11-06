@@ -44,8 +44,6 @@
                 }
             ],
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/covid",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/covid",
                 "table": "data",
@@ -121,8 +119,6 @@
                 "lineageAttribute": "clade_membership"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/rsva",
                 "table": "data",
@@ -195,8 +191,6 @@
                 "lineageAttribute": "clade_membership"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/rsvb",
                 "table": "data",

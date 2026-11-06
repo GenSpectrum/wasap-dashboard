@@ -47,8 +47,6 @@ export const testConfig = {
         },
     ],
     lapisBaseUrl: 'https://lapis.wasap.genspectrum.org',
-    samplingDateField: 'samplingDate',
-    locationNameField: 'locationName',
     clinicalLapis: {
         lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
         cladeField: 'nextstrainClade',
