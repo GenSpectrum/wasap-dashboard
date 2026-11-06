@@ -33,8 +33,8 @@ export function parseBaseFilter(
     return {
         ...parseDatasetFilter(search, config),
         meanProportion: {
-            lower: parseProportion(getStringFromSearch(search, 'meanProportionLower')) ?? defaultMeanProportion.lower,
-            upper: parseProportion(getStringFromSearch(search, 'meanProportionUpper')) ?? defaultMeanProportion.upper,
+            lower: parseProportion(getStringFromSearch(search, 'minMean')) ?? defaultMeanProportion.lower,
+            upper: parseProportion(getStringFromSearch(search, 'maxMean')) ?? defaultMeanProportion.upper,
         },
     };
 }
@@ -72,10 +72,10 @@ export function setBaseFilterSearchParams(
     setDatasetFilterSearchParams(search, base, config);
     // Omitted when it's the mode's default, so the default can still differ between modes.
     if (base.meanProportion.lower !== defaultMeanProportion.lower) {
-        setSearchFromString(search, 'meanProportionLower', String(base.meanProportion.lower));
+        setSearchFromString(search, 'minMean', String(base.meanProportion.lower));
     }
     if (base.meanProportion.upper !== defaultMeanProportion.upper) {
-        setSearchFromString(search, 'meanProportionUpper', String(base.meanProportion.upper));
+        setSearchFromString(search, 'maxMean', String(base.meanProportion.upper));
     }
 }
 

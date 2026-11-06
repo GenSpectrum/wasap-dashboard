@@ -26,8 +26,6 @@ describe('DeconvolutionPageStateHandler', () => {
     });
 
     it('has no mean proportion in the URL', () => {
-        expect(
-            handler.toSearchParams(parse('extraLineage=XEC&meanProportionLower=0.2')).has('meanProportionLower'),
-        ).toBe(false);
+        expect(handler.toSearchParams(parse('extraLineage=XEC&minMean=0.2')).has('minMean')).toBe(false);
     });
 });

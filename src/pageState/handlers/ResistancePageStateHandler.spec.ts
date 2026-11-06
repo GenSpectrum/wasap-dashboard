@@ -56,9 +56,7 @@ describe('ResistancePageStateHandler', () => {
     });
 
     it('ignores a mean proportion in the URL and leaves it out when writing the URL', () => {
-        const filter = handler.parsePageStateFromUrl(
-            new URLSearchParams('meanProportionLower=0.2&meanProportionUpper=0.5'),
-        );
+        const filter = handler.parsePageStateFromUrl(new URLSearchParams('minMean=0.2&maxMean=0.5'));
 
         expect(filter.base.meanProportion).toEqual({ lower: 0, upper: 1 });
         expect(handler.toUrl(filter)).not.toContain('meanProportion');

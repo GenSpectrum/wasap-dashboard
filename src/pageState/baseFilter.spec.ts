@@ -102,14 +102,14 @@ describe('baseFilter', () => {
         });
 
         it('parses lower and upper from the URL', () => {
-            expect(parse('meanProportionLower=0.2&meanProportionUpper=0.7').meanProportion).toEqual({
+            expect(parse('minMean=0.2&maxMean=0.7').meanProportion).toEqual({
                 lower: 0.2,
                 upper: 0.7,
             });
         });
 
         it('falls back to the default for invalid values', () => {
-            expect(parse('meanProportionLower=abc&meanProportionUpper=1.5').meanProportion).toEqual({
+            expect(parse('minMean=abc&maxMean=1.5').meanProportion).toEqual({
                 lower: 0.05,
                 upper: 0.95,
             });
@@ -118,16 +118,15 @@ describe('baseFilter', () => {
         it('only encodes values that differ from the default in the URL', () => {
             expect(serialize(parse(''))).not.toContain('meanProportion');
 
-            const lowerChanged = serialize(parse('meanProportionLower=0.2'));
-            expect(lowerChanged).toContain('meanProportionLower=0.2');
-            expect(lowerChanged).not.toContain('meanProportionUpper');
+            const lowerChanged = serialize(parse('minMean=0.2'));
+            expect(lowerChanged).toContain('minMean=0.2');
+            expect(lowerChanged).not.toContain('maxMean');
         });
     });
 
     describe('setBaseFilterSearchParams', () => {
         it('round-trips a fully specified base filter', () => {
-            const query =
-                'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7';
+            const query = 'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week&minMean=0.2&maxMean=0.7';
 
             expect(serialize(parse(query))).toBe(new URLSearchParams(query).toString());
         });
@@ -151,9 +150,7 @@ describe('baseFilter', () => {
 
     describe('datasetFilterSearchParams', () => {
         it('has the dataset filter but not the mean proportion', () => {
-            const base = parse(
-                'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week&meanProportionLower=0.2&meanProportionUpper=0.7',
-            );
+            const base = parse('locations=Berlin&date=2024-01-01--2024-12-31&granularity=week&minMean=0.2&maxMean=0.7');
 
             expect(datasetFilterSearchParams(base, config).toString()).toBe(
                 'locations=Berlin&date=2024-01-01--2024-12-31&granularity=week',
@@ -161,7 +158,7 @@ describe('baseFilter', () => {
         });
 
         it('gives the mode it is carried to its own default mean proportion', () => {
-            const carried = datasetFilterSearchParams(parse('meanProportionLower=0.2'), config);
+            const carried = datasetFilterSearchParams(parse('minMean=0.2'), config);
 
             expect(parseBaseFilter(carried, config, { lower: 0, upper: 1 }).meanProportion).toEqual({
                 lower: 0,
@@ -172,9 +169,7 @@ describe('baseFilter', () => {
 
     describe('withDatasetFilter', () => {
         it('replaces the dataset filter and leaves the rest', () => {
-            const search = new URLSearchParams(
-                'locations=Berlin&granularity=week&resistanceSet=Spike&meanProportionLower=0.2',
-            );
+            const search = new URLSearchParams('locations=Berlin&granularity=week&resistanceSet=Spike&minMean=0.2');
             const dataset = { ...parse('locations=Basel') };
 
             const result = withDatasetFilter(search, dataset, config);
@@ -182,7 +177,7 @@ describe('baseFilter', () => {
             expect(Object.fromEntries(result)).toEqual({
                 locations: 'Basel',
                 resistanceSet: 'Spike',
-                meanProportionLower: '0.2',
+                minMean: '0.2',
             });
         });
     });

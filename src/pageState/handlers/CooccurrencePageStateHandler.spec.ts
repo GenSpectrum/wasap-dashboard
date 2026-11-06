@@ -56,7 +56,7 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('round-trips the min. share, and has no mean proportion in the URL', () => {
-        const filter = parse('sequenceType=nuc&minShare=0.01&meanProportionLower=0.1');
+        const filter = parse('sequenceType=nuc&minShare=0.01&minMean=0.1');
         expect(filter.analysis.minShare).toBe(0.01);
         const url = handler.toUrl(filter);
         expect(url).toContain('minShare=0.01');

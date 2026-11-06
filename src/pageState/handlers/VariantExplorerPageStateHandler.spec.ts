@@ -95,8 +95,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('has no mean proportion filter: drops one in the URL', () => {
         const filter = handler.parsePageStateFromUrl(
-            new URL('http://example.com/wastewater/covid/variant?meanProportionLower=0.2&meanProportionUpper=0.7')
-                .searchParams,
+            new URL('http://example.com/wastewater/covid/variant?minMean=0.2&maxMean=0.7').searchParams,
         );
 
         expect(filter.base.meanProportion).toEqual({ lower: 0, upper: 1 });
