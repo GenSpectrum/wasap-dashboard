@@ -16,8 +16,8 @@ export class CooccurrencePageStateHandler extends ModePageStateHandler<Cooccurre
         // `list`, like the list of mutations of the manual mode, for positions picked one by one.
         positionSource: named('source', optional(tokenParam<PositionSource>({ manual: 'list', amplicon: 'amplicon' }))),
         positions: optional(listParam),
-        anchorPosition: optional(stringParam),
-        entropyCutoff: optional(numberParam({ min: 0 })),
+        anchorPosition: named('ampliconPosition', optional(stringParam)),
+        entropyCutoff: named('minEntropy', optional(numberParam({ min: 0 }))),
         minShare: optional(numberParam({ min: 0, max: 1 })),
         panel: optional(listParam),
     };

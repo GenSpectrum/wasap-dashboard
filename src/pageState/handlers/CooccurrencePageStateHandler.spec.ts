@@ -41,18 +41,18 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nuc&source=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&source=amplicon&ampliconPosition=23403&minEntropy=0.5');
         expect(filter.analysis.positionSource).toBe('amplicon');
         expect(filter.analysis.anchorPosition).toBe('23403');
         expect(filter.analysis.entropyCutoff).toBe(0.5);
     });
 
     it('round-trips the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nuc&source=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&source=amplicon&ampliconPosition=23403&minEntropy=0.5');
         const url = handler.toUrl(filter);
         expect(url).toContain('source=amplicon');
-        expect(url).toContain('anchorPosition=23403');
-        expect(url).toContain('entropyCutoff=0.5');
+        expect(url).toContain('ampliconPosition=23403');
+        expect(url).toContain('minEntropy=0.5');
     });
 
     it('reads and writes positions picked one by one as source=list', () => {
