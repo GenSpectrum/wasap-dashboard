@@ -4,10 +4,10 @@ import { signatureOverlap } from './signatureOverlap';
 import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
- * The overlap of the signatures of the lineages of a panel. First the number of mutations all of
- * them share, then, without those, a matrix: each cell has the number of mutations that tell two
- * lineages apart (those only one of the two has, so the matrix is symmetric). The first column has the size of the
- * signature. The last column has the mutations only that lineage has.
+ * The overlap of the signatures of the lineages of a panel, as a matrix: each cell has the number
+ * of mutations that tell two lineages apart, then how many of them only the row's and only the
+ * column's lineage has. The first column has the size of the signature, the last one the
+ * mutations only that lineage of the panel has.
  */
 export function SignatureOverlapTable({
     signatures,
@@ -17,31 +17,18 @@ export function SignatureOverlapTable({
     colors: Map<string, string>;
 }) {
     const overlap = useMemo(() => signatureOverlap(signatures), [signatures]);
-    const { lineages, common, totalSizes, sizes, unique, shared, distinguishing } = overlap;
+    const { lineages, sizes, unique, shared, distinguishing } = overlap;
 
     return (
         <div className='flex flex-col gap-3'>
-            <p className='text-sm'>
-                <HoverTooltip
-                    focusable
-                    className='inline font-semibold tabular-nums underline decoration-dotted underline-offset-2'
-                    content={<MutationList title='Common to all lineages of the panel:' mutations={common} />}
-                >
-                    {common.length}
-                </HoverTooltip>{' '}
-                {common.length === 1 ? 'substitution is' : 'substitutions are'} common to all lineages of the panel; the
-                table leaves {common.length === 1 ? 'it' : 'them'} out.
-            </p>
             <table className='text-sm'>
                 <thead>
                     <tr>
                         <th />
                         <th className='px-2 pb-1 text-right align-bottom font-medium'>Signature</th>
                         {lineages.map((lineage) => (
-                            <th key={lineage} className='px-1 pb-1 align-bottom font-medium'>
-                                <span className='inline-block rotate-180 whitespace-nowrap [writing-mode:vertical-rl]'>
-                                    {lineage}
-                                </span>
+                            <th key={lineage} className='px-1 pb-1 align-bottom font-medium whitespace-nowrap'>
+                                {lineage}
                             </th>
                         ))}
                         <th className='px-2 pb-1 text-left align-bottom font-medium'>Unique</th>
@@ -53,7 +40,7 @@ export function SignatureOverlapTable({
                             <th className='pr-2 text-left font-medium whitespace-nowrap'>
                                 <LineageName lineage={row} color={colors.get(row)} />
                             </th>
-                            <td className='px-2 text-right tabular-nums'>{totalSizes[i]}</td>
+                            <td className='px-2 text-right tabular-nums'>{sizes[i]}</td>
                             {lineages.map((column, j) =>
                                 i === j ? (
                                     <td key={column} className='p-0.5' />
@@ -73,10 +60,13 @@ export function SignatureOverlapTable({
                                             }
                                         >
                                             <span
-                                                className='flex h-full w-full items-center justify-center font-medium'
+                                                className='flex h-full w-full items-center justify-center gap-1 px-2 whitespace-nowrap'
                                                 style={cellStyle(distinguishing[i][j])}
                                             >
-                                                {distinguishing[i][j]}
+                                                <span className='font-medium'>{distinguishing[i][j]}</span>
+                                                <span className='text-xs opacity-60'>
+                                                    ({sizes[i] - shared[i][j]} / {sizes[j] - shared[i][j]})
+                                                </span>
                                             </span>
                                         </HoverTooltip>
                                     </td>
@@ -173,7 +163,7 @@ function cellStyle(distinguishing: number) {
 function Legend() {
     return (
         <div className='flex flex-wrap items-center gap-2 text-xs text-gray-600'>
-            <span>Distinguishing substitutions</span>
+            <span>Distinguishing substitutions (only in row / only in column)</span>
             {DISTINGUISHING_STEPS.map(({ label, color }) => (
                 <span key={label} className='flex items-center gap-1'>
                     <span className='inline-block h-3 w-5' style={{ backgroundColor: color }} />

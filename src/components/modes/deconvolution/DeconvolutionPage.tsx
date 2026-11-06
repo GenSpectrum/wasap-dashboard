@@ -258,8 +258,9 @@ function SignatureOverlapInfo() {
     return (
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p className='text-gray-500 italic'>
-                Number of nucleotide substitutions that tell two lineages of the panel apart (in only one of the two),
-                leaving out those all lineages share. Red is hard to tell apart, green easy.
+                Number of nucleotide substitutions that tell two lineages of the panel apart, and in brackets how many
+                of them only the row&apos;s and only the column&apos;s lineage has. Red is hard to tell apart, green
+                easy.
             </p>
             <p>
                 Shows which lineages are hard to tell apart: the fewer mutations only one of two lineages has, the less
