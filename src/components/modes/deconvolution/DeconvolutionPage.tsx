@@ -258,13 +258,13 @@ function SignatureOverlapInfo() {
     return (
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p className='text-gray-500 italic'>
-                Number of nucleotide substitutions that tell two lineages of the panel apart (in only one of the two).
-                Red is hard to tell apart, green easy.
+                Number of mutations that distinguish two lineages, pairwise. The sum of mutations that are unique to
+                either the one or the other.
             </p>
             <p>
-                Shows which lineages are hard to tell apart: the fewer mutations only one of two lineages has, the less
-                certain the split of their shares. <em>Unique</em> counts the mutations no other lineage of the panel
-                has.
+                Shows how easy it is to tell two lineages apart. The fewer distinguishing mutations a lineage has, the
+                easier it is to misclassify if only part of its sequence is available, making the deconvolution less
+                reliable.
             </p>
         </div>
     );
