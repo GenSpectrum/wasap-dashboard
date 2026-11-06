@@ -40,4 +40,11 @@ describe('SegmentedSelect', () => {
 
         expect(onChange).toHaveBeenCalledWith(0.1);
     });
+
+    it('is a radio group named by its label', async () => {
+        const { getByRole } = render(
+            <SegmentedSelect label='Min. share' value={0} options={options} onChange={vi.fn()} />,
+        );
+        await expect.element(getByRole('radiogroup', { name: 'Min. share' })).toBeInTheDocument();
+    });
 });

@@ -23,11 +23,14 @@ export function SegmentedSelect<T extends string | number>({
     direction?: 'horizontal' | 'vertical';
 }) {
     const id = useId();
+    const labelId = useId();
     const isVertical = direction === 'vertical';
 
     return (
-        <LabeledField label={label}>
+        <LabeledField label={label} labelId={labelId}>
             <div
+                role='radiogroup'
+                aria-labelledby={labelId}
                 className={`flex gap-0.5 border border-gray-300 bg-stone-100 p-0.5 text-sm ${isVertical ? 'flex-col' : 'h-8'}`}
             >
                 {options.map((option) => {
