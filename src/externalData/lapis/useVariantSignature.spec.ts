@@ -13,7 +13,6 @@ const unusedBaseConfigFields = {
     genSpectrumOrganismName: 'covid' as const,
     name: '',
     path: '',
-    description: '',
     linkTemplate: { nucleotideMutation: '', aminoAcidMutation: '' },
     samplingDateField: '',
     locationNameField: '',

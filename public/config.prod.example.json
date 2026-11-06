@@ -6,7 +6,6 @@
             "genSpectrumOrganismName": "covid",
             "name": "SARS-CoV-2",
             "path": "/covid",
-            "description": "Analyze SARS-CoV-2 data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}",
                 "aminoAcidMutation": "https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}"
@@ -110,7 +109,6 @@
             "genSpectrumOrganismName": "rsvA",
             "name": "RSV-A",
             "path": "/rsv-a",
-            "description": "Analyze RSV-A data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}",
                 "aminoAcidMutation": "https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}"
@@ -185,7 +183,6 @@
             "genSpectrumOrganismName": "rsvB",
             "name": "RSV-B",
             "path": "/rsv-b",
-            "description": "Analyze RSV-B data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}",
                 "aminoAcidMutation": "https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}"
