@@ -18,7 +18,7 @@ export function AppHeader() {
 
     return (
         <header className='relative border-b-2 border-b-stone-300 bg-stone-200'>
-            <div className='mx-auto flex w-full max-w-[110rem] items-center gap-3 px-4 py-3 sm:gap-4 lg:px-6'>
+            <div className='flex w-full items-center gap-3 px-4 py-3 sm:gap-4 lg:px-6'>
                 {/* As tall as the grouped tabs even where there are none, so that the header keeps its height across pages. */}
                 <div className='hidden min-h-[3.25rem] xl:block'>
                     <ModeTabs />
