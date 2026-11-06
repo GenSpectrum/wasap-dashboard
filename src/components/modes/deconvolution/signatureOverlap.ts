@@ -2,6 +2,8 @@ export type SignatureOverlap = {
     lineages: string[];
     /** The mutations all lineages of the panel have; the other fields leave them out. */
     common: string[];
+    /** The number of mutations in the whole signature of each lineage. */
+    totalSizes: number[];
     /** The number of mutations in the signature of each lineage, without the common ones. */
     sizes: number[];
     /** The mutations of each lineage that no other lineage of the panel has. */
@@ -34,5 +36,13 @@ export function signatureOverlap(signatures: Record<string, readonly string[]>):
     const unique = sets.map((set, i) =>
         [...set].filter((mutation) => sets.every((other, j) => j === i || !other.has(mutation))),
     );
-    return { lineages, common, sizes: sets.map((set) => set.size), unique, shared, jaccard };
+    return {
+        lineages,
+        common,
+        totalSizes: fullSets.map((set) => set.size),
+        sizes: sets.map((set) => set.size),
+        unique,
+        shared,
+        jaccard,
+    };
 }

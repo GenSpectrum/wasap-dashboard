@@ -12,6 +12,7 @@ describe('signatureOverlap', () => {
 
         expect(overlap.lineages).toEqual(['A', 'B', 'C']);
         expect(overlap.common).toEqual(['C0T', 'C1T']);
+        expect(overlap.totalSizes).toEqual([4, 4, 3]);
         expect(overlap.sizes).toEqual([2, 2, 1]);
         expect(overlap.shared).toEqual([
             [2, 1, 0],

@@ -259,8 +259,8 @@ function SignatureOverlapInfo() {
         <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p className='text-gray-500 italic'>
                 Jaccard index of the signatures of two lineages of the panel and the number of nucleotide substitutions
-                that tell them apart (in only one of the two), leaving out those all lineages share; the diagonal is the
-                size of each signature.
+                that tell them apart (in only one of the two), leaving out those all lineages share. Green is easy to
+                tell apart, red hard.
             </p>
             <p>
                 Shows which lineages are hard to tell apart: the fewer mutations only one of two lineages has, the less

@@ -7,7 +7,7 @@ import { HoverTooltip } from '../../ui/HoverTooltip';
  * The overlap of the signatures of the lineages of a panel. First the number of mutations all of
  * them share, then, without those, a matrix: each cell has the Jaccard index of two lineages
  * (shared / union) and the number of mutations that tell them apart (those only one of the two
- * has, so the matrix is symmetric); the diagonal has the size of the
+ * has, so the matrix is symmetric). The first column has the size of the
  * signature. The last column has the mutations only that lineage has.
  */
 export function SignatureOverlapTable({
@@ -18,7 +18,7 @@ export function SignatureOverlapTable({
     colors: Map<string, string>;
 }) {
     const overlap = useMemo(() => signatureOverlap(signatures), [signatures]);
-    const { lineages, common, sizes, unique, shared, jaccard } = overlap;
+    const { lineages, common, totalSizes, sizes, unique, shared, jaccard } = overlap;
 
     return (
         <div className='flex flex-col gap-3'>
@@ -37,6 +37,7 @@ export function SignatureOverlapTable({
                 <thead>
                     <tr>
                         <th />
+                        <th className='px-2 pb-1 text-right align-bottom font-medium'>Signature</th>
                         {lineages.map((lineage) => (
                             <th key={lineage} className='px-1 pb-1 align-bottom font-medium'>
                                 <span className='inline-block rotate-180 whitespace-nowrap [writing-mode:vertical-rl]'>
@@ -53,17 +54,10 @@ export function SignatureOverlapTable({
                             <th className='pr-2 text-left font-medium whitespace-nowrap'>
                                 <LineageName lineage={row} color={colors.get(row)} />
                             </th>
+                            <td className='px-2 text-right tabular-nums'>{totalSizes[i]}</td>
                             {lineages.map((column, j) =>
                                 i === j ? (
-                                    <td key={column} className='p-0.5'>
-                                        <HoverTooltip
-                                            focusable
-                                            className='flex h-10 min-w-14 items-center justify-center bg-stone-100 text-gray-500 tabular-nums'
-                                            content={`${row}: ${sizes[i]} substitutions`}
-                                        >
-                                            {sizes[i]}
-                                        </HoverTooltip>
-                                    </td>
+                                    <td key={column} className='p-0.5' />
                                 ) : (
                                     <td key={column} className='p-0.5'>
                                         <HoverTooltip
@@ -166,13 +160,16 @@ function PairDetails({
     );
 }
 
-/** Steps of the Jaccard index and their colours, darker for more overlap. */
+/**
+ * Steps of the Jaccard index and their colours: green where two lineages are easy to tell apart,
+ * red where they overlap so much that their shares are hard to split.
+ */
 const JACCARD_STEPS = [
-    { from: 0, color: '#f1f5fb', text: undefined },
-    { from: 0.2, color: '#c9dcf4', text: undefined },
-    { from: 0.4, color: '#89b4e8', text: undefined },
-    { from: 0.6, color: '#3f82d4', text: 'white' },
-    { from: 0.8, color: '#1a4f94', text: 'white' },
+    { from: 0, color: '#2e8b57', text: 'white' },
+    { from: 0.2, color: '#a6d96a', text: undefined },
+    { from: 0.4, color: '#fee08b', text: undefined },
+    { from: 0.6, color: '#f98e52', text: undefined },
+    { from: 0.8, color: '#c62828', text: 'white' },
 ];
 
 /** In steps rather than a smooth scale, so that cells are easy to compare. */
