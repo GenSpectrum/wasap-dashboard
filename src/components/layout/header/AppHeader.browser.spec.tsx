@@ -23,10 +23,9 @@ describe('AppHeader', () => {
         setAppConfigForTesting({ organisms: [testConfig] });
     });
 
-    it('shows the title and the organism selector', async () => {
-        const { getByText, getByLabelText } = renderHeader('/');
+    it('shows the organism selector', async () => {
+        const { getByLabelText } = renderHeader('/');
 
-        await expect.element(getByText('W-ASAP')).toBeVisible();
         await expect.element(getByLabelText('Organism')).toBeVisible();
     });
 
@@ -58,16 +57,6 @@ describe('AppHeader', () => {
         const href = getByRole('link', { name: 'About' }).element().getAttribute('href');
 
         expect(href).toBe('/about');
-    });
-
-    it('links the title to the landing page', async () => {
-        const { getByRole } = renderHeader('/wastewater/covid/manual');
-
-        const href = getByRole('link', { name: /W-ASAP/ })
-            .element()
-            .getAttribute('href');
-
-        expect(href).toBe('/');
     });
 
     it('shows no mode tabs where no organism is open', async () => {
