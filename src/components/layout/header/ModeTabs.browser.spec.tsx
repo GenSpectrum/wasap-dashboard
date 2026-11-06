@@ -124,7 +124,7 @@ describe('ModeTabs', () => {
 
     it('links to the page of the mode, with the dataset filter but without the mean proportion', async () => {
         const { getByRole } = renderTabs(
-            `/wastewater/covid/manual?${DATASET_SEARCH}&meanProportionLower=0.3&meanProportionUpper=0.6&sequenceType=amino+acid`,
+            `/wastewater/covid/manual?${DATASET_SEARCH}&meanProportionLower=0.3&meanProportionUpper=0.6&sequenceType=aa`,
         );
 
         const href = getByRole('link', { name: 'Explorer' }).element().getAttribute('href');

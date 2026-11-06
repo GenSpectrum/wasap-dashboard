@@ -1,5 +1,7 @@
 import { type z } from 'zod';
 
+import { type SequenceType } from '../domain/mutations';
+
 /**
  * How a setting of a page is kept in a URL search param: `parse` reads the param's value, and
  * gives `undefined` for a value that isn't a valid one; `write` gives the param's value.
@@ -70,6 +72,23 @@ export function enumParam<T extends string>(schema: z.ZodType<T>): UrlParam<T> {
         write: (value) => value,
     };
 }
+
+/**
+ * One of the keys of `tokens`, written as its token, like `aa` for `amino acid`: for values
+ * that would be long or need escaping in a URL.
+ */
+export function tokenParam<T extends string>(tokens: Record<T, string>): UrlParam<T> {
+    const entries = Object.entries(tokens) as [T, string][];
+    return {
+        parse: (raw) => {
+            const entry = entries.find(([, token]) => token === raw);
+            return entry === undefined ? undefined : { value: entry[0] };
+        },
+        write: (value) => tokens[value],
+    };
+}
+
+export const sequenceTypeParam = tokenParam<SequenceType>({ nucleotide: 'nuc', 'amino acid': 'aa' });
 
 /** A finite number, in `[min, max]`, and a whole one if `integer`. */
 export function numberParam({

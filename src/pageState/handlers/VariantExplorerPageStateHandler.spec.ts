@@ -13,7 +13,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'locations=Berlin&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=week&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'signatureType=computed&' +
             'variant=BA.2*&' +
             'minProportion=0.5&' +
@@ -42,7 +42,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'locations=Berlin&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=week&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'signatureType=predefined&' +
             'lineage=XFG&' +
             'minJaccard=0.8&' +
@@ -144,7 +144,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'signatureType=predefined&' +
             'lineage=XEC&' +
             'minJaccard=0.75&' +
@@ -166,7 +166,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'signatureType=predefined&' +
             'lineage=XEC&' +
             'newMutationsOnly=true&' +
@@ -188,7 +188,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'signatureType=predefined&' +
             'lineage=XEC&' +
             'includeSublineagesForJaccard=false&' +
@@ -219,7 +219,7 @@ describe('VariantExplorerPageStateHandler', () => {
     it('leaves the defaults out of the URL', () => {
         const url = handler.toUrl(
             handler.parsePageStateFromUrl(
-                new URL('http://example.com/wastewater/covid/variant?sequenceType=nucleotide&minCount=15').searchParams,
+                new URL('http://example.com/wastewater/covid/variant?sequenceType=nuc&minCount=15').searchParams,
             ),
         );
 

@@ -1,8 +1,7 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { sequenceTypeSchema } from '../../domain/mutations';
 import { positionSourceSchema, type CooccurrenceAnalysis } from '../analysisFilter';
-import { enumParam, listParam, numberParam, optional, stringParam } from '../urlParams';
+import { enumParam, listParam, numberParam, optional, stringParam, sequenceTypeParam } from '../urlParams';
 
 export class CooccurrencePageStateHandler extends ModePageStateHandler<CooccurrenceAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'cooccurrence'>) {
@@ -13,7 +12,7 @@ export class CooccurrencePageStateHandler extends ModePageStateHandler<Cooccurre
     protected readonly hasMeanProportion = false;
 
     protected readonly params = {
-        sequenceType: enumParam(sequenceTypeSchema),
+        sequenceType: sequenceTypeParam,
         positionSource: optional(enumParam(positionSourceSchema)),
         positions: optional(listParam),
         anchorPosition: optional(stringParam),

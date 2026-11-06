@@ -12,7 +12,7 @@ describe('UntrackedPageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'excludeSet=predefined&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
@@ -30,7 +30,7 @@ describe('UntrackedPageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'excludeSet=custom&' +
             'excludeVariants=XBB.1.5*%7CBA.2*%7CJN.1&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
@@ -46,7 +46,7 @@ describe('UntrackedPageStateHandler', () => {
     it('untracked mode round-trip with pipe-separated variants', () => {
         const url =
             '/wastewater/covid/untracked?' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'excludeSet=custom&' +
             'excludeVariants=XBB*%7CBA.2*%7CJN.1%7CXFG*&';
         const filter1 = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);

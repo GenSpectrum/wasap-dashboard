@@ -17,7 +17,7 @@ describe('CooccurrencePageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&';
+            'sequenceType=nuc&';
 
         const filter = parse(query);
 
@@ -27,12 +27,12 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses multiple positions', () => {
-        const filter = parse('sequenceType=nucleotide&positions=241%7C23403');
+        const filter = parse('sequenceType=nuc&positions=241%7C23403');
         expect(filter.analysis.positions).toEqual(['241', '23403']);
     });
 
     it('round-trips positions', () => {
-        const filter = parse('sequenceType=amino+acid&positions=S%3A501%7CS%3A614');
+        const filter = parse('sequenceType=aa&positions=S%3A501%7CS%3A614');
         expect(handler.toUrl(filter)).toContain('positions=S%3A501%7CS%3A614');
     });
 
@@ -41,14 +41,14 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nucleotide&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
         expect(filter.analysis.positionSource).toBe('amplicon');
         expect(filter.analysis.anchorPosition).toBe('23403');
         expect(filter.analysis.entropyCutoff).toBe(0.5);
     });
 
     it('round-trips the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nucleotide&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
         const url = handler.toUrl(filter);
         expect(url).toContain('positionSource=amplicon');
         expect(url).toContain('anchorPosition=23403');
@@ -56,7 +56,7 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('round-trips the min. share, and has no mean proportion in the URL', () => {
-        const filter = parse('sequenceType=nucleotide&minShare=0.01&meanProportionLower=0.1');
+        const filter = parse('sequenceType=nuc&minShare=0.01&meanProportionLower=0.1');
         expect(filter.analysis.minShare).toBe(0.01);
         const url = handler.toUrl(filter);
         expect(url).toContain('minShare=0.01');

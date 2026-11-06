@@ -25,7 +25,7 @@ describe('ResistancePageStateHandler', () => {
     });
 
     it('resistance mode always uses amino acid sequence type', () => {
-        const url = '/wastewater/covid/resistance?resistanceSet=3CLpro&sequenceType=nucleotide&';
+        const url = '/wastewater/covid/resistance?resistanceSet=3CLpro&sequenceType=nuc&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('resistance');

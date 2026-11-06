@@ -1,8 +1,15 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { sequenceTypeSchema } from '../../domain/mutations';
 import { signatureTypeSchema, variantTimeFrameSchema, type VariantAnalysis } from '../analysisFilter';
-import { booleanParam, enumParam, listParam, numberParam, optional, stringParam } from '../urlParams';
+import {
+    booleanParam,
+    enumParam,
+    listParam,
+    numberParam,
+    optional,
+    stringParam,
+    sequenceTypeParam,
+} from '../urlParams';
 
 export class VariantExplorerPageStateHandler extends ModePageStateHandler<VariantAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'variant'>) {
@@ -14,7 +21,7 @@ export class VariantExplorerPageStateHandler extends ModePageStateHandler<Varian
 
     protected readonly params = {
         signatureType: enumParam(signatureTypeSchema),
-        sequenceType: enumParam(sequenceTypeSchema),
+        sequenceType: sequenceTypeParam,
         // computed signature
         variant: optional(stringParam),
         minProportion: numberParam({ min: 0, max: 1 }),

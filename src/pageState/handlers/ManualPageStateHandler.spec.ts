@@ -17,7 +17,7 @@ describe('ManualPageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&';
+            'sequenceType=nuc&';
 
         const filter = parse(query);
 
@@ -32,26 +32,26 @@ describe('ManualPageStateHandler', () => {
     });
 
     it('parses multiple mutations', () => {
-        const filter = parse('sequenceType=nucleotide&mutations=A23T%7CS:E44H%7CORFla:T123A&');
+        const filter = parse('sequenceType=nuc&mutations=A23T%7CS:E44H%7CORFla:T123A&');
 
         expect(filter.analysis.mutations).toEqual(['A23T', 'S:E44H', 'ORFla:T123A']);
     });
 
     it('round-trips the mutations', () => {
-        const filter = parse('sequenceType=amino+acid&mutations=S:E44H%7CS:K417N');
+        const filter = parse('sequenceType=aa&mutations=S:E44H%7CS:K417N');
 
         expect(handler.toUrl(filter)).toContain('mutations=S%3AE44H%7CS%3AK417N');
     });
 
     it('parses manual mode with no mutations specified', () => {
-        const filter = parse('sequenceType=amino+acid&');
+        const filter = parse('sequenceType=aa&');
 
         expect(filter.analysis.sequenceType).toBe('amino acid');
         expect(filter.analysis.mutations).toBeUndefined();
     });
 
     it('round-trips a position range', () => {
-        const filter = parse('sequenceType=amino+acid&mutationSource=range&rangeGene=S&rangeStart=130&rangeLength=46');
+        const filter = parse('sequenceType=aa&mutationSource=range&rangeGene=S&rangeStart=130&rangeLength=46');
 
         expect(filter.analysis).toEqual({
             mode: 'manual',

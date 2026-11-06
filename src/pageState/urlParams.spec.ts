@@ -9,6 +9,7 @@ import {
     optional,
     parseUrlParams,
     stringParam,
+    tokenParam,
     type UrlParams,
     writeUrlParams,
 } from './urlParams';
@@ -100,5 +101,21 @@ describe('writeUrlParams', () => {
         for (const value of settings) {
             expect(parse(write(value))).toEqual(value);
         }
+    });
+});
+
+describe('tokenParam', () => {
+    const param = tokenParam<'amino acid' | 'nucleotide'>({ 'amino acid': 'aa', nucleotide: 'nuc' });
+
+    it('writes a value as its token', () => {
+        expect(param.write('amino acid')).toBe('aa');
+    });
+
+    it('reads a token as its value', () => {
+        expect(param.parse('aa')).toEqual({ value: 'amino acid' });
+    });
+
+    it('does not read a value that is not a token', () => {
+        expect(param.parse('amino acid')).toBeUndefined();
     });
 });
