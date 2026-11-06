@@ -13,6 +13,7 @@ import {
     useCooccurrence,
 } from '../../../../dataLayer/hooks/analyses/cooccurrence';
 import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
+import { useReferenceGenome } from '../../../../dataLayer/hooks/lookups/referenceGenome';
 import {
     type CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
@@ -90,16 +91,46 @@ export const Cooccurrence: FC<CooccurrenceProps> = (props) => {
 type ManualCooccurrenceProps = Extract<CooccurrenceProps, { positionSource: 'manual' }>;
 type AmpliconCooccurrenceProps = Extract<CooccurrenceProps, { positionSource: 'amplicon' }>;
 
-const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = (componentProps) => {
+const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = ({ panel, lineageTree, ...componentProps }) => {
     const { sequenceType, positions } = componentProps;
     const { nucleotideSequence } = useRhydbSchema();
+    const referenceGenome = useReferenceGenome();
 
     const { targets, labels } = useMemo(() => {
         const tokens = positions.map((raw) => parsePositionToken(raw, sequenceType)).filter((token) => token !== null);
         return cooccurrenceTargets(tokens, sequenceType, nucleotideSequence);
     }, [positions, sequenceType, nucleotideSequence]);
 
-    return <CooccurrenceFromTargets componentProps={componentProps} targets={targets} labels={labels} />;
+    // The reference symbol at each position, from the reference genome; without it (if it failed to
+    // load) the table still works, it just can't tell mutations from reference bases.
+    const referenceSymbols = useMemo(() => {
+        if (referenceGenome.data === undefined) {
+            return undefined;
+        }
+        const sequences =
+            sequenceType === 'nucleotide' ? referenceGenome.data.nucleotideSequences : referenceGenome.data.genes;
+        return Object.fromEntries(
+            targets.map(({ sequenceName, position }, index) => [
+                labels[index],
+                sequences.find((sequence) => sequence.name === sequenceName)?.sequence[position - 1],
+            ]),
+        );
+    }, [referenceGenome.data, sequenceType, targets, labels]);
+
+    if (referenceGenome.isPending) {
+        return <LoadingDisplay />;
+    }
+
+    return (
+        <CooccurrenceFromTargets
+            componentProps={componentProps}
+            targets={targets}
+            labels={labels}
+            referenceSymbols={referenceSymbols}
+            panel={panel}
+            lineageTree={lineageTree}
+        />
+    );
 };
 
 /**
@@ -186,7 +217,7 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
 
 /**
  * The substitution a position's label and observed symbol stand for, to link out to CoV-Spectrum
- * with — `referenceSymbols` (only known for the amplicon-anchor source) gives the reference base;
+ * with — `referenceSymbols` (unknown only if the reference genome failed to load) gives the reference base;
  * without it the substitution is still well-formed, just missing `valueAtReference`, which
  * `SubstitutionClass` and the clinical LAPIS behind the link tolerate (position + new base alone).
  */
@@ -346,7 +377,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
 
     // EXPERIMENTAL: which panel lineages explain each pattern, computed straight from the already-
     // loaded lineage tree (no per-row network call, unlike the clinical-LAPIS lookup this replaced) —
-    // only possible with a reference symbol per position, i.e. the amplicon-anchor source.
+    // only possible with a reference symbol per position.
     const panelSymbols = useMemo(() => {
         if (panel === undefined || panel.length === 0 || lineageTree === undefined || referenceSymbols === undefined) {
             return undefined;
@@ -718,7 +749,7 @@ const CooccurrenceLegend: FC<LegendProps> = ({ hasReference, hasJaccards }) => (
 
 /**
  * A row's own mutations — positions whose symbol differs from the reference, or every position if
- * there's no reference to compare to (the manual position source).
+ * there's no reference to compare to (the reference genome failed to load).
  */
 function substitutionsOf(
     patternSymbols: Record<string, string>,

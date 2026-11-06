@@ -9,8 +9,7 @@
  * signature the deconvolution mode fits against); amino acid reads `getLineageSignature` directly,
  * since `lineageSignatures` is nucleotide-only (deconvolution never needed amino acid codes) — see
  * `lineageTree.ts`'s `Mutations.aminoAcid`. Either way, only meaningful with the queried
- * positions' reference symbols known (the amplicon-anchor position source, which already fetches
- * them for the entropy calculation) — without a reference, "this lineage has no mutation here"
+ * positions' reference symbols known — without a reference, "this lineage has no mutation here"
  * can't be turned into "so it carries the reference base" and compared.
  */
 
