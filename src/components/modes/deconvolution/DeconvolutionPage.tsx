@@ -98,7 +98,14 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
             )}
             {lineageTree !== undefined && panel.length > 0 && (
                 // The tree in one column, so that the signature overlap fits next to it, as wide as it needs.
-                <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_auto]'>
+                <div
+                    className={`grid items-start gap-6 ${panel.length > 1 ? 'xl:grid-cols-[auto_minmax(0,1fr)]' : ''}`}
+                >
+                    {panel.length > 1 && (
+                        <TitledPanel title='Signature overlap' info={<SignatureOverlapInfo />}>
+                            <SignatureOverlapTable signatures={overlapSignatures} colors={colors} />
+                        </TitledPanel>
+                    )}
                     <TitledPanel title='Lineage tree'>
                         <LineagePanelTree
                             lineageTree={lineageTree}
@@ -108,11 +115,6 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
                             columns={1}
                         />
                     </TitledPanel>
-                    {panel.length > 1 && (
-                        <TitledPanel title='Signature overlap' info={<SignatureOverlapInfo />}>
-                            <SignatureOverlapTable signatures={overlapSignatures} colors={colors} />
-                        </TitledPanel>
-                    )}
                 </div>
             )}
         </ModePageLayout>
