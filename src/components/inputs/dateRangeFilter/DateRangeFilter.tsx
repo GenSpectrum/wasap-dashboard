@@ -1,111 +1,58 @@
-import { useMemo } from 'react';
-
 import { DatePicker } from './DatePicker';
-import { computeInitialValues } from './computeInitialValues';
-import { toYYYYMMDD } from './dateConversion';
-import { type DateRangeOption, type DateRangeValue } from '../../../domain/dateRange';
-import { ErrorBoundary } from '../../ui/ErrorBoundary';
+import { CUSTOM_DATE_RANGE_LABEL, type DateRangeOption } from '../../../domain/dateRange';
 
-const CUSTOM_OPTION = 'Custom';
-const NOTHING_SELECTED = '__undefined__';
-
-export type DateRangeFilterProps = {
-    dateRangeOptions: DateRangeOption[];
-    value: DateRangeValue;
-    placeholder?: string;
-    onDateRangeChange?: (value: DateRangeOption) => void;
-};
-
-type DateRangeFilterState = {
-    label: string;
-    dateFrom?: Date;
-    dateTo?: Date;
-} | null;
-
-export const DateRangeFilter = (props: DateRangeFilterProps) => (
-    <ErrorBoundary layout='horizontal' resetKeys={[props.value, props.dateRangeOptions]}>
-        <DateRangeFilterWithoutErrors {...props} />
-    </ErrorBoundary>
-);
-
-/** What is chosen: a preset by its label, or a custom range (`CUSTOM_OPTION`). Derived from `value` alone. */
-function toState(value: DateRangeValue, dateRangeOptions: DateRangeOption[]): DateRangeFilterState {
-    const initialValues = computeInitialValues(value, dateRangeOptions);
-    if (!initialValues) {
-        return null;
-    }
-    return {
-        label: initialValues.initialSelectedDateRange ?? CUSTOM_OPTION,
-        dateFrom: initialValues.initialSelectedDateFrom,
-        dateTo: initialValues.initialSelectedDateTo,
-    };
-}
-
-const DateRangeFilterWithoutErrors = ({
+/**
+ * A preset, and the dates from and to. `value` has its dates (see `resolveDateRange`); editing a date
+ * makes it a custom range.
+ */
+export function DateRangeFilter({
     dateRangeOptions,
     value,
-    placeholder,
-    onDateRangeChange,
-}: DateRangeFilterProps) => {
-    const state = useMemo(() => toState(value, dateRangeOptions), [value, dateRangeOptions]);
+    onChange,
+}: {
+    dateRangeOptions: DateRangeOption[];
+    value: DateRangeOption;
+    onChange: (value: DateRangeOption) => void;
+}) {
+    const { label, dateFrom, dateTo } = value;
     // "Custom" is only an option while a custom range is chosen: it can't be picked, only typed.
-    const options = state?.label === CUSTOM_OPTION ? [...dateRangeOptions, { label: CUSTOM_OPTION }] : dateRangeOptions;
-
-    const changeCustomRange = (dateFrom: Date | undefined, dateTo: Date | undefined) => {
-        onDateRangeChange?.({
-            label: CUSTOM_OPTION,
-            dateFrom: dateFrom !== undefined ? toYYYYMMDD(dateFrom) : undefined,
-            dateTo: dateTo !== undefined ? toYYYYMMDD(dateTo) : undefined,
-        });
-    };
-
-    const onChangeDateFrom = (date: Date | undefined) => {
-        if (date?.toDateString() !== state?.dateFrom?.toDateString()) {
-            changeCustomRange(date, state?.dateTo);
-        }
-    };
-
-    const onChangeDateTo = (date: Date | undefined) => {
-        if (date?.toDateString() !== state?.dateTo?.toDateString()) {
-            changeCustomRange(state?.dateFrom, date);
-        }
-    };
+    const labels = dateRangeOptions.map((option) => option.label);
+    if (label === CUSTOM_DATE_RANGE_LABEL) {
+        labels.push(CUSTOM_DATE_RANGE_LABEL);
+    }
 
     return (
         <div className='grid grid-cols-[minmax(0,40fr)_minmax(0,30fr)_minmax(0,30fr)]'>
             <select
                 className='select w-full'
-                value={state?.label ?? NOTHING_SELECTED}
+                value={label}
                 onChange={(event) => {
                     const option = dateRangeOptions.find((item) => item.label === event.currentTarget.value);
                     if (option !== undefined) {
-                        onDateRangeChange?.(option);
+                        onChange(option);
                     }
                 }}
             >
-                <option value={NOTHING_SELECTED} disabled>
-                    {placeholder ?? 'Select an option'}
-                </option>
-                {options.map(({ label }) => (
-                    <option key={label} value={label}>
-                        {label}
+                {labels.map((optionLabel) => (
+                    <option key={optionLabel} value={optionLabel}>
+                        {optionLabel}
                     </option>
                 ))}
             </select>
             <DatePicker
                 className='w-full'
-                value={state?.dateFrom}
-                onChange={onChangeDateFrom}
-                maxDate={state?.dateTo}
+                value={dateFrom}
+                onChange={(date) => onChange({ label: CUSTOM_DATE_RANGE_LABEL, dateFrom: date, dateTo })}
+                maxDate={dateTo}
                 placeholderText={'Date from'}
             />
             <DatePicker
                 className='w-full'
-                value={state?.dateTo}
-                onChange={onChangeDateTo}
-                minDate={state?.dateFrom}
+                value={dateTo}
+                onChange={(date) => onChange({ label: CUSTOM_DATE_RANGE_LABEL, dateFrom, dateTo: date })}
+                minDate={dateFrom}
                 placeholderText={'Date to'}
             />
         </div>
     );
-};
+}
