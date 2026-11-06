@@ -32,7 +32,7 @@ describe('UntrackedPageStateHandler', () => {
             'granularity=day&' +
             'sequenceType=nuc&' +
             'excludeSet=custom&' +
-            'excludeVariants=XBB.1.5*%7CBA.2*%7CJN.1&';
+            'excludeVariants=XBB.1.5*,BA.2*,JN.1&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('untracked');
@@ -48,7 +48,7 @@ describe('UntrackedPageStateHandler', () => {
             '/wastewater/covid/untracked?' +
             'sequenceType=nuc&' +
             'excludeSet=custom&' +
-            'excludeVariants=XBB*%7CBA.2*%7CJN.1%7CXFG*&';
+            'excludeVariants=XBB*,BA.2*,JN.1,XFG*&';
         const filter1 = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
         const url2 = handler.toUrl(filter1);
         const filter2 = handler.parsePageStateFromUrl(new URL(`http://example.com${url2}`).searchParams);

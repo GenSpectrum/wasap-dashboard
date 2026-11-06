@@ -47,7 +47,7 @@ describe('baseFilter', () => {
         });
 
         it('reads several locations from one list param', () => {
-            expect(parse('locations=Basel|Bern').locationNames).toEqual(['Basel', 'Bern']);
+            expect(parse('locations=Basel,Bern').locationNames).toEqual(['Basel', 'Bern']);
         });
 
         it('reads an empty location as all locations, not the default one', () => {
@@ -133,7 +133,7 @@ describe('baseFilter', () => {
         });
 
         it('round-trips several locations', () => {
-            const query = 'locations=Basel%7CBern';
+            const query = 'locations=Basel%2CBern';
 
             expect(serialize(parse(query))).toBe(query);
         });

@@ -56,7 +56,7 @@ describe('parseUrlParams', () => {
     });
 
     it('reads the values', () => {
-        expect(parse('kind=b&name=x&variant=BA.2&count=3&flag=false&lineages=A|B')).toEqual({
+        expect(parse('kind=b&name=x&variant=BA.2&count=3&flag=false&lineages=A,B')).toEqual({
             mode: 'test',
             kind: 'b',
             name: 'x',

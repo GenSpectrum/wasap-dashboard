@@ -47,7 +47,7 @@ describe('VariantExplorerPageStateHandler', () => {
             'lineage=XFG&' +
             'minJaccard=0.8&' +
             'timeFrame=all&' +
-            'backgroundLineages=JN.1%7CBA.2&';
+            'backgroundLineages=JN.1,BA.2&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.backgroundLineages).toEqual(['JN.1', 'BA.2']);

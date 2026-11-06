@@ -113,10 +113,10 @@ export const booleanParam: UrlParam<boolean> = {
     write: (value) => String(value),
 };
 
-/** A list, like `JN.1|BA.2`; `''` is the empty list. */
+/** A list, like `JN.1,BA.2`; `''` is the empty list. */
 export const listParam: UrlParam<string[]> = {
-    parse: (raw) => ({ value: raw.split('|').filter((item) => item !== '') }),
-    write: (value) => value.join('|'),
+    parse: (raw) => ({ value: raw.split(',').filter((item) => item !== '') }),
+    write: (value) => value.join(','),
 };
 
 /** `param`, or `undefined` for no value at all, written as `''`. An empty list is `undefined` as well. */

@@ -32,15 +32,15 @@ describe('ManualPageStateHandler', () => {
     });
 
     it('parses multiple mutations', () => {
-        const filter = parse('sequenceType=nuc&mutations=A23T%7CS:E44H%7CORFla:T123A&');
+        const filter = parse('sequenceType=nuc&mutations=A23T,S:E44H,ORFla:T123A&');
 
         expect(filter.analysis.mutations).toEqual(['A23T', 'S:E44H', 'ORFla:T123A']);
     });
 
     it('round-trips the mutations', () => {
-        const filter = parse('sequenceType=aa&mutations=S:E44H%7CS:K417N');
+        const filter = parse('sequenceType=aa&mutations=S:E44H,S:K417N');
 
-        expect(handler.toUrl(filter)).toContain('mutations=S%3AE44H%7CS%3AK417N');
+        expect(handler.toUrl(filter)).toContain('mutations=S%3AE44H%2CS%3AK417N');
     });
 
     it('parses manual mode with no mutations specified', () => {

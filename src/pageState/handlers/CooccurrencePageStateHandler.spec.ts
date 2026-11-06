@@ -27,13 +27,13 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses multiple positions', () => {
-        const filter = parse('sequenceType=nuc&positions=241%7C23403');
+        const filter = parse('sequenceType=nuc&positions=241,23403');
         expect(filter.analysis.positions).toEqual(['241', '23403']);
     });
 
     it('round-trips positions', () => {
-        const filter = parse('sequenceType=aa&positions=S%3A501%7CS%3A614');
-        expect(handler.toUrl(filter)).toContain('positions=S%3A501%7CS%3A614');
+        const filter = parse('sequenceType=aa&positions=S:501,S:614');
+        expect(handler.toUrl(filter)).toContain('positions=S%3A501%2CS%3A614');
     });
 
     it('takes the sequence type from the defaults of the config when it is not in the URL', () => {
@@ -78,7 +78,7 @@ describe('CooccurrencePageStateHandler', () => {
         });
 
         it('takes the panel from the URL over the default one', () => {
-            expect(parseWithPanel('panel=XFG%7CNB.1.8.1').analysis.panel).toEqual(['XFG', 'NB.1.8.1']);
+            expect(parseWithPanel('panel=XFG,NB.1.8.1').analysis.panel).toEqual(['XFG', 'NB.1.8.1']);
         });
 
         it('keeps an emptied panel empty, rather than falling back to the default one', () => {
