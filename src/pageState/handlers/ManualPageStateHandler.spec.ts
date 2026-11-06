@@ -51,7 +51,7 @@ describe('ManualPageStateHandler', () => {
     });
 
     it('round-trips a position range', () => {
-        const filter = parse('sequenceType=aa&mutationSource=range&rangeGene=S&rangeStart=130&rangeLength=46');
+        const filter = parse('sequenceType=aa&source=range&rangeGene=S&rangeStart=130&rangeLength=46');
 
         expect(filter.analysis).toEqual({
             mode: 'manual',
@@ -65,7 +65,7 @@ describe('ManualPageStateHandler', () => {
     });
 
     it('ignores a range longer than allowed', () => {
-        expect(parse('mutationSource=range&rangeLength=301').analysis.rangeLength).toBeUndefined();
+        expect(parse('source=range&rangeLength=301').analysis.rangeLength).toBeUndefined();
     });
 
     it('takes the sequence type from the defaults of the config when it is not in the URL', () => {

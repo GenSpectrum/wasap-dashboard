@@ -1,7 +1,7 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { positionSourceSchema, type CooccurrenceAnalysis } from '../analysisFilter';
-import { enumParam, listParam, numberParam, optional, stringParam, sequenceTypeParam } from '../urlParams';
+import { type CooccurrenceAnalysis, type PositionSource } from '../analysisFilter';
+import { listParam, named, numberParam, optional, stringParam, sequenceTypeParam, tokenParam } from '../urlParams';
 
 export class CooccurrencePageStateHandler extends ModePageStateHandler<CooccurrenceAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'cooccurrence'>) {
@@ -13,7 +13,8 @@ export class CooccurrencePageStateHandler extends ModePageStateHandler<Cooccurre
 
     protected readonly params = {
         sequenceType: sequenceTypeParam,
-        positionSource: optional(enumParam(positionSourceSchema)),
+        // `list`, like the list of mutations of the manual mode, for positions picked one by one.
+        positionSource: named('source', optional(tokenParam<PositionSource>({ manual: 'list', amplicon: 'amplicon' }))),
         positions: optional(listParam),
         anchorPosition: optional(stringParam),
         entropyCutoff: optional(numberParam({ min: 0 })),

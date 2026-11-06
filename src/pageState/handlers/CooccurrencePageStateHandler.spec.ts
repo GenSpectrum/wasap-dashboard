@@ -41,18 +41,24 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nuc&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&source=amplicon&anchorPosition=23403&entropyCutoff=0.5');
         expect(filter.analysis.positionSource).toBe('amplicon');
         expect(filter.analysis.anchorPosition).toBe('23403');
         expect(filter.analysis.entropyCutoff).toBe(0.5);
     });
 
     it('round-trips the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nuc&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&source=amplicon&anchorPosition=23403&entropyCutoff=0.5');
         const url = handler.toUrl(filter);
-        expect(url).toContain('positionSource=amplicon');
+        expect(url).toContain('source=amplicon');
         expect(url).toContain('anchorPosition=23403');
         expect(url).toContain('entropyCutoff=0.5');
+    });
+
+    it('reads and writes positions picked one by one as source=list', () => {
+        const filter = parse('sequenceType=nuc&source=list&positions=241,23403');
+        expect(filter.analysis.positionSource).toBe('manual');
+        expect(handler.toUrl(filter)).toContain('source=list');
     });
 
     it('round-trips the min. share, and has no mean proportion in the URL', () => {

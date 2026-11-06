@@ -12,9 +12,11 @@ export type UrlParam<T> = {
     // A method, so that a param can stand for an optional setting whose default isn't `undefined`
     // (like a list that is empty by default): `parse` never gives `undefined` then.
     write(value: T): string;
+    /** The name of the param, if it isn't the name of the setting (see `named`). */
+    name?: string;
 };
 
-/** The URL params of the settings of a page, by the name of the setting, which is also the param's name. */
+/** The URL params of the settings of a page, by the name of the setting, which is also the param's name unless it has its own. */
 export type UrlParams<Settings> = { [Name in keyof Settings]?: UrlParam<Settings[Name]> };
 
 /**
@@ -28,7 +30,7 @@ export function parseUrlParams<Settings extends object>(
 ): Settings {
     const settings = { ...defaults };
     for (const name of Object.keys(params) as (keyof Settings & string)[]) {
-        const raw = search.get(name);
+        const raw = search.get(params[name]!.name ?? name);
         const parsed = raw === null ? undefined : params[name]!.parse(raw);
         if (parsed !== undefined) {
             settings[name] = parsed.value;
@@ -51,9 +53,14 @@ export function writeUrlParams<Settings extends object>(
         const param = params[name]!;
         const value = param.write(settings[name]);
         if (value !== param.write(defaults[name])) {
-            search.set(name, value);
+            search.set(param.name ?? name, value);
         }
     }
+}
+
+/** `param`, but with a name of its own in the URL, for a setting whose name would be too long or unclear there. */
+export function named<T>(name: string, param: UrlParam<T>): UrlParam<T> {
+    return { ...param, name };
 }
 
 /** A non-empty string. */

@@ -5,6 +5,7 @@ import {
     booleanParam,
     enumParam,
     listParam,
+    named,
     numberParam,
     optional,
     parseUrlParams,
@@ -117,5 +118,28 @@ describe('tokenParam', () => {
 
     it('does not read a value that is not a token', () => {
         expect(param.parse('amino acid')).toBeUndefined();
+    });
+});
+
+describe('named', () => {
+    type Named = { mode: 'test'; resistanceSet: string };
+    const namedParams: UrlParams<Named> = { resistanceSet: named('set', stringParam) };
+    const namedDefaults: Named = { mode: 'test', resistanceSet: 'Spike' };
+
+    it('reads the setting from the param of its own name', () => {
+        const settings = parseUrlParams(
+            new URLSearchParams('set=RdRp&resistanceSet=3CLpro'),
+            namedParams,
+            namedDefaults,
+        );
+
+        expect(settings.resistanceSet).toBe('RdRp');
+    });
+
+    it('writes the setting into the param of its own name', () => {
+        const search = new URLSearchParams();
+        writeUrlParams(search, namedParams, { mode: 'test', resistanceSet: 'RdRp' }, namedDefaults);
+
+        expect(search.toString()).toBe('set=RdRp');
     });
 });
