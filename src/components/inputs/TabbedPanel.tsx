@@ -6,7 +6,9 @@ import { Inset } from '../ui/Inset';
  * A pick of one of a few options as tabs, with the controls for the picked one in the panel
  * below: for a choice that decides which other controls there are. The picked tab opens into the
  * panel: it has no bottom border, which the other tabs draw instead. The tabs fill the width, each
- * as wide as its label plus a share of the rest.
+ * as wide as its label plus a share of the rest. It has no visible label: it goes in a
+ * `FilterSection`, whose title says what is picked; `label` is the name of the tab list for screen
+ * readers.
  */
 export function TabbedPanel<T extends string>({
     label,
@@ -24,7 +26,6 @@ export function TabbedPanel<T extends string>({
 
     return (
         <div>
-            <span className='label'>{label}</span>
             <div role='tablist' aria-label={label} className='flex'>
                 {options.map((option) => {
                     const isSelected = option.value === value;
