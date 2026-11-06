@@ -19,13 +19,11 @@ describe('signatureOverlap', () => {
             [1, 2, 0],
             [0, 0, 1],
         ]);
-        expect(overlap.jaccard[0][1]).toBeCloseTo(1 / 3);
-        expect(overlap.jaccard[0][2]).toBe(0);
-        expect(overlap.jaccard[2][2]).toBe(1);
+        expect(overlap.distinguishing).toEqual([
+            [0, 2, 3],
+            [2, 0, 3],
+            [3, 3, 0],
+        ]);
         expect(overlap.unique).toEqual([['C3T'], ['C4T'], ['C5T']]);
-    });
-
-    it('treats two empty signatures as the same', () => {
-        expect(signatureOverlap({ A: [], B: [] }).jaccard[0][1]).toBe(1);
     });
 });

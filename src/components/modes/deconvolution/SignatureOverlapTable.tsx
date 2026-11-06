@@ -5,9 +5,8 @@ import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
  * The overlap of the signatures of the lineages of a panel. First the number of mutations all of
- * them share, then, without those, a matrix: each cell has the Jaccard index of two lineages
- * (shared / union) and the number of mutations that tell them apart (those only one of the two
- * has, so the matrix is symmetric). The first column has the size of the
+ * them share, then, without those, a matrix: each cell has the number of mutations that tell two
+ * lineages apart (those only one of the two has, so the matrix is symmetric). The first column has the size of the
  * signature. The last column has the mutations only that lineage has.
  */
 export function SignatureOverlapTable({
@@ -18,7 +17,7 @@ export function SignatureOverlapTable({
     colors: Map<string, string>;
 }) {
     const overlap = useMemo(() => signatureOverlap(signatures), [signatures]);
-    const { lineages, common, totalSizes, sizes, unique, shared, jaccard } = overlap;
+    const { lineages, common, totalSizes, sizes, unique, shared, distinguishing } = overlap;
 
     return (
         <div className='flex flex-col gap-3'>
@@ -70,18 +69,14 @@ export function SignatureOverlapTable({
                                                     shared={shared[i][j]}
                                                     onlyA={sizes[i] - shared[i][j]}
                                                     onlyB={sizes[j] - shared[i][j]}
-                                                    jaccard={jaccard[i][j]}
                                                 />
                                             }
                                         >
                                             <span
-                                                className='flex h-full w-full flex-col items-center justify-center leading-tight'
-                                                style={cellStyle(jaccard[i][j])}
+                                                className='flex h-full w-full items-center justify-center font-medium'
+                                                style={cellStyle(distinguishing[i][j])}
                                             >
-                                                <span className='font-medium'>{jaccard[i][j].toFixed(2)}</span>
-                                                <span className='text-xs opacity-75'>
-                                                    {sizes[i] + sizes[j] - 2 * shared[i][j]}
-                                                </span>
+                                                {distinguishing[i][j]}
                                             </span>
                                         </HoverTooltip>
                                     </td>
@@ -135,14 +130,12 @@ function PairDetails({
     shared,
     onlyA,
     onlyB,
-    jaccard,
 }: {
     a: string;
     b: string;
     shared: number;
     onlyA: number;
     onlyB: number;
-    jaccard: number;
 }) {
     return (
         <dl className='grid grid-cols-[auto_auto] gap-x-3 text-sm'>
@@ -154,38 +147,37 @@ function PairDetails({
             <dd className='text-right tabular-nums'>{onlyB}</dd>
             <dt>Distinguishing</dt>
             <dd className='text-right tabular-nums'>{onlyA + onlyB}</dd>
-            <dt>Jaccard index</dt>
-            <dd className='text-right tabular-nums'>{jaccard.toFixed(2)}</dd>
         </dl>
     );
 }
 
 /**
- * Steps of the Jaccard index and their colours: green where two lineages are easy to tell apart,
- * red where they overlap so much that their shares are hard to split.
+ * Steps of the number of distinguishing mutations and their colours: shades of red up to 10, where
+ * the deconvolution has little to split the shares of two lineages on, yellow up to 20, green above.
  */
-const JACCARD_STEPS = [
-    { from: 0, color: '#2e8b57', text: 'white' },
-    { from: 0.2, color: '#a6d96a', text: undefined },
-    { from: 0.4, color: '#fee08b', text: undefined },
-    { from: 0.6, color: '#f98e52', text: undefined },
-    { from: 0.8, color: '#c62828', text: 'white' },
+const DISTINGUISHING_STEPS = [
+    { upTo: 1, label: '≤ 1', color: '#8e1b1b', text: 'white' },
+    { upTo: 3, label: '2–3', color: '#c62828', text: 'white' },
+    { upTo: 5, label: '4–5', color: '#e57368', text: undefined },
+    { upTo: 10, label: '6–10', color: '#f5b5ab', text: undefined },
+    { upTo: 20, label: '11–20', color: '#fbe08a', text: undefined },
+    { upTo: Infinity, label: '> 20', color: '#a8d99a', text: undefined },
 ];
 
 /** In steps rather than a smooth scale, so that cells are easy to compare. */
-function cellStyle(jaccard: number) {
-    const step = JACCARD_STEPS.findLast(({ from }) => jaccard >= from) ?? JACCARD_STEPS[0];
+function cellStyle(distinguishing: number) {
+    const step = DISTINGUISHING_STEPS.find(({ upTo }) => distinguishing <= upTo) ?? DISTINGUISHING_STEPS[0];
     return { backgroundColor: step.color, color: step.text };
 }
 
 function Legend() {
     return (
         <div className='flex flex-wrap items-center gap-2 text-xs text-gray-600'>
-            <span>Jaccard index (top), distinguishing substitutions (bottom)</span>
-            {JACCARD_STEPS.map(({ from, color }, index) => (
-                <span key={from} className='flex items-center gap-1'>
+            <span>Distinguishing substitutions</span>
+            {DISTINGUISHING_STEPS.map(({ label, color }) => (
+                <span key={label} className='flex items-center gap-1'>
                     <span className='inline-block h-3 w-5' style={{ backgroundColor: color }} />
-                    {index === JACCARD_STEPS.length - 1 ? `≥ ${from}` : `${from}–${JACCARD_STEPS[index + 1].from}`}
+                    {label}
                 </span>
             ))}
         </div>
