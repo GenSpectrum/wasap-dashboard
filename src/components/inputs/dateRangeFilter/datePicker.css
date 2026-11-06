@@ -1,0 +1,6 @@
+/* flatpickr's static mode (see DatePicker) wraps the date field in an inline-block, which is as wide
+   as the field's default width, not as the space it is given: on a wide page, a gap was left after
+   the field. */
+.flatpickr-wrapper {
+    display: block;
+}

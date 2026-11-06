@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 
-import { DateRangeFilter } from './dateRangeFilter/DateRangeFilter';
+import { CellDropdownLoading } from './CellDropdown';
+import { DateRangeDropdown } from './dateRangeFilter/DateRangeDropdown';
 import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../../domain/dateRange';
-import { LoadingDisplay } from '../ui/LoadingDisplay';
+import { type DateRangeOption } from '../../domain/dateRange';
 
 /**
  * Computes the available date-range options dynamically from the newest
@@ -11,11 +11,15 @@ import { LoadingDisplay } from '../ui/LoadingDisplay';
  */
 export function DynamicDateFilter({
     label,
+    icon,
     generateOptions,
     value,
     onChange,
 }: {
+    /** What the dropdown is, for screen readers: its button shows only the range. */
     label: string;
+    /** An iconify class for the icon at the start of the button. */
+    icon: string;
     generateOptions: ({ startDate, endDate }: { startDate: string; endDate: string }) => DateRangeOption[];
     value: DateRangeOption | undefined;
     onChange: (newValue: DateRangeOption | undefined) => void;
@@ -29,44 +33,23 @@ export function DynamicDateFilter({
         return generateOptions({ startDate: dateExtent.min, endDate: dateExtent.max });
     }, [dateExtent, generateOptions]);
 
-    // When the value has a "Custom" label, try to match it back to one of the generated options
-    // by comparing dateFrom and dateTo. If there's a match, use that option's label instead of "Custom".
-    const normalizedValue = useMemo(() => {
-        if (value?.label !== CUSTOM_DATE_RANGE_LABEL) {
-            return value;
-        }
-
-        const matchingOption = generatedOptions.find(
-            (option) => option.dateFrom === value.dateFrom && option.dateTo === value.dateTo,
-        );
-
-        return matchingOption ?? value;
-    }, [value, generatedOptions]);
-
-    // DateRangeFilter's `value` takes a preset's bare label, or the raw dates for a custom
-    // range (never both) - collapse the resolved DateRangeOption into that shape.
-    const isCustom = normalizedValue?.label === CUSTOM_DATE_RANGE_LABEL;
-
     return (
-        <label>
-            <div className='label flex'>
-                <span>{label}</span>
-            </div>
+        <div className='h-full'>
             {isPending ? (
-                <div className='h-20'>
-                    <LoadingDisplay />
-                </div>
+                <CellDropdownLoading />
             ) : isError ? (
-                <div className='flex h-20 items-center'>
+                <div className='flex h-full items-center'>
                     Failed to load date range: {error instanceof Error ? error.message : String(error)}
                 </div>
             ) : (
-                <DateRangeFilter
-                    onDateRangeChange={onChange}
-                    value={(isCustom ? normalizedValue : normalizedValue?.label) ?? null}
+                <DateRangeDropdown
                     dateRangeOptions={generatedOptions}
+                    value={value}
+                    onChange={onChange}
+                    label={label}
+                    icon={icon}
                 />
             )}
-        </label>
+        </div>
     );
 }

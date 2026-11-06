@@ -110,6 +110,32 @@
     font-size: 0.875rem;
 }
 
+/* daisyUI rings inputs and selects in black on any focus, a click too, and blackens their border.
+   Like its checkboxes, radios and buttons, the ring is for the keyboard only here, and the border
+   keeps its grey (daisyUI's default --input-color). A text field counts as focus-visible on a click
+   too, and has the caret anyway: it gets a darker border instead of the ring. */
+.input:focus,
+.input:focus-within,
+.select:focus,
+.select:focus-within,
+.select:open,
+.textarea:focus {
+    --input-color: color-mix(in oklab, var(--color-base-content) 20%, #0000);
+    outline: none;
+}
+
+button.input:focus-visible,
+.select:focus-visible {
+    outline: 2px solid var(--color-base-content);
+    outline-offset: 2px;
+}
+
+input.input:focus,
+.input:has(input:focus),
+.textarea:focus {
+    border-color: var(--color-stone-500);
+}
+
 /* The toast library and the date picker popup ship their own rounding, and rules like
    .flatpickr-day.startRange, so a plain override would lose to them. */
 .Toastify__toast,

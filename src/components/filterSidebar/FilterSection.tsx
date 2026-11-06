@@ -2,6 +2,9 @@ import { useId, type PropsWithChildren, type ReactNode } from 'react';
 
 import { HelpButton } from '../ui/HelpButton';
 
+/** The small uppercase title of a group of controls: of a `FilterSection`, or of the dataset bar. */
+export const SECTION_TITLE_CLASS = 'text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase';
+
 /**
  * A group of fields in a filter sidebar, under a small uppercase title with a rule after it (like
  * the group labels of the header). The fields keep the same gap among themselves as the sidebar.
@@ -20,10 +23,7 @@ export function FilterSection({
     return (
         <section aria-labelledby={titleId}>
             <div className='mb-3 flex items-center gap-2'>
-                <h2
-                    id={titleId}
-                    className='text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase'
-                >
+                <h2 id={titleId} className={SECTION_TITLE_CLASS}>
                     {title}
                 </h2>
                 <div className='h-px flex-1 bg-stone-300' aria-hidden='true' />

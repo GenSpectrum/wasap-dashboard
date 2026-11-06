@@ -77,6 +77,14 @@ describe('baseFilter', () => {
             });
         });
 
+        it('leaves an end of a custom range that is no date open', () => {
+            expect(parse('date=2026-13-45--2026-08-31').samplingDate).toEqual({
+                label: CUSTOM_DATE_RANGE_LABEL,
+                dateFrom: undefined,
+                dateTo: '2026-08-31',
+            });
+        });
+
         it('leaves the default date range out of the URL', () => {
             expect(serialize(parse(''))).toBe('');
         });
