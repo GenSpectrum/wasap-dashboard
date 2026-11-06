@@ -1,6 +1,7 @@
 import { useCombobox, useMultipleSelection } from 'downshift';
 import { type ReactNode, useMemo, useRef, useState } from 'react';
 
+import { Chip } from './Chip';
 import { DeleteIcon } from '../ui/icons/DeleteIcon';
 
 export function DownshiftCombobox<Item>({
@@ -243,24 +244,17 @@ export function DownshiftMultiCombobox<Item>({
                     }}
                 >
                     {selectedItems.map((selectedItem, index) => (
-                        <span
+                        <Chip
                             key={`${itemToString(selectedItem)}-${index}`}
-                            className='bg-brand-100 inline-flex items-center gap-1 px-2 py-0.5 text-black'
+                            removeLabel={`remove ${itemToString(selectedItem)}`}
+                            onRemove={() => {
+                                removeSelectedItem(selectedItem);
+                                selectItem(null);
+                            }}
+                            removeTabIndex={-1}
                         >
                             {formatSelectedItem ? formatSelectedItem(selectedItem) : itemToString(selectedItem)}
-                            <button
-                                aria-label={`remove ${itemToString(selectedItem)}`}
-                                className='flex cursor-pointer items-center text-gray-600 hover:text-black'
-                                type='button'
-                                onClick={() => {
-                                    removeSelectedItem(selectedItem);
-                                    selectItem(null);
-                                }}
-                                tabIndex={-1}
-                            >
-                                <span className='iconify mdi--close text-sm' />
-                            </button>
-                        </span>
+                        </Chip>
                     ))}
                     <div className='flex min-w-32 grow gap-0.5'>
                         <input

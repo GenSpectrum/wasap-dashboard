@@ -51,7 +51,7 @@ describe('UntrackedFilter - custom variants textarea', () => {
         }
         const { getByRole } = renderWithQueryClient(<WithPageState />);
 
-        const variantCombobox = await vi.waitFor(() => getByRole('combobox', { name: /variant/i }));
+        const variantCombobox = await vi.waitFor(() => getByRole('combobox', { name: 'Variant', exact: true }));
 
         await userEvent.click(variantCombobox);
 

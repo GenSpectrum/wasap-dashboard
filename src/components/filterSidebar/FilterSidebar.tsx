@@ -1,6 +1,7 @@
 import { type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { ApplyFilterButton } from './ApplyFilterButton';
+import { FilterSection } from './FilterSection';
 import { type PageStateHandler } from '../../pageState/PageStateHandler';
 import { type AnalysisFilter, type BaseFilter, type ModeFilter } from '../../pageState/analysisFilter';
 import { useDraftFilter } from '../../pageState/useDraftFilter';
@@ -55,7 +56,9 @@ function FilterSidebarWithDraft<Analysis extends AnalysisFilter>({
         <div className='flex flex-col gap-6'>
             {children(draft.analysis, draft.setAnalysis)}
             {withMeanProportion && (
-                <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
+                <FilterSection title='Filter'>
+                    <MeanProportionField value={draft.meanProportion} onChange={draft.setMeanProportion} />
+                </FilterSection>
             )}
             <ApplyFilterButton
                 pageStateHandler={pageStateHandler}

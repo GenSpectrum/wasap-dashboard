@@ -1,6 +1,7 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 
 import type { ExcludeSetName, UntrackedAnalysis } from '../../../pageState/analysisFilter';
+import { FilterSection } from '../../filterSidebar/FilterSection';
 import { KnownVariantsExclusionInfo } from '../../filterSidebar/InfoBlocks';
 import { LabeledField } from '../../inputs/LabeledField';
 import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
@@ -35,59 +36,60 @@ export function UntrackedFilter({
                 value={pageState.sequenceType}
                 onChange={(sequenceType) => setPageState({ ...pageState, sequenceType })}
             />
-            <LabeledField label='Known variants to exclude' info={<KnownVariantsExclusionInfo />}>
+            <FilterSection title='Excluded variants' info={<KnownVariantsExclusionInfo />}>
                 <select
                     className='select'
+                    aria-label='Known variants to exclude'
                     value={pageState.excludeSet}
                     onChange={(e) => setPageState({ ...pageState, excludeSet: e.target.value as ExcludeSetName })}
                 >
                     <option value='predefined'>Nextstrain clades</option>
                     <option value='custom'>custom</option>
                 </select>
-            </LabeledField>
-            {/* The list of variants (-mt-4) is about the select above, so it stays close to it instead of being a field of its own. */}
-            {pageState.excludeSet === 'predefined' ? (
-                isPending ? (
-                    <LoadingDisplay />
-                ) : isError ? (
-                    <span>Failed to load variant list. Please try again or use custom variant list.</span>
+                {/* The list of variants (-mt-2) is about the select above, so it stays close to it instead of being a field of its own. */}
+                {pageState.excludeSet === 'predefined' ? (
+                    isPending ? (
+                        <LoadingDisplay />
+                    ) : isError ? (
+                        <span>Failed to load variant list. Please try again or use custom variant list.</span>
+                    ) : (
+                        <div className='-mt-2 px-1 py-2 text-sm'>
+                            {defaultLineages.join(', ')}{' '}
+                            <button
+                                className='cursor-pointer underline'
+                                onClick={() => {
+                                    setPageState({
+                                        ...pageState,
+                                        excludeSet: 'custom',
+                                        excludeVariants: defaultLineages,
+                                    });
+                                }}
+                            >
+                                Customize ...
+                            </button>
+                        </div>
+                    )
                 ) : (
-                    <div className='-mt-4 px-1 py-2 text-sm'>
-                        {defaultLineages.join(', ')}{' '}
-                        <button
-                            className='cursor-pointer underline'
-                            onClick={() => {
-                                setPageState({
-                                    ...pageState,
-                                    excludeSet: 'custom',
-                                    excludeVariants: defaultLineages,
-                                });
-                            }}
-                        >
-                            Customize ...
-                        </button>
-                    </div>
-                )
-            ) : (
-                <>
-                    <LabeledField label='Custom variant list'>
-                        <LineageFilter
-                            lapisUrl={clinicalSequenceLapisBaseUrl}
-                            field={clinicalSequenceLapisLineageField}
-                            placeholderText='Variant'
-                            value={pageState.excludeVariants}
-                            onLineageMultiChange={(lineages) => {
-                                setPageState({
-                                    ...pageState,
-                                    excludeVariants: lineages[clinicalSequenceLapisLineageField],
-                                });
-                            }}
-                            hideCounts={true}
-                            multiSelect={true}
-                        />
-                    </LabeledField>
-                </>
-            )}
+                    <>
+                        <LabeledField label='Custom variant list'>
+                            <LineageFilter
+                                lapisUrl={clinicalSequenceLapisBaseUrl}
+                                field={clinicalSequenceLapisLineageField}
+                                placeholderText='Variant'
+                                value={pageState.excludeVariants}
+                                onLineageMultiChange={(lineages) => {
+                                    setPageState({
+                                        ...pageState,
+                                        excludeVariants: lineages[clinicalSequenceLapisLineageField],
+                                    });
+                                }}
+                                hideCounts={true}
+                                multiSelect={true}
+                            />
+                        </LabeledField>
+                    </>
+                )}
+            </FilterSection>
         </>
     );
 }

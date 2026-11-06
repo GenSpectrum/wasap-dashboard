@@ -2,7 +2,7 @@ import { type FC, useEffect, useState } from 'react';
 
 import { parsePositionToken } from './parsePositionToken';
 import { type SequenceType } from '../../../domain/mutations';
-import { singleGraphColorRGBByName } from '../../ui/charts/colors';
+import { Chip } from '../Chip';
 
 export type PositionFilterProps = {
     sequenceType: SequenceType;
@@ -85,22 +85,11 @@ export const PositionFilter: FC<PositionFilterProps> = ({ sequenceType, initialV
             <div className='label flex'>
                 <span>Positions</span>
             </div>
-            <div className={`input flex h-fit w-full flex-wrap gap-x-1 p-1 ${showErrorIndicator ? 'input-error' : ''}`}>
+            <div className={`input flex h-fit w-full flex-wrap gap-1 p-1.5 ${showErrorIndicator ? 'input-error' : ''}`}>
                 {selected.map((token) => (
-                    <span
-                        key={token}
-                        className='my-1 inline-flex items-center px-2 py-1 text-black'
-                        style={{ backgroundColor: singleGraphColorRGBByName('green', 0.4) }}
-                    >
+                    <Chip key={token} removeLabel={`remove position ${token}`} onRemove={() => removeToken(token)}>
                         {token}
-                        <button
-                            className='ml-1 flex cursor-pointer items-center text-gray-600 hover:text-black'
-                            aria-label={`remove position ${token}`}
-                            onClick={() => removeToken(token)}
-                        >
-                            <span className='iconify mdi--close text-sm' />
-                        </button>
-                    </span>
+                    </Chip>
                 ))}
                 <div className='flex grow gap-0.5 p-1'>
                     <input

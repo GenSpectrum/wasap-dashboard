@@ -13,6 +13,7 @@ import {
     useCooccurrence,
 } from '../../../../dataLayer/hooks/analyses/cooccurrence';
 import { useRhydbSchema } from '../../../../dataLayer/hooks/connection';
+import { useReferenceGenome } from '../../../../dataLayer/hooks/lookups/referenceGenome';
 import {
     type CooccurrenceOverTimeDataMap,
     type CooccurrencePattern,
@@ -90,16 +91,46 @@ export const Cooccurrence: FC<CooccurrenceProps> = (props) => {
 type ManualCooccurrenceProps = Extract<CooccurrenceProps, { positionSource: 'manual' }>;
 type AmpliconCooccurrenceProps = Extract<CooccurrenceProps, { positionSource: 'amplicon' }>;
 
-const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = (componentProps) => {
+const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = ({ panel, lineageTree, ...componentProps }) => {
     const { sequenceType, positions } = componentProps;
     const { nucleotideSequence } = useRhydbSchema();
+    const referenceGenome = useReferenceGenome();
 
     const { targets, labels } = useMemo(() => {
         const tokens = positions.map((raw) => parsePositionToken(raw, sequenceType)).filter((token) => token !== null);
         return cooccurrenceTargets(tokens, sequenceType, nucleotideSequence);
     }, [positions, sequenceType, nucleotideSequence]);
 
-    return <CooccurrenceFromTargets componentProps={componentProps} targets={targets} labels={labels} />;
+    // The reference symbol at each position, from the reference genome; without it (if it failed to
+    // load) the table still works, it just can't tell mutations from reference bases.
+    const referenceSymbols = useMemo(() => {
+        if (referenceGenome.data === undefined) {
+            return undefined;
+        }
+        const sequences =
+            sequenceType === 'nucleotide' ? referenceGenome.data.nucleotideSequences : referenceGenome.data.genes;
+        return Object.fromEntries(
+            targets.map(({ sequenceName, position }, index) => [
+                labels[index],
+                sequences.find((sequence) => sequence.name === sequenceName)?.sequence[position - 1],
+            ]),
+        );
+    }, [referenceGenome.data, sequenceType, targets, labels]);
+
+    if (referenceGenome.isPending) {
+        return <LoadingDisplay />;
+    }
+
+    return (
+        <CooccurrenceFromTargets
+            componentProps={componentProps}
+            targets={targets}
+            labels={labels}
+            referenceSymbols={referenceSymbols}
+            panel={panel}
+            lineageTree={lineageTree}
+        />
+    );
 };
 
 /**
@@ -160,9 +191,9 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
     );
 
     const contextNote = (
-        <p className='px-2 pt-2 pb-1 text-sm text-gray-600'>
-            Amplicon <span className='font-mono font-medium text-black'>{amplicon.start.toLocaleString()}</span>
-            &ndash;<span className='font-mono font-medium text-black'>{amplicon.end.toLocaleString()}</span> (
+        <p className='border-b border-stone-200 p-2 text-sm text-gray-600'>
+            Amplicon <span className='font-medium text-black'>{amplicon.start.toLocaleString()}</span>
+            &ndash;<span className='font-medium text-black'>{amplicon.end.toLocaleString()}</span> (
             {(amplicon.end - amplicon.start + 1).toLocaleString()} {sequenceType === 'nucleotide' ? 'bp' : 'aa'})
             &middot; {aboveCutoffCount} of {positionsByEntropy.length} positions exceed {entropyCutoff} bits of entropy
             {aboveCutoffCount > diversePositions.length
@@ -186,7 +217,7 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
 
 /**
  * The substitution a position's label and observed symbol stand for, to link out to CoV-Spectrum
- * with — `referenceSymbols` (only known for the amplicon-anchor source) gives the reference base;
+ * with — `referenceSymbols` (unknown only if the reference genome failed to load) gives the reference base;
  * without it the substitution is still well-formed, just missing `valueAtReference`, which
  * `SubstitutionClass` and the clinical LAPIS behind the link tolerate (position + new base alone).
  */
@@ -346,7 +377,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
 
     // EXPERIMENTAL: which panel lineages explain each pattern, computed straight from the already-
     // loaded lineage tree (no per-row network call, unlike the clinical-LAPIS lookup this replaced) —
-    // only possible with a reference symbol per position, i.e. the amplicon-anchor source.
+    // only possible with a reference symbol per position.
     const panelSymbols = useMemo(() => {
         if (panel === undefined || panel.length === 0 || lineageTree === undefined || referenceSymbols === undefined) {
             return undefined;
@@ -443,7 +474,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                 : undefined;
 
         return (
-            <tr key={rowKey} className={`border-b border-stone-100 ${isReference ? 'bg-stone-100' : ''}`}>
+            <tr key={rowKey} className={`h-9 divide-x divide-stone-200 ${isReference ? 'bg-stone-100' : ''}`}>
                 {positionLabels.map((label) => {
                     const symbol = patternSymbols[label];
                     const isMutated = referenceSymbols !== undefined && symbol !== referenceSymbols[label];
@@ -457,7 +488,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                     return (
                         <td
                             key={label}
-                            className={`px-2 py-1 font-mono whitespace-nowrap ${
+                            className={`px-2 text-center whitespace-nowrap ${
                                 isMutated ? 'font-semibold text-black' : 'text-gray-400'
                             }`}
                         >
@@ -476,10 +507,10 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                         </td>
                     );
                 })}
-                <td className='px-2 py-1 text-right font-mono whitespace-nowrap'>{count.toLocaleString()}</td>
-                <td className='px-2 py-1 text-right font-mono whitespace-nowrap'>{(share * 100).toFixed(2)}%</td>
+                <td className='px-2 text-right whitespace-nowrap tabular-nums'>{count.toLocaleString()}</td>
+                <td className='px-2 text-right whitespace-nowrap tabular-nums'>{(share * 100).toFixed(2)}%</td>
                 {panelSymbols && (
-                    <td className='px-2 py-1 whitespace-nowrap text-gray-700'>
+                    <td className='px-2 whitespace-nowrap text-gray-700'>
                         {isReference ? (
                             <span className='italic'>Reference</span>
                         ) : (
@@ -492,7 +523,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                         )}
                     </td>
                 )}
-                <td className='px-2 py-1 whitespace-nowrap'>
+                <td className='px-2 text-center whitespace-nowrap'>
                     {combinedLink !== undefined && (
                         <a
                             className='btn btn-xs'
@@ -507,7 +538,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                     )}
                 </td>
                 {manualModeLink && (
-                    <td className='px-2 py-1 whitespace-nowrap'>
+                    <td className='px-2 text-center whitespace-nowrap'>
                         {rowSubstitutions.length > 0 && (
                             <Link
                                 className='btn btn-xs'
@@ -525,22 +556,23 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
     };
 
     return (
-        <div className='border border-stone-300 bg-white p-2'>
+        <div className='border border-stone-300 bg-white'>
             {contextNote}
             <div className='overflow-auto'>
-                <table className='w-full text-sm'>
+                {/* Styled like the band grids (FeatureBands): flush with the border, a line between cells. */}
+                <table className='w-full'>
                     <thead>
-                        <tr className='border-b border-stone-300'>
+                        <tr className='h-9 divide-x divide-stone-200 border-b border-stone-200 text-xs'>
                             {positionLabels.map((label) => (
-                                <th key={label} className='px-2 py-1 text-left font-medium whitespace-nowrap'>
+                                <th key={label} className='px-2 font-bold whitespace-nowrap'>
                                     {label}
                                 </th>
                             ))}
-                            <th className='px-2 py-1 text-right font-medium whitespace-nowrap'>Reads</th>
-                            <th className='px-2 py-1 text-right font-medium whitespace-nowrap'>Share</th>
+                            <th className='px-2 font-bold whitespace-nowrap'>Reads</th>
+                            <th className='px-2 font-bold whitespace-nowrap'>Share</th>
                             {panelSymbols && (
                                 <th
-                                    className='px-2 py-1 text-left font-medium whitespace-nowrap'
+                                    className='px-2 font-bold whitespace-nowrap'
                                     title={
                                         'Panel lineages carrying exactly this pattern' +
                                         (jaccards === undefined
@@ -552,13 +584,11 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                                     Panel match
                                 </th>
                             )}
-                            <th className='px-2 py-1 text-left font-medium whitespace-nowrap'>CoV-Spectrum</th>
-                            {manualModeLink && (
-                                <th className='px-2 py-1 text-left font-medium whitespace-nowrap'>Over time</th>
-                            )}
+                            <th className='px-2 font-bold whitespace-nowrap'>CoV-Spectrum</th>
+                            {manualModeLink && <th className='px-2 font-bold whitespace-nowrap'>Over time</th>}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='divide-y divide-stone-200'>
                         {shownRows.map(renderRow)}
                         {pageRows.length === 0 && (
                             <tr>
@@ -570,7 +600,7 @@ const CooccurrenceWithData: FC<CooccurrenceWithDataProps> = ({
                     </tbody>
                 </table>
             </div>
-            <div className='mt-2'>
+            <div className='border-t border-stone-200 p-2'>
                 <Pagination
                     pageIndex={pageIndex}
                     pageSize={pageSize}
@@ -617,7 +647,7 @@ const PanelMatchCell: FC<{
     const listed = [...matches].sort((a, b) => (jaccards?.get(b) ?? -1) - (jaccards?.get(a) ?? -1));
 
     if (listed.length === 0) {
-        return '-';
+        return '–';
     }
     return (
         <>
@@ -655,7 +685,7 @@ const PanelMatchCell: FC<{
 /** A Jaccard index as a small badge, shaded like the Jaccard index columns of the band grids, grey below. */
 const JaccardBadge: FC<{ jaccard: number | undefined; title?: string }> = ({ jaccard, title }) => (
     <span
-        className={`ml-1 rounded px-1 font-mono text-xs text-stone-700 ${jaccardIndexShading(jaccard) || 'bg-stone-100'}`}
+        className={`ml-1 px-1 text-xs text-stone-700 ${jaccardIndexShading(jaccard) || 'bg-stone-100'}`}
         title={title}
     >
         {formatJaccardIndex(jaccard)}
@@ -672,7 +702,12 @@ const LEGEND_JACCARDS = [
 /** A button below the table that shows its legend while the mouse is over it (or it has the focus). */
 const LegendButton: FC<LegendProps> = (props) => (
     <HoverTooltip content={<CooccurrenceLegend {...props} />} placement='top-start'>
-        <button type='button' className='btn btn-xs'>
+        <button type='button' className='btn btn-xs gap-1.5'>
+            {/* A sample of what the legend explains, like the swatches on the band grids' legend button. */}
+            <span className='flex gap-0.5' aria-hidden='true'>
+                <span className='font-semibold text-black underline'>T</span>
+                <span className='text-gray-400'>C</span>
+            </span>
             Legend
         </button>
     </HoverTooltip>
@@ -688,12 +723,10 @@ const CooccurrenceLegend: FC<LegendProps> = ({ hasReference, hasJaccards }) => (
     <div className='flex flex-col gap-3 text-xs text-stone-600' data-testid='cooccurrence-legend'>
         {hasReference && (
             <>
-                <LegendEntry marker={<span className='font-mono font-semibold text-black underline'>T</span>}>
+                <LegendEntry marker={<span className='font-semibold text-black underline'>T</span>}>
                     Differs from the reference
                 </LegendEntry>
-                <LegendEntry marker={<span className='font-mono text-gray-400'>C</span>}>
-                    Same as the reference
-                </LegendEntry>
+                <LegendEntry marker={<span className='text-gray-400'>C</span>}>Same as the reference</LegendEntry>
             </>
         )}
         {hasReference && hasJaccards && <hr className='border-stone-200' />}
@@ -716,7 +749,7 @@ const CooccurrenceLegend: FC<LegendProps> = ({ hasReference, hasJaccards }) => (
 
 /**
  * A row's own mutations — positions whose symbol differs from the reference, or every position if
- * there's no reference to compare to (the manual position source).
+ * there's no reference to compare to (the reference genome failed to load).
  */
 function substitutionsOf(
     patternSymbols: Record<string, string>,

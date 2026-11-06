@@ -1,6 +1,5 @@
 import { useId } from 'react';
 
-import { SelectorHeadline } from './SelectorHeadline';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import {
     predefinedLineage,
@@ -10,6 +9,7 @@ import {
     type VariantTimeFrame,
     type VariantAnalysis,
 } from '../../../pageState/analysisFilter';
+import { FilterSection } from '../../filterSidebar/FilterSection';
 import {
     ClinicalVariantInfo,
     DefineClinicalSignatureInfo,
@@ -26,7 +26,6 @@ import { SequenceTypeSelector } from '../../inputs/SequenceTypeSelector';
 import { TabbedPanel } from '../../inputs/TabbedPanel';
 import { LineageFilter } from '../../inputs/lineageFilter/LineageFilter';
 import { HoverTooltip } from '../../ui/HoverTooltip';
-import { Inset } from '../../ui/Inset';
 
 interface VariantExplorerFilterProps {
     pageState: VariantAnalysis;
@@ -59,54 +58,56 @@ export function VariantExplorerFilter({
                 onChange={(sequenceType) => setPageState({ ...pageState, sequenceType })}
             />
             {lineageTree !== undefined ? (
-                <TabbedPanel<SignatureType>
-                    label='Variant definition source'
-                    value={pageState.signatureType}
-                    options={[
-                        { value: 'predefined', label: 'Nextclade' },
-                        { value: 'computed', label: 'Clinical sequences' },
-                    ]}
-                    onChange={handleSignatureTypeChange}
+                <FilterSection
+                    title='Variant definition'
+                    info={pageState.signatureType === 'computed' ? <DefineClinicalSignatureInfo /> : undefined}
                 >
-                    {pageState.signatureType === 'predefined' ? (
-                        <PredefinedSignature
-                            pageState={pageState}
-                            setPageState={setPageState}
-                            lineageTree={lineageTree}
-                        />
-                    ) : (
-                        <ComputedSignature
-                            pageState={pageState}
-                            setPageState={setPageState}
-                            clinicalSequenceLapisBaseUrl={clinicalSequenceLapisBaseUrl}
-                            clinicalSequenceLapisLineageField={clinicalSequenceLapisLineageField}
-                        />
-                    )}
-                </TabbedPanel>
+                    <TabbedPanel<SignatureType>
+                        label='Variant definition source'
+                        value={pageState.signatureType}
+                        options={[
+                            { value: 'predefined', label: 'Nextclade' },
+                            { value: 'computed', label: 'Clinical sequences' },
+                        ]}
+                        onChange={handleSignatureTypeChange}
+                    >
+                        {pageState.signatureType === 'predefined' ? (
+                            <PredefinedSignature
+                                pageState={pageState}
+                                setPageState={setPageState}
+                                lineageTree={lineageTree}
+                            />
+                        ) : (
+                            <ComputedSignature
+                                pageState={pageState}
+                                setPageState={setPageState}
+                                clinicalSequenceLapisBaseUrl={clinicalSequenceLapisBaseUrl}
+                                clinicalSequenceLapisLineageField={clinicalSequenceLapisLineageField}
+                            />
+                        )}
+                    </TabbedPanel>
+                </FilterSection>
             ) : (
                 pageState.signatureType === 'computed' && (
-                    <Inset className='p-2'>
+                    <FilterSection title='Variant definition' info={<DefineClinicalSignatureInfo />}>
                         <ComputedSignature
                             pageState={pageState}
                             setPageState={setPageState}
                             clinicalSequenceLapisBaseUrl={clinicalSequenceLapisBaseUrl}
                             clinicalSequenceLapisLineageField={clinicalSequenceLapisLineageField}
                         />
-                    </Inset>
+                    </FilterSection>
                 )
             )}
             {lineageTree !== undefined && (
-                <Inset className='p-2'>
-                    <SelectorHeadline info={<ExcludeMutationsInfo />}>Exclude mutations</SelectorHeadline>
+                <FilterSection title='Excluded mutations' info={<ExcludeMutationsInfo />}>
                     <CheckboxWithTooltip
-                        className='pb-2'
                         checked={pageState.excludeNearlyFixed !== false}
                         onChange={(checked) => setPageState({ ...pageState, excludeNearlyFixed: checked })}
                         tooltip='Mutations with a mean proportion of 99% or more over the time range'
                         label='Exclude mutations on ≥99% of reads'
                     />
                     <CheckboxWithTooltip
-                        className='pb-2'
                         checked={pageState.excludeDeletions !== false}
                         onChange={(checked) => setPageState({ ...pageState, excludeDeletions: checked })}
                         tooltip='Deletions are called less reliably on the reads (alignment, read ends)'
@@ -121,7 +122,7 @@ export function VariantExplorerFilter({
                             placeholderText='Add a lineage'
                         />
                     </LabeledField>
-                </Inset>
+                </FilterSection>
             )}
         </>
     );
@@ -199,7 +200,6 @@ function ComputedSignature({
 }) {
     return (
         <>
-            <SelectorHeadline info={<DefineClinicalSignatureInfo />}>Define Clinical Signature</SelectorHeadline>
             <LabeledField label='Variant' info={<ClinicalVariantInfo />}>
                 <LineageFilter
                     lapisUrl={clinicalSequenceLapisBaseUrl}
