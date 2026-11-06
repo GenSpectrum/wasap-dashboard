@@ -1,6 +1,6 @@
 import { type OrganismConfig } from '../../config/organismConfig';
 import { type PageStateHandler } from '../PageStateHandler';
-import { type AnalysisFilter, type ModeFilter } from '../analysisFilter';
+import { type AnalysisFilter, type DatasetFilter, type ModeFilter } from '../analysisFilter';
 import {
     parseBaseFilter,
     parseDatasetFilter,
@@ -52,6 +52,15 @@ export abstract class ModePageStateHandler<Analysis extends AnalysisFilter> impl
     toUrl(pageState: ModeFilter<Analysis>): string {
         const search = this.toSearchParams(pageState).toString();
         return search === '' ? this.getDefaultPageUrl() : `${this.getDefaultPageUrl()}?${search}`;
+    }
+
+    /**
+     * A link to the page of the mode from another one: the dataset filter is taken along, the given
+     * settings are set, and everything else is the default of the mode.
+     */
+    linkTo(dataset: DatasetFilter, settings: Partial<Omit<Analysis, 'mode'>>): string {
+        const analysis = { ...this.defaults(), ...settings };
+        return this.toUrl({ base: { ...dataset, meanProportion: getDefaultMeanProportion(analysis) }, analysis });
     }
 
     getDefaultPageUrl(): string {

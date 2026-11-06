@@ -18,9 +18,8 @@ import {
     isVariantSelected,
     useVariantSignature,
 } from '../../../externalData/lapis/useVariantSignature';
-import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
+import { CooccurrencePageStateHandler } from '../../../pageState/handlers/CooccurrencePageStateHandler';
 import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
-import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
@@ -56,12 +55,11 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
                   variantName === undefined || defaultPanel.includes(variantName)
                       ? defaultPanel
                       : [...defaultPanel, variantName];
-              const search = datasetFilterSearchParams(base, config);
-              search.set('sequenceType', 'nucleotide');
-              search.set('positionSource', 'amplicon');
-              search.set('anchorPosition', anchorPosition);
-              search.set('panel', panel.join('|'));
-              return { pathname: modePath(config.path, 'cooccurrence'), search: `?${search.toString()}` };
+              return new CooccurrencePageStateHandler(config).linkTo(base, {
+                  sequenceType: 'nucleotide',
+                  anchorPosition,
+                  panel,
+              });
           }
         : undefined;
     const backgroundLineages = useMemo(
