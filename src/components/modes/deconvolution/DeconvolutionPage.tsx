@@ -4,6 +4,7 @@ import { type To } from 'react-router-dom';
 import { DeconvolutionFilter } from './DeconvolutionFilter';
 import { DeconvolutionPlot } from './DeconvolutionPlot';
 import { LineagePanelTree } from './LineagePanelTree';
+import { SignatureOverlapTable } from './SignatureOverlapTable';
 import { deconvolutionOptions } from './granularityOptions';
 import { lineageColors } from './lineageColors';
 import { poolFrequencies } from './poolFrequencies';
@@ -11,8 +12,11 @@ import { isModeEnabled, type OrganismConfigFor } from '../../../config/organismC
 import { useMutationFrequencies } from '../../../dataLayer/hooks/analyses/mutationFrequencies';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
 import { type TemporalGranularity } from '../../../domain/temporal';
-import { lineageSignatures } from '../../../externalData/fileBased/lineageTree/lineageSignatures';
-import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
+import {
+    lineageSignatures,
+    nucleotideSubstitutions,
+} from '../../../externalData/fileBased/lineageTree/lineageSignatures';
+import { getLineageSignature, type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import { informativeMutations } from '../../../externalData/lollipop/lollipopService';
 import { useDeconvolution, useLollipopVersion } from '../../../externalData/lollipop/useDeconvolution';
 import { effectivePanel } from '../../../pageState/analysisFilter';
@@ -38,6 +42,10 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
     // of the lineages that are in the tree, as only those get into the deconvolution
     const colors = useMemo(
         () => lineageColors(panel.filter((name) => lineageTree?.lineages.has(name) === true)),
+        [lineageTree, panel],
+    );
+    const overlapSignatures = useMemo(
+        () => (lineageTree === undefined ? {} : panelSignatures(lineageTree, panel)),
         [lineageTree, panel],
     );
     const lineageLink = isModeEnabled(config, 'variant')
@@ -96,6 +104,11 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
                         colors={colors}
                         lineageLink={lineageLink}
                     />
+                </TitledPanel>
+            )}
+            {lineageTree !== undefined && panel.length > 1 && (
+                <TitledPanel title='Signature overlap' info={<SignatureOverlapInfo />}>
+                    <SignatureOverlapTable signatures={overlapSignatures} colors={colors} />
                 </TitledPanel>
             )}
         </ModePageLayout>
@@ -221,6 +234,37 @@ function DeconvolutionInfo() {
             <p>
                 Shows which lineages are circulating and how their shares change. <em>Undetermined</em> is what the
                 panel doesn&apos;t explain; if it grows, a lineage that isn&apos;t in the panel may be spreading.
+            </p>
+        </div>
+    );
+}
+
+/**
+ * The nucleotide substitutions of each lineage of the panel that is in the tree, as the
+ * deconvolution uses them, but keeping lineages with the same signature as another one.
+ */
+function panelSignatures(lineageTree: LineageTree, panel: string[]): Record<string, string[]> {
+    return Object.fromEntries(
+        panel.flatMap((name) => {
+            const lineage = lineageTree.lineages.get(name);
+            return lineage === undefined
+                ? []
+                : [[name, nucleotideSubstitutions(getLineageSignature(lineage).nucleotide)]];
+        }),
+    );
+}
+
+function SignatureOverlapInfo() {
+    return (
+        <div className='w-96 max-w-full space-y-2 text-sm font-normal text-gray-700'>
+            <p className='text-gray-500 italic'>
+                Nucleotide substitutions that the signatures of two lineages of the panel share, shaded by their Jaccard
+                index; the diagonal is the size of each signature.
+            </p>
+            <p>
+                Shows which lineages are hard to tell apart: the fewer mutations only one of two lineages has, the less
+                certain the split of their shares. <em>Unique</em> counts the mutations no other lineage of the panel
+                has.
             </p>
         </div>
     );
