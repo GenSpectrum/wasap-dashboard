@@ -5,8 +5,7 @@ import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
  * The overlap of the signatures of the lineages of a panel, as a matrix: each cell has the number
- * of mutations that tell two lineages apart, then how many of them only the row's and only the
- * column's lineage has. The first column has the size of the signature, the last one the
+ * of mutations that tell two lineages apart (those only one of the two has). The first column has the size of the signature, the last one the
  * mutations only that lineage of the panel has.
  */
 export function SignatureOverlapTable({
@@ -60,13 +59,10 @@ export function SignatureOverlapTable({
                                             }
                                         >
                                             <span
-                                                className='flex h-full w-full items-center justify-center gap-1 px-2 whitespace-nowrap'
+                                                className='flex h-full w-full items-center justify-center font-medium'
                                                 style={cellStyle(distinguishing[i][j])}
                                             >
-                                                <span className='font-medium'>{distinguishing[i][j]}</span>
-                                                <span className='text-xs opacity-60'>
-                                                    ({sizes[i] - shared[i][j]} / {sizes[j] - shared[i][j]})
-                                                </span>
+                                                {distinguishing[i][j]}
                                             </span>
                                         </HoverTooltip>
                                     </td>
@@ -142,16 +138,16 @@ function PairDetails({
 }
 
 /**
- * Steps of the number of distinguishing mutations and their colours: shades of red up to 10, where
+ * Steps of the number of distinguishing mutations and their colours: red to orange up to 10, where
  * the deconvolution has little to split the shares of two lineages on, yellow up to 20, green above.
  */
 const DISTINGUISHING_STEPS = [
-    { upTo: 1, label: '≤ 1', color: '#8e1b1b', text: 'white' },
-    { upTo: 3, label: '2–3', color: '#c62828', text: 'white' },
-    { upTo: 5, label: '4–5', color: '#e57368', text: undefined },
-    { upTo: 10, label: '6–10', color: '#f5b5ab', text: undefined },
-    { upTo: 20, label: '11–20', color: '#fbe08a', text: undefined },
-    { upTo: Infinity, label: '> 20', color: '#a8d99a', text: undefined },
+    { upTo: 1, label: '≤ 1', color: '#e57373', text: undefined },
+    { upTo: 3, label: '2–3', color: '#ef8f6b', text: undefined },
+    { upTo: 5, label: '4–5', color: '#f5ab66', text: undefined },
+    { upTo: 10, label: '6–10', color: '#f9c983', text: undefined },
+    { upTo: 20, label: '11–20', color: '#fbe39c', text: undefined },
+    { upTo: Infinity, label: '> 20', color: '#b9dfa8', text: undefined },
 ];
 
 /** In steps rather than a smooth scale, so that cells are easy to compare. */
@@ -163,7 +159,7 @@ function cellStyle(distinguishing: number) {
 function Legend() {
     return (
         <div className='flex flex-wrap items-center gap-2 text-xs text-gray-600'>
-            <span>Distinguishing substitutions (only in row / only in column)</span>
+            <span>Distinguishing substitutions</span>
             {DISTINGUISHING_STEPS.map(({ label, color }) => (
                 <span key={label} className='flex items-center gap-1'>
                     <span className='inline-block h-3 w-5' style={{ backgroundColor: color }} />
