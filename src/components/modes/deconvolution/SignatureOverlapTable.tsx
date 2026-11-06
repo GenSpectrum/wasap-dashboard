@@ -1,19 +1,23 @@
 import { useMemo } from 'react';
+import { Link, type To } from 'react-router-dom';
 
-import { signatureOverlap } from './signatureOverlap';
+import { distinguishingMutations, signatureOverlap } from './signatureOverlap';
 import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
  * The overlap of the signatures of the lineages of a panel, as a matrix: each cell has the number
  * of mutations that tell two lineages apart (those only one of the two has). Then the size of the signature, and the
- * mutations only that lineage of the panel has.
+ * mutations only that lineage of the panel has. With `manualModeLink`, a cell opens the mutations that tell its two
+ * lineages apart in the manual mode.
  */
 export function SignatureOverlapTable({
     signatures,
     colors,
+    manualModeLink,
 }: {
     signatures: Record<string, readonly string[]>;
     colors: Map<string, string>;
+    manualModeLink?: (mutations: string[]) => To;
 }) {
     const overlap = useMemo(() => signatureOverlap(signatures), [signatures]);
     const { lineages, sizes, unique, shared, distinguishing } = overlap;
@@ -54,15 +58,27 @@ export function SignatureOverlapTable({
                                                     shared={shared[i][j]}
                                                     onlyA={sizes[i] - shared[i][j]}
                                                     onlyB={sizes[j] - shared[i][j]}
+                                                    clickable={manualModeLink !== undefined && distinguishing[i][j] > 0}
                                                 />
                                             }
                                         >
-                                            <span
-                                                className='flex h-full w-full items-center justify-center'
-                                                style={cellStyle(distinguishing[i][j])}
-                                            >
-                                                {distinguishing[i][j]}
-                                            </span>
+                                            {manualModeLink !== undefined && distinguishing[i][j] > 0 ? (
+                                                <Link
+                                                    to={manualModeLink(distinguishingMutations(overlap, i, j))}
+                                                    aria-label={`See the mutations that distinguish ${row} and ${column} over time in the manual mode`}
+                                                    className='flex h-full w-full items-center justify-center hover:underline'
+                                                    style={cellStyle(distinguishing[i][j])}
+                                                >
+                                                    {distinguishing[i][j]}
+                                                </Link>
+                                            ) : (
+                                                <span
+                                                    className='flex h-full w-full items-center justify-center'
+                                                    style={cellStyle(distinguishing[i][j])}
+                                                >
+                                                    {distinguishing[i][j]}
+                                                </span>
+                                            )}
                                         </HoverTooltip>
                                     </td>
                                 ),
@@ -116,24 +132,29 @@ function PairDetails({
     shared,
     onlyA,
     onlyB,
+    clickable,
 }: {
     a: string;
     b: string;
     shared: number;
     onlyA: number;
     onlyB: number;
+    clickable: boolean;
 }) {
     return (
-        <dl className='grid grid-cols-[auto_auto] gap-x-3 text-sm'>
-            <dt>Shared</dt>
-            <dd className='text-right tabular-nums'>{shared}</dd>
-            <dt>Only in {a}</dt>
-            <dd className='text-right tabular-nums'>{onlyA}</dd>
-            <dt>Only in {b}</dt>
-            <dd className='text-right tabular-nums'>{onlyB}</dd>
-            <dt>Distinguishing</dt>
-            <dd className='text-right tabular-nums'>{onlyA + onlyB}</dd>
-        </dl>
+        <div className='text-sm'>
+            <dl className='grid grid-cols-[auto_auto] gap-x-3 text-sm'>
+                <dt>Shared</dt>
+                <dd className='text-right tabular-nums'>{shared}</dd>
+                <dt>Only in {a}</dt>
+                <dd className='text-right tabular-nums'>{onlyA}</dd>
+                <dt>Only in {b}</dt>
+                <dd className='text-right tabular-nums'>{onlyB}</dd>
+                <dt>Distinguishing</dt>
+                <dd className='text-right tabular-nums'>{onlyA + onlyB}</dd>
+            </dl>
+            {clickable && <p className='mt-2 text-xs text-gray-500 italic'>Click to see them over time.</p>}
+        </div>
     );
 }
 
