@@ -5,7 +5,7 @@ import {
     resistanceProportionRangeSchema,
     type ResistanceAnalysis,
 } from '../analysisFilter';
-import { enumParam, stringParam } from '../urlParams';
+import { enumParam, named, stringParam } from '../urlParams';
 
 export class ResistancePageStateHandler extends ModePageStateHandler<ResistanceAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'resistance'>) {
@@ -16,7 +16,7 @@ export class ResistancePageStateHandler extends ModePageStateHandler<ResistanceA
     protected readonly hasMeanProportion = false;
 
     protected readonly params = {
-        resistanceSet: stringParam,
+        resistanceSet: named('set', stringParam),
         proportionRange: enumParam(resistanceProportionRangeSchema),
     };
 

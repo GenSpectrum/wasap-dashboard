@@ -8,7 +8,7 @@ import { setAppConfigForTesting } from '../../../config/appConfig';
 import { it } from '../../../test/test-extend';
 import { testConfig } from '../../../test/testConfig';
 
-const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
+const DATASET_SEARCH = 'locations=Basel&date=2024-01-01--2024-12-31&granularity=week';
 
 function renderMenu(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
     return render(
@@ -65,7 +65,7 @@ describe('ModeMenu', () => {
         await getByRole('button', { name: 'Manual' }).click();
 
         const href = getByRole('link', { name: 'Explorer' }).element().getAttribute('href');
-        expect(href).toBe(`/wastewater/covid/variantExplorer?${DATASET_SEARCH}`);
+        expect(href).toBe(`/wastewater/covid/variant?${DATASET_SEARCH}`);
     });
 
     it('closes after picking a page, and names the new one', async () => {

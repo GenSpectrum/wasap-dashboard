@@ -1,4 +1,4 @@
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL } from '../domain/dateRange';
+import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL, presetToken } from '../domain/dateRange';
 
 export const setSearchFromString = (
     search: URLSearchParams,
@@ -27,7 +27,7 @@ export const setSearchFromDateRange = (
         if (dateRange.label === CUSTOM_DATE_RANGE_LABEL) {
             serializedValue = `${dateRange.dateFrom ?? ''}--${dateRange.dateTo ?? ''}`;
         } else {
-            serializedValue = dateRange.label;
+            serializedValue = presetToken(dateRange.label) ?? dateRange.label;
         }
         search.set(name, serializedValue);
     }

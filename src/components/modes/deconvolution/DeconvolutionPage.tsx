@@ -20,9 +20,8 @@ import { getLineageSignature, type LineageTree } from '../../../externalData/fil
 import { informativeMutations } from '../../../externalData/lollipop/lollipopService';
 import { useDeconvolution, useLollipopVersion } from '../../../externalData/lollipop/useDeconvolution';
 import { effectivePanel } from '../../../pageState/analysisFilter';
-import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
 import { DeconvolutionPageStateHandler } from '../../../pageState/handlers/DeconvolutionPageStateHandler';
-import { modePath } from '../../../pageState/modes';
+import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
 import { ModePageLayout } from '../../layout/ModePageLayout';
 import { NothingSelected } from '../../layout/NothingSelected';
@@ -49,12 +48,11 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
         [lineageTree, panel],
     );
     const lineageLink = isModeEnabled(config, 'variant')
-        ? (lineage: string): To => {
-              const search = datasetFilterSearchParams(base, config);
-              search.set('signatureType', 'predefined');
-              search.set('lineage', lineage);
-              return { pathname: modePath(config.path, 'variant'), search: `?${search.toString()}` };
-          }
+        ? (lineage: string): To =>
+              new VariantExplorerPageStateHandler(config).linkTo(base, {
+                  signatureType: 'predefined',
+                  variant: lineage,
+              })
         : undefined;
 
     return (

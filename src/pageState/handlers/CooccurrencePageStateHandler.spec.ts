@@ -14,10 +14,10 @@ describe('CooccurrencePageStateHandler', () => {
 
     it('parses and encodes the cooccurrence filter', () => {
         const query =
-            'locationName=Z%C3%BCrich+%28ZH%29&' +
-            'samplingDate=2024-01-01--2024-12-31&' +
+            'locations=Z%C3%BCrich+%28ZH%29&' +
+            'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&';
+            'sequenceType=nuc&';
 
         const filter = parse(query);
 
@@ -27,13 +27,13 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses multiple positions', () => {
-        const filter = parse('sequenceType=nucleotide&positions=241%7C23403');
+        const filter = parse('sequenceType=nuc&positions=241,23403');
         expect(filter.analysis.positions).toEqual(['241', '23403']);
     });
 
     it('round-trips positions', () => {
-        const filter = parse('sequenceType=amino+acid&positions=S%3A501%7CS%3A614');
-        expect(handler.toUrl(filter)).toContain('positions=S%3A501%7CS%3A614');
+        const filter = parse('sequenceType=aa&positions=S:501,S:614');
+        expect(handler.toUrl(filter)).toContain('positions=S%3A501%2CS%3A614');
     });
 
     it('takes the sequence type from the defaults of the config when it is not in the URL', () => {
@@ -41,22 +41,28 @@ describe('CooccurrencePageStateHandler', () => {
     });
 
     it('parses the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nucleotide&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&source=amplicon&ampliconPosition=23403&minEntropy=0.5');
         expect(filter.analysis.positionSource).toBe('amplicon');
         expect(filter.analysis.anchorPosition).toBe('23403');
         expect(filter.analysis.entropyCutoff).toBe(0.5);
     });
 
     it('round-trips the amplicon-anchor fields', () => {
-        const filter = parse('sequenceType=nucleotide&positionSource=amplicon&anchorPosition=23403&entropyCutoff=0.5');
+        const filter = parse('sequenceType=nuc&source=amplicon&ampliconPosition=23403&minEntropy=0.5');
         const url = handler.toUrl(filter);
-        expect(url).toContain('positionSource=amplicon');
-        expect(url).toContain('anchorPosition=23403');
-        expect(url).toContain('entropyCutoff=0.5');
+        expect(url).toContain('source=amplicon');
+        expect(url).toContain('ampliconPosition=23403');
+        expect(url).toContain('minEntropy=0.5');
+    });
+
+    it('reads and writes positions picked one by one as source=list', () => {
+        const filter = parse('sequenceType=nuc&source=list&positions=241,23403');
+        expect(filter.analysis.positionSource).toBe('manual');
+        expect(handler.toUrl(filter)).toContain('source=list');
     });
 
     it('round-trips the min. share, and has no mean proportion in the URL', () => {
-        const filter = parse('sequenceType=nucleotide&minShare=0.01&meanProportionLower=0.1');
+        const filter = parse('sequenceType=nuc&minShare=0.01&minMean=0.1');
         expect(filter.analysis.minShare).toBe(0.01);
         const url = handler.toUrl(filter);
         expect(url).toContain('minShare=0.01');
@@ -78,7 +84,7 @@ describe('CooccurrencePageStateHandler', () => {
         });
 
         it('takes the panel from the URL over the default one', () => {
-            expect(parseWithPanel('panel=XFG%7CNB.1.8.1').analysis.panel).toEqual(['XFG', 'NB.1.8.1']);
+            expect(parseWithPanel('panel=XFG,NB.1.8.1').analysis.panel).toEqual(['XFG', 'NB.1.8.1']);
         });
 
         it('keeps an emptied panel empty, rather than falling back to the default one', () => {

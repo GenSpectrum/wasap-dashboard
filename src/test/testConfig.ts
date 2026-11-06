@@ -47,8 +47,6 @@ export const testConfig = {
         },
     ],
     lapisBaseUrl: 'https://lapis.wasap.genspectrum.org',
-    samplingDateField: 'samplingDate',
-    locationNameField: 'locationName',
     clinicalLapis: {
         lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
         cladeField: 'nextstrainClade',
@@ -74,7 +72,6 @@ export const testConfig = {
             minCount: 15,
             minJaccard: 0.75,
             timeFrame: VARIANT_TIME_FRAME.all,
-            lineage: 'XFG',
         },
         resistance: {
             mode: 'resistance',

@@ -58,8 +58,8 @@ describe('the routes of the analysis modes', () => {
         await expect.element(getByTestId('location')).toHaveTextContent('/wastewater/covid/resistance');
     });
 
-    it('knows the variant mode as variantExplorer', async () => {
-        const { getByText } = renderRoutes('/wastewater/covid/variantExplorer');
+    it('knows the variant mode as variant', async () => {
+        const { getByText } = renderRoutes('/wastewater/covid/variant');
 
         await expect.element(getByText('Page of the variant mode')).toBeVisible();
     });

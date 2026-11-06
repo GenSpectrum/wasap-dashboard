@@ -89,8 +89,6 @@ export const organismConfigBaseSchema = z.object({
     linkTemplate: linkTemplateSchema,
 
     lapisBaseUrl: z.string(),
-    samplingDateField: z.string(),
-    locationNameField: z.string(),
 
     /**
      * Native RhyDB (RhyDB) coordinates for this organism's wastewater data.

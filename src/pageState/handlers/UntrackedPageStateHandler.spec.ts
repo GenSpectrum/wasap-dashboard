@@ -9,10 +9,10 @@ describe('UntrackedPageStateHandler', () => {
     it('parses and encodes untracked filter with predefined excludeSet', () => {
         const url =
             '/wastewater/covid/untracked?' +
-            'locationName=Z%C3%BCrich+%28ZH%29&' +
-            'samplingDate=2024-01-01--2024-12-31&' +
+            'locations=Z%C3%BCrich+%28ZH%29&' +
+            'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'excludeSet=predefined&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
@@ -27,12 +27,12 @@ describe('UntrackedPageStateHandler', () => {
     it('parses and encodes untracked filter with custom excludeSet and variants', () => {
         const url =
             '/wastewater/covid/untracked?' +
-            'locationName=Z%C3%BCrich+%28ZH%29&' +
-            'samplingDate=2024-01-01--2024-12-31&' +
+            'locations=Z%C3%BCrich+%28ZH%29&' +
+            'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'excludeSet=custom&' +
-            'excludeVariants=XBB.1.5*%7CBA.2*%7CJN.1&';
+            'excludeVariants=XBB.1.5*,BA.2*,JN.1&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('untracked');
@@ -46,9 +46,9 @@ describe('UntrackedPageStateHandler', () => {
     it('untracked mode round-trip with pipe-separated variants', () => {
         const url =
             '/wastewater/covid/untracked?' +
-            'sequenceType=nucleotide&' +
+            'sequenceType=nuc&' +
             'excludeSet=custom&' +
-            'excludeVariants=XBB*%7CBA.2*%7CJN.1%7CXFG*&';
+            'excludeVariants=XBB*,BA.2*,JN.1,XFG*&';
         const filter1 = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
         const url2 = handler.toUrl(filter1);
         const filter2 = handler.parsePageStateFromUrl(new URL(`http://example.com${url2}`).searchParams);

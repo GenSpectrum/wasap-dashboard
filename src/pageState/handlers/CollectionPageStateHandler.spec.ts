@@ -13,7 +13,7 @@ describe('CollectionPageStateHandler', () => {
     });
 
     it('parses the collectionId as a number', () => {
-        const filter = parse('collectionId=456');
+        const filter = parse('id=456');
 
         expect(filter.analysis).toEqual({ mode: 'collection', source: 'genSpectrum', collectionId: 456 });
     });
@@ -26,11 +26,11 @@ describe('CollectionPageStateHandler', () => {
     });
 
     it('has no collection for an invalid collectionId', () => {
-        expect(parse('collectionId=abc').analysis.collectionId).toBeUndefined();
+        expect(parse('id=abc').analysis.collectionId).toBeUndefined();
     });
 
     it('round-trips the collectionId', () => {
-        expect(handler.toUrl(parse('collectionId=789'))).toContain('collectionId=789');
+        expect(handler.toUrl(parse('id=789'))).toContain('id=789');
     });
 
     describe('source', () => {
@@ -55,14 +55,14 @@ describe('CollectionPageStateHandler', () => {
             });
 
             it('round-trips the CoV-Spectrum source together with its collectionId', () => {
-                const url = handlerWithSources.toUrl(parseWithSources('source=covSpectrum&collectionId=42'));
+                const url = handlerWithSources.toUrl(parseWithSources('source=covSpectrum&id=42'));
 
                 expect(url).toContain('source=covSpectrum');
-                expect(url).toContain('collectionId=42');
+                expect(url).toContain('id=42');
             });
 
             it('omits the source from the URL when it is GenSpectrum, the default', () => {
-                expect(handlerWithSources.toUrl(parseWithSources('collectionId=1'))).not.toContain('source');
+                expect(handlerWithSources.toUrl(parseWithSources('id=1'))).not.toContain('source');
             });
         });
     });
