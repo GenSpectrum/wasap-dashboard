@@ -18,6 +18,7 @@ export function LineagePanelTree({
     panel,
     colors,
     lineageLink,
+    columns = 2,
 }: {
     lineageTree: LineageTree;
     panel: string[];
@@ -25,13 +26,15 @@ export function LineagePanelTree({
     colors: Map<string, string>;
     /** Where the name of a lineage links to. */
     lineageLink?: (lineage: string) => To;
+    /** Whether the recombinants go next to the other lineages (on wide screens) or below them. */
+    columns?: 1 | 2;
 }) {
     const panelTree = useMemo(() => buildPanelTree(lineageTree, panel), [lineageTree, panel]);
     const inPanel = new Set(panel);
 
     return (
         <div className='flex flex-col gap-4'>
-            <div className='grid gap-6 md:grid-cols-2'>
+            <div className={`grid gap-6 ${columns === 2 ? 'md:grid-cols-2' : ''}`}>
                 <TreeSection title='Lineages'>
                     {panelTree.lineages.length === 0 ? (
                         <Empty>No lineages outside the recombinants.</Empty>
