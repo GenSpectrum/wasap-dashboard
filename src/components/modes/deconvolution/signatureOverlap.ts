@@ -8,6 +8,8 @@ export type SignatureOverlap = {
     shared: number[][];
     /** `distinguishing[i][j]`: the number of mutations only one of lineages `i` and `j` has. */
     distinguishing: number[][];
+    /** `onlyIn[i][j]`: the mutations of lineage `i` that lineage `j` doesn't have. */
+    onlyIn: string[][][];
 };
 
 /**
@@ -19,8 +21,18 @@ export function signatureOverlap(signatures: Record<string, readonly string[]>):
     const sets = lineages.map((lineage) => new Set(signatures[lineage]));
     const shared = sets.map((a) => sets.map((b) => [...a].filter((mutation) => b.has(mutation)).length));
     const distinguishing = sets.map((a, i) => sets.map((b, j) => a.size + b.size - 2 * shared[i][j]));
+    const onlyIn = sets.map((a) => sets.map((b) => [...a].filter((mutation) => !b.has(mutation))));
     const unique = sets.map((set, i) =>
         [...set].filter((mutation) => sets.every((other, j) => j === i || !other.has(mutation))),
     );
-    return { lineages, sizes: sets.map((set) => set.size), unique, shared, distinguishing };
+    return { lineages, sizes: sets.map((set) => set.size), unique, shared, distinguishing, onlyIn };
+}
+
+/** The mutations that tell two lineages apart (those only one of them has), by position. */
+export function distinguishingMutations(overlap: SignatureOverlap, i: number, j: number): string[] {
+    return [...overlap.onlyIn[i][j], ...overlap.onlyIn[j][i]].sort((a, b) => position(a) - position(b));
+}
+
+function position(mutation: string): number {
+    return Number(/\d+/.exec(mutation)?.[0] ?? 0);
 }
