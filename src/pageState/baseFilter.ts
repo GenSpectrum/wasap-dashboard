@@ -2,7 +2,12 @@ import { type BaseFilter, type DatasetFilter, type MeanProportion } from './anal
 import { enumParam, listParam } from './urlParams';
 import { getStringFromSearch, setSearchFromDateRange, setSearchFromString } from './urlSearchParams';
 import { type OrganismConfig } from '../config/organismConfig';
-import { type DateRangeOption, CUSTOM_DATE_RANGE_LABEL, DEFAULT_RECENT_DAYS_LABEL } from '../domain/dateRange';
+import {
+    type DateRangeOption,
+    CUSTOM_DATE_RANGE_LABEL,
+    DEFAULT_RECENT_DAYS_LABEL,
+    presetLabel,
+} from '../domain/dateRange';
 import { temporalGranularitySchema } from '../domain/temporal';
 
 const granularityParam = enumParam(temporalGranularitySchema);
@@ -84,7 +89,7 @@ export function setDatasetFilterSearchParams(
     if (locations !== config.defaultLocationName) {
         search.set(LOCATIONS_PARAM, locations);
     }
-    // Presets (e.g. "Most recent 14 days") serialize as their label, so reloading
+    // Presets (e.g. "Most recent 14 days") serialize as their short name (`14d`), so reloading
     // the URL re-resolves them against the dataset's current date range instead of
     // pinning stale dates (see useResolvedSamplingDate). Explicit custom ranges
     // still serialize as literal dates — setSearchFromDateRange already branches
@@ -142,14 +147,12 @@ function parseLocationNames(search: URLSearchParams, defaultLocationName: string
 
 /**
  * Parses the `date` URL param, which is either literal `dateFrom--dateTo`
- * dates or a preset's label (e.g. "Most recent 14 days") written by `toUrl`. A
- * label-only value has no concrete dates yet: WASAP's presets are relative to
- * the dataset's actual latest sample date (which can lag behind today), not to
- * today, so they can only be resolved once that date range has been read from
- * RhyDB. See `useResolvedSamplingDate`, which does that resolution — this
- * function only parses, deliberately not against a fixed options list (the old
- * `{ type: 'date', dateRangeOptions: () => [] }` mechanism never had one to
- * match against, which is why a preset label from the URL never resolved).
+ * dates or a preset's short name (e.g. `14d` for "Most recent 14 days", see
+ * `presetToken`); anything else is `undefined`, the default. A preset has no
+ * concrete dates yet: WASAP's presets are relative to the dataset's actual
+ * latest sample date (which can lag behind today), not to today, so they can
+ * only be resolved once that date range has been read from RhyDB. See
+ * `useResolvedSamplingDate`, which does that resolution.
  */
 function parseSamplingDateFromUrl(search: URLSearchParams): DateRangeOption | undefined {
     const value = search.get(DATE_PARAM);
@@ -164,7 +167,8 @@ function parseSamplingDateFromUrl(search: URLSearchParams): DateRangeOption | un
             dateTo: to === '' ? undefined : to,
         };
     }
-    return { label: value };
+    const label = presetLabel(value);
+    return label === undefined ? undefined : { label };
 }
 
 /**

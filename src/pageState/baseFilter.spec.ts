@@ -57,11 +57,16 @@ describe('baseFilter', () => {
 
     describe('sampling date', () => {
         it('does not override an explicit preset from the URL with the default', () => {
-            expect(parse('date=Most+recent+14+days').samplingDate).toEqual({ label: 'Most recent 14 days' });
+            expect(parse('date=14d').samplingDate).toEqual({ label: 'Most recent 14 days' });
         });
 
-        it('parses a preset label from the URL without concrete dates (unresolved)', () => {
-            expect(parse('date=All+times').samplingDate).toEqual({ label: 'All times' });
+        it('parses a preset from the URL without concrete dates (unresolved)', () => {
+            expect(parse('date=all').samplingDate).toEqual({ label: 'All times' });
+        });
+
+        it('takes the default for an unknown preset, like a label', () => {
+            expect(parse('date=Most+recent+14+days').samplingDate).toEqual({ label: DEFAULT_RECENT_DAYS_LABEL });
+            expect(parse('date=15d').samplingDate).toEqual({ label: DEFAULT_RECENT_DAYS_LABEL });
         });
 
         it('parses an open-ended custom range', () => {
@@ -76,8 +81,8 @@ describe('baseFilter', () => {
             expect(serialize(parse(''))).toBe('');
         });
 
-        it('round-trips another preset label through the URL instead of pinning literal dates', () => {
-            expect(serialize(parse('date=Most+recent+30+days'))).toBe('date=Most+recent+30+days');
+        it('round-trips another preset through the URL instead of pinning literal dates', () => {
+            expect(serialize(parse('date=30d'))).toBe('date=30d');
         });
 
         it('serializes an explicit custom date range as literal dates', () => {
