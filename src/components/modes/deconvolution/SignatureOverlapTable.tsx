@@ -6,7 +6,8 @@ import { HoverTooltip } from '../../ui/HoverTooltip';
 /**
  * The overlap of the signatures of the lineages of a panel. First the number of mutations all of
  * them share, then, without those, a matrix: each cell has the Jaccard index of two lineages
- * (shared / union) and the number of mutations they share; the diagonal has the size of the
+ * (shared / union) and the number of mutations that tell them apart (those only one of the two
+ * has, so the matrix is symmetric); the diagonal has the size of the
  * signature. The last column has the mutations only that lineage has.
  */
 export function SignatureOverlapTable({
@@ -84,7 +85,9 @@ export function SignatureOverlapTable({
                                                 style={cellStyle(jaccard[i][j])}
                                             >
                                                 <span className='font-medium'>{jaccard[i][j].toFixed(2)}</span>
-                                                <span className='text-xs opacity-75'>{shared[i][j]}</span>
+                                                <span className='text-xs opacity-75'>
+                                                    {sizes[i] + sizes[j] - 2 * shared[i][j]}
+                                                </span>
                                             </span>
                                         </HoverTooltip>
                                     </td>
@@ -155,6 +158,8 @@ function PairDetails({
             <dd className='text-right tabular-nums'>{onlyA}</dd>
             <dt>Only in {b}</dt>
             <dd className='text-right tabular-nums'>{onlyB}</dd>
+            <dt>Distinguishing</dt>
+            <dd className='text-right tabular-nums'>{onlyA + onlyB}</dd>
             <dt>Jaccard index</dt>
             <dd className='text-right tabular-nums'>{jaccard.toFixed(2)}</dd>
         </dl>
@@ -179,7 +184,7 @@ function cellStyle(jaccard: number) {
 function Legend() {
     return (
         <div className='flex flex-wrap items-center gap-2 text-xs text-gray-600'>
-            <span>Jaccard index (top), shared substitutions (bottom)</span>
+            <span>Jaccard index (top), distinguishing substitutions (bottom)</span>
             {JACCARD_STEPS.map(({ from, color }, index) => (
                 <span key={from} className='flex items-center gap-1'>
                     <span className='inline-block h-3 w-5' style={{ backgroundColor: color }} />
