@@ -1,6 +1,7 @@
 import flatpickr from 'flatpickr';
 import { useEffect, useRef, useState } from 'react';
 import 'flatpickr/dist/flatpickr.css';
+import './datePicker.css';
 
 const DATE_FORMAT = 'Y-m-d';
 

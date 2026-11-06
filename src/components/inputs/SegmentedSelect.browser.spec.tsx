@@ -40,4 +40,15 @@ describe('SegmentedSelect', () => {
 
         expect(onChange).toHaveBeenCalledWith(0.1);
     });
+
+    it('is a radio group named by its label, or by the icon standing in for it', async () => {
+        const labelled = render(<SegmentedSelect label='Min. share' value={0} options={options} onChange={vi.fn()} />);
+        await expect.element(labelled.getByRole('radiogroup', { name: 'Min. share' })).toBeInTheDocument();
+        labelled.unmount();
+
+        const withIcon = render(
+            <SegmentedSelect label='Min. share' icon='mdi--chart-bar' value={0} options={options} onChange={vi.fn()} />,
+        );
+        await expect.element(withIcon.getByRole('radiogroup', { name: 'Min. share' })).toBeInTheDocument();
+    });
 });

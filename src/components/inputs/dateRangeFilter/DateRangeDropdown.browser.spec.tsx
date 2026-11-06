@@ -15,7 +15,13 @@ function renderDropdown(value: DateRangeOption | undefined, onChange = vi.fn()) 
         <>
             {/* Above: the calendar opens below, over whatever is there. */}
             <button type='button'>Elsewhere</button>
-            <DateRangeDropdown dateRangeOptions={options} value={value} onChange={onChange} />
+            <DateRangeDropdown
+                label='Sampling date'
+                icon='mdi--calendar-blank-outline'
+                dateRangeOptions={options}
+                value={value}
+                onChange={onChange}
+            />
         </>,
     );
     return { ...screen, onChange, button: screen.getByRole('button', { name: /2026/ }) };
