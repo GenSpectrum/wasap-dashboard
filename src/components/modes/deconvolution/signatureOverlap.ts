@@ -1,6 +1,8 @@
 export type SignatureOverlap = {
     lineages: string[];
-    /** The number of mutations in the signature of each lineage. */
+    /** The mutations all lineages of the panel have; the other fields leave them out. */
+    common: string[];
+    /** The number of mutations in the signature of each lineage, without the common ones. */
     sizes: number[];
     /** The mutations of each lineage that no other lineage of the panel has. */
     unique: string[][];
@@ -12,11 +14,16 @@ export type SignatureOverlap = {
 
 /**
  * How much the signatures of the lineages of a panel overlap, pair by pair. The fewer mutations
- * tell two lineages apart, the harder it is for the deconvolution to split their shares.
+ * tell two lineages apart, the harder it is for the deconvolution to split their shares. The
+ * mutations all of them have are counted apart, as they don't tell any of them apart.
  */
 export function signatureOverlap(signatures: Record<string, readonly string[]>): SignatureOverlap {
     const lineages = Object.keys(signatures);
-    const sets = lineages.map((lineage) => new Set(signatures[lineage]));
+    const fullSets = lineages.map((lineage) => new Set(signatures[lineage]));
+    const common =
+        fullSets.length < 2 ? [] : [...fullSets[0]].filter((mutation) => fullSets.every((set) => set.has(mutation)));
+    const commonSet = new Set(common);
+    const sets = fullSets.map((set) => new Set([...set].filter((mutation) => !commonSet.has(mutation))));
     const shared = sets.map((a) => sets.map((b) => [...a].filter((mutation) => b.has(mutation)).length));
     const jaccard = sets.map((a, i) =>
         sets.map((b, j) => {
@@ -27,5 +34,5 @@ export function signatureOverlap(signatures: Record<string, readonly string[]>):
     const unique = sets.map((set, i) =>
         [...set].filter((mutation) => sets.every((other, j) => j === i || !other.has(mutation))),
     );
-    return { lineages, sizes: sets.map((set) => set.size), unique, shared, jaccard };
+    return { lineages, common, sizes: sets.map((set) => set.size), unique, shared, jaccard };
 }

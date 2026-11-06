@@ -4,9 +4,10 @@ import { signatureOverlap } from './signatureOverlap';
 import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
- * The overlap of the signatures of the lineages of a panel, as a matrix: each cell has the number
- * of mutations two lineages share, shaded by their Jaccard index (shared / union); the diagonal
- * has the size of the signature. The last column has the mutations only that lineage has.
+ * The overlap of the signatures of the lineages of a panel. First the number of mutations all of
+ * them share, then, without those, a matrix: each cell has the Jaccard index of two lineages
+ * (shared / union) and the number of mutations they share; the diagonal has the size of the
+ * signature. The last column has the mutations only that lineage has.
  */
 export function SignatureOverlapTable({
     signatures,
@@ -16,10 +17,21 @@ export function SignatureOverlapTable({
     colors: Map<string, string>;
 }) {
     const overlap = useMemo(() => signatureOverlap(signatures), [signatures]);
-    const { lineages, sizes, unique, shared, jaccard } = overlap;
+    const { lineages, common, sizes, unique, shared, jaccard } = overlap;
 
     return (
         <div className='flex flex-col gap-3'>
+            <p className='text-sm'>
+                <HoverTooltip
+                    focusable
+                    className='inline font-semibold tabular-nums underline decoration-dotted underline-offset-2'
+                    content={<MutationList title='Common to all lineages of the panel:' mutations={common} />}
+                >
+                    {common.length}
+                </HoverTooltip>{' '}
+                {common.length === 1 ? 'substitution is' : 'substitutions are'} common to all lineages of the panel; the
+                table leaves {common.length === 1 ? 'it' : 'them'} out.
+            </p>
             <table className='text-sm'>
                 <thead>
                     <tr>
@@ -45,7 +57,7 @@ export function SignatureOverlapTable({
                                     <td key={column} className='p-0.5'>
                                         <HoverTooltip
                                             focusable
-                                            className='flex h-8 min-w-10 items-center justify-center bg-stone-100 text-gray-500'
+                                            className='flex h-10 min-w-14 items-center justify-center bg-stone-100 text-gray-500 tabular-nums'
                                             content={`${row}: ${sizes[i]} substitutions`}
                                         >
                                             {sizes[i]}
@@ -55,7 +67,7 @@ export function SignatureOverlapTable({
                                     <td key={column} className='p-0.5'>
                                         <HoverTooltip
                                             focusable
-                                            className='flex h-8 min-w-10 items-center justify-center tabular-nums'
+                                            className='flex h-10 min-w-14 items-center justify-center tabular-nums'
                                             content={
                                                 <PairDetails
                                                     a={row}
@@ -68,10 +80,11 @@ export function SignatureOverlapTable({
                                             }
                                         >
                                             <span
-                                                className='flex h-full w-full items-center justify-center'
+                                                className='flex h-full w-full flex-col items-center justify-center leading-tight'
                                                 style={cellStyle(jaccard[i][j])}
                                             >
-                                                {shared[i][j]}
+                                                <span className='font-medium'>{jaccard[i][j].toFixed(2)}</span>
+                                                <span className='text-xs opacity-75'>{shared[i][j]}</span>
                                             </span>
                                         </HoverTooltip>
                                     </td>
@@ -85,10 +98,7 @@ export function SignatureOverlapTable({
                                         unique[i].length === 0 ? (
                                             `Every mutation of ${row} is also in another lineage of the panel.`
                                         ) : (
-                                            <div className='max-w-96 text-xs'>
-                                                <p className='mb-1 font-medium'>Only in {row}:</p>
-                                                <p className='font-mono'>{unique[i].join(' ')}</p>
-                                            </div>
+                                            <MutationList title={`Only in ${row}:`} mutations={unique[i]} />
                                         )
                                     }
                                 >
@@ -100,6 +110,15 @@ export function SignatureOverlapTable({
                 </tbody>
             </table>
             <Legend />
+        </div>
+    );
+}
+
+function MutationList({ title, mutations }: { title: string; mutations: string[] }) {
+    return (
+        <div className='max-w-96 text-xs'>
+            <p className='mb-1 font-medium'>{title}</p>
+            <p className='font-mono'>{mutations.length === 0 ? 'none' : mutations.join(' ')}</p>
         </div>
     );
 }
@@ -142,23 +161,29 @@ function PairDetails({
     );
 }
 
-/** Darker for more overlap, so that the pairs that are hard to tell apart stand out. */
+/** Steps of the Jaccard index and their colours, darker for more overlap. */
+const JACCARD_STEPS = [
+    { from: 0, color: '#f1f5fb', text: undefined },
+    { from: 0.2, color: '#c9dcf4', text: undefined },
+    { from: 0.4, color: '#89b4e8', text: undefined },
+    { from: 0.6, color: '#3f82d4', text: 'white' },
+    { from: 0.8, color: '#1a4f94', text: 'white' },
+];
+
+/** In steps rather than a smooth scale, so that cells are easy to compare. */
 function cellStyle(jaccard: number) {
-    return {
-        backgroundColor: `rgba(42, 120, 214, ${(0.08 + 0.85 * jaccard).toFixed(3)})`,
-        color: jaccard > 0.55 ? 'white' : undefined,
-    };
+    const step = JACCARD_STEPS.findLast(({ from }) => jaccard >= from) ?? JACCARD_STEPS[0];
+    return { backgroundColor: step.color, color: step.text };
 }
 
 function Legend() {
-    const steps = [0, 0.25, 0.5, 0.75, 1];
     return (
-        <div className='flex items-center gap-2 text-xs text-gray-600'>
-            <span>Jaccard index</span>
-            {steps.map((step) => (
-                <span key={step} className='flex items-center gap-1'>
-                    <span className='inline-block h-3 w-5' style={cellStyle(step)} />
-                    {step}
+        <div className='flex flex-wrap items-center gap-2 text-xs text-gray-600'>
+            <span>Jaccard index (top), shared substitutions (bottom)</span>
+            {JACCARD_STEPS.map(({ from, color }, index) => (
+                <span key={from} className='flex items-center gap-1'>
+                    <span className='inline-block h-3 w-5' style={{ backgroundColor: color }} />
+                    {index === JACCARD_STEPS.length - 1 ? `≥ ${from}` : `${from}–${JACCARD_STEPS[index + 1].from}`}
                 </span>
             ))}
         </div>
