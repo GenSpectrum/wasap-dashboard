@@ -11,7 +11,7 @@ export function AppShell() {
         <div className='flex min-h-full flex-col bg-stone-100'>
             <AppHeader />
 
-            <main className='mx-auto flex w-full max-w-[110rem] flex-1 flex-col'>
+            <main className='flex w-full flex-1 flex-col'>
                 <Outlet />
             </main>
         </div>
