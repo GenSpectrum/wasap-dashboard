@@ -21,6 +21,7 @@ import { informativeMutations } from '../../../externalData/lollipop/lollipopSer
 import { useDeconvolution, useLollipopVersion } from '../../../externalData/lollipop/useDeconvolution';
 import { effectivePanel } from '../../../pageState/analysisFilter';
 import { DeconvolutionPageStateHandler } from '../../../pageState/handlers/DeconvolutionPageStateHandler';
+import { ManualPageStateHandler } from '../../../pageState/handlers/ManualPageStateHandler';
 import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
 import { ModePageLayout } from '../../layout/ModePageLayout';
@@ -53,6 +54,11 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
                   signatureType: 'predefined',
                   variant: lineage,
               })
+        : undefined;
+    // Opens the mutations that distinguish two lineages of the signature overlap in the manual mode.
+    const manualModeLink = isModeEnabled(config, 'manual')
+        ? (mutations: string[]): To =>
+              new ManualPageStateHandler(config).linkTo(base, { sequenceType: 'nucleotide', mutations })
         : undefined;
 
     return (
@@ -101,7 +107,11 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
                 >
                     {panel.length > 1 && (
                         <TitledPanel title='Signature overlap' info={<SignatureOverlapInfo />}>
-                            <SignatureOverlapTable signatures={overlapSignatures} colors={colors} />
+                            <SignatureOverlapTable
+                                signatures={overlapSignatures}
+                                colors={colors}
+                                manualModeLink={manualModeLink}
+                            />
                         </TitledPanel>
                     )}
                     <TitledPanel title='Lineage tree'>
