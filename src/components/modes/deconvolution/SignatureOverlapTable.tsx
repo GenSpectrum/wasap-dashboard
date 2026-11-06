@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
 import { Link, type To } from 'react-router-dom';
 
-import { distinguishingMutations, signatureOverlap } from './signatureOverlap';
+import { byPosition, distinguishingMutations, signatureOverlap } from './signatureOverlap';
 import { HoverTooltip } from '../../ui/HoverTooltip';
 
 /**
  * The overlap of the signatures of the lineages of a panel, as a matrix: each cell has the number
  * of mutations that tell two lineages apart (those only one of the two has). Then the size of the signature, and the
  * mutations only that lineage of the panel has. With `manualModeLink`, a cell opens the mutations that tell its two
- * lineages apart in the manual mode.
+ * lineages apart in the manual mode, and
+ * a Unique count the mutations only that lineage has.
  */
 export function SignatureOverlapTable({
     signatures,
@@ -92,11 +93,28 @@ export function SignatureOverlapTable({
                                         unique[i].length === 0 ? (
                                             `Every mutation of ${row} is also in another lineage of the panel.`
                                         ) : (
-                                            <MutationList title={`Only in ${row}:`} mutations={unique[i]} />
+                                            <>
+                                                <MutationList title={`Only in ${row}:`} mutations={unique[i]} />
+                                                {manualModeLink !== undefined && (
+                                                    <p className='mt-2 text-xs text-gray-500 italic'>
+                                                        Click to see them over time.
+                                                    </p>
+                                                )}
+                                            </>
                                         )
                                     }
                                 >
-                                    {unique[i].length}
+                                    {manualModeLink !== undefined && unique[i].length > 0 ? (
+                                        <Link
+                                            to={manualModeLink(byPosition(unique[i]))}
+                                            aria-label={`See the mutations only ${row} has over time in the manual mode`}
+                                            className='underline decoration-dotted underline-offset-2 hover:decoration-solid'
+                                        >
+                                            {unique[i].length}
+                                        </Link>
+                                    ) : (
+                                        unique[i].length
+                                    )}
                                 </HoverTooltip>
                             </td>
                         </tr>

@@ -30,7 +30,12 @@ export function signatureOverlap(signatures: Record<string, readonly string[]>):
 
 /** The mutations that tell two lineages apart (those only one of them has), by position. */
 export function distinguishingMutations(overlap: SignatureOverlap, i: number, j: number): string[] {
-    return [...overlap.onlyIn[i][j], ...overlap.onlyIn[j][i]].sort((a, b) => position(a) - position(b));
+    return byPosition([...overlap.onlyIn[i][j], ...overlap.onlyIn[j][i]]);
+}
+
+/** Sorts mutations like C123T by their position. */
+export function byPosition(mutations: readonly string[]): string[] {
+    return [...mutations].sort((a, b) => position(a) - position(b));
 }
 
 function position(mutation: string): number {
