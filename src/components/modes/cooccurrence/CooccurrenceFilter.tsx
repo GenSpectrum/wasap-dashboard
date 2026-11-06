@@ -64,7 +64,7 @@ export function CooccurrenceFilter({
                 value={positionSource}
                 options={[
                     { value: POSITION_SOURCE.amplicon, label: 'Amplicon' },
-                    { value: POSITION_SOURCE.manual, label: 'Manual' },
+                    { value: POSITION_SOURCE.manual, label: 'List' },
                 ]}
                 onChange={(newSource) => setPageState({ ...pageState, positionSource: newSource })}
             >

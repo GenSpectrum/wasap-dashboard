@@ -18,13 +18,13 @@ describe('modes', () => {
         expect(new Set(segments).size).toBe(modes.length);
     });
 
-    it('uses variantExplorer as the segment of the variant mode', () => {
-        expect(modeToSegment('variant')).toBe('variantExplorer');
-        expect(segmentToMode('variantExplorer')).toBe('variant');
+    it('uses prevalence as the segment of the deconvolution mode', () => {
+        expect(modeToSegment('deconvolution')).toBe('prevalence');
+        expect(segmentToMode('prevalence')).toBe('deconvolution');
     });
 
     it('does not know the internal id of a mode whose segment differs', () => {
-        expect(segmentToMode('variant')).toBeUndefined();
+        expect(segmentToMode('deconvolution')).toBeUndefined();
     });
 
     it('returns undefined for unknown or missing segments', () => {

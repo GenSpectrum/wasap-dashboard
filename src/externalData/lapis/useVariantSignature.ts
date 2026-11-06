@@ -7,7 +7,7 @@ import { type LapisFilter } from './lapisTypes';
 import { type OrganismConfigFor } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
-import type { VariantTimeFrame, VariantAnalysis } from '../../pageState/analysisFilter';
+import { predefinedLineage, type VariantTimeFrame, type VariantAnalysis } from '../../pageState/analysisFilter';
 import { getLineageSignature, type LineageTree } from '../fileBased/lineageTree/lineageTree';
 
 const logger = getClientLogger('useVariantSignature');
@@ -59,11 +59,11 @@ export function useVariantSignature(
 }
 
 /**
- * Whether there is a variant to show: the variant of a computed signature, or the lineage of a
- * predefined one. Without one, a computed signature would be that of all clinical sequences.
+ * Whether there is a variant to show. Without one, a computed signature would be that of all
+ * clinical sequences.
  */
 export function isVariantSelected(analysis: VariantAnalysis): boolean {
-    return (analysis.signatureType === 'computed' ? analysis.variant : analysis.lineage) !== undefined;
+    return analysis.variant !== undefined;
 }
 
 export async function fetchVariantSignature(
@@ -114,15 +114,16 @@ async function fetchPredefinedSignature(
     lineageTree: LineageTree | undefined,
     signal: AbortSignal | undefined,
 ): Promise<VariantSignature> {
-    if (analysis.lineage === undefined) {
+    if (analysis.variant === undefined) {
         throw new Error('No lineage selected for predefined variant mode.');
     }
     if (lineageTree === undefined) {
         throw new Error('There is no lineage tree to take the predefined variant from.');
     }
-    const lineage = lineageTree.lineages.get(analysis.lineage);
+    const name = predefinedLineage(analysis.variant);
+    const lineage = lineageTree.lineages.get(name);
     if (lineage === undefined) {
-        throw new Error(`Lineage "${analysis.lineage}" is not in the lineage tree.`);
+        throw new Error(`Lineage "${name}" is not in the lineage tree.`);
     }
 
     const signature = analysis.newMutationsOnly ? lineage.definingMutations : getLineageSignature(lineage);

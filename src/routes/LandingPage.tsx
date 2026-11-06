@@ -11,7 +11,20 @@ export function LandingPage() {
 
     return (
         <div className='mx-auto max-w-3xl p-6'>
-            <p className='mb-6 text-gray-700'>
+            <h1 className='mb-4 text-xl font-semibold'>Choose an organism</h1>
+            <ul className='grid gap-4 sm:grid-cols-3'>
+                {organisms.map((entry) => (
+                    <li key={entry.pathSegment}>
+                        <Link
+                            to={`/${entry.pathSegment}`}
+                            className='border-base-300 hover:border-primary hover:bg-base-200 block h-full border p-4 transition-colors'
+                        >
+                            <div className='font-semibold'>{entry.config.name}</div>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+            <p className='mt-8 text-gray-700'>
                 Welcome to the Swiss W-ASAP instance, a highly interactive dashboard for exploring and analyzing viral
                 sequencing data obtained from wastewater. More information can be found on the{' '}
                 <Link className='link' to='/about'>
@@ -23,20 +36,6 @@ export function LandingPage() {
                 </a>
                 .
             </p>
-            <h1 className='mb-6 text-2xl font-semibold'>Choose an organism</h1>
-            <ul className='grid gap-4 sm:grid-cols-2'>
-                {organisms.map((entry) => (
-                    <li key={entry.pathSegment}>
-                        <Link
-                            to={`/${entry.pathSegment}`}
-                            className='border-base-300 hover:border-primary hover:bg-base-200 block h-full border p-4 transition-colors'
-                        >
-                            <div className='font-semibold'>{entry.config.name}</div>
-                            <div className='text-base-content/70 mt-1 text-sm'>{entry.config.description}</div>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
         </div>
     );
 }

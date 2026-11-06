@@ -9,10 +9,10 @@ describe('ResistancePageStateHandler', () => {
     it('parses and encodes resistance filter', () => {
         const url =
             '/wastewater/covid/resistance?' +
-            'locationName=Z%C3%BCrich+%28ZH%29&' +
-            'samplingDate=2024-01-01--2024-12-31&' +
+            'locations=Z%C3%BCrich+%28ZH%29&' +
+            'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'resistanceSet=3CLpro&' +
+            'set=3CLpro&' +
             'proportionRange=high&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
@@ -25,7 +25,7 @@ describe('ResistancePageStateHandler', () => {
     });
 
     it('resistance mode always uses amino acid sequence type', () => {
-        const url = '/wastewater/covid/resistance?resistanceSet=3CLpro&sequenceType=nucleotide&';
+        const url = '/wastewater/covid/resistance?set=3CLpro&sequenceType=nuc&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('resistance');
@@ -56,9 +56,7 @@ describe('ResistancePageStateHandler', () => {
     });
 
     it('ignores a mean proportion in the URL and leaves it out when writing the URL', () => {
-        const filter = handler.parsePageStateFromUrl(
-            new URLSearchParams('meanProportionLower=0.2&meanProportionUpper=0.5'),
-        );
+        const filter = handler.parsePageStateFromUrl(new URLSearchParams('minMean=0.2&maxMean=0.5'));
 
         expect(filter.base.meanProportion).toEqual({ lower: 0, upper: 1 });
         expect(handler.toUrl(filter)).not.toContain('meanProportion');

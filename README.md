@@ -51,8 +51,8 @@ The bare `/<organism>` is the organism's overview page displaying whole-instance
 an unfiltered table of its sampling locations.
 
 Every organism also has a page per analysis mode: `/<organism>/<mode>`, for example `/covid/manual`,
-`/covid/variantExplorer`, `/covid/resistance`, `/covid/untracked`, `/covid/collection`,
-`/covid/lineagePrevalence`, and `/covid/cooccurrence`. The modes are the ones that are enabled
+`/covid/variant`, `/covid/resistance`, `/covid/untracked`, `/covid/collection`,
+`/covid/prevalence`, and `/covid/cooccurrence`. The modes are the ones that are enabled
 in the organism's config.
 Location, sampling date and granularity are search params that stay the same when going from one
 mode to another.

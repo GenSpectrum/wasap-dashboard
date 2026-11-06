@@ -1,7 +1,7 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
 import { COLLECTION_SOURCE, collectionSourceSchema, type CollectionAnalysis } from '../analysisFilter';
-import { enumParam, numberParam, optional } from '../urlParams';
+import { enumParam, named, numberParam, optional } from '../urlParams';
 
 export class CollectionPageStateHandler extends ModePageStateHandler<CollectionAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'collection'>) {
@@ -10,7 +10,7 @@ export class CollectionPageStateHandler extends ModePageStateHandler<CollectionA
 
     protected readonly params = {
         source: enumParam(collectionSourceSchema),
-        collectionId: optional(numberParam({ min: 0, integer: true })),
+        collectionId: named('id', optional(numberParam({ min: 0, integer: true }))),
     };
 
     protected defaults(): CollectionAnalysis {

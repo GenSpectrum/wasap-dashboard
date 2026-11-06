@@ -6,11 +6,11 @@ import { ANALYSIS_MODE, type AnalysisMode } from './analysisFilter';
  */
 const MODE_SEGMENTS = {
     manual: 'manual',
-    variant: 'variantExplorer',
+    variant: 'variant',
     resistance: 'resistance',
     untracked: 'untracked',
     collection: 'collection',
-    deconvolution: 'lineagePrevalence',
+    deconvolution: 'prevalence',
     cooccurrence: 'cooccurrence',
 } as const satisfies Record<AnalysisMode, string>;
 

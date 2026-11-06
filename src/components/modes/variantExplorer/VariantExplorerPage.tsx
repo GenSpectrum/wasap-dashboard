@@ -18,9 +18,9 @@ import {
     isVariantSelected,
     useVariantSignature,
 } from '../../../externalData/lapis/useVariantSignature';
-import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
+import { predefinedLineage } from '../../../pageState/analysisFilter';
+import { CooccurrencePageStateHandler } from '../../../pageState/handlers/CooccurrencePageStateHandler';
 import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
-import { modePath } from '../../../pageState/modes';
 import { usePageState } from '../../../pageState/usePageState';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
@@ -48,7 +48,7 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
 
     // Opens an amplicon in the co-occurrence mode, to see all of its variable positions there, with
     // the variant added to the mode's default panel, to tell which patterns are the variant's.
-    const variantName = analysis.signatureType === 'computed' ? analysis.variant : analysis.lineage;
+    const variantName = analysis.signatureType === 'computed' ? analysis.variant : predefinedLineage(analysis.variant);
     const cooccurrenceModeLink = isModeEnabled(config, 'cooccurrence')
         ? (anchorPosition: string): To => {
               const defaultPanel = config.filterDefaults.cooccurrence.panel ?? [];
@@ -56,12 +56,11 @@ export function VariantExplorerPage({ config }: { config: OrganismConfigFor<'var
                   variantName === undefined || defaultPanel.includes(variantName)
                       ? defaultPanel
                       : [...defaultPanel, variantName];
-              const search = datasetFilterSearchParams(base, config);
-              search.set('sequenceType', 'nucleotide');
-              search.set('positionSource', 'amplicon');
-              search.set('anchorPosition', anchorPosition);
-              search.set('panel', panel.join('|'));
-              return { pathname: modePath(config.path, 'cooccurrence'), search: `?${search.toString()}` };
+              return new CooccurrencePageStateHandler(config).linkTo(base, {
+                  sequenceType: 'nucleotide',
+                  anchorPosition,
+                  panel,
+              });
           }
         : undefined;
     const backgroundLineages = useMemo(

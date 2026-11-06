@@ -1,8 +1,7 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { sequenceTypeSchema } from '../../domain/mutations';
 import { excludeSetNameSchema, type UntrackedAnalysis } from '../analysisFilter';
-import { enumParam, listParam, optional } from '../urlParams';
+import { enumParam, listParam, optional, sequenceTypeParam } from '../urlParams';
 
 export class UntrackedPageStateHandler extends ModePageStateHandler<UntrackedAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'untracked'>) {
@@ -10,7 +9,7 @@ export class UntrackedPageStateHandler extends ModePageStateHandler<UntrackedAna
     }
 
     protected readonly params = {
-        sequenceType: enumParam(sequenceTypeSchema),
+        sequenceType: sequenceTypeParam,
         excludeSet: optional(enumParam(excludeSetNameSchema)),
         excludeVariants: optional(listParam),
     };

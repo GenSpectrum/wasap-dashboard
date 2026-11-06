@@ -6,7 +6,6 @@ export const testConfig = {
     genSpectrumOrganismName: 'covid',
     name: 'SARS-CoV-2',
     path: `/wastewater/covid`,
-    description: 'Analyze SARS-CoV-2 data that was collected by the WISE project.',
     linkTemplate: {
         nucleotideMutation:
             'https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}',
@@ -48,8 +47,6 @@ export const testConfig = {
         },
     ],
     lapisBaseUrl: 'https://lapis.wasap.genspectrum.org',
-    samplingDateField: 'samplingDate',
-    locationNameField: 'locationName',
     clinicalLapis: {
         lapisBaseUrl: 'https://lapis.cov-spectrum.org/open/v2',
         cladeField: 'nextstrainClade',
@@ -75,7 +72,6 @@ export const testConfig = {
             minCount: 15,
             minJaccard: 0.75,
             timeFrame: VARIANT_TIME_FRAME.all,
-            lineage: 'XFG',
         },
         resistance: {
             mode: 'resistance',

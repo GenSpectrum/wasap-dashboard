@@ -6,7 +6,6 @@
             "genSpectrumOrganismName": "covid",
             "name": "SARS-CoV-2",
             "path": "/covid",
-            "description": "Analyze SARS-CoV-2 data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?nucMutations={{mutation}}",
                 "aminoAcidMutation": "https://open.cov-spectrum.org/explore/World/AllSamples/AllTimes/variants?aaMutations={{mutation}}"
@@ -46,8 +45,6 @@
                 }
             ],
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/covid",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/covid",
                 "table": "data",
@@ -86,7 +83,6 @@
                     "minCount": 15,
                     "minJaccard": 0.75,
                     "timeFrame": "all",
-                    "lineage": "XFG",
                     "backgroundLineages": ["B.1.1.529"]
                 },
                 "resistance": {
@@ -111,7 +107,6 @@
             "genSpectrumOrganismName": "rsvA",
             "name": "RSV-A",
             "path": "/rsv-a",
-            "description": "Analyze RSV-A data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}",
                 "aminoAcidMutation": "https://genspectrum.org/rsv-a/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}"
@@ -125,8 +120,6 @@
                 "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/rsva",
                 "table": "data",
@@ -173,8 +166,7 @@
                     "minProportion": 0.8,
                     "minCount": 15,
                     "minJaccard": 0.75,
-                    "timeFrame": "all",
-                    "lineage": "A.D.1"
+                    "timeFrame": "all"
                 },
                 "resistance": {
                     "mode": "resistance",
@@ -187,7 +179,6 @@
             "genSpectrumOrganismName": "rsvB",
             "name": "RSV-B",
             "path": "/rsv-b",
-            "description": "Analyze RSV-B data that was collected by the WISE project.",
             "linkTemplate": {
                 "nucleotideMutation": "https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&nucleotideMutations={{mutation}}",
                 "aminoAcidMutation": "https://genspectrum.org/rsv-b/single-variant?sampleCollectionDateRangeLower=Last+year&aminoAcidMutations={{mutation}}"
@@ -201,8 +192,6 @@
                 "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
-            "samplingDateField": "samplingDate",
-            "locationNameField": "locationName",
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/rsvb",
                 "table": "data",
@@ -249,8 +238,7 @@
                     "minProportion": 0.8,
                     "minCount": 15,
                     "minJaccard": 0.75,
-                    "timeFrame": "all",
-                    "lineage": "B.D.E.1"
+                    "timeFrame": "all"
                 },
                 "resistance": {
                     "mode": "resistance",

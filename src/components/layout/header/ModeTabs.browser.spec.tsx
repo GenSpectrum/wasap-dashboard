@@ -12,7 +12,7 @@ import {
     testConfigWithDeconvolution,
 } from '../../../test/testConfig';
 
-const DATASET_SEARCH = 'locationName=Basel&samplingDate=2024-01-01--2024-12-31&granularity=week';
+const DATASET_SEARCH = 'locations=Basel&date=2024-01-01--2024-12-31&granularity=week';
 
 function renderTabs(entry = `/wastewater/covid/manual?${DATASET_SEARCH}`) {
     return render(
@@ -74,7 +74,7 @@ describe('ModeTabs', () => {
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
         await expect.element(tabs.nth(1)).toHaveTextContent('Prevalence');
-        expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/lineagePrevalence\?/);
+        expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/prevalence\?/);
     });
 
     it('has the Co-occurrence tab right after the Explorer tab', async () => {
@@ -124,12 +124,12 @@ describe('ModeTabs', () => {
 
     it('links to the page of the mode, with the dataset filter but without the mean proportion', async () => {
         const { getByRole } = renderTabs(
-            `/wastewater/covid/manual?${DATASET_SEARCH}&meanProportionLower=0.3&meanProportionUpper=0.6&sequenceType=amino+acid`,
+            `/wastewater/covid/manual?${DATASET_SEARCH}&minMean=0.3&maxMean=0.6&sequenceType=aa`,
         );
 
         const href = getByRole('link', { name: 'Explorer' }).element().getAttribute('href');
 
-        expect(href).toBe(`/wastewater/covid/variantExplorer?${DATASET_SEARCH}`);
+        expect(href).toBe(`/wastewater/covid/variant?${DATASET_SEARCH}`);
     });
 
     it('marks the tab of the current mode', async () => {

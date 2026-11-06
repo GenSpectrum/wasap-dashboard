@@ -1,8 +1,17 @@
 import { ModePageStateHandler } from './ModePageStateHandler';
 import { type OrganismConfigFor } from '../../config/organismConfig';
-import { sequenceTypeSchema } from '../../domain/mutations';
-import { signatureTypeSchema, variantTimeFrameSchema, type VariantAnalysis } from '../analysisFilter';
-import { booleanParam, enumParam, listParam, numberParam, optional, stringParam } from '../urlParams';
+import { signatureTypeSchema, type VariantAnalysis, type VariantTimeFrame } from '../analysisFilter';
+import {
+    booleanParam,
+    enumParam,
+    listParam,
+    named,
+    numberParam,
+    optional,
+    stringParam,
+    sequenceTypeParam,
+    tokenParam,
+} from '../urlParams';
 
 export class VariantExplorerPageStateHandler extends ModePageStateHandler<VariantAnalysis> {
     constructor(protected readonly config: OrganismConfigFor<'variant'>) {
@@ -14,19 +23,19 @@ export class VariantExplorerPageStateHandler extends ModePageStateHandler<Varian
 
     protected readonly params = {
         signatureType: enumParam(signatureTypeSchema),
-        sequenceType: enumParam(sequenceTypeSchema),
-        // computed signature
+        sequenceType: sequenceTypeParam,
+        // either
         variant: optional(stringParam),
+        // computed signature
         minProportion: numberParam({ min: 0, max: 1 }),
         minCount: numberParam({ min: 0, integer: true }),
         minJaccard: numberParam({ min: 0, max: 1 }),
-        timeFrame: enumParam(variantTimeFrameSchema),
+        timeFrame: tokenParam<VariantTimeFrame>({ all: 'all', '6months': '6m', '3months': '3m' }),
         // predefined signature
-        lineage: optional(stringParam),
         newMutationsOnly: optional(booleanParam),
-        includeSublineagesForJaccard: optional(booleanParam),
+        includeSublineagesForJaccard: named('jaccardSublineages', optional(booleanParam)),
         // either
-        backgroundLineages: listParam,
+        backgroundLineages: named('background', listParam),
         excludeNearlyFixed: optional(booleanParam),
         excludeDeletions: optional(booleanParam),
     };

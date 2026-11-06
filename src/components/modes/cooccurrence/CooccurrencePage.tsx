@@ -8,9 +8,9 @@ import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerB
 import { ampliconAnchor } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
 import { effectivePositionSource, type CooccurrenceAnalysis } from '../../../pageState/analysisFilter';
-import { datasetFilterSearchParams } from '../../../pageState/baseFilter';
 import { CooccurrencePageStateHandler } from '../../../pageState/handlers/CooccurrencePageStateHandler';
-import { modePath } from '../../../pageState/modes';
+import { ManualPageStateHandler } from '../../../pageState/handlers/ManualPageStateHandler';
+import { VariantExplorerPageStateHandler } from '../../../pageState/handlers/VariantExplorerPageStateHandler';
 import { usePageState } from '../../../pageState/usePageState';
 import { FilterSidebar } from '../../filterSidebar/FilterSidebar';
 import { ModePageLayout } from '../../layout/ModePageLayout';
@@ -74,22 +74,17 @@ export function CooccurrencePage({ config }: { config: OrganismConfigFor<'cooccu
 
     // Opens a row's mutations in the manual mode, to see them over time there.
     const manualModeLink = isModeEnabled(config, 'manual')
-        ? (mutations: string[]): To => {
-              const search = datasetFilterSearchParams(base, config);
-              search.set('sequenceType', analysis.sequenceType);
-              search.set('mutations', mutations.join('|'));
-              return { pathname: modePath(config.path, 'manual'), search: `?${search.toString()}` };
-          }
+        ? (mutations: string[]): To =>
+              new ManualPageStateHandler(config).linkTo(base, { sequenceType: analysis.sequenceType, mutations })
         : undefined;
 
     // Opens a panel-match lineage in the variant explorer, predefined signature.
     const variantModeLink = isModeEnabled(config, 'variant')
-        ? (lineage: string): To => {
-              const search = datasetFilterSearchParams(base, config);
-              search.set('signatureType', 'predefined');
-              search.set('lineage', lineage);
-              return { pathname: modePath(config.path, 'variant'), search: `?${search.toString()}` };
-          }
+        ? (lineage: string): To =>
+              new VariantExplorerPageStateHandler(config).linkTo(base, {
+                  signatureType: 'predefined',
+                  variant: lineage,
+              })
         : undefined;
 
     return (

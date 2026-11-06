@@ -51,6 +51,27 @@ const RECENT_DAYS_OPTIONS = [7, 14, 30, 60, 90] as const;
 export const DEFAULT_RECENT_DAYS_LABEL = recentDaysLabel(RECENT_DAYS_OPTIONS[4]);
 
 /**
+ * The short name of a preset in a URL: like `90d` for "Most recent 90 days", and `all` for "All times".
+ * `undefined` for a label that isn't one of a preset.
+ */
+export function presetToken(label: string): string | undefined {
+    if (label === ALL_TIMES_LABEL) {
+        return 'all';
+    }
+    const days = RECENT_DAYS_OPTIONS.find((option) => recentDaysLabel(option) === label);
+    return days === undefined ? undefined : `${days}d`;
+}
+
+/** The label of the preset with the short name `token` (see `presetToken`), or `undefined` if there's none. */
+export function presetLabel(token: string): string | undefined {
+    if (token === 'all') {
+        return ALL_TIMES_LABEL;
+    }
+    const days = RECENT_DAYS_OPTIONS.find((option) => `${option}d` === token);
+    return days === undefined ? undefined : recentDaysLabel(days);
+}
+
+/**
  * Generates date range options for "most recent X days" where X is 7, 14, 30,
  * 60, or 90, counting backwards from the given end date, plus an "All times"
  * option bounded by the given start date (the earliest date actually present
