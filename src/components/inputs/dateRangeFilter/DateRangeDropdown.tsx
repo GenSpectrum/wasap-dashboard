@@ -1,5 +1,3 @@
-import { useId } from 'react';
-
 import { DateRangeFilter } from './DateRangeFilter';
 import {
     ALL_TIMES_LABEL,
@@ -7,6 +5,7 @@ import {
     type DateRangeOption,
     resolveDateRange,
 } from '../../../domain/dateRange';
+import { CellDropdown } from '../CellDropdown';
 import { useDraftDropdown } from '../useDraftDropdown';
 
 /**
@@ -18,8 +17,14 @@ export function DateRangeDropdown({
     dateRangeOptions,
     value,
     onChange,
+    label,
+    icon,
 }: {
     dateRangeOptions: DateRangeOption[];
+    /** What the dropdown is, for screen readers: the button shows only the range. */
+    label: string;
+    /** An iconify class for the icon at the start of the button, e.g. `mdi--calendar-blank-outline`. */
+    icon: string;
     value: DateRangeOption | undefined;
     onChange: (value: DateRangeOption | undefined) => void;
 }) {
@@ -32,33 +37,20 @@ export function DateRangeDropdown({
             onChange(draft);
         }
     });
-    const { isOpen } = dropdown;
     const shown = resolve(dropdown.shown);
-    const menuId = useId();
 
     return (
-        <div ref={dropdown.rootRef} className='relative w-full' onBlur={dropdown.onBlur}>
-            <button
-                ref={dropdown.buttonRef}
-                type='button'
-                className='input flex w-full min-w-32 cursor-pointer items-center gap-2 text-left'
-                aria-haspopup='true'
-                aria-expanded={isOpen}
-                aria-controls={menuId}
-                onClick={dropdown.toggle}
-            >
-                <span className='grow truncate'>{describeDateRange(shown)}</span>
-                <span
-                    aria-hidden
-                    className={`iconify mx-1 shrink-0 text-xl text-gray-500 ${isOpen ? 'mdi--chevron-up' : 'mdi--chevron-down'}`}
-                />
-            </button>
-            {isOpen && (
-                <div id={menuId} className='absolute z-10 mt-1 w-full border border-gray-200 bg-white p-2 shadow-sm'>
-                    <DateRangeFilter dateRangeOptions={dateRangeOptions} value={shown} onChange={dropdown.setDraft} />
-                </div>
-            )}
-        </div>
+        <CellDropdown
+            dropdown={dropdown}
+            label={label}
+            icon={icon}
+            summary={<span className='grow truncate'>{describeDateRange(shown)}</span>}
+            // Wider than the button where there is room, for the preset and the two dates. Towards the left in the
+            // dataset bar's one-row layout, where the date is near the right edge, under the locations.
+            menuClassName='w-full p-2 md:min-w-[32rem] xl:right-0'
+        >
+            <DateRangeFilter dateRangeOptions={dateRangeOptions} value={shown} onChange={dropdown.setDraft} />
+        </CellDropdown>
     );
 }
 
