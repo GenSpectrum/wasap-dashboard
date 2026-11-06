@@ -74,7 +74,7 @@ describe('ModeTabs', () => {
         const tabs = getByRole('navigation', { name: 'Analysis mode' }).getByRole('link');
 
         await expect.element(tabs.nth(1)).toHaveTextContent('Prevalence');
-        expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/lineagePrevalence\?/);
+        expect(tabs.nth(1).element().getAttribute('href')).toMatch(/^\/wastewater\/covid\/prevalence\?/);
     });
 
     it('has the Co-occurrence tab right after the Explorer tab', async () => {
@@ -129,7 +129,7 @@ describe('ModeTabs', () => {
 
         const href = getByRole('link', { name: 'Explorer' }).element().getAttribute('href');
 
-        expect(href).toBe(`/wastewater/covid/variantExplorer?${DATASET_SEARCH}`);
+        expect(href).toBe(`/wastewater/covid/variant?${DATASET_SEARCH}`);
     });
 
     it('marks the tab of the current mode', async () => {

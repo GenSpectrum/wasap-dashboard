@@ -8,8 +8,8 @@ describe('DeconvolutionPageStateHandler', () => {
 
     const parse = (query: string) => handler.parsePageStateFromUrl(new URLSearchParams(query));
 
-    it('lives at the lineagePrevalence segment below the path of the organism', () => {
-        expect(handler.getDefaultPageUrl()).toBe('/wastewater/covid/lineagePrevalence');
+    it('lives at the prevalence segment below the path of the organism', () => {
+        expect(handler.getDefaultPageUrl()).toBe('/wastewater/covid/prevalence');
     });
 
     it('has no extra lineage when the URL has none', () => {

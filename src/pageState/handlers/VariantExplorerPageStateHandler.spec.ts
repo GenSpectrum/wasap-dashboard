@@ -9,7 +9,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('parses and encodes variant filter with all parameters', () => {
         const url =
-            '/wastewater/covid/variantExplorer?' +
+            '/wastewater/covid/variant?' +
             'locationName=Berlin&' +
             'samplingDate=2024-01-01--2024-12-31&' +
             'granularity=week&' +
@@ -38,7 +38,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('parses and encodes the background lineages, for either signature type', () => {
         const url =
-            '/wastewater/covid/variantExplorer?' +
+            '/wastewater/covid/variant?' +
             'locationName=Berlin&' +
             'samplingDate=2024-01-01--2024-12-31&' +
             'granularity=week&' +
@@ -53,7 +53,7 @@ describe('VariantExplorerPageStateHandler', () => {
         expect(filter.analysis.backgroundLineages).toEqual(['JN.1', 'BA.2']);
         expect(handler.parsePageStateFromUrl(handler.toSearchParams(filter))).toEqual(filter);
         expect(
-            handler.parsePageStateFromUrl(new URL('http://example.com/wastewater/covid/variantExplorer').searchParams)
+            handler.parsePageStateFromUrl(new URL('http://example.com/wastewater/covid/variant').searchParams)
                 .analysis.backgroundLineages,
         ).toEqual([]);
     });
@@ -68,7 +68,7 @@ describe('VariantExplorerPageStateHandler', () => {
         });
         const parse = (query: string) =>
             withDefault.parsePageStateFromUrl(
-                new URL(`http://example.com/wastewater/covid/variantExplorer?${query}`).searchParams,
+                new URL(`http://example.com/wastewater/covid/variant?${query}`).searchParams,
             );
 
         expect(parse('').analysis.backgroundLineages).toEqual(['B.1.1.529']);
@@ -83,7 +83,7 @@ describe('VariantExplorerPageStateHandler', () => {
     it('excludes the nearly fixed mutations unless told not to, and only writes that down', () => {
         const parse = (query: string) =>
             handler.parsePageStateFromUrl(
-                new URL(`http://example.com/wastewater/covid/variantExplorer?${query}`).searchParams,
+                new URL(`http://example.com/wastewater/covid/variant?${query}`).searchParams,
             );
 
         expect(parse('').analysis.excludeNearlyFixed).toBe(true);
@@ -98,7 +98,7 @@ describe('VariantExplorerPageStateHandler', () => {
     it('has no mean proportion filter: drops one in the URL', () => {
         const filter = handler.parsePageStateFromUrl(
             new URL(
-                'http://example.com/wastewater/covid/variantExplorer?meanProportionLower=0.2&meanProportionUpper=0.7',
+                'http://example.com/wastewater/covid/variant?meanProportionLower=0.2&meanProportionUpper=0.7',
             ).searchParams,
         );
 
@@ -107,7 +107,7 @@ describe('VariantExplorerPageStateHandler', () => {
     });
 
     it('converts numeric string parameters to numbers', () => {
-        const url = '/wastewater/covid/variantExplorer?' + 'minProportion=0.5&' + 'minCount=10&' + 'minJaccard=0.6&';
+        const url = '/wastewater/covid/variant?' + 'minProportion=0.5&' + 'minCount=10&' + 'minJaccard=0.6&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         const { analysis } = filter;
@@ -118,7 +118,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('variant mode round-trip preserves numeric precision', () => {
         const url =
-            '/wastewater/covid/variantExplorer?' +
+            '/wastewater/covid/variant?' +
             'signatureType=computed&' +
             'minProportion=0.123456&' +
             'minJaccard=0.789012&';
@@ -133,7 +133,7 @@ describe('VariantExplorerPageStateHandler', () => {
     });
 
     it('defaults signatureType to predefined when absent from URL', () => {
-        const url = '/wastewater/covid/variantExplorer?';
+        const url = '/wastewater/covid/variant?';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         const { analysis } = filter;
@@ -143,7 +143,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('parses and encodes predefined variant filter with lineage (round-trip)', () => {
         const url =
-            '/wastewater/covid/variantExplorer?' +
+            '/wastewater/covid/variant?' +
             'locationName=Z%C3%BCrich+%28ZH%29&' +
             'samplingDate=2024-01-01--2024-12-31&' +
             'granularity=day&' +
@@ -165,7 +165,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('parses and encodes newMutationsOnly=true in predefined variant mode (round-trip)', () => {
         const url =
-            '/wastewater/covid/variantExplorer?' +
+            '/wastewater/covid/variant?' +
             'locationName=Z%C3%BCrich+%28ZH%29&' +
             'samplingDate=2024-01-01--2024-12-31&' +
             'granularity=day&' +
@@ -187,7 +187,7 @@ describe('VariantExplorerPageStateHandler', () => {
 
     it('parses and encodes includeSublineagesForJaccard=false in predefined variant mode (round-trip)', () => {
         const url =
-            '/wastewater/covid/variantExplorer?' +
+            '/wastewater/covid/variant?' +
             'locationName=Z%C3%BCrich+%28ZH%29&' +
             'samplingDate=2024-01-01--2024-12-31&' +
             'granularity=day&' +
@@ -210,7 +210,7 @@ describe('VariantExplorerPageStateHandler', () => {
     it('keeps a cleared variant or lineage cleared, instead of going back to the default', () => {
         const parse = (query: string) =>
             handler.parsePageStateFromUrl(
-                new URL(`http://example.com/wastewater/covid/variantExplorer?${query}`).searchParams,
+                new URL(`http://example.com/wastewater/covid/variant?${query}`).searchParams,
             );
         const cleared = { ...parse(''), analysis: { ...parse('').analysis, variant: undefined, lineage: undefined } };
 
@@ -224,7 +224,7 @@ describe('VariantExplorerPageStateHandler', () => {
     it('leaves the defaults out of the URL', () => {
         const url = handler.toUrl(
             handler.parsePageStateFromUrl(
-                new URL('http://example.com/wastewater/covid/variantExplorer?sequenceType=nucleotide&minCount=15')
+                new URL('http://example.com/wastewater/covid/variant?sequenceType=nucleotide&minCount=15')
                     .searchParams,
             ),
         );
@@ -236,7 +236,7 @@ describe('VariantExplorerPageStateHandler', () => {
     it('takes the default for invalid values, as from an old or mistyped link', () => {
         const { analysis } = handler.parsePageStateFromUrl(
             new URL(
-                'http://example.com/wastewater/covid/variantExplorer?' +
+                'http://example.com/wastewater/covid/variant?' +
                     'signatureType=other&sequenceType=dna&minProportion=abc&minCount=-3&minJaccard=2&timeFrame=1year',
             ).searchParams,
         );

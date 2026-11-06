@@ -65,7 +65,7 @@ describe('ModeMenu', () => {
         await getByRole('button', { name: 'Manual' }).click();
 
         const href = getByRole('link', { name: 'Explorer' }).element().getAttribute('href');
-        expect(href).toBe(`/wastewater/covid/variantExplorer?${DATASET_SEARCH}`);
+        expect(href).toBe(`/wastewater/covid/variant?${DATASET_SEARCH}`);
     });
 
     it('closes after picking a page, and names the new one', async () => {
