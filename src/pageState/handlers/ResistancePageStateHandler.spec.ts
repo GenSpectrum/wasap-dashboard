@@ -12,7 +12,7 @@ describe('ResistancePageStateHandler', () => {
             'locations=Z%C3%BCrich+%28ZH%29&' +
             'date=2024-01-01--2024-12-31&' +
             'granularity=day&' +
-            'resistanceSet=3CLpro&' +
+            'set=3CLpro&' +
             'proportionRange=high&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
@@ -25,7 +25,7 @@ describe('ResistancePageStateHandler', () => {
     });
 
     it('resistance mode always uses amino acid sequence type', () => {
-        const url = '/wastewater/covid/resistance?resistanceSet=3CLpro&sequenceType=nuc&';
+        const url = '/wastewater/covid/resistance?set=3CLpro&sequenceType=nuc&';
         const filter = handler.parsePageStateFromUrl(new URL(`http://example.com${url}`).searchParams);
 
         expect(filter.analysis.mode).toBe('resistance');

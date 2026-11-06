@@ -169,14 +169,14 @@ describe('baseFilter', () => {
 
     describe('withDatasetFilter', () => {
         it('replaces the dataset filter and leaves the rest', () => {
-            const search = new URLSearchParams('locations=Berlin&granularity=week&resistanceSet=Spike&minMean=0.2');
+            const search = new URLSearchParams('locations=Berlin&granularity=week&set=Spike&minMean=0.2');
             const dataset = { ...parse('locations=Basel') };
 
             const result = withDatasetFilter(search, dataset, config);
 
             expect(Object.fromEntries(result)).toEqual({
                 locations: 'Basel',
-                resistanceSet: 'Spike',
+                set: 'Spike',
                 minMean: '0.2',
             });
         });
