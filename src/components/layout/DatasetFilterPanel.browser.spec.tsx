@@ -81,6 +81,16 @@ function renderPanel(onChange = vi.fn(), locationColumn = schema.locationName) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('DatasetFilterPanel', () => {
+    it('keeps the names of its controls for screen readers, which see no labels but the heading', async () => {
+        const { getByRole } = renderPanel();
+
+        await expect.element(getByRole('region', { name: 'Dataset' })).toBeInTheDocument();
+        await expect
+            .element(getByRole('button', { name: `Sampling locations: ${DEFAULT_LOCATION}` }))
+            .toBeInTheDocument();
+        await expect.element(getByRole('radiogroup', { name: 'Granularity' })).toBeInTheDocument();
+    });
+
     it("offers the locations of RhyDB's location column, not of the URL param's name", async () => {
         const { getByRole } = renderPanel(vi.fn(), 'city');
 
@@ -114,7 +124,7 @@ describe('DatasetFilterPanel', () => {
 
     it('applies the ticks on Escape and on a click outside', async () => {
         const onChange = vi.fn();
-        const { getByRole, getByText } = renderPanel(onChange);
+        const { getByRole } = renderPanel(onChange);
 
         await getByRole('button', { name: DEFAULT_LOCATION }).click();
         await getByRole('checkbox', { name: 'Basel (BS)' }).click();
@@ -124,7 +134,7 @@ describe('DatasetFilterPanel', () => {
 
         await getByRole('button', { name: /Basel \(BS\)/ }).click();
         await getByRole('checkbox', { name: 'Basel (BS)' }).click();
-        await getByText('Granularity').click();
+        await getByRole('heading', { name: 'Dataset' }).click();
         expect(onChange).toHaveBeenLastCalledWith({ ...dataset, locationNames: [DEFAULT_LOCATION] });
     });
 

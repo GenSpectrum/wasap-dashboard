@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 
+import { CellDropdownLoading } from './CellDropdown';
 import { DateRangeDropdown } from './dateRangeFilter/DateRangeDropdown';
 import { useDateExtent } from '../../dataLayer/hooks/lookups/dateExtent';
 import { type DateRangeOption } from '../../domain/dateRange';
-import { LoadingDisplay } from '../ui/LoadingDisplay';
 
 /**
  * Computes the available date-range options dynamically from the newest
@@ -11,11 +11,15 @@ import { LoadingDisplay } from '../ui/LoadingDisplay';
  */
 export function DynamicDateFilter({
     label,
+    icon,
     generateOptions,
     value,
     onChange,
 }: {
+    /** What the dropdown is, for screen readers: its button shows only the range. */
     label: string;
+    /** An iconify class for the icon at the start of the button. */
+    icon: string;
     generateOptions: ({ startDate, endDate }: { startDate: string; endDate: string }) => DateRangeOption[];
     value: DateRangeOption | undefined;
     onChange: (newValue: DateRangeOption | undefined) => void;
@@ -30,21 +34,21 @@ export function DynamicDateFilter({
     }, [dateExtent, generateOptions]);
 
     return (
-        // Not a <label>: it would forward its clicks to the first control in the dropdown.
-        <div>
-            <div className='label flex'>
-                <span>{label}</span>
-            </div>
+        <div className='h-full'>
             {isPending ? (
-                <div className='h-20'>
-                    <LoadingDisplay />
-                </div>
+                <CellDropdownLoading />
             ) : isError ? (
-                <div className='flex h-20 items-center'>
+                <div className='flex h-full items-center'>
                     Failed to load date range: {error instanceof Error ? error.message : String(error)}
                 </div>
             ) : (
-                <DateRangeDropdown dateRangeOptions={generatedOptions} value={value} onChange={onChange} />
+                <DateRangeDropdown
+                    dateRangeOptions={generatedOptions}
+                    value={value}
+                    onChange={onChange}
+                    label={label}
+                    icon={icon}
+                />
             )}
         </div>
     );
