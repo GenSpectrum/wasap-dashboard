@@ -162,16 +162,20 @@ function PairDetails({
     return (
         <div className='text-sm'>
             <dl className='grid grid-cols-[auto_auto] gap-x-3 text-sm'>
-                <dt>Shared</dt>
-                <dd className='text-right tabular-nums'>{shared}</dd>
+                <dt>Distinguishing</dt>
+                <dd className='text-right tabular-nums'>{onlyA + onlyB}</dd>
                 <dt>Only in {a}</dt>
                 <dd className='text-right tabular-nums'>{onlyA}</dd>
                 <dt>Only in {b}</dt>
                 <dd className='text-right tabular-nums'>{onlyB}</dd>
-                <dt>Distinguishing</dt>
-                <dd className='text-right tabular-nums'>{onlyA + onlyB}</dd>
+                <dt>Shared</dt>
+                <dd className='text-right tabular-nums'>{shared}</dd>
             </dl>
-            {clickable && <p className='mt-2 text-xs text-gray-500 italic'>Click to see them over time.</p>}
+            {clickable && (
+                <p className='mt-2 text-xs text-gray-500 italic'>
+                    Click to see the distinguishing mutations over time.
+                </p>
+            )}
         </div>
     );
 }
