@@ -152,6 +152,12 @@ input.input:focus,
     border: 1px solid var(--color-stone-300);
 }
 
+/* flatpickr's static mode wraps the date field in an inline-block, which is as wide as the field's
+   default width, not as the space it is given: on a wide page, a gap was left after the field. */
+.flatpickr-wrapper {
+    display: block;
+}
+
 html,
 body,
 #root {
