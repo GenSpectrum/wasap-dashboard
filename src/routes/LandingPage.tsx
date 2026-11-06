@@ -11,7 +11,7 @@ export function LandingPage() {
 
     return (
         <div className='mx-auto max-w-3xl p-6'>
-            <h1 className='mb-6 text-2xl font-semibold'>Choose an organism</h1>
+            <h1 className='mb-4 text-xl font-semibold'>Choose an organism</h1>
             <ul className='grid gap-4 sm:grid-cols-3'>
                 {organisms.map((entry) => (
                     <li key={entry.pathSegment}>
