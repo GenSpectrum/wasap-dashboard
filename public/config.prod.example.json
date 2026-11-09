@@ -21,7 +21,8 @@
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/tree.json",
                 "lineageAttribute": "Nextclade_pango",
                 "cladeAttribute": "clade_nextstrain",
-                "aliasKeyUrl": "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json"
+                "aliasKeyUrl": "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json",
+                "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/sars-cov-2/wuhan-hu-1/orfs/genome_annotation.gff3"
             },
             "resistanceMutationCollections": [
                 {
@@ -115,7 +116,8 @@
             "resistanceAnalysisModeEnabled": true,
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/tree.json",
-                "lineageAttribute": "clade_membership"
+                "lineageAttribute": "clade_membership",
+                "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/a/EPI_ISL_412866/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
             "rhydb": {
@@ -186,7 +188,8 @@
             "resistanceAnalysisModeEnabled": true,
             "lineageTree": {
                 "url": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/tree.json",
-                "lineageAttribute": "clade_membership"
+                "lineageAttribute": "clade_membership",
+                "genomeAnnotationUrl": "https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/master/data/nextstrain/rsv/b/EPI_ISL_1653999/genome_annotation.gff3"
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
             "rhydb": {
