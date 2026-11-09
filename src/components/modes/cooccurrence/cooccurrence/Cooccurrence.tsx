@@ -225,7 +225,8 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({
             Amplicon <span className='font-medium text-black'>{amplicon.start.toLocaleString()}</span>
             &ndash;<span className='font-medium text-black'>{amplicon.end.toLocaleString()}</span> (
             {(amplicon.end - amplicon.start + 1).toLocaleString()} {sequenceType === 'nucleotide' ? 'bp' : 'aa'})
-            &middot; {aboveCutoffCount} of {positionsByEntropy.length} positions exceed {entropyCutoff} bits of entropy
+            &middot; {aboveCutoffCount} {aboveCutoffCount === 1 ? 'position exceeds' : 'positions exceed'}{' '}
+            {entropyCutoff} bits of entropy
             {aboveCutoffCount > diversePositions.length
                 ? `; showing the ${diversePositions.length} most variable.`
                 : '.'}
