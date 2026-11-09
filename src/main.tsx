@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { loadAppConfig } from './config/appConfig';
+import { reportLocationToEmbeddingPage } from './embedding';
 import { routes } from './routes';
 import './index.css';
 
@@ -15,6 +16,8 @@ import './index.css';
 const router = createBrowserRouter(routes, {
     basename: import.meta.env.BASE_URL.replace(/\/$/, ''),
 });
+
+reportLocationToEmbeddingPage(router);
 
 /**
  * The app-wide TanStack Query client, of every data read but those from RhyDB (which have their own,
