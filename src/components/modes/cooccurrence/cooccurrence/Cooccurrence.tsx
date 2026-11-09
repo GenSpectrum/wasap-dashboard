@@ -22,6 +22,10 @@ import { type RhydbReadFilter } from '../../../../dataLayer/queries/filter';
 import { type PositionTarget } from '../../../../dataLayer/queries/mutationsOverTime';
 import { SubstitutionClass, type Substitution, type SequenceType } from '../../../../domain/mutations';
 import { type TemporalGranularity } from '../../../../domain/temporal';
+import { ampliconRange } from '../../../../externalData/fileBased/amplicons/ampliconRange';
+import { type AmpliconsConfig } from '../../../../externalData/fileBased/amplicons/ampliconsConfig';
+import { useAmplicons } from '../../../../externalData/fileBased/amplicons/useAmplicons';
+import { useGeneAnnotation } from '../../../../externalData/fileBased/genome/useGeneAnnotation';
 import {
     lineagePanelSymbols,
     matchingPanelLineages,
@@ -73,6 +77,10 @@ export type CooccurrenceProps =
           anchorPosition: string;
           /** Positions at or below this Shannon entropy (bits) are left out. */
           entropyCutoff: number;
+          /** The primer scheme, for the amplicon's range; told from the coverage around the anchor without. */
+          amplicons?: AmpliconsConfig;
+          /** Places amino-acid anchors on the primer scheme; without, their range is told from the coverage. */
+          genomeAnnotationUrl?: string;
       });
 
 export const Cooccurrence: FC<CooccurrenceProps> = (props) => {
@@ -138,9 +146,21 @@ const ManualCooccurrenceInner: FC<ManualCooccurrenceProps> = ({ panel, lineageTr
  * over: the amplicon containing it, filtered to positions above the entropy
  * cutoff — see `useAmpliconAnchor` for the two-query technique.
  */
-const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, lineageTree, ...componentProps }) => {
+const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({
+    panel,
+    lineageTree,
+    amplicons: ampliconsConfig,
+    genomeAnnotationUrl,
+    ...componentProps
+}) => {
     const { filter, sequenceType, anchorPosition, entropyCutoff } = componentProps;
     const { nucleotideSequence } = useRhydbSchema();
+    // Both cached from the filter's amplicon picker. One that failed to load leaves the range to the coverage.
+    const amplicons = useAmplicons(ampliconsConfig);
+    const genes = useGeneAnnotation(sequenceType === 'amino acid' ? genomeAnnotationUrl : undefined);
+    const schemePending =
+        (ampliconsConfig !== undefined && amplicons.isPending) ||
+        (sequenceType === 'amino acid' && genomeAnnotationUrl !== undefined && genes.isPending);
 
     const anchorToken = useMemo(() => parsePositionToken(anchorPosition, sequenceType), [anchorPosition, sequenceType]);
     const anchorTarget: PositionTarget | null = useMemo(() => {
@@ -151,12 +171,22 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({ panel, linea
         return sequenceName === '' ? null : { sequenceName, position: anchorToken.position };
     }, [anchorToken, sequenceType, nucleotideSequence]);
 
-    const { amplicon, positionsByEntropy, isLoading, error } = useAmpliconAnchor(filter, sequenceType, anchorTarget);
+    const knownRange = useMemo(
+        () =>
+            anchorTarget === null ? undefined : ampliconRange(anchorTarget, sequenceType, amplicons.data, genes.data),
+        [anchorTarget, sequenceType, amplicons.data, genes.data],
+    );
+    const { amplicon, positionsByEntropy, isLoading, error } = useAmpliconAnchor(
+        filter,
+        sequenceType,
+        schemePending ? null : anchorTarget,
+        knownRange,
+    );
 
     if (anchorTarget === null) {
         return <NoDataDisplay />;
     }
-    if (isLoading) {
+    if (schemePending || isLoading) {
         return <LoadingDisplay />;
     }
     if (error) {

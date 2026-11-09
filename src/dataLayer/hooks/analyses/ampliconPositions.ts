@@ -1,8 +1,8 @@
 /**
  * Resolves an anchor position to its amplicon and the amplicon's positions ranked by variability:
  * one query (`ampliconPositionsQuery`), then three pure steps — reconstruct each position's allele
- * distribution, find the contiguous high-coverage run around the anchor (the amplicon), and rank
- * its positions by Shannon entropy.
+ * distribution, take the amplicon's range (the primer scheme's, else the contiguous high-coverage
+ * run around the anchor), and rank its positions by Shannon entropy.
  *
  * Verified live against production covid data: amplicon edges are a single-nucleotide-sharp
  * coverage cliff, and most positions are >99% one allele, with a handful genuinely split — the
@@ -51,6 +51,8 @@ export function useAmpliconAnchor(
     filter: RhydbReadFilter,
     sequenceType: OverTimeSequenceType,
     anchor: PositionTarget | null,
+    /** The amplicon's range from the primer scheme (`ampliconRange`); told from the coverage without. */
+    knownRange: { start: number; end: number } | undefined,
 ): AmpliconAnchorResult {
     const connection = useConnection();
     const schema = useRhydbSchema();
@@ -58,7 +60,7 @@ export function useAmpliconAnchor(
 
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     const query = useRhydbQuery({
-        queryKey: ['rhydb', 'amplicon-anchor', ...connection.key, normalized, sequenceType, anchor],
+        queryKey: ['rhydb', 'amplicon-anchor', ...connection.key, normalized, sequenceType, anchor, knownRange],
         enabled: anchor !== null,
         queryFn: async ({ signal }) => {
             if (anchor === null) {
@@ -72,8 +74,10 @@ export function useAmpliconAnchor(
             const positionRows = readAmpliconPositionRows(rows);
 
             const byPosition = groupByPosition(positionRows);
-            const anchorCoverage = byPosition.get(anchor.position)?.coverage;
-            if (anchorCoverage === undefined || anchorCoverage === 0) {
+            // `mutations()` has no row for a position where every read shows the reference, which can be the
+            // anchor too. With the scheme's range, any row at all means that there are reads.
+            const anchorCoverage = byPosition.get(anchor.position)?.coverage ?? 0;
+            if (knownRange !== undefined ? byPosition.size === 0 : anchorCoverage === 0) {
                 throw new UserFacingError(
                     'No coverage at this position',
                     `Position ${anchor.position} has no covering reads in the current filter. Try a different position, ` +
@@ -81,7 +85,9 @@ export function useAmpliconAnchor(
                 );
             }
 
-            const amplicon = detectAmpliconRange(byPosition, anchor.position, anchorCoverage);
+            // The coverage-told range ends at any such all-reference position and any dip in the coverage,
+            // losing the rest of the amplicon: in 18 of the 96 covid amplicons over 30 days (2026-11-09).
+            const amplicon = knownRange ?? detectAmpliconRange(byPosition, anchor.position, anchorCoverage);
             const positionsByEntropy =
                 amplicon === null ? [] : entropyInRange(byPosition, amplicon.start, amplicon.end);
 
