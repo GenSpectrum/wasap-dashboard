@@ -155,12 +155,12 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({
 }) => {
     const { filter, sequenceType, anchorPosition, entropyCutoff } = componentProps;
     const { nucleotideSequence } = useRhydbSchema();
-    // Both cached from the filter's amplicon picker. One that failed to load leaves the range to the coverage.
+    // Usually cached from the filter's amplicon picker. One that failed to load leaves the range to the
+    // coverage. While loading, the panel waits rather than show the coverage-told range first.
     const amplicons = useAmplicons(ampliconsConfig);
     const genes = useGeneAnnotation(sequenceType === 'amino acid' ? genomeAnnotationUrl : undefined);
     const schemePending =
-        (ampliconsConfig !== undefined && amplicons.isPending) ||
-        (sequenceType === 'amino acid' && genomeAnnotationUrl !== undefined && genes.isPending);
+        (amplicons.isPending && amplicons.fetchStatus !== 'idle') || (genes.isPending && genes.fetchStatus !== 'idle');
 
     const anchorToken = useMemo(() => parsePositionToken(anchorPosition, sequenceType), [anchorPosition, sequenceType]);
     const anchorTarget: PositionTarget | null = useMemo(() => {
@@ -179,7 +179,7 @@ const AmpliconCooccurrenceInner: FC<AmpliconCooccurrenceProps> = ({
     const { amplicon, positionsByEntropy, isLoading, error } = useAmpliconAnchor(
         filter,
         sequenceType,
-        schemePending ? null : anchorTarget,
+        anchorTarget,
         knownRange,
     );
 

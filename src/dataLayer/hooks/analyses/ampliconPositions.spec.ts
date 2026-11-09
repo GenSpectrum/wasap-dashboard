@@ -5,6 +5,7 @@ import {
     entropyInRange,
     groupByPosition,
     labelFor,
+    resolveAmplicon,
     selectDiversePositions,
 } from './ampliconPositions';
 import { type AmpliconPositionRow } from '../../queries/ampliconPositions';
@@ -115,5 +116,44 @@ describe('labelFor', () => {
 
     test('amino acid: gene-qualified', () => {
         expect(labelFor(501, 'amino acid', 'S')).toBe('S:501');
+    });
+});
+
+describe('resolveAmplicon', () => {
+    // Reads over 100–110, but `mutations()` has no row at 105, where they all show the reference.
+    function rows(positions: number[], coverage = 1000) {
+        return groupByPosition(
+            positions.map((position) => ({ position, mutationFrom: 'A', mutationTo: 'G', count: 100, coverage })),
+        );
+    }
+    const gapped = rows([100, 101, 102, 103, 104, 106, 107, 108, 109, 110]);
+
+    test('takes the known range, across positions without a row', () => {
+        const resolved = resolveAmplicon(gapped, 102, { start: 100, end: 110 });
+        expect(resolved).not.toBe('no-coverage');
+        if (resolved !== 'no-coverage') {
+            expect(resolved.amplicon).toEqual({ start: 100, end: 110 });
+            expect(resolved.positionsByEntropy.map(({ position }) => position).sort((a, b) => a - b)).toEqual([
+                100, 101, 102, 103, 104, 106, 107, 108, 109, 110,
+            ]);
+        }
+    });
+
+    test('without one, tells the range from the coverage, which ends at the missing row', () => {
+        const resolved = resolveAmplicon(gapped, 102, undefined);
+        expect(resolved !== 'no-coverage' && resolved.amplicon).toEqual({ start: 100, end: 104 });
+    });
+
+    test('with a known range, an anchor without a row still has reads', () => {
+        const resolved = resolveAmplicon(gapped, 105, { start: 100, end: 110 });
+        expect(resolved !== 'no-coverage' && resolved.amplicon).toEqual({ start: 100, end: 110 });
+    });
+
+    test('without one, an anchor without a row has no coverage', () => {
+        expect(resolveAmplicon(gapped, 105, undefined)).toBe('no-coverage');
+    });
+
+    test('without any rows, there is no coverage either way', () => {
+        expect(resolveAmplicon(new Map(), 105, { start: 100, end: 110 })).toBe('no-coverage');
     });
 });
