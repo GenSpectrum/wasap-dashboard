@@ -188,7 +188,8 @@ const MutationsOverTimeWithMetadata: FC<{
                     pageData === null
                     ? []
                     // subsetting mean by the mutations listed in pageData
-                    :  pageData.getFirstAxisKeys().filter((mutation) => ( mutation.segment === forSegment && mutation.code in meanProportions ) ).map((mutation) => [ mutation.position, meanProportions[ mutation.code ] ] ),
+                    // TODO consider fusing consecutive positions as a single label ?
+                    :  pageData.getFirstAxisKeys().filter((mutation) => ( mutation.segment === forSegment && mutation.code in meanProportions ) ).map((mutation) => [ mutation.position, mutation.position, meanProportions[ mutation.code ], mutation.code ] ),
             }}
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}
