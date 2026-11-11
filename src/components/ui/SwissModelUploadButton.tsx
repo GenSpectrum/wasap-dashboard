@@ -1,5 +1,6 @@
 import { type FC, useState } from 'react';
 import { type DataValue } from './CsvDownloadButton';
+import { HSLToHex } from '../../util/color';
 
 export interface SwissModelUploadButtonProps {
     /** Not shown, the button is an icon: used as its tooltip and accessible name. */
@@ -56,9 +57,8 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
         const lenght = segment in segmentLenght
             ? segmentLenght[segment]
             : 10000; // HACK fallback, unneeded once lenght is built from actual data
-        // TODO color HSV from position and proportion
         // protein_name start   stop    color   link    label
-        const rows = data.map((row) => `${prot}\t${row[0]}\t${row[1]}\t#ff00ff\tW-ASAP\t${row[3]}` ).join('\n');
+        const rows = data.map((row) => `${prot}\t${row[0]}\t${row[1]}\t${HSLToHex({h: (row[0]+row[1])*180/lenght, s: 100*row[2], l: 50})}\t${window.location.href}\t${row[3]}` ).join('\n');
         return rows;
     }
 
