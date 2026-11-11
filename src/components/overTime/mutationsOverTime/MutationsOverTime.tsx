@@ -187,12 +187,8 @@ const MutationsOverTimeWithMetadata: FC<{
                 getSMData: (forSegment: String) =>
                     pageData === null
                     ? []
-                    // see meanProportions  above: skipping no count
-                    // HACK also, I am tapping the wrong object (overallMutations) instead of the current page (pageData)
-                    // TODO probably subsetting meanProportions by the mutations listed in pageData would be better
-                    : overallMutations
-                        .filter((entry) => ( entry.mutation.segment === forSegment && entry.count > 0 ) )
-                        .map((entry) => [entry.mutation.position, entry.proportion]),
+                    // subsetting mean by the mutations listed in pageData
+                    :  pageData.getFirstAxisKeys().filter((mutation) => ( mutation.segment === forSegment && mutation.code in meanProportions ) ).map((mutation) => [ mutation.position, meanProportions[ mutation.code ] ] ),
             }}
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}
