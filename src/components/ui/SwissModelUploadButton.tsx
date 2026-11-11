@@ -36,6 +36,42 @@ const segmentLenght = {
     "S": 1273,
 };
 
+// HACK more hardcoded shit
+// TODO configure
+const url = 'https://swissmodel.expasy.org/repository/annotation/create';
+// HACK DO NOT USE THIS WAY
+// TODO user input box? Generic e-mail for the project?
+const email = 'blackcat@sympato.ch';
+
+
+// HACK that part must go into externalData
+const submitSwissModelAnnotation = async (content: String) => {
+    const formBody = new FormData();
+    formBody.append('email', email);
+    // TODO add something about the view: current organism, the current mode
+    formBody.append('title', 'Annotation from Wastewater');
+    formBody.append('annotation_data', content);
+
+    try {
+        // POST API documented here: https://swissmodel.expasy.org/repository/annotation
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formBody,
+        });
+        console.log("Fetch returned");
+        // Parse the JSON response
+        const data = await response.json();
+        if (response.ok) { // Check if the response status is OK (200-299)
+            console.log(data); // Log the response data to the console
+        } else {
+            console.error(data); // Log the error response to the console
+        }
+    } catch (error) { // Catch any errors during the request
+        console.error("submiting failed");
+        console.error(error); // Log the error to the console
+    }
+}
+
 
 
 export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
@@ -76,6 +112,7 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
         try {
             const content = await getUploadContent();
             console.log(`${content}`)
+            await submitSwissModelAnnotation(content);
         } finally {
             setIsUploading(false);
         }
