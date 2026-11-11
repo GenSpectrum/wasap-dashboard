@@ -167,6 +167,7 @@ const MutationsOverTimeWithMetadata: FC<{
             featureRenderer={mutationRenderer}
             totalRows={sortedMutationCodes.length}
             csv={{
+                // *** for downloading CSVs
                 filename: 'mutations_over_time.csv',
                 getRows: () =>
                     pageData === null
@@ -175,6 +176,23 @@ const MutationsOverTimeWithMetadata: FC<{
                               mutation: mutation.code,
                               ...proportionsByDate(pageData, mutation),
                           })),
+                // *** for sending CSV to Swiss Model
+                // HACK There's probably a better way to coney whether table holds aa or nuc (e.g. based on the type/class of mutation
+                type: sequenceType,
+                getSegments: () =>
+                    (pageData === null || sequenceType !== 'amino acid')
+                    ? []
+                    // Oh, hai! I have no idea what I am doing but I know way to much Perl to be dangerous
+                    : [ ...new Set( pageData.getFirstAxisKeys().map((mutation) => ( mutation.segment ) ) ) ],
+                getSMData: (forSegment: String) =>
+                    pageData === null
+                    ? []
+                    // see meanProportions  above: skipping no count
+                    // HACK also, I am tapping the wrong object (overallMutations) instead of the current page (pageData)
+                    // TODO probably subsetting meanProportions by the mutations listed in pageData would be better
+                    : overallMutations
+                        .filter((entry) => ( entry.mutation.segment === forSegment && entry.count > 0 ) )
+                        .map((entry) => [entry.mutation.position, entry.proportion]),
             }}
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}

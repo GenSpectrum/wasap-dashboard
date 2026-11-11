@@ -83,12 +83,22 @@ export function OverTimeGrid<F>({ state, totalRows, csv, ...bandsProps }: OverTi
                     onPageSizeChange: state.changePageSize,
                     startContent: <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />,
                     endContent: (
+                      <div class="flex items-center gap-1">
+                        { csv.type === 'amino acid' ? (
+                        <div>aa-b0rk<span hidden>
+                           {csv.getSegments()}
+                           {csv.getSMData('S')}
+                        </span></div>
+                        ) : (
+                        <div>NO-b0rk</div>
+                        ) }
                         <CsvDownloadButton
                             className='btn btn-xs'
                             label='Download CSV'
                             getData={csv.getRows}
                             filename={csv.filename}
                         />
+                      </div>
                     ),
                 }}
             />
