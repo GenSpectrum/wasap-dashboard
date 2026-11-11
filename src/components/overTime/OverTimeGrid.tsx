@@ -8,6 +8,7 @@ import { type TemporalDataMap } from '../../dataLayer/overTime/MutationOverTimeD
 import { getProportion } from '../../domain/proportionValue';
 import { toTemporalClass } from '../../domain/temporal';
 import { CsvDownloadButton, type DataValue } from '../ui/CsvDownloadButton';
+import { SwissModelUploadButton } from '../ui/SwissModelUploadButton';
 
 /**
  * What the user chose in an over-time grid: the sort, the page and the page size. Hold it above
@@ -85,12 +86,14 @@ export function OverTimeGrid<F>({ state, totalRows, csv, ...bandsProps }: OverTi
                     endContent: (
                       <div class="flex items-center gap-1">
                         { csv.type === 'amino acid' ? (
-                        <div>aa-b0rk<span hidden>
-                           {csv.getSegments()}
-                           {csv.getSMData('S')}
-                        </span></div>
+                        <SwissModelUploadButton
+                           className='btn btn-xs'
+                           label='Upload and View annotation on SwissModel'
+                           getSegments={csv.getSegments}
+                           getSegmentData={csv.getSMData}
+                        />
                         ) : (
-                        <div>NO-b0rk</div>
+                        <div><span hidden>noAA</span></div>
                         ) }
                         <CsvDownloadButton
                             className='btn btn-xs'
