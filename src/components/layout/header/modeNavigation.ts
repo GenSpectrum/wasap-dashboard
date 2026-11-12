@@ -4,18 +4,7 @@ import { isModeEnabled } from '../../../config/organismConfig';
 import { resolveOrganismConfig } from '../../../config/wastewaterOrganisms';
 import { type AnalysisMode } from '../../../pageState/analysisFilter';
 import { datasetFilterSearchParams, parseDatasetFilter } from '../../../pageState/baseFilter';
-import { MODE_GROUPS, modeLabel, modePath } from '../../../pageState/modes';
-
-// Spelled out in full, so that Tailwind finds the icon classes in the source.
-const MODE_ICONS = {
-    deconvolution: 'mdi--chart-areaspline',
-    variant: 'wasap--mutation-row',
-    cooccurrence: 'mdi--set-center',
-    resistance: 'mdi--shield-outline',
-    untracked: 'mdi--radar',
-    manual: 'mdi--pencil-outline',
-    collection: 'mdi--folder-multiple-outline',
-} as const satisfies Record<AnalysisMode, string>;
+import { MODE_GROUPS, modeIcon, modeLabel, modePath } from '../../../pageState/modes';
 
 export const OVERVIEW_ICON = 'mdi--view-dashboard-outline';
 export const ABOUT_ICON = 'mdi--information-outline';
@@ -63,7 +52,7 @@ export function useModeNavigation(): ModeNavigation | undefined {
                     mode,
                     to: { pathname: modePath(config.path, mode), search },
                     label: modeLabel(mode),
-                    icon: MODE_ICONS[mode],
+                    icon: modeIcon(mode),
                 })),
         })).filter((group) => group.links.length > 0),
     };
