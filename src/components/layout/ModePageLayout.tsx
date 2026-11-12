@@ -3,16 +3,18 @@ import { type ReactNode, useState } from 'react';
 import { DatasetFilterPanel } from './DatasetFilterPanel';
 import { useOrganismLayoutContext } from './OrganismLayout';
 import { type AnalysisMode } from '../../pageState/analysisFilter';
+import { modeIcon, modeTitle } from '../../pageState/modes';
 import { ModeAbout } from '../filterSidebar/InfoBlocks';
 
 /**
  * The filter panel of an analysis mode on the left, and on the right the panel for the
  * dataset filter (the same for all modes) above the results. The sidebar and the results
- * fill the height of the page, in their own shade of grey. Below the filter, the sidebar says
- * what the mode shows, collapsed.
+ * fill the height of the page, in their own shade of grey. The sidebar opens with the full title
+ * of the mode, and below the filter it says what the mode shows, collapsed.
  *
  * Below lg, the sidebar sits above the results and is collapsed behind a button, so that a
  * phone shows the results first: the filters always have values, so there is something to show.
+ * There, the title is only there for screen readers: the menu in the header names the page already.
  */
 export function ModePageLayout({
     mode,
@@ -32,6 +34,13 @@ export function ModePageLayout({
     return (
         <div className='flex-1 grid-cols-[300px_1fr] lg:grid'>
             <div className='bg-stone-200 px-4 py-3 lg:px-6'>
+                {/* The spacing is on the span: not-sr-only resets the margin and padding of the h1. */}
+                <h1 className='sr-only lg:not-sr-only'>
+                    <span className='mb-4 flex items-center gap-2 border-b border-stone-300 pb-3 text-base font-semibold text-stone-800'>
+                        <span className={`iconify ${modeIcon(mode)} shrink-0 text-lg`} />
+                        {modeTitle(mode)}
+                    </span>
+                </h1>
                 <button
                     type='button'
                     className='flex w-full items-center justify-between py-1 text-sm font-semibold text-gray-700 lg:hidden'

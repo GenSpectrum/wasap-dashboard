@@ -22,6 +22,9 @@
 
 /* The app's colour palette. */
 @theme {
+    /* From here up, the header has room for all the mode tabs; below, the mode menu takes their place. */
+    --breakpoint-nav: 85rem;
+
     --color-indigo: rgba(51, 34, 136, 0.9);
     --color-green: rgba(17, 119, 51, 1);
     --color-cyan: rgba(53, 166, 222, 1);

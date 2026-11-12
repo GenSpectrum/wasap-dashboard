@@ -1,13 +1,15 @@
 /**
  * Resolves an anchor position to its amplicon and the amplicon's positions ranked by variability:
  * one query (`ampliconPositionsQuery`), then three pure steps — reconstruct each position's allele
- * distribution, find the contiguous high-coverage run around the anchor (the amplicon), and rank
- * its positions by Shannon entropy.
+ * distribution, take the amplicon's range (the primer scheme's, else the contiguous high-coverage
+ * run around the anchor), and rank its positions by Shannon entropy.
  *
  * Verified live against production covid data: amplicon edges are a single-nucleotide-sharp
  * coverage cliff, and most positions are >99% one allele, with a handful genuinely split — the
  * ones worth co-occurrence.
  */
+
+import { useMemo } from 'react';
 
 import { useConnection, useRhydbSchema } from '../connection';
 import { MAX_COOCCURRENCE_POSITIONS } from './cooccurrence';
@@ -51,11 +53,15 @@ export function useAmpliconAnchor(
     filter: RhydbReadFilter,
     sequenceType: OverTimeSequenceType,
     anchor: PositionTarget | null,
+    /** The amplicon's range from the primer scheme (`ampliconRange`); told from the coverage without. */
+    knownRange: { start: number; end: number } | undefined,
 ): AmpliconAnchorResult {
     const connection = useConnection();
     const schema = useRhydbSchema();
     const normalized = normalizeFilter(filter);
 
+    // The range isn't part of the query, so the primer scheme and gene annotation it comes from load
+    // alongside it.
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     const query = useRhydbQuery({
         queryKey: ['rhydb', 'amplicon-anchor', ...connection.key, normalized, sequenceType, anchor],
@@ -69,35 +75,64 @@ export function useAmpliconAnchor(
                 'Amplicon positions',
                 { signal },
             );
-            const positionRows = readAmpliconPositionRows(rows);
-
-            const byPosition = groupByPosition(positionRows);
-            const anchorCoverage = byPosition.get(anchor.position)?.coverage;
-            if (anchorCoverage === undefined || anchorCoverage === 0) {
-                throw new UserFacingError(
-                    'No coverage at this position',
-                    `Position ${anchor.position} has no covering reads in the current filter. Try a different position, ` +
-                        'or widen the location / sampling-date filter.',
-                );
-            }
-
-            const amplicon = detectAmpliconRange(byPosition, anchor.position, anchorCoverage);
-            const positionsByEntropy =
-                amplicon === null ? [] : entropyInRange(byPosition, amplicon.start, amplicon.end);
-
-            return { amplicon, positionsByEntropy };
+            return groupByPosition(readAmpliconPositionRows(rows));
         },
     });
 
+    const resolved = useMemo(
+        () =>
+            query.data === undefined || anchor === null
+                ? undefined
+                : resolveAmplicon(query.data, anchor.position, knownRange),
+        [query.data, anchor, knownRange],
+    );
+
+    if (resolved === 'no-coverage') {
+        return {
+            amplicon: null,
+            positionsByEntropy: [],
+            isLoading: false,
+            error: new UserFacingError(
+                'No coverage at this position',
+                `Position ${anchor?.position} has no covering reads in the current filter. Try a different position, ` +
+                    'or widen the location / sampling-date filter.',
+            ),
+        };
+    }
     return {
-        amplicon: query.data?.amplicon ?? null,
-        positionsByEntropy: query.data?.positionsByEntropy ?? [],
+        amplicon: resolved?.amplicon ?? null,
+        positionsByEntropy: resolved?.positionsByEntropy ?? [],
         isLoading: query.isPending,
         error: query.error,
     };
 }
 
 // --- pure helpers (exported for tests) --------------------------------------
+
+/**
+ * The amplicon's range — `knownRange` from the primer scheme, else told from the coverage around the
+ * anchor — and its positions by entropy; `'no-coverage'` without reads at the anchor.
+ *
+ * `mutations()` has no row for a position where every read shows the reference, which can be the
+ * anchor too: with a known range, any row at all means that there are reads. The coverage-told range
+ * ends at any such all-reference position, and at any dip in the coverage, losing the rest of the
+ * amplicon.
+ */
+export function resolveAmplicon(
+    byPosition: ReadonlyMap<number, PositionInfo>,
+    anchorPosition: number,
+    knownRange: { start: number; end: number } | undefined,
+): { amplicon: { start: number; end: number } | null; positionsByEntropy: PositionEntropy[] } | 'no-coverage' {
+    const anchorCoverage = byPosition.get(anchorPosition)?.coverage ?? 0;
+    if (knownRange !== undefined ? byPosition.size === 0 : anchorCoverage === 0) {
+        return 'no-coverage';
+    }
+    const amplicon = knownRange ?? detectAmpliconRange(byPosition, anchorPosition, anchorCoverage);
+    return {
+        amplicon,
+        positionsByEntropy: amplicon === null ? [] : entropyInRange(byPosition, amplicon.start, amplicon.end),
+    };
+}
 
 type PositionInfo = { coverage: number; ref: string; alts: Map<string, number> };
 

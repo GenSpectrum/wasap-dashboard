@@ -125,6 +125,8 @@ export function CooccurrencePage({ config }: { config: OrganismConfigFor<'cooccu
                     manualModeLink={manualModeLink}
                     variantModeLink={variantModeLink}
                     clinicalLapis={isModeEnabled(config, 'variant') ? config.clinicalLapis : undefined}
+                    amplicons={config.amplicons}
+                    genomeAnnotationUrl={config.lineageTree?.genomeAnnotationUrl}
                 />
             )}
         </ModePageLayout>

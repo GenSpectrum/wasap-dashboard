@@ -3,6 +3,7 @@ import { type To } from 'react-router-dom';
 import { Cooccurrence } from './cooccurrence/Cooccurrence';
 import { type ClinicalLapisSource } from './cooccurrence/usePanelLineageJaccards';
 import { type RhydbReadFilter } from '../../../dataLayer/queries';
+import { type AmpliconsConfig } from '../../../externalData/fileBased/amplicons/ampliconsConfig';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import {
     DEFAULT_ENTROPY_CUTOFF_BITS,
@@ -23,6 +24,8 @@ export function CooccurrenceResult({
     manualModeLink,
     variantModeLink,
     clinicalLapis,
+    amplicons,
+    genomeAnnotationUrl,
 }: {
     base: BaseFilter;
     analysis: CooccurrenceAnalysis;
@@ -37,6 +40,10 @@ export function CooccurrenceResult({
     variantModeLink?: (lineage: string) => To;
     /** The clinical sequences to compute the panel lineages' Jaccard indices in; none without. */
     clinicalLapis?: ClinicalLapisSource;
+    /** The primer scheme, for the amplicon's range; told from the coverage without. */
+    amplicons?: AmpliconsConfig;
+    /** Places amino-acid anchors on the primer scheme. */
+    genomeAnnotationUrl?: string;
 }) {
     const commonProps = {
         filter,
@@ -57,6 +64,8 @@ export function CooccurrenceResult({
             positionSource='amplicon'
             anchorPosition={analysis.anchorPosition ?? ''}
             entropyCutoff={analysis.entropyCutoff ?? DEFAULT_ENTROPY_CUTOFF_BITS}
+            amplicons={amplicons}
+            genomeAnnotationUrl={genomeAnnotationUrl}
         />
     ) : (
         <Cooccurrence {...commonProps} positionSource='manual' positions={analysis.positions ?? []} />
