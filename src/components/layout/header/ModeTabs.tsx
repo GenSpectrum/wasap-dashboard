@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { ABOUT_ICON, OVERVIEW_ICON, useAboutPath, useModeNavigation } from './modeNavigation';
@@ -5,9 +6,9 @@ import { ABOUT_ICON, OVERVIEW_ICON, useAboutPath, useModeNavigation } from './mo
 /**
  * The tabs to pick the analysis mode of the organism whose page is open, which is a page
  * each, on a wide page (a narrow one has the `ModeMenu` instead). The overview page is the
- * first tab, always there — unlike the modes, every organism has one. The modes come in their
- * groups, each with its label (if it has one) above its tabs and some space in front.
- * There are no tabs where no organism is open, like on the landing page.
+ * first tab, always there — unlike the modes, every organism has one. Each group of tabs sits
+ * in a grey tray of its own, the overview as well, with the label of the group (if it has one)
+ * in front of it. There are no tabs where no organism is open, like on the landing page.
  */
 export function ModeTabs() {
     const navigation = useModeNavigation();
@@ -17,31 +18,35 @@ export function ModeTabs() {
     }
 
     return (
-        // Aligned at the bottom: the groups have their label above their tabs, so that all tabs are in one line.
-        // As much space below as the labels take above, so that the line of tabs is in the middle of the nav.
-        <nav aria-label='Analysis mode' className='flex items-end pb-2.5'>
-            <Tab to={navigation.overviewPath} label='Overview' icon={OVERVIEW_ICON} end />
+        <nav aria-label='Analysis mode' className='flex items-center gap-4'>
+            <Tray>
+                <Tab to={navigation.overviewPath} label='Overview' icon={OVERVIEW_ICON} end />
+            </Tray>
             {navigation.groups.map(({ label, links }) => (
                 <div
                     key={links.map((link) => link.mode).join()}
                     role={label === undefined ? undefined : 'group'}
                     aria-label={label}
-                    className='ml-6 flex shrink-0 flex-col'
+                    className='flex shrink-0 items-center gap-1'
                 >
                     {label !== undefined && (
                         <span className='px-2 text-[10px] leading-none font-semibold tracking-wide text-gray-500 uppercase'>
                             {label}
                         </span>
                     )}
-                    <div className='flex items-center'>
+                    <Tray>
                         {links.map((link) => (
                             <Tab key={link.mode} to={link.to} label={link.label} icon={link.icon} />
                         ))}
-                    </div>
+                    </Tray>
                 </div>
             ))}
         </nav>
     );
+}
+
+function Tray({ children }: { children: ReactNode }) {
+    return <div className='flex items-center overflow-hidden rounded-xs bg-stone-100'>{children}</div>;
 }
 
 /**
@@ -64,23 +69,16 @@ function Tab({
     end?: boolean;
 }) {
     return (
+        // The bar under the active tab is an inset shadow, not a border: it takes no room, so that the tab doesn't move.
         <NavLink
             to={to}
             end={end}
             className={({ isActive }) =>
-                `flex items-center gap-1.5 px-2 py-1 text-sm font-semibold whitespace-nowrap ${isActive ? 'text-brand-700' : 'text-gray-700 hover:bg-stone-300'}`
+                `flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold whitespace-nowrap ${isActive ? 'text-brand-700 bg-white shadow-[inset_0_-2px_0_var(--color-brand-700)]' : 'text-gray-700 hover:bg-stone-50'}`
             }
         >
-            {({ isActive }) => (
-                // The underline is on the text itself, not on the link: one on the link would run
-                // across its padding as well, wider than the label it marks.
-                <>
-                    <span className={`iconify ${icon} shrink-0 text-base`} />
-                    <span className={`border-b-[3px] pb-px ${isActive ? 'border-brand-700' : 'border-transparent'}`}>
-                        {label}
-                    </span>
-                </>
-            )}
+            <span className={`iconify ${icon} shrink-0 text-base`} />
+            {label}
         </NavLink>
     );
 }
