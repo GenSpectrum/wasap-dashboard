@@ -17,17 +17,17 @@ export function AppHeader() {
     const isOrganismOpen = resolveOrganismConfig(organismPath) !== undefined;
 
     return (
-        <header className='relative border-b-2 border-b-stone-300 bg-stone-200'>
+        <header className='relative border-b border-stone-300 bg-stone-200'>
             <div className='flex w-full items-center gap-3 px-4 py-3 sm:gap-4 lg:px-6'>
-                {/* As tall as the grouped tabs even where there are none, so that the header keeps its height across pages. */}
-                <div className='hidden min-h-[3.25rem] xl:block'>
+                {/* As tall as the trays of tabs even where there are none, so that the header keeps its height across pages. */}
+                <div className='nav:block hidden min-h-8'>
                     <ModeTabs />
                 </div>
-                <div className='min-w-0 xl:hidden'>
+                <div className='nav:hidden min-w-0'>
                     <ModeMenu />
                 </div>
                 <div className='ml-auto flex shrink-0 items-center gap-4'>
-                    <div className={isOrganismOpen ? 'hidden xl:block' : ''}>
+                    <div className={isOrganismOpen ? 'nav:block hidden' : ''}>
                         <AboutLink />
                     </div>
                     <OrganismSelect />

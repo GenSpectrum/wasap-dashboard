@@ -14,7 +14,7 @@ export function OrganismSelect() {
 
     return (
         <select
-            className='select select-sm'
+            className='select select-sm rounded-xs'
             aria-label='Organism'
             value={organismPath ?? ''}
             onChange={(event) => void navigate(`/${event.target.value}`)}
