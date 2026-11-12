@@ -13,12 +13,47 @@ export interface SwissModelUploadButtonProps {
 
 // HACK hardcoded for now
 // TODO split and move that to organism configuration
+// Uniprot ID of the protein, to help searching in databases, e.g. SwissModel
 const segmentProtein = {
     // SARS-CoV-2
+    "ORF1a": "P0DTC1",
+    "ORF1b": "P0DTD1", // Uniprot ID is for ORF1ab, use delta below to adapt position
     "S": "P0DTC2",
+    "ORF3a": "P0DTC3", // 3b, 3c, 3d are nested within ORF3a
+    "E": "P0DTC4",
+    "M": "P0DTC5",
+    "ORF6": "P0DTC6",
+    "ORF7a": "P0DTC7",
+    "ORF7b": "P0DTD8",
+    "ORF8": "P0DTC8",
+    "N": "P0DTC9",
+    "ORF9b": "P0DTD2",
+/*
     // RSV-A
+    "NS1": "P0DOE9",
+    "NS2": "P04543",
+    "N": "P03418",
+    "P": "P03421",
+    "M": "P0DOE7",
+    "SH": "P0DOE5",
+    "G": "P03423",
+    "F": "P03420",
+    "M2-1": "P04545",
+    "M2-2": "P88812",
+    "L": "P28887",
+*/
     // RSV-B
+    "NS1": "O42083",
+    "NS2": "O42038",
+    "N": "O42053",
+    "P": "O42062",
+    "M": "O42049",
+    "SH": "O36632",
+    "G": "O36633",
     "F": "O36634",
+    "M2-1": "O42050",
+    "M2-2": "O42047",
+    "L": "O36635",
 };
 // Special
 const segmentDelta = {
@@ -94,7 +129,7 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
             ? segmentLenght[segment]
             : 10000; // HACK fallback, unneeded once lenght is built from actual data
         // protein_name start   stop    color   link    label
-        const rows = data.map((row) => `${prot}\t${row[0]}\t${row[1]}\t${HSLToHex({h: (row[0]+row[1])*180/lenght, s: 100*row[2], l: 50})}\t${window.location.href}\t${row[3]}` ).join('\n');
+        const rows = data.map((row) => `${prot}\t${delta+row[0]}\t${delta+row[1]}\t${HSLToHex({h: (delta+row[0]+delta+row[1])*180/lenght, s: 100*row[2], l: 50})}\t${window.location.href}\t${row[3]}` ).join('\n');
         return rows;
     }
 
