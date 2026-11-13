@@ -73,7 +73,7 @@ const segmentLenght = {
 
 // HACK more hardcoded shit
 // TODO configure
-const url = 'https://swissmodel.expasy.org/repository/annotation/create';
+const url = 'https://beta.swissmodel.expasy.org/repository/annotation/create';
 // HACK DO NOT USE THIS WAY
 // TODO user input box? Generic e-mail for the project?
 const email = 'blackcat@sympato.ch';
