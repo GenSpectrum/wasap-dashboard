@@ -78,10 +78,45 @@ const segmentLenght = {
     // SARS-CoV-2
     // TODO patch should be kept in configuration
     // patch ORF1a and ORF1b to reflect the lenght of combined ORF1ab
-    "ORF1a": ((13468-266+1)/3)+(21555-13468+1)/3,
-    "ORF1b": ((13468-266+1)/3)+(21555-13468+1)/3,
+    "ORF1a": ((13468-266+1)/3)+(21555-13468+1)/3-1,
+    "ORF1b": ((13468-266+1)/3)+(21555-13468+1)/3-1,
     // TODO remaining should be loaded from the regular resources
-    "S": 1273,
+    'S': 1273,
+    'ORF3a': 275,
+    'E': 75,
+    'M': 222,
+    'ORF6': 61,
+    'ORF7a': 121,
+    'ORF7b': 43,
+    'ORF8': 121,
+    'N': 419,
+    'ORF9b': 97,
+/*
+    // RSV-A
+    'NS1': 139,
+    'NS2': 124,
+    'N': 391,
+    'P': 241,
+    'M': 256,
+    'SH': 64,
+    'G': 321,
+    'F': 574,
+    'M2-1': 194,
+    'M2-2': 90,
+    'L': 2165,
+*/
+    // RSV-B
+    'NS1': 139,
+    'NS2': 124,
+    'N': 391,
+    'P': 241,
+    'M': 256,
+    'SH': 65,
+    'G': 310,
+    'F': 574,
+    'M2-1': 195,
+    'M2-2': 90,
+    'L': 2166,
 };
 
 // HACK more hardcoded shit
