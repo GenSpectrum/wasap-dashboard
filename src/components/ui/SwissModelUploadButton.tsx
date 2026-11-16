@@ -123,7 +123,7 @@ const segmentLenght: Record<string, number> = {
 
 // HACK more hardcoded shit
 // TODO configure
-const repoUrl = 'https://beta.swissmodel.expasy.org/repository';
+const repoUrl = 'https://swissmodel.expasy.org/repository';
 // HACK DO NOT USE THIS WAY
 // TODO user input box? Generic e-mail for the project?
 const email = 'blackcat@sympato.ch';
