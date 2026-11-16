@@ -1,7 +1,17 @@
 import { type FC, useState } from 'react';
 import { type DataValue } from './CsvDownloadButton';
+import { dropdownClass } from './Dropdown';
 import { HSLToHex } from '../../util/color';
 
+// from DropDown
+import { flip, offset, shift } from '@floating-ui/dom';
+import { type Placement } from '@floating-ui/utils';
+import { type /* FC */, type ReactNode, useRef/*, useState */} from 'react';
+
+import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from './floatingUiHooks';
+
+// HACK the DropDown functionnality is done by copy-pasting from DropDown
+// TODO there's probably some inheritence and/or common sub-code split out?
 export interface SwissModelUploadButtonProps {
     /** Not shown, the button is an icon: used as its tooltip and accessible name. */
     label?: string;
@@ -9,6 +19,9 @@ export interface SwissModelUploadButtonProps {
     getSegments: () => Record<string, DataValue>[] | Promise<Record<string, DataValue>[]>;
     getSegmentData: () => Record<string, DataValue>[] | Promise<Record<string, DataValue>[]>;
     className?: string;
+    // from Dropdown
+    placement?: Placement;
+    children?: ReactNode;
 }
 
 // HACK hardcoded for now
@@ -73,14 +86,13 @@ const segmentLenght = {
 
 // HACK more hardcoded shit
 // TODO configure
-const url = 'https://beta.swissmodel.expasy.org/repository/annotation/create';
+const repoUrl = 'https://beta.swissmodel.expasy.org/repository';
 // HACK DO NOT USE THIS WAY
 // TODO user input box? Generic e-mail for the project?
 const email = 'blackcat@sympato.ch';
 
-
 // HACK that part must go into externalData
-const submitSwissModelAnnotation = async (content: String) => {
+const submitSwissModelAnnotation = async (content: String) : String | null => {
     const formBody = new FormData();
     formBody.append('email', email);
     // TODO add something about the view: current organism, the current mode
@@ -89,7 +101,7 @@ const submitSwissModelAnnotation = async (content: String) => {
 
     try {
         // POST API documented here: https://swissmodel.expasy.org/repository/annotation
-        const response = await fetch(url, {
+        const response = await fetch(`${repoUrl}/annotation/create`, {
             method: 'POST',
             body: formBody,
         });
@@ -98,6 +110,7 @@ const submitSwissModelAnnotation = async (content: String) => {
         const data = await response.json();
         if (response.ok) { // Check if the response status is OK (200-299)
             console.log(data); // Log the response data to the console
+            return data.project_id;
         } else {
             console.error(data); // Log the error response to the console
         }
@@ -105,18 +118,38 @@ const submitSwissModelAnnotation = async (content: String) => {
         console.error("submiting failed");
         console.error(error); // Log the error to the console
     }
+    return null;
 }
 
 
 
+// HACK the DropDown functionnality is done by copy-pasting from DropDown, I am most likely doing TypeScript's object-orientedness wrong
 export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
     label = 'Upload and View',
     getSegments,
     getSegmentData,
     className,
+    placement,
 }) => {
     const [isUploading, setIsUploading] = useState(false);
+    const [projectId, setProjectId] = useState(null);
+    const [linkOuts, setLinkOuts] = useState(null);
 
+    // from DropDown
+    const [showContent, setShowContent] = useState(false);
+    const referenceRef = useRef<HTMLButtonElement>(null);
+    const floatingRef = useRef<HTMLDivElement>(null);
+
+    useFloatingUi(referenceRef, floatingRef, [offset(4), shift(), flip()], placement);
+
+    useCloseOnClickOutside(floatingRef, referenceRef, setShowContent);
+    useCloseOnEsc(setShowContent);
+
+    const toggle = () => {
+        setShowContent(!showContent);
+    };
+
+    // prepare CSV to upload for 1 protein
     const getSegmentRows = async (segment: String) => {
         const data = await getSegmentData(segment);
         if (! segment in segmentProtein)
@@ -143,30 +176,63 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
     };
 
     const upload = async () => {
-        setIsUploading(true);
-        try {
-            const content = await getUploadContent();
-            console.log(`${content}`)
-            await submitSwissModelAnnotation(content);
-        } finally {
-            setIsUploading(false);
+        if (! projectId) {
+            setIsUploading(true);
+            try {
+                const content = await getUploadContent();
+                console.log(`${content}`)
+                const project_id = await submitSwissModelAnnotation(content);
+                if (project_id != null) {
+                    setProjectId(project_id);
+                    setLinkOuts(generateLinkOuts(project_id));
+                    setShowContent(true);
+                }
+            } finally {
+                setIsUploading(false);
+            }
+        } else {
+            toggle();
         }
     };
 
+    const generateLinkOuts = async (id: String) => {
+        const segs = await getSegments();
+        return segs.map((seg) => (
+            <li key={ `${seg}_${ segmentProtein[seg] }` }><a href={ `${repoUrl}/uniprot/${ segmentProtein[seg] }?annotations=${ id }` }>3D View of {seg} (Uniprot: { segmentProtein[seg] })</a></li>
+        ));
+    }
+
 
     return (
+      <>
         <button
         className={className}
         onClick={() => void upload()}
         disabled={isUploading}
         aria-label={label}
         title={label}
+        // from DropDown
+        ref={referenceRef}
         >
         {isUploading ? (
             <span className='loading loading-spinner loading-xs' />
         ) : /* TODO make a mini SVG from SwissModel's official icon */ (
+            <>
             <span className='iconify mdi--upload' />
+            <span hidden>{ projectId }</span>
+            </>
         )}
         </button>
+        { /* from DropDown */ projectId ? (
+        <div ref={floatingRef} className={`${dropdownClass} ${showContent ? '' : 'hidden'}`}>
+            <a href={ `${repoUrl}/annotation/${ projectId }` }>SwissModel Annotation Project { projectId }</a>
+            <ul>
+            { linkOuts }
+            </ul>
+        </div>
+        ) : (
+        <span hidden>no project id yet</span>
+        )}
+      </>
     );
 };

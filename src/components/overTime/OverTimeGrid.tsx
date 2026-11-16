@@ -91,6 +91,7 @@ export function OverTimeGrid<F>({ state, totalRows, csv, ...bandsProps }: OverTi
                            label='Upload and View annotation on SwissModel'
                            getSegments={csv.getSegments}
                            getSegmentData={csv.getSMData}
+                           placement='top-start'
                         />
                         ) : (
                         <div><span hidden>noAA</span></div>
