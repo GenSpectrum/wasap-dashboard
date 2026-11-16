@@ -59,7 +59,13 @@ type OverTimeGridProps<F> = Omit<FeatureBandsProps<F>, 'viewSettings' | 'paginat
     state: OverTimeGridState;
     /** The number of rows across all pages. */
     totalRows: number;
-    csv: { filename: string; getRows: () => Record<string, DataValue>[] };
+    csv: {
+        filename: string;
+        getRows: () => Record<string, DataValue>[];
+        type?: string;
+        getSegments?: () => string[];
+        getSMData?: (forSegment: string) => [number, number, number, string][];
+    };
 };
 
 /**
@@ -84,25 +90,29 @@ export function OverTimeGrid<F>({ state, totalRows, csv, ...bandsProps }: OverTi
                     onPageSizeChange: state.changePageSize,
                     startContent: <ViewSettingsControls settings={viewSettings} onChange={setViewSettings} />,
                     endContent: (
-                      <div class="flex items-center gap-1">
-                        { csv.type === 'amino acid' ? (
-                        <SwissModelUploadButton
-                           className='btn btn-xs'
-                           label='Upload and View annotation on SwissModel'
-                           getSegments={csv.getSegments}
-                           getSegmentData={csv.getSMData}
-                           placement='top-start'
-                        />
-                        ) : (
-                        <div><span hidden>noAA</span></div>
-                        ) }
-                        <CsvDownloadButton
-                            className='btn btn-xs'
-                            label='Download CSV'
-                            getData={csv.getRows}
-                            filename={csv.filename}
-                        />
-                      </div>
+                        <div className='flex items-center gap-1'>
+                            {csv.type === 'amino acid' &&
+                            typeof csv.getSegments !== 'undefined' &&
+                            typeof csv.getSMData !== 'undefined' ? (
+                                <SwissModelUploadButton
+                                    className='btn btn-xs'
+                                    label='Upload and View annotation on SwissModel'
+                                    getSegments={csv.getSegments}
+                                    getSegmentData={csv.getSMData}
+                                    placement='top-start'
+                                />
+                            ) : (
+                                <div>
+                                    <span hidden>noAA</span>
+                                </div>
+                            )}
+                            <CsvDownloadButton
+                                className='btn btn-xs'
+                                label='Download CSV'
+                                getData={csv.getRows}
+                                filename={csv.filename}
+                            />
+                        </div>
                     ),
                 }}
             />

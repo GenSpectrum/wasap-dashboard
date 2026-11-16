@@ -10,8 +10,8 @@ export const HSLToHex = (hsl: { h: number; s: number; l: number }): string => {
 
         // Convert to Hex and prefix with "0" if required
         return Math.round(255 * color)
-        .toString(16)
-        .padStart(2, "0");
+            .toString(16)
+            .padStart(2, '0');
     };
     return `#${f(0)}${f(8)}${f(4)}`;
-}
+};

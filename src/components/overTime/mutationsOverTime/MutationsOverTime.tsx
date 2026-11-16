@@ -177,19 +177,36 @@ const MutationsOverTimeWithMetadata: FC<{
                               ...proportionsByDate(pageData, mutation),
                           })),
                 // *** for sending CSV to Swiss Model
-                // HACK There's probably a better way to coney whether table holds aa or nuc (e.g. based on the type/class of mutation
+                // HACK There's probably a better way to convey whether table holds aa or nuc (e.g. based on the type/class of mutation
                 type: sequenceType,
-                getSegments: () =>
-                    (pageData === null || sequenceType !== 'amino acid')
-                    ? []
-                    // Oh, hai! I have no idea what I am doing but I know way to much Perl to be dangerous
-                    : [ ...new Set( pageData.getFirstAxisKeys().map((mutation) => ( mutation.segment ) ) ) ],
-                getSMData: (forSegment: String) =>
+                getSegments: (): string[] =>
+                    pageData === null || sequenceType !== 'amino acid'
+                        ? []
+                        : // Oh, hai! I have no idea what I am doing but I know way to much Perl to be dangerous
+                          [
+                              ...new Set(
+                                  pageData
+                                      .getFirstAxisKeys()
+                                      .filter((mutation) => typeof mutation.segment !== 'undefined')
+                                      .map((mutation): string =>
+                                          typeof mutation.segment !== 'undefined' ? mutation.segment : '',
+                                      ),
+                              ),
+                          ],
+                getSMData: (forSegment: string): [number, number, number, string][] =>
                     pageData === null
-                    ? []
-                    // subsetting mean by the mutations listed in pageData
-                    // TODO consider fusing consecutive positions as a single label ?
-                    :  pageData.getFirstAxisKeys().filter((mutation) => ( mutation.segment === forSegment && mutation.code in meanProportions ) ).map((mutation) => [ mutation.position, mutation.position, meanProportions[ mutation.code ], mutation.code ] ),
+                        ? []
+                        : // subsetting mean by the mutations listed in pageData
+                          // TODO consider fusing consecutive positions as a single label ?
+                          pageData
+                              .getFirstAxisKeys()
+                              .filter((mutation) => mutation.segment === forSegment && mutation.code in meanProportions)
+                              .map((mutation) => [
+                                  mutation.position,
+                                  mutation.position,
+                                  meanProportions[mutation.code],
+                                  mutation.code,
+                              ]),
             }}
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}
