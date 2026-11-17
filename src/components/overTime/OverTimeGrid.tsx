@@ -4,6 +4,7 @@ import { FeatureBands, type FeatureBandsProps } from './FeatureBands';
 import { ViewSettingsControls } from './ViewSettingsControls';
 import { useBandViewSettings } from './bandViewSettings';
 import { DEFAULT_FEATURE_SORT, type FeatureSort } from './featureSort';
+import { type SwissModelConfig } from '../../config/organismConfig';
 import { type TemporalDataMap } from '../../dataLayer/overTime/MutationOverTimeData';
 import { getProportion } from '../../domain/proportionValue';
 import { toTemporalClass } from '../../domain/temporal';
@@ -65,6 +66,8 @@ type OverTimeGridProps<F> = Omit<FeatureBandsProps<F>, 'viewSettings' | 'paginat
         type?: string;
         getSegments?: () => string[];
         getSMData?: (forSegment: string) => [number, number, number, string][];
+        /** The organism's UniProt proteins by gene; without them, there is no SWISS-MODEL button. */
+        swissModelProteins?: SwissModelConfig['proteins'];
     };
 };
 
@@ -93,8 +96,10 @@ export function OverTimeGrid<F>({ state, totalRows, csv, ...bandsProps }: OverTi
                         <div className='flex items-center gap-1'>
                             {csv.type === 'amino acid' &&
                             typeof csv.getSegments !== 'undefined' &&
-                            typeof csv.getSMData !== 'undefined' ? (
+                            typeof csv.getSMData !== 'undefined' &&
+                            csv.swissModelProteins !== undefined ? (
                                 <SwissModelUploadButton
+                                    proteins={csv.swissModelProteins}
                                     className='btn btn-xs'
                                     label='Upload and View annotation on SwissModel'
                                     getSegments={csv.getSegments}

@@ -5,6 +5,7 @@ import { type RhydbReadFilter } from '../../dataLayer/queries';
 import { type SequenceType } from '../../domain/mutations';
 import { type TemporalGranularity } from '../../domain/temporal';
 import { type AnalysisFilter } from '../../pageState/analysisFilter';
+import { useOrganismLayoutContext } from '../layout/OrganismLayout';
 import { MutationsOverTime } from '../overTime/mutationsOverTime/MutationsOverTime';
 import { type ProportionInterval } from '../overTime/mutationsOverTime/getFilteredMutationCodes';
 import { TitledPanel } from '../ui/TitledPanel';
@@ -42,6 +43,7 @@ export function MutationsResult({
     info?: ReactElement;
     children?: ReactNode;
 }) {
+    const { config } = useOrganismLayoutContext();
     const mutationsOverTime = (
         <MutationsOverTime
             filter={filter}
@@ -52,6 +54,7 @@ export function MutationsResult({
             meanProportionInterval={meanProportionInterval}
             jaccardIndices={jaccardIndices}
             ampliconsByMutation={ampliconsByMutation}
+            swissModelProteins={config.swissModel?.proteins}
         />
     );
     return (
