@@ -59,6 +59,30 @@ export const linkTemplateSchema = z.object({
 export type LinkTemplate = z.infer<typeof linkTemplateSchema>;
 
 /**
+ * Where the amino acid positions of each gene lie on a UniProt protein, for showing mutations on its
+ * 3D structure at SWISS-MODEL, by gene name as RhyDB's amino acid sequences are named. Genes that
+ * aren't listed are left out of the upload.
+ *
+ * Several genes can map onto one protein: SWISS-MODEL knows SARS-CoV-2's ORF1a and ORF1b only as
+ * the joined polyprotein ORF1ab, so ORF1b's positions are shifted by `offset` onto it, and ORF1a's
+ * tail after the frameshift, which ORF1ab doesn't have, is cut off by `maxPosition`.
+ */
+export const swissModelConfigSchema = z.object({
+    proteins: z.record(
+        z.string(),
+        z.object({
+            /** The UniProt accession, e.g. `P0DTC2`. */
+            uniprot: z.string().min(1),
+            /** Added to the gene's position to get the protein's. 0 without. */
+            offset: z.number().int().nonnegative().optional(),
+            /** The gene's last position on the protein; mutations after it are left out. */
+            maxPosition: z.number().int().positive().optional(),
+        }),
+    ),
+});
+export type SwissModelConfig = z.infer<typeof swissModelConfigSchema>;
+
+/**
  * Base settings that apply to all modes.
  */
 export const organismConfigBaseSchema = z.object({
@@ -113,6 +137,12 @@ export const organismConfigBaseSchema = z.object({
      * before showing a page. Optional: without it, there is no lineage tree.
      */
     lineageTree: lineageTreeConfigSchema.optional(),
+
+    /**
+     * The UniProt proteins of the genes, for the "3D structure" button of amino acid results.
+     * Optional: without it, there is no button. See `swissModelConfigSchema`.
+     */
+    swissModel: swissModelConfigSchema.optional(),
 });
 export type OrganismConfigBase = z.infer<typeof organismConfigBaseSchema>;
 

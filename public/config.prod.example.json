@@ -101,6 +101,22 @@
                     "minShare": 0.001,
                     "panel": ["NB.1.8.1", "XFG", "KP.2", "KP.3", "XEC", "LP.8", "BA.3.2"]
                 }
+            },
+            "swissModel": {
+                "proteins": {
+                    "ORF1a": { "uniprot": "P0DTD1", "maxPosition": 4401 },
+                    "ORF1b": { "uniprot": "P0DTD1", "offset": 4401 },
+                    "S": { "uniprot": "P0DTC2" },
+                    "ORF3a": { "uniprot": "P0DTC3" },
+                    "E": { "uniprot": "P0DTC4" },
+                    "M": { "uniprot": "P0DTC5" },
+                    "ORF6": { "uniprot": "P0DTC6" },
+                    "ORF7a": { "uniprot": "P0DTC7" },
+                    "ORF7b": { "uniprot": "P0DTD8" },
+                    "ORF8": { "uniprot": "P0DTC8" },
+                    "N": { "uniprot": "P0DTC9" },
+                    "ORF9b": { "uniprot": "P0DTD2" }
+                }
             }
         },
         {
@@ -173,6 +189,21 @@
                     "sequenceType": "amino acid",
                     "resistanceSet": "Nirsevimab"
                 }
+            },
+            "swissModel": {
+                "proteins": {
+                    "NS1": { "uniprot": "P0DOE9" },
+                    "NS2": { "uniprot": "P04543" },
+                    "N": { "uniprot": "P03418" },
+                    "P": { "uniprot": "P03421" },
+                    "M": { "uniprot": "P0DOE7" },
+                    "SH": { "uniprot": "P0DOE5" },
+                    "G": { "uniprot": "P03423" },
+                    "F": { "uniprot": "P03420" },
+                    "M2-1": { "uniprot": "P04545" },
+                    "M2-2": { "uniprot": "P88812" },
+                    "L": { "uniprot": "P28887" }
+                }
             }
         },
         {
@@ -244,6 +275,21 @@
                     "mode": "resistance",
                     "sequenceType": "amino acid",
                     "resistanceSet": "Nirsevimab"
+                }
+            },
+            "swissModel": {
+                "proteins": {
+                    "NS1": { "uniprot": "O42083" },
+                    "NS2": { "uniprot": "O42038" },
+                    "N": { "uniprot": "O42053" },
+                    "P": { "uniprot": "O42062" },
+                    "M": { "uniprot": "O42049" },
+                    "SH": { "uniprot": "O36632" },
+                    "G": { "uniprot": "O36633" },
+                    "F": { "uniprot": "O36634" },
+                    "M2-1": { "uniprot": "O42050" },
+                    "M2-2": { "uniprot": "O42047" },
+                    "L": { "uniprot": "O36635" }
                 }
             }
         }
