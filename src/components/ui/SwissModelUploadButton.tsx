@@ -7,6 +7,7 @@ import { /* type FC ,*/ type ReactNode, useRef /*, useState */ } from 'react';
 // import { type DataValue } from './CsvDownloadButton';
 import { dropdownClass } from './Dropdown';
 import { useCloseOnClickOutside, useCloseOnEsc, useFloatingUi } from './floatingUiHooks';
+import { type SwissModelConfig } from '../../config/organismConfig';
 import { getClientLogger } from '../../logging';
 import { getErrorLogMessage } from '../../logging';
 import { HSLToHex } from '../../util/color';
@@ -18,6 +19,8 @@ const logger = getClientLogger('SwissModelUploadButton');
 export interface SwissModelUploadButtonProps {
     /** Not shown, the button is an icon: used as its tooltip and accessible name. */
     label?: string;
+    /** The UniProt protein of each gene, from the organism config. */
+    proteins: SwissModelConfig['proteins'];
     getSegments: () => string[] | Promise<string[]>;
     getSegmentData: (seg: string) => [number, number, number, string][] | Promise<[number, number, number, string][]>;
     className?: string;
@@ -26,55 +29,6 @@ export interface SwissModelUploadButtonProps {
     children?: ReactNode;
 }
 
-// HACK hardcoded for now
-// TODO split and move that to organism configuration
-// Uniprot ID of the protein, to help searching in databases, e.g. SwissModel
-const segmentProtein: Record<string, string> = {
-    // SARS-CoV-2
-    ORF1a: 'P0DTC1',
-    ORF1b: 'P0DTD1', // Uniprot ID is for ORF1ab, use delta below to adapt position
-    S: 'P0DTC2',
-    ORF3a: 'P0DTC3', // 3b, 3c, 3d are nested within ORF3a
-    E: 'P0DTC4',
-    M: 'P0DTC5',
-    ORF6: 'P0DTC6',
-    ORF7a: 'P0DTC7',
-    ORF7b: 'P0DTD8',
-    ORF8: 'P0DTC8',
-    N: 'P0DTC9',
-    ORF9b: 'P0DTD2',
-    /*
-    // RSV-A
-    "NS1": "P0DOE9",
-    "NS2": "P04543",
-    "N": "P03418",
-    "P": "P03421",
-    "M": "P0DOE7",
-    "SH": "P0DOE5",
-    "G": "P03423",
-    "F": "P03420",
-    "M2-1": "P04545",
-    "M2-2": "P88812",
-    "L": "P28887",
-*/
-    // RSV-B
-    NS1: 'O42083',
-    NS2: 'O42038',
-    //    N: 'O42053',
-    P: 'O42062',
-    //    M: 'O42049',
-    SH: 'O36632',
-    G: 'O36633',
-    F: 'O36634',
-    'M2-1': 'O42050',
-    'M2-2': 'O42047',
-    L: 'O36635',
-};
-// Special
-const segmentDelta: Record<string, number> = {
-    // SARS-CoV-2
-    ORF1b: (13468 - 266 + 1) / 3, // ORF1b comes after this position on ORF1a to form together the ORF1ab
-};
 // With the exception of ORF1a and ORFb which are patched to the lenght of combined ORF1ab, all other are probably accessible from normal resources
 const segmentLenght: Record<string, number> = {
     // SARS-CoV-2
@@ -174,6 +128,7 @@ const mkSwissModelProteinURL = (projectId: string, proteinId: string): string =>
 // HACK the DropDown functionnality is done by copy-pasting from DropDown, I am most likely doing TypeScript's object-orientedness wrong
 export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
     label = 'Upload and View',
+    proteins,
     getSegments,
     getSegmentData,
     className,
@@ -199,12 +154,15 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
 
     // prepare CSV to upload for 1 protein
     const getSegmentRows = async (segment: string) => {
-        const data = await getSegmentData(segment);
-        if (!(segment in segmentProtein)) {
+        const protein = proteins[segment] as SwissModelConfig['proteins'][string] | undefined;
+        if (protein === undefined) {
             return '';
         }
-        const prot = segmentProtein[segment];
-        const delta = segment in segmentDelta ? segmentDelta[segment] : 0;
+        const data = (await getSegmentData(segment)).filter(
+            (row) => protein.maxPosition === undefined || row[1] <= protein.maxPosition,
+        );
+        const prot = protein.uniprot;
+        const delta = protein.offset ?? 0;
         const lenght = segment in segmentLenght ? segmentLenght[segment] : 10000; // HACK fallback, unneeded once lenght is built from actual data
         // protein_name start   stop    color   link    label
         const rows = data
@@ -221,7 +179,7 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
         logger.debug(segs.join('\n'));
         // I'm probably holding it wrong?
         const rows = await Promise.all(segs.map(async (seg) => await getSegmentRows(seg)));
-        const content = rows.join('\n');
+        const content = rows.filter((segmentRows) => segmentRows !== '').join('\n');
         return `${content}\n`;
     };
 
@@ -245,13 +203,19 @@ export const SwissModelUploadButton: FC<SwissModelUploadButtonProps> = ({
         }
     };
 
-    // dog typing
+    // One link per protein: genes that map onto the same one (ORF1a and ORF1b onto ORF1ab) share it.
     const generateLinkOuts = async (id: string): Promise<ReactNode[]> => {
-        const segs = await getSegments();
-        return segs.map((seg) => (
-            <li key={`${seg}_${segmentProtein[seg]}`}>
-                <a href={mkSwissModelProteinURL(id, segmentProtein[seg])}>
-                    3D View of {seg} (Uniprot: {segmentProtein[seg]})
+        const genesByProtein = new Map<string, string[]>();
+        for (const seg of await getSegments()) {
+            const protein = proteins[seg] as SwissModelConfig['proteins'][string] | undefined;
+            if (protein !== undefined) {
+                genesByProtein.set(protein.uniprot, [...(genesByProtein.get(protein.uniprot) ?? []), seg]);
+            }
+        }
+        return [...genesByProtein].map(([uniprot, genes]) => (
+            <li key={uniprot}>
+                <a href={mkSwissModelProteinURL(id, uniprot)}>
+                    3D View of {genes.join(' + ')} (Uniprot: {uniprot})
                 </a>
             </li>
         ));

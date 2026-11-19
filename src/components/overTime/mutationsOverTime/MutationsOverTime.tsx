@@ -1,6 +1,7 @@
 import { type FC, useEffect, useMemo } from 'react';
 
 import { getFilteredMutationCodes, type ProportionInterval } from './getFilteredMutationCodes';
+import { type SwissModelConfig } from '../../../config/organismConfig';
 import {
     useMutationsOverTimePage,
     useOverTimeMetadata,
@@ -32,6 +33,8 @@ export type MutationsOverTimeProps = {
     jaccardIndices?: Record<string, number>;
     /** The numbers of the amplicons each mutation is in, by mutation code; with it, a column of them. */
     ampliconsByMutation?: Record<string, number[]>;
+    /** The organism's UniProt proteins by gene, for the SWISS-MODEL button of amino acid mutations; none without. */
+    swissModelProteins?: SwissModelConfig['proteins'];
 };
 
 export const MutationsOverTime: FC<MutationsOverTimeProps> = (props) => {
@@ -73,7 +76,15 @@ const MutationsOverTimeWithMetadata: FC<{
     props: MutationsOverTimeProps;
     gridState: OverTimeGridState;
 }> = ({ metadata, props, gridState }) => {
-    const { filter, sequenceType, granularity, meanProportionInterval, jaccardIndices, ampliconsByMutation } = props;
+    const {
+        filter,
+        sequenceType,
+        granularity,
+        meanProportionInterval,
+        jaccardIndices,
+        ampliconsByMutation,
+        swissModelProteins,
+    } = props;
     const { overallMutations, requestedDateRanges, totalCountsByBucket } = metadata;
     const { nucleotideSequence } = useRhydbSchema();
     const [viewSettings] = useBandViewSettings();
@@ -179,6 +190,7 @@ const MutationsOverTimeWithMetadata: FC<{
                 // *** for sending CSV to Swiss Model
                 // HACK There's probably a better way to convey whether table holds aa or nuc (e.g. based on the type/class of mutation
                 type: sequenceType,
+                swissModelProteins,
                 getSegments: (): string[] =>
                     pageData === null || sequenceType !== 'amino acid'
                         ? []
