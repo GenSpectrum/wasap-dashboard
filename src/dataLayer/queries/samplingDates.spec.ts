@@ -7,22 +7,20 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
 };
 
 describe('samplingDatesQuery', () => {
-    test('samplingDatesQuery groups by the grouping-date column, oldest first', () => {
+    test('samplingDatesQuery groups by the sampling date, oldest first', () => {
         expect(samplingDatesQuery(schema).render()).toBe(
-            'data.group(by := {date}, aggs := {n := count()}).order(by := {date.asc()})',
+            'data.group(by := {samplingDate}, aggs := {n := count()}).order(by := {samplingDate.asc()})',
         );
     });
-    test('samplingDatesQuery filters and groups on the dictionary date column', () => {
+    test('samplingDatesQuery filters and groups on the sampling date', () => {
         expect(samplingDatesQuery(schema, { samplingDateFrom: '2024-01-01' }).render()).toBe(
-            "data.filter(date >= '2024-01-01').group(by := {date}, aggs := {n := count()}).order(by := {date.asc()})",
+            "data.filter(samplingDate >= '2024-01-01'::date).group(by := {samplingDate}, aggs := {n := count()}).order(by := {samplingDate.asc()})",
         );
     });
 });

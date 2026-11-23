@@ -52,7 +52,7 @@ export function symbolsBySampleQuery(
     sequenceName: string,
     positions: readonly number[],
 ): Relation {
-    return jointSymbolsQuery(schema, filter, sequenceName, positions, [schema.sampleId, schema.groupingDate]);
+    return jointSymbolsQuery(schema, filter, sequenceName, positions, [schema.sampleId, schema.samplingDate]);
 }
 
 export type SymbolsBySampleRow = {
@@ -82,7 +82,7 @@ export function readSymbolsBySample(
                 if (entry === undefined) {
                     marginal.set(key, {
                         sampleId,
-                        date: readText(row, schema.groupingDate),
+                        date: readText(row, schema.samplingDate),
                         sym,
                         count: readCount(row, 'count'),
                     });

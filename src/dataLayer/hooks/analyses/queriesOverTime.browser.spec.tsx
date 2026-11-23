@@ -11,8 +11,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -44,7 +42,7 @@ function stubRhydb() {
             const query = typeof init?.body === 'string' ? init.body : '';
             const isCount = query.includes('nucleotideEquals(') && !query.includes('maybe(');
             const n = !isCount ? 1000 : query.includes('Zürich') ? 900 : 100;
-            return Promise.resolve(ndjson([{ date: '2026-06-01', n }]));
+            return Promise.resolve(ndjson([{ samplingDate: '2026-06-01', n }]));
         }),
     );
 }

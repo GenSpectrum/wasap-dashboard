@@ -7,8 +7,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -32,22 +30,17 @@ describe('filterExpression', () => {
         );
     });
 
-    test('a date bound compares against the dictionary date column as a plain string', () => {
-        expect(render({ samplingDateFrom: '2024-01-01' })).toBe("date >= '2024-01-01'");
-        expect(render({ samplingDateTo: '2024-12-31' })).toBe("date <= '2024-12-31'");
-    });
-
-    test('against a DATE32 grouping column the bound carries a ::date cast', () => {
-        const date32Schema: RhydbSchema = { ...schema, groupingDate: 'samplingDate', groupingDateIsDictionary: false };
-        expect(filterExpression(date32Schema, { samplingDateFrom: '2024-01-01' })?.render()).toBe(
-            "samplingDate >= '2024-01-01'::date",
-        );
+    test('a date bound compares against the DATE32 sampling date with a ::date cast', () => {
+        expect(render({ samplingDateFrom: '2024-01-01' })).toBe("samplingDate >= '2024-01-01'::date");
+        expect(render({ samplingDateTo: '2024-12-31' })).toBe("samplingDate <= '2024-12-31'::date");
     });
 
     test('a full window is the two bounds and the location, in a fixed order', () => {
         expect(
             render({ samplingDateTo: '2024-12-31', locationNames: ['Zürich (ZH)'], samplingDateFrom: '2024-01-01' }),
-        ).toBe("locationName = 'Zürich (ZH)' && date >= '2024-01-01' && date <= '2024-12-31'");
+        ).toBe(
+            "locationName = 'Zürich (ZH)' && samplingDate >= '2024-01-01'::date && samplingDate <= '2024-12-31'::date",
+        );
     });
 
     test('a malformed date is rejected where it is built, not sent', () => {

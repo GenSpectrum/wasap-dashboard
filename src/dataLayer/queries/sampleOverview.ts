@@ -18,7 +18,7 @@ import { readCount, readText, type RhydbRow } from '../transport/row';
 export function sampleOverviewQuery(schema: RhydbSchema): Relation {
     return table(schema.table).group(readCounts(), [
         schema.locationName,
-        schema.groupingDate,
+        schema.samplingDate,
         schema.sampleId,
         schema.batchId,
     ]);
@@ -26,7 +26,7 @@ export function sampleOverviewQuery(schema: RhydbSchema): Relation {
 
 export type SampleOverview = {
     locationName: string;
-    /** The sampling date, from `schema.groupingDate`. */
+    /** The sampling date, from `schema.samplingDate`. */
     date: string;
     sampleId: string;
     batchId: string;
@@ -42,7 +42,7 @@ export function readSampleOverview(rows: readonly RhydbRow[], schema: RhydbSchem
     return rows
         .map((row) => ({
             locationName: readText(row, schema.locationName),
-            date: readText(row, schema.groupingDate),
+            date: readText(row, schema.samplingDate),
             sampleId: readText(row, schema.sampleId),
             batchId: readText(row, schema.batchId),
             reads: readCount(row, READS),

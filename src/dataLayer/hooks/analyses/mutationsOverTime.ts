@@ -341,7 +341,7 @@ export function useMutationsOverTimePage(
                     `Over-time position ${target.sequenceName}:${target.position}`,
                     { signal },
                 );
-                return readPositionOverTime(rows, schema.groupingDate);
+                return readPositionOverTime(rows, schema.samplingDate);
             },
         })),
     });

@@ -11,8 +11,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -54,8 +52,8 @@ describe('useResolvedSamplingDate', () => {
     it('resolves a preset label against the dataset date range', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { date: '2024-01-01', n: 1 },
-                { date: '2024-06-30', n: 3 },
+                { samplingDate: '2024-01-01', n: 1 },
+                { samplingDate: '2024-06-30', n: 3 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
@@ -77,8 +75,8 @@ describe('useResolvedSamplingDate', () => {
     it('falls back to "All times" bounded by the dataset when the label matches no known preset', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { date: '2024-01-01', n: 1 },
-                { date: '2024-06-30', n: 3 },
+                { samplingDate: '2024-01-01', n: 1 },
+                { samplingDate: '2024-06-30', n: 3 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
@@ -106,8 +104,8 @@ describe('useResolvedSamplingDate', () => {
     it('treats a missing samplingDate as "All times" and bounds it to the dataset', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { date: '2024-01-01', n: 1 },
-                { date: '2024-06-30', n: 3 },
+                { samplingDate: '2024-01-01', n: 1 },
+                { samplingDate: '2024-06-30', n: 3 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);

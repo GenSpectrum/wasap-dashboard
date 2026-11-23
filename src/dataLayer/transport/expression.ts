@@ -133,9 +133,8 @@ export function str(value: string): Expr {
  * A `DATE32` literal: `'2026-06-01'::date`.
  *
  * RhyDB rejects a bare string in a comparison against a `DATE32` column; the
- * `::date` cast is how a date reaches such a comparison. Used for a date bound
- * against a `DATE32` grouping column (see `dataLayer/queries/filter.ts`); a
- * dictionary date column takes a plain string instead.
+ * `::date` cast is how a date reaches such a comparison (see
+ * `dataLayer/queries/filter.ts`).
  */
 export function dateLiteral(value: string): Expr {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {

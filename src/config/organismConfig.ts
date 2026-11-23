@@ -27,16 +27,7 @@ export const rhydbInstanceConfigSchema = z.object({
     /** Base URL of the RhyDB instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
     url: z.string(),
     table: z.string(),
-    /**
-     * Column to group and range on for date-bucketed reads. covid's instance
-     * carries a dictionary-encoded `date` column (cheap to group); rsv-a / rsv-b
-     * have only `samplingDate` (DATE32), which RhyDB groups pathologically slowly —
-     * so date-bucketed RSV views stay blocked until those instances gain a dict
-     * date column. `samplingDateColumn` is the DATE32 column
-     * everywhere, for the min/max date-extent read.
-     */
-    dateColumn: z.string(),
-    dateColumnIsDictionaryEncoded: z.boolean(),
+    /** The indexed `DATE32` sampling-date column, used for every date filter and date grouping. */
     samplingDateColumn: z.string(),
     /** Dictionary/indexed string column backing the location dropdown. */
     locationNameColumn: z.string(),
