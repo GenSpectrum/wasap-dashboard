@@ -48,8 +48,8 @@
             "rhydb": {
                 "url": "https://silo.wasap.genspectrum.org/covid",
                 "table": "data",
-                "dateColumn": "date",
-                "dateColumnIsDictionaryEncoded": true,
+                "dateColumn": "samplingDate",
+                "dateColumnIsDictionaryEncoded": false,
                 "samplingDateColumn": "samplingDate",
                 "locationNameColumn": "locationName",
                 "sampleIdColumn": "sampleId",
