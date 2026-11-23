@@ -14,8 +14,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -38,14 +36,14 @@ describe('overallMutationsQuery (metadata: which mutations get a row)', () => {
                 { sequenceType: 'amino acid' },
             ).render(),
         ).toBe(
-            "data.filter(locationName = 'Basel (BS)' && date >= '2026-06-01' && date <= '2026-06-30')" +
+            "data.filter(locationName = 'Basel (BS)' && samplingDate >= '2026-06-01'::date && samplingDate <= '2026-06-30'::date)" +
                 `.aminoAcidMutations(minProportion := 0.001, fields := ${fields})`,
         );
     });
 });
 
 describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
-    test('maps the symbol at one position, then groups by the bare grouping-date + sym columns', () => {
+    test('maps the symbol at one position, then groups by the bare sampling-date + sym columns', () => {
         expect(
             positionOverTimeQuery(
                 schema,
@@ -54,7 +52,7 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
             ).render(),
         ).toBe(
             "data.filter(locationName = 'Zürich (ZH)')" +
-                '.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+                '.map({sym := main.at(241)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
         );
     });
 
@@ -66,42 +64,14 @@ describe('positionOverTimeQuery (page: one position, symbols per day)', () => {
                 { sequenceName: 'main', position: 241 },
             ).render(),
         ).toBe(
-            "data.filter(date >= '2026-06-03' && date <= '2026-06-30')" +
-                '.map({sym := main.at(241)}).group(by := {date, sym}, aggs := {count := count()})',
+            "data.filter(samplingDate >= '2026-06-03'::date && samplingDate <= '2026-06-30'::date)" +
+                '.map({sym := main.at(241)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
         );
     });
 
     test('no location narrows nothing; amino acid uses the gene column', () => {
         expect(positionOverTimeQuery(schema, {}, { sequenceName: 'S', position: 19 }).render()).toBe(
-            'data.map({sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})',
-        );
-    });
-
-    // Regression: the older RhyDB version behind rsv-a / rsv-b (0.12.1) rejects
-    // an inline `:=` assignment in a groupBy column list outright (400,
-    // "expected set literal") — not a timeout, as previously assumed. Verified
-    // live that the map()-first / bare-column form above parses and runs
-    // sub-second on both that version and covid's newer one.
-    test('the DATE32-grouping instance uses the same map()-first shape', () => {
-        const rsvSchema: RhydbSchema = {
-            table: 'data',
-            locationName: 'locationName',
-            samplingDate: 'samplingDate',
-            groupingDate: 'samplingDate',
-            groupingDateIsDictionary: false,
-            nucleotideSequence: 'main',
-            sampleId: 'sampleId',
-            batchId: 'batchId',
-        };
-        expect(
-            positionOverTimeQuery(
-                rsvSchema,
-                { locationNames: ['Geneva'] },
-                { sequenceName: 'main', position: 848 },
-            ).render(),
-        ).toBe(
-            "data.filter(locationName = 'Geneva')" +
-                '.map({sym := main.at(848)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
+            'data.map({sym := S.at(19)}).group(by := {samplingDate, sym}, aggs := {count := count()})',
         );
     });
 });
@@ -140,9 +110,9 @@ describe('readers', () => {
 describe('positionsOverTimeQuery (many positions in one unionall)', () => {
     const part = (position: number) =>
         "data.filter(locationName = 'Zürich (ZH)')" +
-        `.map({sym := main.at(${position})}).group(by := {date, sym}, aggs := {count := count()})` +
-        `.map({day := date, sequenceName := 'main', position := ${position}})` +
-        ".filter(day >= '2026-06-03' && day <= '2026-06-30')" +
+        `.map({sym := main.at(${position})}).group(by := {samplingDate, sym}, aggs := {count := count()})` +
+        `.map({day := samplingDate, sequenceName := 'main', position := ${position}})` +
+        ".filter(day >= '2026-06-03'::date && day <= '2026-06-30'::date)" +
         '.project({day, sym, count, sequenceName, position})';
 
     test('filters by location in every part, by date after the group, and tags each part with its target', () => {
@@ -158,25 +128,10 @@ describe('positionsOverTimeQuery (many positions in one unionall)', () => {
         ).toBe(`${part(241)}.unionall(${part(3037)})`);
     });
 
-    test('against a DATE32 grouping column the date bounds carry a ::date cast', () => {
-        expect(
-            positionsOverTimeQuery(
-                { ...schema, groupingDate: 'samplingDate', groupingDateIsDictionary: false },
-                { samplingDateFrom: '2026-06-03' },
-                [{ sequenceName: 'main', position: 241 }],
-            ).render(),
-        ).toBe(
-            'data.map({sym := main.at(241)})' +
-                '.group(by := {samplingDate, sym}, aggs := {count := count()})' +
-                ".map({day := samplingDate, sequenceName := 'main', position := 241}).filter(day >= '2026-06-03'::date)" +
-                '.project({day, sym, count, sequenceName, position})',
-        );
-    });
-
     test('without dates or locations, nothing is filtered', () => {
         expect(positionsOverTimeQuery(schema, {}, [{ sequenceName: 'S', position: 19 }]).render()).toBe(
-            'data.map({sym := S.at(19)}).group(by := {date, sym}, aggs := {count := count()})' +
-                ".map({day := date, sequenceName := 'S', position := 19}).project({day, sym, count, sequenceName, position})",
+            'data.map({sym := S.at(19)}).group(by := {samplingDate, sym}, aggs := {count := count()})' +
+                ".map({day := samplingDate, sequenceName := 'S', position := 19}).project({day, sym, count, sequenceName, position})",
         );
     });
 });

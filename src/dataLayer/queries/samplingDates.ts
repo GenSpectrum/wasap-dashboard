@@ -7,12 +7,11 @@ import { readText, type RhydbRow } from '../transport/row';
 
 /**
  * Every distinct sampling date in the dataset (oldest first), with its read
- * count, grouped on the dictionary-encoded date column where the instance has
- * one. The date extent is the first and last row; the caller reads min/max off
+ * count. The date extent is the first and last row; the caller reads min/max off
  * the sorted result rather than paying for two queries.
  */
 export function samplingDatesQuery(schema: RhydbSchema, filter: RhydbReadFilter = {}): Relation {
-    return scoped(schema, filter).group(readCounts(), [schema.groupingDate]).order(field(schema.groupingDate).asc());
+    return scoped(schema, filter).group(readCounts(), [schema.samplingDate]).order(field(schema.samplingDate).asc());
 }
 
 /** The oldest and newest value of a sorted `{ <column>, n }` result. */

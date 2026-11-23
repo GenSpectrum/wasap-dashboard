@@ -28,7 +28,7 @@ export function useDateExtent(
             });
             // queryFn must not resolve `undefined` (TanStack Query treats that as
             // "no data" internally) — `null` is the "no extent" value instead.
-            return readValueExtent(rows, schema.groupingDate) ?? null;
+            return readValueExtent(rows, schema.samplingDate) ?? null;
         },
         enabled,
     });

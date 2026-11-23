@@ -12,27 +12,6 @@ import type { RhydbSchema } from './schema';
 import { and, dateLiteral, field, str, type Expr } from '../transport/expression';
 import { table, type Relation } from '../transport/relation';
 
-/**
- * An ISO date as the right-hand side of a comparison against `groupingDate`.
- *
- * The dictionary date column holds an ISO string, so a plain string comparison
- * is both correct (ISO dates sort lexically) and fast — and RhyDB rejects a
- * `::date` cast against it. The `DATE32` column needs the cast. Either way the
- * value is validated here, not at the instance.
- *
- * TODO: this function should not exist. It is here only for the transition
- * period where covid has a dictionary `date` column and rsv-a / rsv-b do not
- * (see `RhydbSchema.groupingDateIsDictionary`). Once every instance has one,
- * every date bound is a plain `str(value)` against the dict column and this
- * collapses back into `filterExpression`.
- */
-function dateComparand(schema: RhydbSchema, value: string): Expr {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        throw new Error(`Not an ISO date (yyyy-mm-dd): ${JSON.stringify(value)}`);
-    }
-    return schema.groupingDateIsDictionary ? str(value) : dateLiteral(value);
-}
-
 export const rhydbReadFilterSchema = z.object({
     /**
      * The locations whose reads are pooled, matched exactly on the location-name column. Absent
@@ -75,9 +54,8 @@ export function normalizeFilter(filter: RhydbReadFilter): RhydbReadFilter {
  * nothing.
  *
  * Order is fixed — location, then the date bounds — so the same scope always
- * renders the same text. Date bounds compare against `groupingDate`: the
- * dictionary date column where the instance has one (a plain, cheap string
- * comparison), otherwise the `DATE32` column with a `::date` cast.
+ * renders the same text. Date bounds compare against the `DATE32`
+ * `samplingDate` column with a `::date` cast.
  */
 export function filterExpression(schema: RhydbSchema, filter: RhydbReadFilter): Expr | undefined {
     return and(locationExpression(schema, filter.locationNames), dateRangeExpression(schema, filter));
@@ -85,20 +63,16 @@ export function filterExpression(schema: RhydbSchema, filter: RhydbReadFilter): 
 
 /**
  * The date bounds of a filter on its own, or `undefined` without any. Against `column` when the
- * dates are in a column of another name (one `map()`-ed from `groupingDate`), else `groupingDate`.
+ * dates are in a column of another name (one `map()`-ed from `samplingDate`), else `samplingDate`.
  */
 export function dateRangeExpression(
     schema: RhydbSchema,
     filter: RhydbReadFilter,
-    column: string = schema.groupingDate,
+    column: string = schema.samplingDate,
 ): Expr | undefined {
     return and(
-        filter.samplingDateFrom === undefined
-            ? undefined
-            : field(column).gte(dateComparand(schema, filter.samplingDateFrom)),
-        filter.samplingDateTo === undefined
-            ? undefined
-            : field(column).lte(dateComparand(schema, filter.samplingDateTo)),
+        filter.samplingDateFrom === undefined ? undefined : field(column).gte(dateLiteral(filter.samplingDateFrom)),
+        filter.samplingDateTo === undefined ? undefined : field(column).lte(dateLiteral(filter.samplingDateTo)),
     );
 }
 

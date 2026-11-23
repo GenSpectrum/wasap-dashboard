@@ -13,10 +13,6 @@ export function rhydbSchema(rhydb: RhydbInstanceConfig): RhydbSchema {
         table: rhydb.table,
         locationName: rhydb.locationNameColumn,
         samplingDate: rhydb.samplingDateColumn,
-        // `dateColumn` is the dictionary-encoded date where the instance has one
-        // (covid), otherwise the same DATE32 column as `samplingDate` (rsv-a/b).
-        groupingDate: rhydb.dateColumn,
-        groupingDateIsDictionary: rhydb.dateColumnIsDictionaryEncoded,
         nucleotideSequence: 'main',
         sampleId: rhydb.sampleIdColumn,
         batchId: rhydb.batchIdColumn,

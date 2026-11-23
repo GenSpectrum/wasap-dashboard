@@ -9,8 +9,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',

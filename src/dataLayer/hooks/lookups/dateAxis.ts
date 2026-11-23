@@ -77,7 +77,7 @@ function samplingDateCountsQuery(connection: Connection, schema: RhydbSchema, fi
         queryFn: ({ signal }) =>
             connection
                 .query(samplingDatesQuery(schema, filter), 'Over-time date axis', { signal })
-                .then((result) => readNamedCounts(result.rows, schema.groupingDate)),
+                .then((result) => readNamedCounts(result.rows, schema.samplingDate)),
     });
 }
 

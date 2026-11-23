@@ -99,7 +99,7 @@ export function useAmpliconCooccurrence(
                         `Haplotypes over time at ${positions.join(', ')}`,
                         { signal },
                     );
-                    return readHaplotypesOverTime(rows, schema.groupingDate, positions);
+                    return readHaplotypesOverTime(rows, schema.samplingDate, positions);
                 },
             };
         }),

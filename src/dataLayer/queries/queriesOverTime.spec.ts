@@ -8,8 +8,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -107,11 +105,11 @@ describe('translateGenomeFilter', () => {
 describe('countOverTimeQuery / coverageOverTimeQuery', () => {
     const node: RhydbFilterExpression = { type: 'NucleotideEquals', sequenceName: 'main', position: 241, symbol: 'T' };
 
-    test('count: the query, scoped, grouped by the dictionary date column', () => {
+    test('count: the query, scoped, grouped by the sampling date', () => {
         expect(countOverTimeQuery(schema, { locationNames: ['Zürich (ZH)'] }, node).render()).toBe(
             "data.filter(locationName = 'Zürich (ZH)' && " +
                 "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
-                '.group(by := {date}, aggs := {n := count()})',
+                '.group(by := {samplingDate}, aggs := {n := count()})',
         );
     });
 
@@ -123,16 +121,16 @@ describe('countOverTimeQuery / coverageOverTimeQuery', () => {
                 node,
             ).render(),
         ).toBe(
-            "data.filter(date >= '2026-06-01' && date <= '2026-06-30' && " +
+            "data.filter(samplingDate >= '2026-06-01'::date && samplingDate <= '2026-06-30'::date && " +
                 "(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main') || " +
                 "!maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))))" +
-                '.group(by := {date}, aggs := {n := count()})',
+                '.group(by := {samplingDate}, aggs := {n := count()})',
         );
     });
 
     test('no filter: the query stands alone', () => {
         expect(countOverTimeQuery(schema, {}, { type: 'True' }).render()).toBe(
-            'data.filter(true).group(by := {date}, aggs := {n := count()})',
+            'data.filter(true).group(by := {samplingDate}, aggs := {n := count()})',
         );
     });
 });

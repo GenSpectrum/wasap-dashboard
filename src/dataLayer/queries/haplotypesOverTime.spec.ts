@@ -7,8 +7,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -19,15 +17,15 @@ describe('haplotypesOverTimeQuery', () => {
         expect(haplotypesOverTimeQuery(schema, { locationNames: ['Zürich (ZH)'] }, 'main', [2000, 2100]).render()).toBe(
             "data.filter(locationName = 'Zürich (ZH)')" +
                 '.map({p2000 := main.at(2000), p2100 := main.at(2100)})' +
-                '.group(by := {date, p2000, p2100}, aggs := {count := count()})',
+                '.group(by := {samplingDate, p2000, p2100}, aggs := {count := count()})',
         );
     });
 
     test('is narrowed to the sampling dates', () => {
         expect(haplotypesOverTimeQuery(schema, { samplingDateFrom: '2026-06-03' }, 'main', [2000, 2100]).render()).toBe(
-            "data.filter(date >= '2026-06-03')" +
+            "data.filter(samplingDate >= '2026-06-03'::date)" +
                 '.map({p2000 := main.at(2000), p2100 := main.at(2100)})' +
-                '.group(by := {date, p2000, p2100}, aggs := {count := count()})',
+                '.group(by := {samplingDate, p2000, p2100}, aggs := {count := count()})',
         );
     });
 });

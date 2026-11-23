@@ -119,13 +119,12 @@ export type PositionRange = {
  * This form parses and runs sub-second on both that version and covid's newer
  * one, so there's no per-instance branching.
  *
- * The caller buckets the days. `schema.groupingDate` is the dictionary date column where
- * the instance has one, else the `DATE32` column.
+ * The caller buckets the days.
  */
 export function positionOverTimeQuery(schema: RhydbSchema, filter: RhydbReadFilter, target: PositionTarget): Relation {
     return scoped(schema, filter)
         .map({ sym: field(target.sequenceName).at(target.position) })
-        .group({ count: count() }, [schema.groupingDate, 'sym']);
+        .group({ count: count() }, [schema.samplingDate, 'sym']);
 }
 
 export type PositionOverTimeRow = {
@@ -169,9 +168,9 @@ export function positionsOverTimeQuery(
         targets.map((target) =>
             location
                 .map({ sym: field(target.sequenceName).at(target.position) })
-                .group({ count: count() }, [schema.groupingDate, 'sym'])
+                .group({ count: count() }, [schema.samplingDate, 'sym'])
                 .map({
-                    day: field(schema.groupingDate),
+                    day: field(schema.samplingDate),
                     sequenceName: str(target.sequenceName),
                     position: int(target.position),
                 })

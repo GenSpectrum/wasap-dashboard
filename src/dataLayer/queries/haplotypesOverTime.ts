@@ -19,7 +19,7 @@ export function haplotypesOverTimeQuery(
     sequenceName: string,
     positions: readonly number[],
 ): Relation {
-    return jointSymbolsQuery(schema, filter, sequenceName, positions, [schema.groupingDate]);
+    return jointSymbolsQuery(schema, filter, sequenceName, positions, [schema.samplingDate]);
 }
 
 export type HaplotypeOverTimeRow = {
