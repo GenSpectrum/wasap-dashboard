@@ -16,7 +16,7 @@ export function ProportionRangeTabs({
     onChange: (proportionRange: ResistanceProportionRange) => void;
 }) {
     return (
-        <div className='flex gap-1' role='group' aria-label='Mutations by mean proportion'>
+        <div className='isolate flex gap-1' role='group' aria-label='Mutations by mean proportion'>
             {RESISTANCE_PROPORTION_RANGES.map(({ range, label, suffix }) => {
                 const isSelected = range === value;
                 return (
