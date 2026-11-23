@@ -26,7 +26,7 @@ export type ResistanceMutationCollectionConfig = z.infer<typeof resistanceMutati
 export const rhydbInstanceConfigSchema = z.object({
     /** Base URL of the RhyDB instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
     url: z.string(),
-    /** Root table name. `data` for every current instance. */
+    /** Root table name: `data` for covid, `rsva` / `rsvb` in the same instance for RSV. */
     table: z.string(),
     /**
      * Column to group and range on for date-bucketed reads. covid's instance

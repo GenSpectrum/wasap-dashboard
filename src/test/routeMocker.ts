@@ -51,14 +51,19 @@ export class CovSpectrumRouteMocker {
 export class RhydbRouteMocker {
     constructor(private workerOrServer: MSWWorkerOrServer) {}
 
+    /** The reference genome of the `data` table, with a column for each row. */
     mockReferenceGenome(rows: { name: string; type: 'nucleotide' | 'amino_acid'; sequence: string }[]) {
         this.mockQuery('reference_genomes', rows);
+        this.mockQuery(
+            'data.schema()',
+            rows.map(({ name }) => ({ fieldName: name, type: 'STRING' })),
+        );
     }
 
     mockQuery(query: string, rows: Record<string, unknown>[], statusCode = 200) {
         this.workerOrServer.use(
             http.post(`${DUMMY_RHYDB_URL}/query`, async ({ request }) => {
-                if ((await request.text()) !== query) {
+                if ((await request.clone().text()) !== query) {
                     return undefined;
                 }
                 return new Response(rows.map((row) => JSON.stringify(row)).join('\n'), {
