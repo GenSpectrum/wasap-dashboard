@@ -46,7 +46,7 @@
             ],
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/covid",
             "rhydb": {
-                "url": "https://silo.wasap.genspectrum.org/covid",
+                "url": "https://rhydb.wasap.genspectrum.org",
                 "table": "data",
                 "samplingDateColumn": "samplingDate",
                 "locationNameColumn": "locationName",
@@ -135,7 +135,7 @@
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsva",
             "rhydb": {
-                "url": "https://silo.wasap.genspectrum.org/covid",
+                "url": "https://rhydb.wasap.genspectrum.org",
                 "table": "rsva",
                 "samplingDateColumn": "samplingDate",
                 "locationNameColumn": "locationName",
@@ -220,7 +220,7 @@
             },
             "lapisBaseUrl": "https://lapis.wasap.genspectrum.org/rsvb",
             "rhydb": {
-                "url": "https://silo.wasap.genspectrum.org/covid",
+                "url": "https://rhydb.wasap.genspectrum.org",
                 "table": "rsvb",
                 "samplingDateColumn": "samplingDate",
                 "locationNameColumn": "locationName",
