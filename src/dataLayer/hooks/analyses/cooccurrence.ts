@@ -98,7 +98,7 @@ export function useCooccurrence(
                 'Co-occurrence',
                 { signal },
             );
-            const cooccurrenceRows = readCooccurrenceRows(rows, schema.groupingDate, targets);
+            const cooccurrenceRows = readCooccurrenceRows(rows, schema.samplingDate, targets);
 
             const data = buildCooccurrenceMap(
                 cooccurrenceRows,

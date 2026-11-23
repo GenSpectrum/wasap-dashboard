@@ -31,7 +31,7 @@ export function positionsCooccurrenceQuery(
     );
     return scoped(schema, filter)
         .map(assignments)
-        .group({ count: count() }, [schema.groupingDate, ...targets.map((_target, index) => symColumn(index))]);
+        .group({ count: count() }, [schema.samplingDate, ...targets.map((_target, index) => symColumn(index))]);
 }
 
 export type CooccurrenceRow = {

@@ -11,8 +11,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -43,9 +41,9 @@ describe('useSampleOverview', () => {
     it('reads one entry per sample, unfiltered', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 },
-                { locationName: 'Basel (BS)', date: '2024-02-05', sampleId: 'A2', batchId: 'B2', n: 8 },
-                { locationName: 'Zürich (ZH)', date: '2024-01-12', sampleId: 'Z1', batchId: 'B1', n: 5 },
+                { locationName: 'Basel (BS)', samplingDate: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 },
+                { locationName: 'Basel (BS)', samplingDate: '2024-02-05', sampleId: 'A2', batchId: 'B2', n: 8 },
+                { locationName: 'Zürich (ZH)', samplingDate: '2024-01-12', sampleId: 'Z1', batchId: 'B1', n: 5 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
@@ -60,7 +58,9 @@ describe('useSampleOverview', () => {
         ]);
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('data.group(by := {locationName, date, sampleId, batchId}, aggs := {n := count()})');
+        expect(init.body).toBe(
+            'data.group(by := {locationName, samplingDate, sampleId, batchId}, aggs := {n := count()})',
+        );
     });
 });
 
@@ -68,9 +68,9 @@ describe('useLocationOverview', () => {
     it('folds the sample overview into one entry per location, off the same query', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 },
-                { locationName: 'Basel (BS)', date: '2024-02-05', sampleId: 'A2', batchId: 'B2', n: 8 },
-                { locationName: 'Zürich (ZH)', date: '2024-01-12', sampleId: 'Z1', batchId: 'B1', n: 5 },
+                { locationName: 'Basel (BS)', samplingDate: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 },
+                { locationName: 'Basel (BS)', samplingDate: '2024-02-05', sampleId: 'A2', batchId: 'B2', n: 8 },
+                { locationName: 'Zürich (ZH)', samplingDate: '2024-01-12', sampleId: 'Z1', batchId: 'B1', n: 5 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);

@@ -26,18 +26,8 @@ export type ResistanceMutationCollectionConfig = z.infer<typeof resistanceMutati
 export const rhydbInstanceConfigSchema = z.object({
     /** Base URL of the RhyDB instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
     url: z.string(),
-    /** Root table name. `data` for every current instance. */
     table: z.string(),
-    /**
-     * Column to group and range on for date-bucketed reads. covid's instance
-     * carries a dictionary-encoded `date` column (cheap to group); rsv-a / rsv-b
-     * have only `samplingDate` (DATE32), which RhyDB groups pathologically slowly —
-     * so date-bucketed RSV views stay blocked until those instances gain a dict
-     * date column. `samplingDateColumn` is the DATE32 column
-     * everywhere, for the min/max date-extent read.
-     */
-    dateColumn: z.string(),
-    dateColumnIsDictionaryEncoded: z.boolean(),
+    /** The indexed `DATE32` sampling-date column, used for every date filter and date grouping. */
     samplingDateColumn: z.string(),
     /** Dictionary/indexed string column backing the location dropdown. */
     locationNameColumn: z.string(),
@@ -57,6 +47,30 @@ export const linkTemplateSchema = z.object({
     aminoAcidMutation: z.string(),
 });
 export type LinkTemplate = z.infer<typeof linkTemplateSchema>;
+
+/**
+ * Where the amino acid positions of each gene lie on a UniProt protein, for showing mutations on its
+ * 3D structure at SWISS-MODEL, by gene name as RhyDB's amino acid sequences are named. Genes that
+ * aren't listed are left out of the upload.
+ *
+ * Several genes can map onto one protein: SWISS-MODEL knows SARS-CoV-2's ORF1a and ORF1b only as
+ * the joined polyprotein ORF1ab, so ORF1b's positions are shifted by `offset` onto it, and ORF1a's
+ * tail after the frameshift, which ORF1ab doesn't have, is cut off by `maxPosition`.
+ */
+export const swissModelConfigSchema = z.object({
+    proteins: z.record(
+        z.string(),
+        z.object({
+            /** The UniProt accession, e.g. `P0DTC2`. */
+            uniprot: z.string().min(1),
+            /** Added to the gene's position to get the protein's. 0 without. */
+            offset: z.number().int().nonnegative().optional(),
+            /** The gene's last position on the protein; mutations after it are left out. */
+            maxPosition: z.number().int().positive().optional(),
+        }),
+    ),
+});
+export type SwissModelConfig = z.infer<typeof swissModelConfigSchema>;
 
 /**
  * Base settings that apply to all modes.
@@ -113,6 +127,12 @@ export const organismConfigBaseSchema = z.object({
      * before showing a page. Optional: without it, there is no lineage tree.
      */
     lineageTree: lineageTreeConfigSchema.optional(),
+
+    /**
+     * The UniProt proteins of the genes, for the "3D structure" button of amino acid results.
+     * Optional: without it, there is no button. See `swissModelConfigSchema`.
+     */
+    swissModel: swissModelConfigSchema.optional(),
 });
 export type OrganismConfigBase = z.infer<typeof organismConfigBaseSchema>;
 

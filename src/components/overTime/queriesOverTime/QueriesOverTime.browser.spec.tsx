@@ -10,8 +10,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -26,7 +24,7 @@ function ndjson(rows: unknown[]): Response {
 
 /**
  * Routes the RhyDB queries the component sends to canned NDJSON:
- *  - the date axis (`group(by := {date}, aggs := {n := count()}).order(...)`) -> two day buckets, 1000 reads each
+ *  - the date axis (`group(by := {samplingDate}, aggs := {n := count()}).order(...)`) -> two day buckets, 1000 reads each
  *  - the coverage query per query (`... maybe(nucleotideEquals(position := P ...`) -> 1000/day
  *  - the count query per query (`nucleotideEquals(position := P ...`, no `maybe`) -> 900/day for 241, 100/day for 3037
  *
@@ -37,8 +35,8 @@ function stubRhydb() {
         const q = typeof init?.body === 'string' ? init.body : '';
         const twoDays = (n: number) =>
             ndjson([
-                { date: '2026-06-01', n },
-                { date: '2026-06-02', n },
+                { samplingDate: '2026-06-01', n },
+                { samplingDate: '2026-06-02', n },
             ]);
 
         const has241 = q.includes('nucleotideEquals(position := 241');
@@ -112,14 +110,14 @@ describe('QueriesOverTime (RhyDB)', () => {
 
         const bodies = () => fetchMock.mock.calls.map(([, init]) => (typeof init?.body === 'string' ? init.body : ''));
         const countQuery =
-            "data.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
+            "data.filter(samplingDate >= '2026-06-01'::date && samplingDate <= '2026-06-02'::date && " +
             "nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))" +
-            '.group(by := {date}, aggs := {n := count()})';
+            '.group(by := {samplingDate}, aggs := {n := count()})';
         const coverageQuery =
-            "data.filter(date >= '2026-06-01' && date <= '2026-06-02' && " +
+            "data.filter(samplingDate >= '2026-06-01'::date && samplingDate <= '2026-06-02'::date && " +
             "(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main') || " +
             "!maybe(nucleotideEquals(position := 241, symbol := 'T', sequenceName := 'main'))))" +
-            '.group(by := {date}, aggs := {n := count()})';
+            '.group(by := {samplingDate}, aggs := {n := count()})';
 
         await vi.waitFor(() => {
             expect(bodies()).toContain(countQuery);

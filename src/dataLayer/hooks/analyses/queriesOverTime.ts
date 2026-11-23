@@ -76,14 +76,14 @@ export function useQueriesOverTime(
                             `Queries-over-time count: ${query.displayLabel}`,
                             { signal },
                         )
-                        .then((result) => readNamedCounts(result.rows, schema.groupingDate)),
+                        .then((result) => readNamedCounts(result.rows, schema.samplingDate)),
                     connection
                         .query(
                             coverageOverTimeQuery(schema, normalized, query.filter),
                             `Queries-over-time coverage: ${query.displayLabel}`,
                             { signal },
                         )
-                        .then((result) => readNamedCounts(result.rows, schema.groupingDate)),
+                        .then((result) => readNamedCounts(result.rows, schema.samplingDate)),
                 ]);
                 return { count, coverage };
             },

@@ -118,7 +118,7 @@ export function translateGenomeFilter(schema: RhydbSchema, node: RhydbFilterExpr
 }
 
 function groupByDate(relation: Relation, schema: RhydbSchema): Relation {
-    return relation.group({ [READS]: count() }, [schema.groupingDate]);
+    return relation.group({ [READS]: count() }, [schema.samplingDate]);
 }
 
 /** Reads matching the query, per date bucket: `{ <date>, n }` rows. */

@@ -7,8 +7,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -23,9 +21,9 @@ describe('symbolsBySampleQuery', () => {
         };
 
         expect(symbolsBySampleQuery(schema, filter, 'main', [241, 670]).render()).toBe(
-            "data.filter(locationName = 'Zürich (ZH)' && date >= '2026-05-01' && date <= '2026-08-31')" +
+            "data.filter(locationName = 'Zürich (ZH)' && samplingDate >= '2026-05-01'::date && samplingDate <= '2026-08-31'::date)" +
                 '.map({p241 := main.at(241), p670 := main.at(670)})' +
-                '.group(by := {sampleId, date, p241, p670}, aggs := {count := count()})',
+                '.group(by := {sampleId, samplingDate, p241, p670}, aggs := {count := count()})',
         );
     });
 });
@@ -33,10 +31,10 @@ describe('symbolsBySampleQuery', () => {
 describe('readSymbolsBySample', () => {
     test('sums the joint counts into the counts of each position on its own', () => {
         const rows = [
-            { sampleId: 'A1', date: '2026-05-04', p241: 'T', p670: 'N', count: 3 },
-            { sampleId: 'A1', date: '2026-05-04', p241: 'N', p670: 'G', count: 5 },
-            { sampleId: 'A1', date: '2026-05-04', p241: 'N', p670: 'T', count: 2 },
-            { sampleId: 'A2', date: '2026-05-05', p241: 'T', p670: 'G', count: 1 },
+            { sampleId: 'A1', samplingDate: '2026-05-04', p241: 'T', p670: 'N', count: 3 },
+            { sampleId: 'A1', samplingDate: '2026-05-04', p241: 'N', p670: 'G', count: 5 },
+            { sampleId: 'A1', samplingDate: '2026-05-04', p241: 'N', p670: 'T', count: 2 },
+            { sampleId: 'A2', samplingDate: '2026-05-05', p241: 'T', p670: 'G', count: 1 },
         ];
 
         const result = readSymbolsBySample(rows, schema, [241, 670]);

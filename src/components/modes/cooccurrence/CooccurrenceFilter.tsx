@@ -6,7 +6,7 @@ import { type SequenceType } from '../../../domain/mutations';
 import { type Amplicon } from '../../../externalData/fileBased/amplicons/primerBed';
 import { ampliconAnchor, samplingPositions } from '../../../externalData/fileBased/amplicons/samplingPositions';
 import { useAmplicons } from '../../../externalData/fileBased/amplicons/useAmplicons';
-import { codonAnchorFor } from '../../../externalData/fileBased/genome/geneAnnotation';
+import { codonAnchorFor, type GeneRange } from '../../../externalData/fileBased/genome/geneAnnotation';
 import { useGeneAnnotation } from '../../../externalData/fileBased/genome/useGeneAnnotation';
 import { type LineageTree } from '../../../externalData/fileBased/lineageTree/lineageTree';
 import {
@@ -48,6 +48,18 @@ export function CooccurrenceFilter({
     const positionSource = effectivePositionSource(pageState);
     const defaultPanel = config.filterDefaults.cooccurrence.panel ?? [];
     const missingDefaultLineages = defaultPanel.filter((lineage) => !(pageState.panel ?? []).includes(lineage));
+    // Both cached, so loading them here too costs nothing extra: they carry the picked amplicon over
+    // when the sequence type changes.
+    const { data: amplicons } = useAmplicons(config.amplicons);
+    const { data: genes } = useGeneAnnotation(
+        config.amplicons !== undefined ? config.lineageTree?.genomeAnnotationUrl : undefined,
+    );
+    const anchorFor = (sequenceType: SequenceType) =>
+        sequenceType === 'nucleotide'
+            ? ampliconAnchor
+            : genes !== undefined
+              ? aminoAcidAmpliconAnchor(genes)
+              : undefined;
 
     return (
         <>
@@ -57,7 +69,17 @@ export function CooccurrenceFilter({
                     if (sequenceType === pageState.sequenceType) {
                         return;
                     }
-                    setPageState({ ...pageState, sequenceType, positions: undefined, anchorPosition: undefined });
+                    setPageState({
+                        ...pageState,
+                        sequenceType,
+                        positions: undefined,
+                        anchorPosition: translateAmpliconAnchor(
+                            pageState.anchorPosition,
+                            anchorFor(pageState.sequenceType),
+                            anchorFor(sequenceType),
+                            amplicons,
+                        ),
+                    });
                 }}
             />
             <FilterSection title='Positions'>
@@ -185,7 +207,7 @@ export function CooccurrenceFilter({
  */
 const AmpliconSelect: FC<{
     amplicons: NonNullable<OrganismConfigFor<'cooccurrence'>['amplicons']>;
-    toAnchor: (amplicon: Amplicon, allAmplicons: Amplicon[]) => string | null;
+    toAnchor: AmpliconAnchor;
     value: string | undefined;
     onChange: (value: string) => void;
 }> = ({ amplicons: ampliconsConfig, toAnchor, value, onChange }) => {
@@ -238,6 +260,35 @@ const AmpliconSelect: FC<{
     );
 };
 
+type AmpliconAnchor = (amplicon: Amplicon, allAmplicons: Amplicon[]) => string | null;
+
+/** The gene:codon of an amplicon's core midpoint, `null` without a coding region there (exported for tests). */
+export function aminoAcidAmpliconAnchor(genes: readonly GeneRange[]): AmpliconAnchor {
+    return (amplicon, allAmplicons) => {
+        const [position] = samplingPositions(amplicon, allAmplicons, 1);
+        const anchor = codonAnchorFor(position, genes);
+        return anchor === null ? null : `${anchor.segment}:${anchor.position}`;
+    };
+}
+
+/**
+ * The anchor of the same amplicon under the other sequence type, so switching it keeps the pick.
+ * `undefined` (nothing picked) when the anchor isn't an amplicon's (typed in by hand), the amplicon
+ * has no coding region, or the amplicons or gene annotation aren't loaded (exported for tests).
+ */
+export function translateAmpliconAnchor(
+    anchor: string | undefined,
+    fromAnchor: AmpliconAnchor | undefined,
+    toAnchor: AmpliconAnchor | undefined,
+    amplicons: Amplicon[] | undefined,
+): string | undefined {
+    if (anchor === undefined || fromAnchor === undefined || toAnchor === undefined || amplicons === undefined) {
+        return undefined;
+    }
+    const amplicon = amplicons.find((candidate) => fromAnchor(candidate, amplicons) === anchor);
+    return (amplicon !== undefined ? toAnchor(amplicon, amplicons) : null) ?? undefined;
+}
+
 /** `AmpliconSelect`, anchoring on the gene:codon of each amplicon's core midpoint. */
 const AminoAcidAmpliconSelect: FC<{
     amplicons: NonNullable<OrganismConfigFor<'cooccurrence'>['amplicons']>;
@@ -265,11 +316,7 @@ const AminoAcidAmpliconSelect: FC<{
     return (
         <AmpliconSelect
             amplicons={amplicons}
-            toAnchor={(amplicon, allAmplicons) => {
-                const [position] = samplingPositions(amplicon, allAmplicons, 1);
-                const anchor = codonAnchorFor(position, genes);
-                return anchor === null ? null : `${anchor.segment}:${anchor.position}`;
-            }}
+            toAnchor={aminoAcidAmpliconAnchor(genes)}
             value={value}
             onChange={onChange}
         />

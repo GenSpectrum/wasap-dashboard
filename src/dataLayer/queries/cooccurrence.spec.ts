@@ -7,8 +7,6 @@ const schema: RhydbSchema = {
     table: 'default',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -23,7 +21,7 @@ describe('positionsCooccurrenceQuery', () => {
             ]).render(),
         ).toBe(
             'default.map({sym0 := main.at(241), sym1 := main.at(23403)})' +
-                '.group(by := {date, sym0, sym1}, aggs := {count := count()})',
+                '.group(by := {samplingDate, sym0, sym1}, aggs := {count := count()})',
         );
     });
 
@@ -34,7 +32,7 @@ describe('positionsCooccurrenceQuery', () => {
             ]).render(),
         ).toBe(
             "default.filter(locationName = 'Zürich (ZH)').map({sym0 := S.at(501)})" +
-                '.group(by := {date, sym0}, aggs := {count := count()})',
+                '.group(by := {samplingDate, sym0}, aggs := {count := count()})',
         );
     });
 });

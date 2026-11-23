@@ -11,8 +11,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -40,11 +38,11 @@ function wrapper(): FC<PropsWithChildren> {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('useDateExtent', () => {
-    it('is the first and last row of the result, grouped on the grouping-date column', async () => {
+    it('is the first and last row of the result, grouped on the sampling date', async () => {
         const fetchMock = vi.fn().mockResolvedValue(
             ndjson([
-                { date: '2023-05-01', n: 1 },
-                { date: '2025-12-27', n: 3 },
+                { samplingDate: '2023-05-01', n: 1 },
+                { samplingDate: '2025-12-27', n: 3 },
             ]),
         );
         vi.stubGlobal('fetch', fetchMock);
@@ -55,6 +53,8 @@ describe('useDateExtent', () => {
         expect(result.current.data).toEqual({ min: '2023-05-01', max: '2025-12-27' });
 
         const [, init] = fetchMock.mock.calls[0];
-        expect(init.body).toBe('data.group(by := {date}, aggs := {n := count()}).order(by := {date.asc()})');
+        expect(init.body).toBe(
+            'data.group(by := {samplingDate}, aggs := {n := count()}).order(by := {samplingDate.asc()})',
+        );
     });
 });

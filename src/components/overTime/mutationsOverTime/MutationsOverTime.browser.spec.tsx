@@ -11,8 +11,6 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
@@ -45,7 +43,7 @@ const SYMBOLS_BY_POSITION: Record<number, { date: string; sym: string; count: nu
 
 /**
  * Routes the RhyDB queries the component sends to canned NDJSON:
- *  - the date axis (`group(by := {date}, aggs := {n := count()})`) -> two day buckets
+ *  - the date axis (`group(by := {samplingDate}, aggs := {n := count()})`) -> two day buckets
  *  - the positions of the display mutations, in one `unionall` -> `SYMBOLS_BY_POSITION`, each row
  *    tagged with its position
  */
@@ -72,8 +70,8 @@ function stubRhydb() {
         // date axis
         return Promise.resolve(
             ndjson([
-                { date: '2026-06-01', n: 1000 },
-                { date: '2026-06-02', n: 2000 },
+                { samplingDate: '2026-06-01', n: 1000 },
+                { samplingDate: '2026-06-02', n: 2000 },
             ]),
         );
     });
@@ -144,7 +142,7 @@ describe('MutationsOverTime (RhyDB position-over-time)', () => {
             .filter((body) => body.includes('sym := main.at('));
         expect(positionBodies).toHaveLength(1);
         expect(positionBodies[0]).toContain('.unionall(');
-        expect(positionBodies[0]).toContain("filter(day >= '2026-06-01' && day <= '2026-06-02')");
+        expect(positionBodies[0]).toContain("filter(day >= '2026-06-01'::date && day <= '2026-06-02'::date)");
         expect(positionBodies[0]).not.toContain('.mutations(');
     });
 

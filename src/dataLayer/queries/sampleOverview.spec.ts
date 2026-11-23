@@ -7,17 +7,15 @@ const schema: RhydbSchema = {
     table: 'data',
     locationName: 'locationName',
     samplingDate: 'samplingDate',
-    groupingDate: 'date',
-    groupingDateIsDictionary: true,
     nucleotideSequence: 'main',
     sampleId: 'sampleId',
     batchId: 'batchId',
 };
 
 describe('sampleOverviewQuery', () => {
-    test('sampleOverviewQuery groups the whole table by location, date, sample and batch, unfiltered', () => {
+    test('sampleOverviewQuery groups the whole table by location, samplingDate, sample and batch, unfiltered', () => {
         expect(sampleOverviewQuery(schema).render()).toBe(
-            'data.group(by := {locationName, date, sampleId, batchId}, aggs := {n := count()})',
+            'data.group(by := {locationName, samplingDate, sampleId, batchId}, aggs := {n := count()})',
         );
     });
 });
@@ -26,7 +24,7 @@ describe('readSampleOverview', () => {
     test('reads one entry per row', () => {
         expect(
             readSampleOverview(
-                [{ locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 }],
+                [{ locationName: 'Basel (BS)', samplingDate: '2024-01-10', sampleId: 'A1', batchId: 'B1', n: 10 }],
                 schema,
             ),
         ).toEqual([{ locationName: 'Basel (BS)', date: '2024-01-10', sampleId: 'A1', batchId: 'B1', reads: 10 }]);
@@ -34,7 +32,10 @@ describe('readSampleOverview', () => {
 
     test('drops a row with a blank location', () => {
         expect(
-            readSampleOverview([{ locationName: '', date: '2024-01-10', sampleId: 'X1', batchId: 'B1', n: 1 }], schema),
+            readSampleOverview(
+                [{ locationName: '', samplingDate: '2024-01-10', sampleId: 'X1', batchId: 'B1', n: 1 }],
+                schema,
+            ),
         ).toEqual([]);
     });
 

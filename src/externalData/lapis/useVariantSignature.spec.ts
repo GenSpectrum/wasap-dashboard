@@ -17,8 +17,6 @@ const unusedBaseConfigFields = {
     rhydb: {
         url: '',
         table: 'data',
-        dateColumn: 'date',
-        dateColumnIsDictionaryEncoded: true,
         samplingDateColumn: 'samplingDate',
         locationNameColumn: 'locationName',
         sampleIdColumn: 'sampleId',
