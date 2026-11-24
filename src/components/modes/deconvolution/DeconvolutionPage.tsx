@@ -120,7 +120,6 @@ export function DeconvolutionPage({ config }: { config: OrganismConfigFor<'decon
                             panel={panel}
                             colors={colors}
                             lineageLink={lineageLink}
-                            columns={1}
                         />
                     </TitledPanel>
                 </div>

@@ -10,15 +10,15 @@ import { HoverTooltip } from '../../ui/HoverTooltip';
  * the panel, it shows (greyed out) only the common ancestors where the panel branches apart and
  * the lineages on the way that start a clade; a dashed line and "via N" mark where others are left
  * out. Recombinants get a section of their own, a tree per recombinant with the lineages it's a
- * recombinant of. Hovering a lineage shows its immediate parents and when it was designated,
- * clicking it goes to `lineageLink` of the lineage, if there is one.
+ * recombinant of, next to the other lineages when the panel is wide enough and below them otherwise.
+ * Hovering a lineage shows its immediate parents and when it was designated, clicking it goes to
+ * `lineageLink` of the lineage, if there is one.
  */
 export function LineagePanelTree({
     lineageTree,
     panel,
     colors,
     lineageLink,
-    columns = 2,
 }: {
     lineageTree: LineageTree;
     panel: string[];
@@ -26,15 +26,14 @@ export function LineagePanelTree({
     colors: Map<string, string>;
     /** Where the name of a lineage links to. */
     lineageLink?: (lineage: string) => To;
-    /** Whether the recombinants go next to the other lineages (on wide screens) or below them. */
-    columns?: 1 | 2;
 }) {
     const panelTree = useMemo(() => buildPanelTree(lineageTree, panel), [lineageTree, panel]);
     const inPanel = new Set(panel);
 
     return (
-        <div className='flex flex-col gap-4'>
-            <div className={`grid gap-6 ${columns === 2 ? 'md:grid-cols-2' : ''}`}>
+        // Sized by the panel, not the screen: next to the signature overlap the panel is narrow even on wide screens.
+        <div className='@container flex flex-col gap-4'>
+            <div className='grid items-start gap-6 @2xl:grid-cols-2'>
                 <TreeSection title='Lineages'>
                     {panelTree.lineages.length === 0 ? (
                         <Empty>No lineages outside the recombinants.</Empty>
