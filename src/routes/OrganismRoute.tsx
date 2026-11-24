@@ -18,7 +18,7 @@ export function OrganismRoute() {
     const config = resolveOrganismConfig(organismPath);
 
     if (config === undefined) {
-        return <NoDataDisplay message={`Organism '${organismPath}' doesn't exist or isn't configured.`} />;
+        return <NoDataDisplay message={`Virus '${organismPath}' doesn't exist or isn't configured.`} />;
     }
 
     return <OrganismDashboard config={config} />;

@@ -69,19 +69,19 @@ const QuickStart = ({ referenceGenome }: { referenceGenome: ReferenceGenome }) =
             </InfoParagraph>
             {referenceGenome.nucleotideSequences.length > 1 && (
                 <InfoParagraph>
-                    This organism has the following segments:{' '}
+                    This virus has the following segments:{' '}
                     {referenceGenome.nucleotideSequences.map((gene) => gene.name).join(', ')}.
                 </InfoParagraph>
             )}
             {referenceGenome.nucleotideSequences.length === 0 && (
-                <InfoParagraph>This organism doesn't support nucleotide sequences.</InfoParagraph>
+                <InfoParagraph>This virus doesn't support nucleotide sequences.</InfoParagraph>
             )}
             {referenceGenome.genes.length !== 0 ? (
                 <InfoParagraph>
-                    This organism has the following genes: {referenceGenome.genes.map((gene) => gene.name).join(', ')}.
+                    This virus has the following genes: {referenceGenome.genes.map((gene) => gene.name).join(', ')}.
                 </InfoParagraph>
             ) : (
-                <InfoParagraph>This organism doesn't support amino acid sequences.</InfoParagraph>
+                <InfoParagraph>This virus doesn't support amino acid sequences.</InfoParagraph>
             )}
         </>
     );
@@ -97,7 +97,7 @@ const NucleotideMutationsInfo = ({ referenceGenome }: { referenceGenome: Referen
             <>
                 <InfoHeadline2>Nucleotide Mutations and Insertions</InfoHeadline2>
                 <InfoParagraph>
-                    This organism is single-segmented. Thus, nucleotide mutations have the format{' '}
+                    This virus is single-segmented. Thus, nucleotide mutations have the format{' '}
                     <b>&lt;position&gt;&lt;base&gt;</b> or <b>&lt;base_ref&gt;&lt;position&gt;&lt;base&gt;</b>. The{' '}
                     <b>&lt;base_ref&gt;</b> is the reference base at the position. It is optional. A <b>&lt;base&gt;</b>{' '}
                     can be one of the four nucleotides <b>A</b>, <b>T</b>, <b>C</b>, and <b>G</b>. It can also be{' '}
@@ -118,7 +118,7 @@ const NucleotideMutationsInfo = ({ referenceGenome }: { referenceGenome: Referen
         <>
             <InfoHeadline2>Nucleotide Mutations and Insertions</InfoHeadline2>
             <InfoParagraph>
-                This organism is multi-segmented. Thus, nucleotide mutations have the format{' '}
+                This virus is multi-segmented. Thus, nucleotide mutations have the format{' '}
                 <b>&lt;segment&gt;:&lt;position&gt;&lt;base&gt;</b> or{' '}
                 <b>&lt;segment&gt;:&lt;base_ref&gt;&lt;position&gt;&lt;base&gt;</b>. <b>&lt;base_ref&gt;</b> is the
                 reference base at the position. It is optional. A <b>&lt;base&gt;</b> can be one of the four nucleotides{' '}

@@ -15,7 +15,7 @@ export function OrganismSelect() {
     return (
         <select
             className='select select-sm rounded-xs'
-            aria-label='Organism'
+            aria-label='Virus'
             value={organismPath ?? ''}
             onChange={(event) => void navigate(`/${event.target.value}`)}
         >
