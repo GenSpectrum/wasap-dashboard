@@ -2,6 +2,7 @@ import { type FC, useEffect, useMemo } from 'react';
 
 import { getFilteredMutationCodes, type ProportionInterval } from './getFilteredMutationCodes';
 import {
+    useMutationsOverTimeDownload,
     useMutationsOverTimePage,
     useOverTimeMetadata,
     type OverTimeMetadata,
@@ -125,6 +126,15 @@ const MutationsOverTimeWithMetadata: FC<{
         viewSettings.showEmptyDates,
     );
 
+    const fetchMatrix = useMutationsOverTimeDownload(
+        filter,
+        granularity,
+        sequenceType,
+        requestedDateRanges,
+        totalCountsByBucket,
+        viewSettings.showEmptyDates,
+    );
+
     const mutationRenderer: FeatureRenderer<Substitution | Deletion> = useMemo(
         () => ({
             asString: (value: Substitution | Deletion) => value.code,
@@ -168,13 +178,14 @@ const MutationsOverTimeWithMetadata: FC<{
             totalRows={sortedMutationCodes.length}
             csv={{
                 filename: 'mutations_over_time.csv',
-                getRows: () =>
-                    pageData === null
-                        ? []
-                        : pageData.getFirstAxisKeys().map((mutation) => ({
-                              mutation: mutation.code,
-                              ...proportionsByDate(pageData, mutation),
-                          })),
+                // Every page's rows, in the grid's order: most of them have not been loaded yet.
+                getRows: async ({ signal, onProgress }) => {
+                    const data = await fetchMatrix(sortedMutationCodes, { signal, onProgress });
+                    return data.getFirstAxisKeys().map((mutation) => ({
+                        mutation: mutation.code,
+                        ...proportionsByDate(data, mutation),
+                    }));
+                },
             }}
             meanProportions={meanProportions}
             jaccardIndices={jaccardIndices}
