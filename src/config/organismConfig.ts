@@ -24,7 +24,7 @@ export const resistanceMutationCollectionConfigSchema = z.object({
 export type ResistanceMutationCollectionConfig = z.infer<typeof resistanceMutationCollectionConfigSchema>;
 
 export const rhydbInstanceConfigSchema = z.object({
-    /** Base URL of the RhyDB instance, e.g. `https://silo.wasap.genspectrum.org/covid`. */
+    /** Base URL of the RhyDB instance, e.g. `https://rhydb.wasap.genspectrum.org`. */
     url: z.string(),
     table: z.string(),
     /** The indexed `DATE32` sampling-date column, used for every date filter and date grouping. */

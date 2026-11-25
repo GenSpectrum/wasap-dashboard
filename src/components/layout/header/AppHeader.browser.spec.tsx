@@ -26,7 +26,7 @@ describe('AppHeader', () => {
     it('shows the organism selector', async () => {
         const { getByLabelText } = renderHeader('/');
 
-        await expect.element(getByLabelText('Organism')).toBeVisible();
+        await expect.element(getByLabelText('Virus')).toBeVisible();
     });
 
     it('shows the mode tabs of the organism that is open', async () => {

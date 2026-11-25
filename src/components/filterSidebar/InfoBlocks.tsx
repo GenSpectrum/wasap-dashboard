@@ -103,7 +103,7 @@ export function CollectionInfo({ titleFilter }: { titleFilter?: string }) {
         <div className='w-80 max-w-full space-y-2 text-sm font-normal text-gray-700'>
             <p className='text-gray-500 italic'>
                 {titleFilter === undefined
-                    ? 'The GenSpectrum collections of this organism.'
+                    ? 'The GenSpectrum collections of this virus.'
                     : `The CoV-Spectrum collections with “${titleFilter}” in their title.`}{' '}
                 Each variant of the collection is shown over time.
             </p>

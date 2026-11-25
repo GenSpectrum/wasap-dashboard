@@ -200,7 +200,7 @@ function MutationFilterWithReferenceGenome({
     if (referenceGenome.nucleotideSequences.length === 0 && referenceGenome.genes.length === 0) {
         throw new UserFacingError(
             'No reference sequences available',
-            'This organism has neither nucleotide nor amino acid sequences configured in its reference genome. You cannot filter by mutations.',
+            'This virus has neither nucleotide nor amino acid sequences configured in its reference genome. You cannot filter by mutations.',
         );
     }
 

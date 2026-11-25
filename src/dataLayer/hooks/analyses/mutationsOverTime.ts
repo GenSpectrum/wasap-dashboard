@@ -15,10 +15,13 @@
  * and filter (`staleTime: Infinity`), so paging, granularity changes and revisits reuse whatever
  * positions are already in hand. The count/coverage
  * matrix is a pure function of those rows (`buildMatrix`).
+ *
+ * `useMutationsOverTimeDownload` — the same matrix for any rows, e.g. all of them for the CSV,
+ * fetched as for a given list of mutations: batched, and through the same cache as the pages.
  */
 
 import { type QueryClient, type UseQueryResult } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import {
     DeletionClass,
@@ -167,6 +170,8 @@ async function fetchPositionsOverTime(
     filter: RhydbReadFilter,
     targets: readonly PositionTarget[],
     signal: AbortSignal,
+    /** Called with the fraction of the targets in hand: first for those in the cache, then per query. */
+    onProgress?: (fraction: number) => void,
 ): Promise<Map<string, PositionOverTimeRow[]>> {
     const rowsByPosition = new Map<string, PositionOverTimeRow[]>();
     const missing: PositionTarget[] = [];
@@ -178,6 +183,10 @@ async function fetchPositionsOverTime(
             rowsByPosition.set(targetKey(target), cached);
         }
     }
+
+    let done = targets.length - missing.length;
+    const reportProgress = () => onProgress?.(targets.length === 0 ? 1 : done / targets.length);
+    reportProgress();
 
     const chunks = Array.from({ length: Math.ceil(missing.length / POSITIONS_PER_QUERY) }, (_, index) =>
         missing.slice(index * POSITIONS_PER_QUERY, (index + 1) * POSITIONS_PER_QUERY),
@@ -201,6 +210,8 @@ async function fetchPositionsOverTime(
                     rowsByPosition.get(targetKey(target)),
                 );
             }
+            done += chunk.length;
+            reportProgress();
         }),
     );
     return rowsByPosition;
@@ -384,6 +395,69 @@ export function useMutationsOverTimePage(
         totalCountsByBucket,
         showEmptyDates,
     ]);
+}
+
+// --- download: any rows, e.g. all of them -----------------------------------
+
+export type FetchMutationsOverTimeMatrix = (
+    mutationCodes: string[],
+    options: { signal: AbortSignal; onProgress?: (fraction: number) => void },
+) => Promise<MutationOverTimeDataMap>;
+
+/**
+ * A function that fetches the matrix of `useMutationsOverTimePage` for any mutations, in their
+ * order: for the CSV of every page. The positions go in batches (`positionsOverTimeQuery`) rather
+ * than one query each, and through the pages' cache, so the pages already seen cost nothing and
+ * those not yet seen need no queries of their own afterwards.
+ */
+export function useMutationsOverTimeDownload(
+    filter: RhydbReadFilter,
+    granularity: TemporalGranularity,
+    sequenceType: OverTimeSequenceType,
+    requestedDateRanges: TemporalClass[],
+    totalCountsByBucket: number[],
+    showEmptyDates: boolean,
+): FetchMutationsOverTimeMatrix {
+    const connection = useConnection();
+    const schema = useRhydbSchema();
+    const queryClient = useRhydbQueryClient();
+
+    return useCallback(
+        async (mutationCodes, { signal, onProgress }) => {
+            const normalized = normalizeFilter(filter);
+            const targets = positionTargets(mutationCodes, sequenceType, schema.nucleotideSequence);
+            const rowsByPosition = await fetchPositionsOverTime(
+                queryClient,
+                connection,
+                schema,
+                normalized,
+                targets,
+                signal,
+                onProgress,
+            );
+            const matrix = buildMatrix(
+                mutationCodes,
+                granularity,
+                sequenceType,
+                schema.nucleotideSequence,
+                requestedDateRanges,
+                totalCountsByBucket,
+                rowsByPosition,
+            );
+            return removeEmptyDatesUnlessShown(matrix, showEmptyDates);
+        },
+        [
+            queryClient,
+            connection,
+            schema,
+            filter,
+            granularity,
+            sequenceType,
+            requestedDateRanges,
+            totalCountsByBucket,
+            showEmptyDates,
+        ],
+    );
 }
 
 // --- pure helpers (exported for tests) --------------------------------------

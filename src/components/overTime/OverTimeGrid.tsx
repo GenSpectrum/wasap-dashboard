@@ -7,7 +7,7 @@ import { DEFAULT_FEATURE_SORT, type FeatureSort } from './featureSort';
 import { type TemporalDataMap } from '../../dataLayer/overTime/MutationOverTimeData';
 import { getProportion } from '../../domain/proportionValue';
 import { toTemporalClass } from '../../domain/temporal';
-import { CsvDownloadButton, type DataValue } from '../ui/CsvDownloadButton';
+import { CsvDownloadButton, type CsvDownloadButtonProps } from '../ui/CsvDownloadButton';
 
 /**
  * What the user chose in an over-time grid: the sort, the page and the page size. Hold it above
@@ -58,7 +58,8 @@ type OverTimeGridProps<F> = Omit<FeatureBandsProps<F>, 'viewSettings' | 'paginat
     state: OverTimeGridState;
     /** The number of rows across all pages. */
     totalRows: number;
-    csv: { filename: string; getRows: () => Record<string, DataValue>[] };
+    /** The CSV of all the rows, not only the page's: `getRows` may have to load them first. */
+    csv: { filename: string; getRows: CsvDownloadButtonProps['getData'] };
 };
 
 /**
