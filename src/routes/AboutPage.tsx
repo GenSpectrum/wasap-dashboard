@@ -19,7 +19,7 @@ function PeopleList({ people }: { people: Person[] }) {
             {people.map(({ name, github }) => (
                 <li key={github}>
                     {name} (
-                    <a className='link' href={`https://github.com/${github}`}>
+                    <a className='link' href={`https://github.com/${github}`} target='_blank' rel='noopener noreferrer'>
                         @{github}
                     </a>
                     )
@@ -93,7 +93,7 @@ function DataProcessingInfo() {
             <h3 className='mt-4 mb-2 text-base font-semibold'>Quality control and preprocessing</h3>
             <p className='text-gray-700'>
                 Reads are preprocessed with{' '}
-                <a className='link' href='https://cbg-ethz.github.io/V-pipe/'>
+                <a className='link' href='https://cbg-ethz.github.io/V-pipe/' target='_blank' rel='noopener noreferrer'>
                     V-pipe
                 </a>
                 , which:
@@ -106,7 +106,12 @@ function DataProcessingInfo() {
             </ul>
             <p className='mt-2 text-gray-700'>
                 The expected error rate of the Aviti sequencer is about 0.32% (
-                <a className='link' href='https://www.sciencedirect.com/science/article/pii/S0043135424013642'>
+                <a
+                    className='link'
+                    href='https://www.sciencedirect.com/science/article/pii/S0043135424013642'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     John et al., 2024
                 </a>
                 ).
@@ -124,12 +129,22 @@ function DataProcessingInfo() {
             <p className='text-gray-700'>
                 In paired-end sequencing, each DNA fragment is read from both ends, giving two reads (mates) with the
                 same read name.{' '}
-                <a className='link' href='https://github.com/cbg-ethz/sr2silo'>
+                <a
+                    className='link'
+                    href='https://github.com/cbg-ethz/sr2silo'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     sr2silo
                 </a>{' '}
                 merges each pair into one read that spans the whole fragment, using <code>paired_end_read_merger</code>{' '}
                 from{' '}
-                <a className='link' href='https://github.com/cbg-ethz/smallgenomeutilities'>
+                <a
+                    className='link'
+                    href='https://github.com/cbg-ethz/smallgenomeutilities'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     smallgenomeutilities
                 </a>
                 ; reads without a mate are kept as they are. Because of merging, the read count is roughly half the
@@ -139,19 +154,34 @@ function DataProcessingInfo() {
             <h3 className='mt-4 mb-2 text-base font-semibold'>Alignment</h3>
             <p className='text-gray-700'>
                 As part of V-pipe, reads are aligned with{' '}
-                <a className='link' href='https://github.com/lh3/bwa'>
+                <a className='link' href='https://github.com/lh3/bwa' target='_blank' rel='noopener noreferrer'>
                     BWA
                 </a>{' '}
                 to the reference genome (for SARS-CoV-2,{' '}
-                <a className='link' href='https://www.ncbi.nlm.nih.gov/nuccore/1798174254'>
+                <a
+                    className='link'
+                    href='https://www.ncbi.nlm.nih.gov/nuccore/1798174254'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     Wuhan-Hu-1, NC_045512.2
                 </a>
                 ). For the amino acid view,{' '}
-                <a className='link' href='https://github.com/cbg-ethz/sr2silo'>
+                <a
+                    className='link'
+                    href='https://github.com/cbg-ethz/sr2silo'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     sr2silo
                 </a>{' '}
                 translates and aligns the reads with{' '}
-                <a className='link' href='https://github.com/bbuchfink/diamond'>
+                <a
+                    className='link'
+                    href='https://github.com/bbuchfink/diamond'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     DIAMOND
                 </a>
                 .
@@ -160,7 +190,7 @@ function DataProcessingInfo() {
             <h3 className='mt-4 mb-2 text-base font-semibold'>Database</h3>
             <p className='text-gray-700'>
                 The processed reads are loaded into{' '}
-                <a className='link' href='https://rhydb.org/'>
+                <a className='link' href='https://rhydb.org/' target='_blank' rel='noopener noreferrer'>
                     RhyDB
                 </a>
                 , which answers the dashboard&rsquo;s queries interactively.
@@ -168,7 +198,7 @@ function DataProcessingInfo() {
 
             <p className='mt-4 text-gray-700'>
                 The full data is available for download at{' '}
-                <a className='link' href='https://db.wasap.genspectrum.org'>
+                <a className='link' href='https://db.wasap.genspectrum.org' target='_blank' rel='noopener noreferrer'>
                     db.wasap.genspectrum.org
                 </a>
                 .
@@ -193,11 +223,11 @@ export function AboutPage() {
                     <p className='text-gray-700'>
                         The project is part of Switzerland&rsquo;s broader wastewater-based disease surveillance
                         program, with sequencing performed by the{' '}
-                        <a className='link' href='https://fgcz.ch/'>
+                        <a className='link' href='https://fgcz.ch/' target='_blank' rel='noopener noreferrer'>
                             Functional Genomics Center Zurich (FGCZ)
                         </a>
                         . For more information about the program, see{' '}
-                        <a className='link' href='https://wise.ethz.ch'>
+                        <a className='link' href='https://wise.ethz.ch' target='_blank' rel='noopener noreferrer'>
                             wise.ethz.ch
                         </a>
                         .
@@ -208,7 +238,12 @@ export function AboutPage() {
                     <h2 className='mb-3 text-xl font-semibold'>Contact</h2>
                     <p className='text-gray-700'>
                         For any questions and suggestions, please create an issue in our{' '}
-                        <a className='link' href='https://github.com/GenSpectrum/wasap-dashboard/issues'>
+                        <a
+                            className='link'
+                            href='https://github.com/GenSpectrum/wasap-dashboard/issues'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
                             GitHub repository
                         </a>
                         .
@@ -219,19 +254,29 @@ export function AboutPage() {
                     <h2 className='mb-3 text-xl font-semibold'>Funding statement</h2>
                     <p className='text-gray-700'>
                         We received funding from{' '}
-                        <a className='link' href='https://ethz.ch/en.html'>
+                        <a className='link' href='https://ethz.ch/en.html' target='_blank' rel='noopener noreferrer'>
                             ETH Zurich
                         </a>
                         , the{' '}
-                        <a className='link' href='https://www.sib.swiss/'>
+                        <a className='link' href='https://www.sib.swiss/' target='_blank' rel='noopener noreferrer'>
                             Swiss Institute of Bioinformatics (SIB)
                         </a>
                         ,{' '}
-                        <a className='link' href='http://swissuniversities.ch/'>
+                        <a
+                            className='link'
+                            href='http://swissuniversities.ch/'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
                             swissuniversities
                         </a>{' '}
                         and NIH* through the{' '}
-                        <a className='link' href='https://pathogendatanetwork.org/'>
+                        <a
+                            className='link'
+                            href='https://pathogendatanetwork.org/'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
                             Pathogen Data Network
                         </a>
                         .
@@ -243,6 +288,8 @@ export function AboutPage() {
                             <a
                                 className='link'
                                 href='https://reporter.nih.gov/search/JHbtQB-XeUu8wvs3vUlFFw/project-details/10913643'
+                                target='_blank'
+                                rel='noopener noreferrer'
                             >
                                 U24AI183840
                             </a>
@@ -264,14 +311,24 @@ export function AboutPage() {
                     <ul className='mt-3 space-y-4 text-gray-700'>
                         {TOOLS.map((tool) => (
                             <li key={tool.name}>
-                                <a className='link font-semibold' href={tool.url}>
+                                <a
+                                    className='link font-semibold'
+                                    href={tool.url}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                >
                                     {tool.name}
                                 </a>{' '}
                                 — {tool.role}
                                 {tool.papers.map((paper) => (
                                     <p key={paper.doi} className='mt-1 text-sm text-gray-600'>
                                         {paper.citation}{' '}
-                                        <a className='link' href={`https://doi.org/${paper.doi}`}>
+                                        <a
+                                            className='link'
+                                            href={`https://doi.org/${paper.doi}`}
+                                            target='_blank'
+                                            rel='noopener noreferrer'
+                                        >
                                             doi:{paper.doi}
                                         </a>
                                     </p>

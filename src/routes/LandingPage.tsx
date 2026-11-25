@@ -31,7 +31,12 @@ export function LandingPage() {
                     About page
                 </Link>
                 . The code is open-source and available on{' '}
-                <a className='link' href='https://github.com/GenSpectrum/wasap-dashboard'>
+                <a
+                    className='link'
+                    href='https://github.com/GenSpectrum/wasap-dashboard'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
                     GitHub
                 </a>
                 .

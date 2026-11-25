@@ -7,6 +7,14 @@ import { type Deletion, type Substitution, type SequenceType } from '../../domai
 import { InfoHeadline1, InfoHeadline2, InfoParagraph } from '../ui/Info';
 import { Modal } from '../ui/Modal';
 
+// The dashboard may be embedded in an iframe, so links in annotation descriptions open in a new tab.
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+    if (node.tagName === 'A' && node.hasAttribute('href')) {
+        node.setAttribute('target', '_blank');
+        node.setAttribute('rel', 'noopener noreferrer');
+    }
+});
+
 export type AnnotatedMutationProps = {
     mutation: Substitution | Deletion;
     sequenceType: SequenceType;
@@ -23,6 +31,8 @@ export const AnnotatedMutation: FC<AnnotatedMutationProps> = ({ mutation, sequen
             <a
                 className='hover:text-brand-800 focus:ring-brand-300 underline focus:ring-2 focus:outline-none'
                 href={link}
+                target='_blank'
+                rel='noopener noreferrer'
             >
                 {mutation.code}
             </a>

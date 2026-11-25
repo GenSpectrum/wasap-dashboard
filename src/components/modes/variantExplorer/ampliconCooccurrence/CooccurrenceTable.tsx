@@ -278,6 +278,8 @@ function RowLabel({
                     href={covSpectrumLink}
                     title='Open these mutations together on CoV-Spectrum'
                     onClick={(event) => event.stopPropagation()}
+                    target='_blank'
+                    rel='noopener noreferrer'
                 >
                     {name}
                 </a>
